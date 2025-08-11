@@ -324,7 +324,4 @@ main() {
     return 0
 }
 
-# If script is run directly, run main function
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main
-fi
+main
