@@ -1263,7 +1263,7 @@ echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 su "$USER_NAME" <<USEREOF
     echo "Running post-install script as user \$USER with login manager $LOGIN_MANAGER..."
-    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sway/main/install.sh) --login-manager "$LOGIN_MANAGER" || echo "Failed to run the install script"
+    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager "$LOGIN_MANAGER" || echo "Failed to run the install script"
 USEREOF
 
 echo "Restoring sudo password requirement for wheel group"
@@ -1273,7 +1273,7 @@ POSTINSTALLEOF
 else
     warn "Skipping post-install script, you may reboot now."
     info "if you would like to run my post-install script later, you can run it with the command:"
-    info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sway/main/install.sh) --login-manager \"$login_manager_choice\""
+    info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager \"$login_manager_choice\""
 fi
 
 newTask "==================================================\n==================================================\n"

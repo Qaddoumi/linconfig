@@ -21,18 +21,18 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux/
 
 ### For Sway and SDDM installation
 ``` bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sway/main/install.sh) --login-manager sddm
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager sddm
 ```
 
 ### For Sway and Ly installation
 ``` bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sway/main/install.sh) --login-manager ly
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager ly
 ```
 
 - Or for only the config files :
 
 ``` bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sway/main/installconfig.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/installconfig.sh)
 ```
 
 
