@@ -26,7 +26,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 if [ -z "$size_of_pages" ]; then
-    size_of_pages=0  # Fallback to the default
+    size_of_pages=0  # Fallback to zero
 fi
 
 # Function to create backup files
