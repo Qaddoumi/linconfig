@@ -11,6 +11,24 @@ yellow='\033[1;33m'
 blue='\033[0;34m'
 no_color='\033[0m' # No Color
 
+# Parse named arguments --size-of-pages
+size_of_pages=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --size-of-pages)
+            size_of_pages="$2"
+            shift 2
+            ;;
+        *)
+            echo -e "${red}Unknown argument: $1${no_color}"
+            exit 1
+            ;;
+    esac
+done
+if [ -z "$size_of_pages" ]; then
+    size_of_pages=0  # Fallback to the default
+fi
+
 # Function to create backup files
 backup_file() {
     local file="$1"
@@ -747,6 +765,15 @@ if is_gpu_passed_to_vm "\$GUEST_NAME"; then
 else
     echo -e "\${red}GPU is not passed to VM, Or something happen during the process!!\${no_color}"
 fi
+
+if [ "\$HOOK_NAME" = "prepare" ] && [ "\$STATE_NAME" = "begin" ]; then
+    echo "Enabling hugepages..."
+    echo $size_of_pages | sudo tee /proc/sys/vm/nr_hugepages
+elif [ "\$HOOK_NAME" = "release" ] && [ "\$STATE_NAME" = "end" ]; then
+    echo "Disabling hugepages..."
+    echo 0 | sudo tee /proc/sys/vm/nr_hugepages
+fi
+
 
 LIBVIRTHOOK_SCRIPT_EOF
 sudo chmod +x $LIBVIRTHOOK_SCRIPT
