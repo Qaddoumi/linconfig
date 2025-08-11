@@ -535,6 +535,88 @@ fi
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
+echo -e "${green}Setting up Hugepages for KVM guests${no_color}"
+# as im allocating a 20GB of rams to vm ==> i need to allocate 10240 hugepages (20GB / 2MB per page = 10240 pages)
+
+# Check current hugepages allocation
+current_hugepages=$(cat /proc/sys/vm/nr_hugepages 2>/dev/null || echo "0")
+
+if [ "$current_hugepages" -ge 10240 ]; then
+    echo -e "${green}Hugepages are already configured (${current_hugepages} pages)${no_color}"
+else
+    echo -e "${green}Configuring hugepages for KVM guests...${no_color}"
+    
+    # Set runtime hugepages
+    echo 10240 | sudo tee /proc/sys/vm/nr_hugepages > /dev/null || true
+    
+    # Make it persistent
+    echo "vm.nr_hugepages=10240" | sudo tee /etc/sysctl.d/99-hugepages.conf > /dev/null || true
+    
+    # Also add kernel parameter for boot-time allocation (more reliable)
+    echo -e "${green}Detecting bootloader...${no_color}"
+    bootloader_type="Systemd-boot"
+    echo -e "${green}check for systemd-boot first${no_color}"
+    if bootctl status 2>/dev/null | grep -q "systemd-boot"; then
+        echo -e "${green}systemd-boot confirmed via bootctl${no_color}"
+    elif [[ -f "/boot/grub/grub.cfg" ]] || sudo test -d "/boot/grub"; then
+            echo -e "${green}GRUB bootloader detected${no_color}"
+            bootloader_type="grub" # GRUB detected
+    fi
+    echo -e "${green}Bootloader type: $bootloader_type${no_color}"
+    if [ "$bootloader_type" = "grub" ]; then
+        if ! grep -q "hugepages=10240" /etc/default/grub; then
+            sudo sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="hugepages=10240 /' /etc/default/grub
+            sudo grub-mkconfig -o /boot/grub/grub.cfg
+            echo -e "${yellow}Kernel parameters updated. Reboot required for optimal hugepages allocation.${no_color}"
+        fi
+    elif [ "$bootloader_type" = "systemd-boot" ]; then
+        if ! grep -q "hugepages=10240" /boot/loader/entries/*.conf; then
+            sudo sed -i 's/^options /&hugepages=10240 /' /boot/loader/entries/*.conf
+            echo -e "${yellow}Kernel parameters updated for systemd-boot. Reboot required for optimal hugepages allocation.${no_color}"
+        fi
+    fi
+    
+    echo -e "${green}Hugepages configured with 10240 pages${no_color}"
+fi
+
+# Check if hugepages are mounted
+if mount | grep -q "hugetlbfs on /dev/hugepages"; then
+    echo -e "${green}Hugepages are already mounted${no_color}"
+else
+    echo -e "${green}Mounting hugepages...${no_color}"
+    sudo mkdir -p /dev/hugepages || true
+    
+    # Check if already in fstab
+    if ! grep -q "/dev/hugepages" /etc/fstab; then
+        echo "hugetlbfs /dev/hugepages hugetlbfs mode=1770,gid=kvm 0 0" | sudo tee -a /etc/fstab > /dev/null || true
+    fi
+    
+    sudo mount -a || true
+    echo -e "${green}Hugepages mounted at /dev/hugepages${no_color}"
+fi
+
+# this part not recommended for most workloads
+# # Disabling Transparent hugepages for better performance
+# if grep -q "transparent_hugepage" /sys/kernel/mm/transparent_hugepage/enabled; then
+#     echo -e "${green}Disabling Transparent Hugepages...${no_color}"
+#     echo never | sudo tee /sys/kernel/mm/transparent_hugepage/enabled > /dev/null || true
+#     echo -e "${green}Transparent Hugepages disabled${no_color}"
+# else
+#     echo -e "${yellow}Transparent Hugepages not supported or already disabled${no_color}"
+# fi
+
+# Display current hugepages status
+echo -e "${green}Current Hugepages configuration:${no_color}"
+if grep -q "HugePages_Total" /proc/meminfo; then
+    grep "HugePages" /proc/meminfo
+    grep "Hugepagesize" /proc/meminfo
+else
+    echo -e "${red}Hugepages information not available in /proc/meminfo${no_color}"
+fi
+
+echo -e "${green}Hugepages setup completed${no_color}"
+
+echo -e "${blue}==================================================\n==================================================${no_color}"
 #TODO: Add AMD SEV Support
 #TODO: Optimise Host with TuneD
 
