@@ -589,8 +589,8 @@ echo -e "${green}You can also use the following command to check if the shared m
 echo -e "${green}ls -l /dev/shm/looking-glass*${no_color}"
 
 echo -e "${green}Creating desktop entries for Looking Glass Client to run in fullscreen${no_color}"
-sudo mkdir -p ~/.local/share/applications/
-tee ~/.local/share/applications/looking-glass-fullscreen.desktop << 'EOF'
+sudo mkdir -p ~/.local/share/applications/ || true
+sudo tee ~/.local/share/applications/looking-glass-fullscreen.desktop > /dev/null << 'EOF'
 [Desktop Entry]
 Name=Looking Glass Client (Fullscreen)
 Comment=View KVM guest desktop in fullscreen
