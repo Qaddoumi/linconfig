@@ -15,23 +15,23 @@ This project is not ready yet, it is a work in progress. It may not work as expe
 - Run :
 
 An automated script for installing Arch Linux with advanced configuration options.
-```shell
-
+```bash
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux/archinstall.sh)
 ```
 
 ### For Sway and SDDM installation
-``` shell
+``` bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sway/main/install.sh) --login-manager sddm
 ```
 
 ### For Sway and Ly installation
-``` shell
+``` bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sway/main/install.sh) --login-manager ly
 ```
 
 - Or for only the config files :
 
-``` shell
+``` bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sway/main/installconfig.sh)
 ```
 

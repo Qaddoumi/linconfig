@@ -17,7 +17,7 @@ An automated script for installing Arch Linux with advanced configuration option
 
 Run the installer directly:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/archInstall/main/archinstall.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/Linux/archinstall.sh)
 ```
 
 ## 📝 Todo List
