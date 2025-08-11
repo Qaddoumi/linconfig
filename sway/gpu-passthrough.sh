@@ -12,7 +12,7 @@ blue='\033[0;34m'
 no_color='\033[0m' # No Color
 
 # Parse named arguments --size-of-pages
-size_of_pages=""
+size_of_pages=0
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --size-of-pages)
@@ -25,9 +25,6 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
-if [ -z "$size_of_pages" ]; then
-    size_of_pages=0  # Fallback to zero
-fi
 
 # Function to create backup files
 backup_file() {
