@@ -1,3 +1,16 @@
+## For arch :
+
+## 📝 Todo List
+- [ ] handling secure boot
+- [ ] make sure hibernate works
+- [ ] luks encryption
+- [ ] apparmor support
+- [ ] zram, zswap
+
+
+
+## For Sway:
+
 - [ ]  pacman -Ss conky
 extra/conky 1.22.2-1
     Light-weight system monitor for X, Wayland, and other things, too
