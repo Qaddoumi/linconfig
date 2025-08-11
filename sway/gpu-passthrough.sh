@@ -268,7 +268,7 @@ if [ -n "$VFIO_IDS" ]; then
             # Filter out backups and fallbacks
             boot_entries=()
             for entry in "${all_entries[@]}"; do
-                if [[ "$(basename "$entry")" != *".backup."* && "$(basename "$entry")" != *"-fallback.conf" ]]; then
+                if [[ "$(basename "$entry")" != *".backup."* && "$(basename "$entry")" != *"-fallback."* ]]; then
                     boot_entries+=("$entry")
                 fi
             done
