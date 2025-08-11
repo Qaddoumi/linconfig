@@ -162,7 +162,7 @@ else
         "mesa"                   # OpenGL/Vulkan
         "vulkan-mesa-layers"     # Vulkan validation
         "mesa-utils"             # glxinfo, etc.
-        "libva-utils"                 # vainfo (debugging)
+        "libva"                  # Video Acceleration API
     )
     
     # VM-specific drivers 
@@ -782,11 +782,11 @@ declare -a INEGRATED_GPU_PKGS=()
 case "$CPU_VENDOR" in
     "GenuineIntel")
         UCODE_PKG="intel-ucode" 
-        INEGRATED_GPU_PKGS+=("vulkan-intel" "intel-media-driver" "intel-compute-runtime" "libva-intel-driver" "intel-gpu-tools")
+        INEGRATED_GPU_PKGS+=("vulkan-intel" "intel-media-driver" "intel-compute-runtime" "libva-utils" "libva-intel-driver" "intel-gpu-tools")
     ;;
     "AuthenticAMD")
         UCODE_PKG="amd-ucode" 
-        INEGRATED_GPU_PKGS+=("xf86-video-amdgpu" "vulkan-radeon" "radeontop" "libva-mesa-driver")
+        INEGRATED_GPU_PKGS+=("xf86-video-amdgpu" "vulkan-radeon" "radeontop")
     ;;
     *) UCODE_PKG=""; warn "Unknown CPU vendor: $CPU_VENDOR" ;;
 esac
