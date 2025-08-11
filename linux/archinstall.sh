@@ -158,22 +158,26 @@ else
     done
     
     # Always include mesa as base
-    FINAL_GPU_PKGS+=("mesa" "vulkan-mesa-layers" "mesa-utils")
+    FINAL_GPU_PKGS=(
+        "mesa"                   # OpenGL/Vulkan
+        "vulkan-mesa-layers"     # Vulkan validation
+        "mesa-utils"             # glxinfo, etc.
+        "libva-mesa-driver"      # VA-API acceleration (critical for VMs)
+        "vainfo"                 # vainfo (debugging)
+    )
     
     # VM-specific drivers 
     info "Configuring VM graphics drivers..."
-    if printf '%s\n' "${VM_GPUS[@]}" | grep -q "qxl"; then
-        FINAL_GPU_PKGS+=("xf86-video-qxl")
-        info "Added QXL driver for SPICE graphics"
-    elif printf '%s\n' "${VM_GPUS[@]}" | grep -q "virtio"; then
-        FINAL_GPU_PKGS+=("xf86-video-virtio")
-        info "Added virtio GPU driver"
+    if printf '%s\n' "${VM_GPUS[@]}" | grep -E "qxl|virtio"; then
+        FINAL_GPU_PKGS+=("xf86-video-qxl" "virglrenderer")
+        info "Added virtio and QXL driver for SPICE graphics"
     elif printf '%s\n' "${VM_GPUS[@]}" | grep -q "vmware"; then
         FINAL_GPU_PKGS+=("xf86-video-vmware")
         info "Added VMware SVGA driver"
     else
-        # Generic VM fallback - mesa should handle it
-        info "Using generic mesa drivers for VM"
+        # Fallback: Software rendering
+        FINAL_GPU_PKGS+=("mesa-vulkan-swrast")
+        info "Using generic Mesa drivers (software rendering)"
     fi
 
     # Physical hardware OR GPU passthrough - handle multiple GPU types
@@ -777,13 +781,13 @@ info "Detected CPU vendor: $CPU_VENDOR"
 declare -a INEGRATED_GPU_PKGS=()
 # Fix microcode package naming
 case "$CPU_VENDOR" in
-    "GenuineIntel") 
+    "GenuineIntel")
         UCODE_PKG="intel-ucode" 
-        INEGRATED_GPU_PKGS+=("vulkan-intel" "intel-media-sdk" "intel-compute-runtime" "libva-intel-driver" "libva-utils")
+        INEGRATED_GPU_PKGS+=("vulkan-intel" "intel-media-driver" "intel-compute-runtime" "libva-intel-driver" "intel-gpu-tools")
     ;;
-    "AuthenticAMD") 
+    "AuthenticAMD")
         UCODE_PKG="amd-ucode" 
-        INEGRATED_GPU_PKGS+=("xf86-video-amdgpu" "vulkan-radeon" "libva-mesa-driver" "mesa-vdpau" "amdvlk" "radeontop")
+        INEGRATED_GPU_PKGS+=("xf86-video-amdgpu" "vulkan-radeon" "radeontop")
     ;;
     *) UCODE_PKG=""; warn "Unknown CPU vendor: $CPU_VENDOR" ;;
 esac
