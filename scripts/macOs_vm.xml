@@ -1,6 +1,6 @@
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
-    <name>301-MacOS-clone</name>
-    <uuid>3b318f64-f9af-4ddb-a8bc-47a0d9556ce8</uuid>
+    <name>300-MacOS</name>
+    <uuid>1be00be1-d539-494c-8d15-cbde644047d3</uuid>
     <memory unit="KiB">16777216</memory>
     <currentMemory unit="KiB">16777216</currentMemory>
     <vcpu placement="static">20</vcpu>
@@ -48,13 +48,6 @@
     <devices>
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <disk type="file" device="disk">
-            <driver name="qemu" type="qcow2" cache="none" io="native" discard="unmap" iothread="1"/>
-            <source file="/var/lib/libvirt/images/301-MacOS-clone.qcow2"/>
-            <target dev="vdb" bus="virtio"/>
-            <boot order="3"/>
-            <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
-        </disk>
-        <disk type="file" device="disk">
             <driver name="qemu" type="qcow2" cache="none" io="native" iothread="2"/>
             <source file="/home/moh/OSX-KVM/OpenCore/OpenCore.qcow2"/>
             <target dev="vdc" bus="virtio"/>
@@ -67,6 +60,13 @@
             <target dev="vdd" bus="virtio"/>
             <boot order="2"/>
             <address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/>
+        </disk>
+        <disk type="file" device="disk">
+            <driver name="qemu" type="qcow2" cache="none" io="native" discard="unmap" iothread="1"/>
+            <source file="/var/lib/libvirt/images/300-MacOS.qcow2"/>
+            <target dev="vde" bus="virtio"/>
+            <boot order="3"/>
+            <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
         </disk>
         <controller type="sata" index="0">
             <address type="pci" domain="0x0000" bus="0x00" slot="0x1f" function="0x2"/>
@@ -168,6 +168,13 @@
             </model>
             <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
         </video>
+        <hostdev mode="subsystem" type="usb" managed="yes">
+            <source>
+                <vendor id="0x0bda"/>
+                <product id="0x4853"/>
+            </source>
+            <address type="usb" bus="0" port="1"/>
+        </hostdev>
         <watchdog model="itco" action="reset"/>
         <memballoon model="none"/>
     </devices>
