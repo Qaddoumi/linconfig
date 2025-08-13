@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # GPU PCI ID Identifier Script for VFIO Passthrough
@@ -10,21 +9,6 @@ green='\033[0;32m'
 yellow='\033[1;33m'
 blue='\033[0;34m'
 no_color='\033[0m' # No Color
-
-# Parse named arguments --size-of-pages
-size_of_pages=0
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        --size-of-pages)
-            size_of_pages="$2"
-            shift 2
-            ;;
-        *)
-            echo -e "${red}Unknown argument: $1${no_color}"
-            exit 1
-            ;;
-    esac
-done
 
 # Function to create backup files
 backup_file() {
@@ -763,13 +747,15 @@ else
     echo -e "\${red}GPU is not passed to VM, Or something happen during the process!!\${no_color}"
 fi
 
-if [ "\$HOOK_NAME" = "prepare" ] && [ "\$STATE_NAME" = "begin" ]; then
-    echo "Enabling hugepages..."
-    echo $size_of_pages | sudo tee /proc/sys/vm/nr_hugepages
-elif [ "\$HOOK_NAME" = "release" ] && [ "\$STATE_NAME" = "end" ]; then
-    echo "Disabling hugepages..."
-    echo 0 | sudo tee /proc/sys/vm/nr_hugepages
-fi
+##TODO: make running the hugepages dynamic by checking the xml if it contains the hugepages tag.
+## and check the memory size to determine the size of hugepages.
+# if [ "\$HOOK_NAME" = "prepare" ] && [ "\$STATE_NAME" = "begin" ]; then
+#     echo "Enabling hugepages..."
+#     echo $size_of_pages | sudo tee /proc/sys/vm/nr_hugepages
+# elif [ "\$HOOK_NAME" = "release" ] && [ "\$STATE_NAME" = "end" ]; then
+#     echo "Disabling hugepages..."
+#     echo 0 | sudo tee /proc/sys/vm/nr_hugepages
+# fi
 
 
 LIBVIRTHOOK_SCRIPT_EOF
