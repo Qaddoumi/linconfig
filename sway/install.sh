@@ -114,6 +114,7 @@ sudo pacman -S --needed --noconfirm kanshi # Automatic Display manager for Wayla
 sudo pacman -S --needed --noconfirm nano # Text editor
 sudo pacman -S --needed --noconfirm neovim # Neovim text editor
 sudo pacman -S --needed --noconfirm brightnessctl # Brightness control
+sudo pacman -S --needed --noconfirm polkit-gnome # PolicyKit authentication agent (give sudo access to GUI apps)
 sudo pacman -S --needed --noconfirm s-tui # Terminal UI for monitoring CPU
 sudo pacman -S --needed --noconfirm gdu # Disk usage analyzer
 sudo pacman -S --needed --noconfirm jq # JSON processor

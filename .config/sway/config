@@ -160,6 +160,9 @@ font pango:JetBrainsMono Nerd Font Propo 12
 # Wide containers get vertical splits, tall containers get horizontal splits
 #exec autotiling -l 2
 
+# Start polkit authentication agent
+exec_always /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+
 # Automatically manage display configurations
 exec_always bash -c 'sleep 1; pkill kanshi 2>/dev/null || true; kanshi'
 
@@ -190,6 +193,12 @@ for_window [class="GtkFileChooserDialog"] floating enable, move position center,
 for_window [class="kdialog"] floating enable, move position center, resize set 400 300
 for_window [class="kde5-config-dialog"] floating enable, move position center, resize set 500 400
 for_window [app_id="wlogout"] move position center, resize set 500 400
+
+# Make polkit dialogs appear on focused workspace
+for_window [app_id="gcr-prompter"] floating enable, move container to workspace current
+for_window [class="Polkit-gnome-authentication-agent-1"] floating enable, move container to workspace current
+for_window [title="Authentication Required"] floating enable, move container to workspace current
+for_window [title="Authentication"] floating enable, move container to workspace current
 
 ### Input configuration
 #
