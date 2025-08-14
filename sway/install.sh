@@ -121,6 +121,7 @@ sudo pacman -S --needed --noconfirm jq # JSON processor
 sudo pacman -S --needed --noconfirm bc # Arbitrary precision calculator language
 sudo pacman -S --needed --noconfirm fastfetch # Fast system information tool
 sudo pacman -S --needed --noconfirm less # Pager program for viewing text files
+sudo pacman -S --needed --noconfirm man-db man-pages # Manual pages and database
 sudo pacman -S --needed --noconfirm mpv # video player
 sudo pacman -S --needed --noconfirm celluloid # frontend for mpv
 sudo pacman -S --needed --noconfirm imv # image viewer
