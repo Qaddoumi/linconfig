@@ -1,6 +1,7 @@
 ## For arch :
 
 ## 📝 Todo List
+- [ ] btrfs filesystem
 - [ ] handling secure boot
 - [ ] make sure hibernate works
 - [ ] luks encryption
