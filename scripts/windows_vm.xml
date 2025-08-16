@@ -9,6 +9,10 @@
     </metadata>
     <memory unit="KiB">20971520</memory>
     <currentMemory unit="KiB">20971520</currentMemory>
+    <memoryBacking>
+        <source type="memfd"/>
+        <access mode="shared"/>
+    </memoryBacking>
     <vcpu placement="static">20</vcpu>
     <cputune>
         <shares>2048</shares>
