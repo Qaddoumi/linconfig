@@ -1066,14 +1066,14 @@ elif [[ "$BOOTLOADER" == "systemd-boot" ]]; then
 
     info "Configuring systemd-boot entries"
     cat > /boot/loader/loader.conf <<LOADEREOF
-default arch
+default 99-arch.conf
 timeout 1
 console-mode max
 editor no
 LOADEREOF
 
     # Create proper systemd-boot entry
-    cat > /boot/loader/entries/arch.conf <<ENTRYEOF
+    cat > /boot/loader/entries/99-arch.conf <<ENTRYEOF
 title Arch Linux
 linux /vmlinuz-linux
 ${UCODE_LINE}
@@ -1082,7 +1082,7 @@ options root=UUID=${ROOT_UUID} rw loglevel=3 $KERNEL_CMDLINE resume=UUID=${ROOT_
 ENTRYEOF
 
     # Create fallback entry
-    cat > /boot/loader/entries/arch-fallback.conf <<ENTRYEOF
+    cat > /boot/loader/entries/97-arch-fallback.conf <<ENTRYEOF
 title Arch Linux (fallback initramfs)
 linux /vmlinuz-linux
 ${UCODE_LINE}
@@ -1092,7 +1092,7 @@ ENTRYEOF
 
     # Create zen entry (only if zen kernel is installed)
     if [[ -f /boot/vmlinuz-linux-zen ]]; then
-        cat > /boot/loader/entries/arch-zen.conf <<ZENEOF
+        cat > /boot/loader/entries/98-arch-zen.conf <<ZENEOF
 title Arch Linux (linux-zen)
 linux /vmlinuz-linux-zen
 ${UCODE_LINE}
@@ -1101,7 +1101,7 @@ options root=UUID=${ROOT_UUID} rw loglevel=3 $KERNEL_CMDLINE resume=UUID=${ROOT_
 ZENEOF
 
         # Create zen fallback entry
-        cat > /boot/loader/entries/arch-zen-fallback.conf <<ZENFALLBACKEOF
+        cat > /boot/loader/entries/96-arch-zen-fallback.conf <<ZENFALLBACKEOF
 title Arch Linux (linux-zen fallback initramfs)
 linux /vmlinuz-linux-zen
 ${UCODE_LINE}
@@ -1130,6 +1130,39 @@ fi
 info "Bootloader configuration completed for $BOOTLOADER in $BOOT_MODE mode"
 info "Resume UUID: $ROOT_UUID"
 info "Resume offset: $SWAPFILE_OFFSET"
+
+newTask "==================================================\n=================================================="
+
+info "Installing memtest86+ for memory testing"
+
+if [[ "$BOOTLOADER" == "grub" ]]; then
+    info "Installing memtest86+ for GRUB"
+    
+    # Install the traditional memtest86+ for GRUB compatibility
+    pacman -S --needed --noconfirm memtest86+ || warn "Failed to install memtest86+"
+    
+    # Update GRUB configuration to include memtest86+
+    grub-mkconfig -o /boot/grub/grub.cfg || warn "Failed to update GRUB configuration"
+    
+    # Verify memtest86+ was added to GRUB menu
+    if grep -q "Memory test" /boot/grub/grub.cfg; then
+        info "memtest86+ successfully added to GRUB menu"
+    else
+        warn "memtest86+ may not have been properly added to GRUB menu"
+    fi
+elif [[ "$BOOTLOADER" == "systemd-boot" ]]; then
+    info "Installing memtest86+ for systemd-boot"
+    
+    pacman -S --needed --noconfirm memtest86+-efi || warn "Failed to install memtest86+efi"
+
+    cat > /boot/loader/entries/95-memtest86+-efi.conf <<MEMTESTEOF
+title Memory Test (memtest86+-efi)
+efi /memtest86+/memtest.efi
+options
+MEMTESTEOF
+
+    bootctl upadate || error "Failed to update systemd-boot configuration"
+fi
 
 newTask "==================================================\n=================================================="
 
