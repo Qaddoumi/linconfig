@@ -8,7 +8,7 @@ XML_DIR="/etc/libvirt/qemu"
 DEST_DIR="/run/media/moh/Mkohaa4TB/archBackup/vms/$(date +%Y%m%d_%H%M%S)"
 
 # Create destination directory if it doesn't exist
-#sudo mkdir -p "$DEST_DIR"
+sudo mkdir -p "$DEST_DIR"
 
 # Process all qcow2 files
 echo "Processing qcow2 files..."
@@ -31,7 +31,7 @@ for qcow_file in "$QCOW2_DIR"/*.qcow2; do
         echo "  Checking disk..."
         sudo qemu-img check "$QCOW2_DIR/$vm_name"
         echo "  Converting and copying the disk..."
-        #sudo qemu-img convert -p -O qcow2 -c "$QCOW2_DIR/$vm_name" "$DEST_DIR/$vm_name"
+        sudo qemu-img convert -p -O qcow2 -c "$QCOW2_DIR/$vm_name" "$DEST_DIR/$vm_name"
         
         # Add your custom commands here
     fi
