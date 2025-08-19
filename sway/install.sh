@@ -399,7 +399,7 @@ fi
 echo ""
 echo -e "${green}Service status:${no_color}"
 echo -e "${green}===============${no_color}"
-systemctl status lm_sensors.service --no-pager -l > /dev/null
+systemctl status lm_sensors.service --no-pager -l || true
 
 echo -e ""
 echo -e "${green}To manually test: sensors${no_color}"

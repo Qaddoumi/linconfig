@@ -430,6 +430,12 @@ fi
 
 newTask "==================================================\n=================================================="
 
+info "Would you like to reboot the system after the installation?"
+read -rp "Type 'y' to reboot, or hit enter to skip: " REBOOT_AFTER_INSTALL
+REBOOT_AFTER_INSTALL=${REBOOT_AFTER_INSTALL:-n}
+
+newTask "==================================================\n=================================================="
+
 cleanup_disks() {
     local attempts=3
     info "Starting cleanup process (3 attempts)..."
@@ -1347,4 +1353,16 @@ time_str+="${seconds}s"
 
 echo -e "Operation completed in ${time_str}"
 
-### version 0.7.3 ###
+if [[ "$REBOOT_AFTER_INSTALL" == "y" ]]; then
+    info "Rebooting system in 7 seconds..."
+    i=1
+    for ((i=1; i<=7; i++)); do
+        echo -ne "\rRebooting in $((8-i)) seconds..."
+        sleep 1
+    done
+    systemctl reboot || error "Failed to reboot system"
+else
+    info "You can reboot the system manually when ready."
+fi
+
+### version 0.7.4 ###
