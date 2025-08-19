@@ -1315,7 +1315,6 @@ USEREOF
 
 echo "Restoring sudo password requirement for wheel group"
 sed -i '/^%wheel ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers
-echo -e "\n"
 POSTINSTALLEOF
 else
     warn "Skipping post-install script, you may reboot now."
