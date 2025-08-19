@@ -27,22 +27,15 @@ echo -e "${green}Checking CPU vendor and IOMMU support...${no_color}"
 CPU_VENDOR=$(lscpu | grep "Vendor ID" | awk '{print $3}')
 echo -e "${green}CPU Vendor: $CPU_VENDOR${no_color}"
 
-# Integrated gpu modeset
-integrated_gpu_modeset=""
-discrete_gpu_modeset=""
 # Determine IOMMU parameter based on CPU vendor
 echo -e "${green}Determining IOMMU parameter based on CPU vendor${no_color}"
 if [[ "$CPU_VENDOR" == "GenuineIntel" ]]; then
     IOMMU_PARAM="intel_iommu=on"
-    integrated_gpu_modeset="i915.modeset=1"
-    discrete_gpu_modeset="noveau.modeset=0"
-    echo -e "${green}Intel CPU detected - will use intel_iommu=on $integrated_gpu_modeset $discrete_gpu_modeset${no_color}"
+    echo -e "${green}Intel CPU detected - will use intel_iommu=on${no_color}"
 elif [[ "$CPU_VENDOR" == "AuthenticAMD" ]]; then
     echo -e "${red}This script does not handle amd inegrated gpu with amd discrete gpe probebly${no_color}"
     IOMMU_PARAM="amd_iommu=on"
-    integrated_gpu_modeset="amdgpu.modeset=1"
-    discrete_gpu_modeset="radeon.modeset=0"
-    echo -e "${green}AMD CPU detected - will use amd_iommu=on $integrated_gpu_modeset $discrete_gpu_modeset${no_color}"
+    echo -e "${green}AMD CPU detected - will use amd_iommu=on${no_color}"
 else
     echo -e "${red}Unknown CPU vendor: $CPU_VENDOR${no_color}"
     echo -e "${red}Please manually add the appropriate IOMMU parameter for your CPU${no_color}"
@@ -199,7 +192,7 @@ if [ -n "$amd_gpu" ]; then
     GPU_PCI_ID="$amd_pci_addr"
 fi
 
-echo -e "${green}\nAdding $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS $integrated_gpu_modeset $discrete_gpu_modeset to the bootloader\n${no_color}"
+echo -e "${green}\nAdding $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS to the bootloader\n${no_color}"
 
 echo -e "${green}Detecting bootloader...${no_color}"
 bootloader_type=2
@@ -257,7 +250,7 @@ if [ -n "$VFIO_IDS" ]; then
             
             if [[ -z "$entries_dir" ]] || ! sudo test -d "$entries_dir"; then
                 echo -e "${red}Could not locate systemd-boot entries directory${no_color}"
-                echo -e "${yellow}Please manually add '$IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS $integrated_gpu_modeset $discrete_gpu_modeset' to your boot entry${no_color}"
+                echo -e "${yellow}Please manually add '$IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS' to your boot entry${no_color}"
                 #exit 1
             fi
             
@@ -295,12 +288,12 @@ if [ -n "$VFIO_IDS" ]; then
                 
                 # Add IOMMU parameter to the options line
                 if sudo grep -q "^options" "$entry"; then
-                    sudo sed -i "/^options/ s/$/ $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS $integrated_gpu_modeset $discrete_gpu_modeset/" "$entry"
-                    echo -e "${green}Updated $(basename "$entry") with: $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS $integrated_gpu_modeset $discrete_gpu_modeset${no_color}"
+                    sudo sed -i "/^options/ s/$/ $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS/" "$entry"
+                    echo -e "${green}Updated $(basename "$entry") with: $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS${no_color}"
                 else
                     # If no options line exists, add one
-                    echo "options $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS $integrated_gpu_modeset $discrete_gpu_modeset" | sudo tee -a "$entry" > /dev/null
-                    echo -e "${green}Added options line to $(basename "$entry") with: $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS $integrated_gpu_modeset $discrete_gpu_modeset${no_color}"
+                    echo "options $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS" | sudo tee -a "$entry" > /dev/null
+                    echo -e "${green}Added options line to $(basename "$entry") with: $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS${no_color}"
                 fi
             done
             ;;
@@ -321,8 +314,8 @@ if [ -n "$VFIO_IDS" ]; then
                 echo -e "${yellow}IOMMU parameter already present in GRUB configuration${no_color}"
             else
                 # Add IOMMU parameter to GRUB_CMDLINE_LINUX_DEFAULT
-                sudo sed -i "/GRUB_CMDLINE_LINUX_DEFAULT=/ s/\"$/ $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS $integrated_gpu_modeset $discrete_gpu_modeset\"/" "$GRUB_CONFIG"
-                echo -e "${green}Updated GRUB configuration with: $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS $integrated_gpu_modeset $discrete_gpu_modeset${no_color}"
+                sudo sed -i "/GRUB_CMDLINE_LINUX_DEFAULT=/ s/\"$/ $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS\"/" "$GRUB_CONFIG"
+                echo -e "${green}Updated GRUB configuration with: $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS${no_color}"
             fi
 
             # Regenerate GRUB configuration
@@ -337,7 +330,7 @@ if [ -n "$VFIO_IDS" ]; then
         2)
             # No bootloader detected
             echo -e "${red}Unable to detect bootloader (GRUB or systemd-boot)${no_color}"
-            echo -e "${red}Please manually add '$IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS $integrated_gpu_modeset $discrete_gpu_modeset' to your kernel parameters${no_color}"
+            echo -e "${red}Please manually add '$IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS' to your kernel parameters${no_color}"
             #exit 1
             ;;
     esac
@@ -615,15 +608,15 @@ else
 
 fi
 
-# echo -e "${green}Blacklist host GPU drivers to prevent automatic binding:${no_color}"
-# if [ "$GPU_TYPE" = "nvidia" ]; then
-#     echo -e "blacklist nvidia\nblacklist nvidia_drm\nblacklist nvidia_modeset\nblacklist nouveau\nblacklist nvidiafb\nblacklist nvidia_uvm\nblacklist nvidia_wmi_ec_backlight" | sudo tee /etc/modprobe.d/blacklist-nvidia.conf > /dev/null
-# elif [ "$GPU_TYPE" = "amdgpu" ]; then
-#     echo -e "blacklist amdgpu\nblacklist radeon" | sudo tee /etc/modprobe.d/blacklist-amd.conf > /dev/null
-# fi
+echo -e "${green}Blacklist host GPU drivers to prevent automatic binding:${no_color}"
+if [ "$GPU_TYPE" = "nvidia" ]; then
+    echo -e "blacklist nvidia\nblacklist nvidia_drm\nblacklist nvidia_modeset\nblacklist nouveau\nblacklist nvidiafb\nblacklist nvidia_uvm" | sudo tee /etc/modprobe.d/blacklist-nvidia.conf > /dev/null
+elif [ "$GPU_TYPE" = "amdgpu" ]; then
+    echo -e "blacklist amdgpu\nblacklist radeon" | sudo tee /etc/modprobe.d/blacklist-amd.conf > /dev/null
+fi
 
-# echo -e "${green}Creating VFIO configuration file /etc/modprobe.d/vfio.conf${no_color}"
-# echo -e "options vfio-pci ids=$VFIO_IDS" | sudo tee /etc/modprobe.d/vfio.conf > /dev/null
+echo -e "${green}Creating VFIO configuration file /etc/modprobe.d/vfio.conf${no_color}"
+echo -e "options vfio-pci ids=$VFIO_IDS" | sudo tee /etc/modprobe.d/vfio.conf > /dev/null
 
 # Update initramfs
 echo -e "${green}Updating initramfs...${no_color}"
