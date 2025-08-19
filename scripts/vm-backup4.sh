@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+start_time=$(date +%s)
+
 # Directory paths
 QCOW2_DIR="/var/lib/libvirt/images"
 XML_DIR="/etc/libvirt/qemu"
@@ -56,4 +58,22 @@ for xml_file in "$XML_DIR"/*.xml; do
 done
 
 echo "======================================================"
-echo -e "\nOperation completed."
+
+end_time=$(date +%s)
+elapsed_time=$((end_time - start_time))
+
+# Convert seconds to human readable format
+hours=$((elapsed_time / 3600))
+minutes=$(( (elapsed_time % 3600) / 60 ))
+seconds=$((elapsed_time % 60))
+
+time_str=""
+if [[ $hours -gt 0 ]]; then
+    time_str+="${hours}h "
+fi
+if [[ $minutes -gt 0 || $hours -gt 0 ]]; then
+    time_str+="${minutes}m "
+fi
+time_str+="${seconds}s"
+
+echo -e "Operation completed in ${time_str}"
