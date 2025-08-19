@@ -1161,7 +1161,7 @@ efi /memtest86+/memtest.efi
 options
 MEMTESTEOF
 
-    bootctl update > /dev/null || error "Failed to update systemd-boot configuration"
+    bootctl update || true
 fi
 
 newTask "==================================================\n=================================================="
