@@ -104,6 +104,7 @@ sudo pacman -S --needed --noconfirm kitty # Terminal emulator
 sudo pacman -S --needed --noconfirm swayidle # Idle management for sway
 sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
 sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway
+sudo pacman -S --needed --noconfirm xorg-server-xwayland # XWayland for compatibility with X11 applications
 sudo pacman -S --needed --noconfirm xdg-desktop-portal xdg-desktop-portal-wlr # Portal for Wayland
 sudo pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
@@ -123,7 +124,7 @@ sudo pacman -S --needed --noconfirm fastfetch # Fast system information tool
 sudo pacman -S --needed --noconfirm less # Pager program for viewing text files
 sudo pacman -S --needed --noconfirm man-db man-pages # Manual pages and database
 sudo pacman -S --needed --noconfirm mpv # video player
-sudo pacman -S --needed --noconfirm celluloid # frontend for mpv
+sudo pacman -S --needed --noconfirm celluloid # frontend for mpv video player
 sudo pacman -S --needed --noconfirm imv # image viewer
 sudo pacman -S --needed --noconfirm file-roller # Handling archive files
 sudo pacman -S --needed --noconfirm libxml2 # XML parsing library

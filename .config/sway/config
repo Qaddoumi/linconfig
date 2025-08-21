@@ -174,7 +174,7 @@ exec_always wl-paste --type text --watch cliphist store
 exec_always wl-paste --type image --watch cliphist store
 
 # NetworkManager
-exec_always killall -q nm-applet || true; nm-applet --indicator
+exec_always bash -c "killall -q nm-applet ; nm-applet --indicator"
 
 ## Waybar
 #exec waybar
