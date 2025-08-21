@@ -439,7 +439,7 @@ GPU_DRIVER="$GPU_DRIVER"
 AUDIO_DRIVER="$AUDIO_DRIVER"
 
 case "\$1" in
-    "vm")
+    "DELETEMEvm")
         echo -e "\${green}Switching GPU to VM mode...\${no_color}"
 
         echo -e "\${blue}Unloading host drivers...\${no_color}"
@@ -483,7 +483,7 @@ case "\$1" in
 
         echo -e "\${green}GPU switched to VM mode\${no_color}"
         ;;
-    "host")
+    "DELETEMEhost")
         echo -e "\${green}Switching GPU to host mode...\${no_color}"
         # Unbind from vfio-pci
         echo -e "\${blue}Unbinding GPU and audio devices from vfio-pci...\${no_color}"

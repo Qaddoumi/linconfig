@@ -99,11 +99,11 @@ echo -e "${green}Installing Sway and related packages${no_color}"
 sudo pacman -S --needed --noconfirm sway # Sway window manager
 sudo pacman -S --needed --noconfirm waybar # Status bar for sway
 sudo pacman -S --needed --noconfirm wofi # Application launcher
-#sudo pacman -S --needed --noconfirm dunst # Notification daemon
 sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for sway
 sudo pacman -S --needed --noconfirm kitty # Terminal emulator
 sudo pacman -S --needed --noconfirm swayidle # Idle management for sway
 sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
+sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway
 sudo pacman -S --needed --noconfirm xdg-desktop-portal xdg-desktop-portal-wlr # Portal for Wayland
 sudo pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
@@ -149,6 +149,11 @@ echo -e "${blue}==================================================\n============
 
 echo -e "${green}Setting up environment variable for Electron apps so they lunch in wayland mode${no_color}"
 ENV_FILE="/etc/environment"
+if [ ! -f "$ENV_FILE" ]; then
+    echo -e "${green}Creating $ENV_FILE${no_color}"
+    sudo touch "$ENV_FILE"
+fi
+
 if grep -q "ELECTRON_OZONE_PLATFORM_HINT" "$ENV_FILE"; then
     echo "${green}ELECTRON_OZONE_PLATFORM_HINT already exists in $ENV_FILE${no_color}"
 else
@@ -175,6 +180,22 @@ else
     echo -e "${green}Successfully added to .bashrc${no_color}"
 fi
 source ~/.bashrc || true
+
+# Check if running in vm
+systemType=$(systemd-detect-virt)
+if [[ "$systemType" == "none" ]]; then
+    echo -e "${green}Not running in a VM, no need to set the cursor${no_color}"
+else
+    echo -e "${green}Running in a VM: $systemType${no_color}"
+    echo -e "${green}Setting the cursor rendering${no_color}"
+
+    if grep -q "WLR_NO_HARDWARE_CURSORS" "$ENV_FILE"; then 
+        echo -e "${green}Cursor is already set in $ENV_FILE${no_color}"
+    else
+        echo -e "${green}Adding cursor to "$ENV_FILE"...${no_color}"
+        echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a "$ENV_FILE" > /dev/null || true
+    fi
+fi
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
@@ -915,6 +936,7 @@ echo -e "${blue}==================================================\n============
 
 #TODO: Add AMD SEV Support
 #TODO: Optimise Host with TuneD
+#TODO: Use taskset to pin QEMU emulator thread
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
