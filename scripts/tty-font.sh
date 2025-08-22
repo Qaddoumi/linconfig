@@ -21,7 +21,7 @@ done
 
 if [ -z "$jetbrains_location" ]; then
     echo "Error: JetBrains font not found! Please install it first."
-    echo "Try: yay -S ttf-jetbrains-mono-nerd"
+    echo "Try: sudo pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd"
     exit 1
 fi
 
