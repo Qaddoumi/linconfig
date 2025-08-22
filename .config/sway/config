@@ -5,6 +5,9 @@
 # Setting the cursor theme and size
 seat * xcursor_theme capitaine-cursors 32
 
+# Enable XWayland for running X11 applications
+xwayland enable
+
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
