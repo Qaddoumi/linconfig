@@ -1,7 +1,7 @@
 <domain type="kvm">
-    <name>003-win11-study</name>
-    <uuid>af0fafa4-c7dd-4274-87f2-6493948b5bbb</uuid>
-    <title>003-win11-study</title>
+    <name>002-win11-benchmark</name>
+    <uuid>9217f433-f8d3-4754-ab02-a578d7dbb3ae</uuid>
+    <title>002-win11-benchmark</title>
     <metadata>
         <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
             <libosinfo:os id="http://microsoft.com/win/11"/>
@@ -10,6 +10,13 @@
     <memory unit="KiB">20971520</memory>
     <currentMemory unit="KiB">20971520</currentMemory>
     <vcpu placement="static">20</vcpu>
+    <iothreads>4</iothreads>
+    <iothreadids>
+        <iothread id="1"/>
+        <iothread id="2"/>
+        <iothread id="3"/>
+        <iothread id="4"/>
+    </iothreadids>
     <cputune>
         <shares>2048</shares>
         <period>100000</period>
@@ -36,6 +43,9 @@
         <vcpupin vcpu="19" cpuset="19"/>
         <emulatorpin cpuset="20"/>
     </cputune>
+    <numatune>
+        <memory mode="strict" nodeset="0"/>
+    </numatune>
     <os firmware="efi">
         <type arch="x86_64" machine="pc-q35-10.0">hvm</type>
         <firmware>
@@ -43,11 +53,12 @@
             <feature enabled="yes" name="secure-boot"/>
         </firmware>
         <loader readonly="yes" secure="yes" type="pflash" format="raw">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd</loader>
-        <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd" templateFormat="raw" format="raw">/var/lib/libvirt/qemu/nvram/003-win11-study_VARS.fd</nvram>
+        <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd" templateFormat="raw" format="raw">/var/lib/libvirt/qemu/nvram/002-win11-benchmark_VARS.fd</nvram>
     </os>
     <features>
         <acpi/>
         <apic/>
+        <pae/>
         <hyperv mode="custom">
             <relaxed state="on"/>
             <vapic state="on"/>
@@ -62,11 +73,14 @@
             <evmcs state="on"/>
             <avic state="on"/>
         </hyperv>
+        <kvm>
+            <hidden state="on"/>
+        </kvm>
         <vmport state="off"/>
         <smm state="on"/>
     </features>
-    <cpu mode="host-passthrough" check="none" migratable="on">
-        <topology sockets="1" dies="1" clusters="1" cores="20" threads="1"/>
+    <cpu mode="host-passthrough" check="none" migratable="off">
+        <topology sockets="1" dies="1" clusters="1" cores="10" threads="2"/>
         <cache mode="passthrough"/>
         <feature policy="require" name="topoext"/>
         <feature policy="require" name="invtsc"/>
@@ -90,40 +104,21 @@
     <devices>
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <disk type="file" device="disk">
-            <driver name="qemu" type="qcow2" discard="unmap"/>
-            <source file="/var/lib/libvirt/images/003-win11-study.qcow2"/>
+            <driver name="qemu" type="qcow2" cache="none" io="native" discard="unmap" iothread="1"/>
+            <source file="/var/lib/libvirt/images/002-win11-benchmark.qcow2"/>
             <target dev="vda" bus="virtio"/>
+            <iotune>
+                <read_iops_sec>10000</read_iops_sec>
+                <write_iops_sec>10000</write_iops_sec>
+            </iotune>
             <boot order="1"/>
             <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
         </disk>
         <disk type="file" device="cdrom">
             <driver name="qemu" type="raw"/>
-            <source file="/home/moh/ISOs/Windows11_15-07-2025_24H2.iso"/>
             <target dev="sdb" bus="sata"/>
             <readonly/>
-            <boot order="2"/>
             <address type="drive" controller="0" bus="0" target="0" unit="1"/>
-        </disk>
-        <disk type="file" device="cdrom">
-            <driver name="qemu" type="raw"/>
-            <source file="/home/moh/ISOs/Windows_virtio-drivers-0.1.271.iso"/>
-            <target dev="sdc" bus="sata"/>
-            <readonly/>
-            <address type="drive" controller="0" bus="0" target="0" unit="2"/>
-        </disk>
-        <disk type="file" device="cdrom">
-            <driver name="qemu" type="raw"/>
-            <source file="/home/moh/ISOs/windows-autounattend_2025-06-21_21-03-04_390464721_PM.iso"/>
-            <target dev="sdd" bus="sata"/>
-            <readonly/>
-            <address type="drive" controller="0" bus="0" target="0" unit="3"/>
-        </disk>
-        <disk type="file" device="cdrom">
-            <driver name="qemu" type="raw"/>
-            <source file="/home/moh/ISOs/Windows11_NVIDIA_Studio_Driver_576_80_2025-06-20_13-56-36_132414850_PM.iso"/>
-            <target dev="sde" bus="sata"/>
-            <readonly/>
-            <address type="drive" controller="0" bus="0" target="0" unit="4"/>
         </disk>
         <controller type="usb" index="0" model="qemu-xhci" ports="15">
             <address type="pci" domain="0x0000" bus="0x02" slot="0x00" function="0x0"/>
@@ -218,6 +213,8 @@
             <mac address="52:54:00:78:f6:0a"/>
             <source network="default"/>
             <model type="virtio"/>
+            <driver name="vhost" queues="4"/>
+            <link state="down"/>
             <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
         </interface>
         <serial type="pty">
@@ -287,6 +284,13 @@
             </source>
             <address type="usb" bus="0" port="5"/>
         </hostdev>
+        <hostdev mode="subsystem" type="usb" managed="yes">
+            <source>
+                <vendor id="0x1bcf"/>
+                <product id="0x08a0"/>
+            </source>
+            <address type="usb" bus="0" port="6"/>
+        </hostdev>
         <redirdev bus="usb" type="spicevmc">
             <address type="usb" bus="0" port="3"/>
         </redirdev>
@@ -296,7 +300,12 @@
         <watchdog model="itco" action="reset"/>
         <memballoon model="virtio">
             <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
+            <driver iommu="on"/>
         </memballoon>
+        <rng model="virtio">
+            <backend model="random">/dev/urandom</backend>
+            <address type="pci" domain="0x0000" bus="0x09" slot="0x00" function="0x0"/>
+        </rng>
         <shmem name="looking-glass">
             <model type="ivshmem-plain"/>
             <size unit="M">128</size>
