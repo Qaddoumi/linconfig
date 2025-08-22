@@ -9,6 +9,7 @@
     </metadata>
     <memory unit="KiB">20971520</memory>
     <currentMemory unit="KiB">20971520</currentMemory>
+    <vcpu placement="static">20</vcpu>
     <iothreads>4</iothreads>
     <iothreadids>
         <iothread id="1"/>
@@ -16,7 +17,6 @@
         <iothread id="3"/>
         <iothread id="4"/>
     </iothreadids>
-    <vcpu placement="static">20</vcpu>
     <cputune>
         <shares>2048</shares>
         <period>100000</period>
@@ -59,9 +59,6 @@
         <acpi/>
         <apic/>
         <pae/>
-        <kvm>
-            <hidden state="on"/>
-        </kvm>
         <hyperv mode="custom">
             <relaxed state="on"/>
             <vapic state="on"/>
@@ -76,6 +73,9 @@
             <evmcs state="on"/>
             <avic state="on"/>
         </hyperv>
+        <kvm>
+            <hidden state="on"/>
+        </kvm>
         <vmport state="off"/>
         <smm state="on"/>
     </features>
@@ -87,7 +87,6 @@
         <numa>
             <cell id="0" cpus="0-19" memory="20971520" unit="KiB"/>
         </numa>
-        <!-- Consider hyper-threading if your host supports it -->
     </cpu>
     <clock offset="localtime">
         <timer name="rtc" tickpolicy="catchup"/>
@@ -105,42 +104,21 @@
     <devices>
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <disk type="file" device="disk">
-            <driver name="qemu" type="qcow2" discard="unmap" cache="none" io="native" iothread="1"/>
+            <driver name="qemu" type="qcow2" cache="none" io="native" discard="unmap" iothread="1"/>
             <source file="/var/lib/libvirt/images/003-win11-study.qcow2"/>
             <target dev="vda" bus="virtio"/>
             <iotune>
                 <read_iops_sec>10000</read_iops_sec>
                 <write_iops_sec>10000</write_iops_sec>
             </iotune>
+            <boot order="1"/>
+            <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
         </disk>
         <disk type="file" device="cdrom">
             <driver name="qemu" type="raw"/>
-            <source file="/home/moh/ISOs/Windows11_15-07-2025_24H2.iso"/>
             <target dev="sdb" bus="sata"/>
             <readonly/>
-            <boot order="2"/>
             <address type="drive" controller="0" bus="0" target="0" unit="1"/>
-        </disk>
-        <disk type="file" device="cdrom">
-            <driver name="qemu" type="raw"/>
-            <source file="/home/moh/ISOs/Windows_virtio-drivers-0.1.271.iso"/>
-            <target dev="sdc" bus="sata"/>
-            <readonly/>
-            <address type="drive" controller="0" bus="0" target="0" unit="2"/>
-        </disk>
-        <disk type="file" device="cdrom">
-            <driver name="qemu" type="raw"/>
-            <source file="/home/moh/ISOs/windows-autounattend_2025-06-21_21-03-04_390464721_PM.iso"/>
-            <target dev="sdd" bus="sata"/>
-            <readonly/>
-            <address type="drive" controller="0" bus="0" target="0" unit="3"/>
-        </disk>
-        <disk type="file" device="cdrom">
-            <driver name="qemu" type="raw"/>
-            <source file="/home/moh/ISOs/Windows11_NVIDIA_Studio_Driver_576_80_2025-06-20_13-56-36_132414850_PM.iso"/>
-            <target dev="sde" bus="sata"/>
-            <readonly/>
-            <address type="drive" controller="0" bus="0" target="0" unit="4"/>
         </disk>
         <controller type="usb" index="0" model="qemu-xhci" ports="15">
             <address type="pci" domain="0x0000" bus="0x02" slot="0x00" function="0x0"/>
@@ -313,15 +291,17 @@
         </redirdev>
         <watchdog model="itco" action="reset"/>
         <memballoon model="virtio">
+            <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
             <driver iommu="on"/>
         </memballoon>
+        <rng model="virtio">
+            <backend model="random">/dev/urandom</backend>
+            <address type="pci" domain="0x0000" bus="0x09" slot="0x00" function="0x0"/>
+        </rng>
         <shmem name="looking-glass">
             <model type="ivshmem-plain"/>
             <size unit="M">128</size>
             <address type="pci" domain="0x0000" bus="0x10" slot="0x01" function="0x0"/>
         </shmem>
-        <rng model="virtio">
-            <backend model="random">/dev/urandom</backend>
-        </rng>
     </devices>
 </domain>
