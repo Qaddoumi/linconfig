@@ -76,7 +76,8 @@ button:hover {
 #backlight, #disk, #custom-uptime, #custom-updates, #custom-quote,
 #idle_inhibitor, #tray, #custom-notification, #custom-hijri,
 #custom-prayer, #custom-power, #custom-player.Stopped,
-#custom-player.Playing, #custom-player.Paused{
+#custom-player.Playing, #custom-player.Paused,
+#custom-cpu_temp {
     padding: 0 10px;
     margin: 6px 3px;
     color: #333333;
@@ -86,7 +87,8 @@ button:hover {
 #custom-prayer,
 #custom-player.Stopped,
 #custom-power,
-#custom-notification {
+#custom-notification,
+#custom-cpu_temp {
     background-color: #bbccdd;
 }
 
@@ -104,6 +106,46 @@ button:hover {
 #custom-prayer.next-prayer {
     background-color: #9ae6b4;
     color: #333333;
+}
+
+/* CPU Temperature Module Styles */
+#custom-cpu_temp {
+    background-color: #2d3748;
+    color: #e2e8f0;
+    transition: all 0.3s ease;
+} 
+
+/* #custom-cpu_temp:hover {
+    background-color: #4a5568;
+    transform: scale(1.05);
+} */
+
+/* Temperature-based color classes */
+#custom-cpu_temp.cool {
+    color: #68d391;
+    border-left: 3px solid #68d391;
+}
+
+#custom-cpu_temp.warm {
+    color: #fbb60b;
+    border-left: 3px solid #fbb60b;
+}
+
+#custom-cpu_temp.hot {
+    color: #f56565;
+    border-left: 3px solid #f56565;
+}
+
+#custom-cpu_temp.critical {
+    color: #fc8181;
+    background-color: #742a2a;
+    border-left: 3px solid #fc8181;
+    animation: pulse 2s infinite;
+}
+
+#custom-cpu_temp.unknown {
+    color: #a0aec0;
+    border-left: 3px solid #a0aec0;
 }
 
 @keyframes pulse {
@@ -334,4 +376,20 @@ label:focus {
 
 #scratchpad.empty {
     background-color: transparent;
+}
+
+/* Tooltip styling */
+tooltip {
+    background-color: #1a202c;
+    color: #e2e8f0;
+    border: 1px solid #4a5568;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 11px;
+    /* line-height: 1.4;*/
+}
+
+tooltip label {
+    color: #e2e8f0;
 }

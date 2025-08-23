@@ -6,8 +6,8 @@
 
     "modules-left": ["sway/workspaces", "sway/mode", "sway/scratchpad", "sway/window"],
     "modules-center": [],
-    "modules-right": ["idle_inhibitor", "memory", "cpu", "disk", "battery", "custom/player", "network", "backlight", "temperature", "custom/prayer", "custom/hijri", "clock", "custom/notification", "custom/power", "tray"],
-    "modules-right-alt": ["custom/uptime", "custom/updates", "custom/weather", "pulseaudio"],
+    "modules-right": ["idle_inhibitor", "memory", "cpu", "disk", "battery", "custom/player", "network", "backlight", "custom/cpu_temp", "custom/prayer", "custom/hijri", "clock", "custom/notification", "custom/power", "tray"],
+    "modules-right-alt": ["custom/uptime", "custom/updates", "custom/weather", "pulseaudio", "temperature"],
 
     "sway/workspaces": {
         "disable-scroll": true,
@@ -156,6 +156,16 @@
         "on-click": "notify-send \"****************\" \"$(~/.config/waybar/scripts/prayer_times.sh | jq -r '.tooltip')\""
     },
 
+    "custom/cpu_temp": {
+        "exec": "~/.config/waybar/scripts/cpu_temp.sh",
+        "return-type": "json",
+        "interval": 3,
+        "format": " {text}",
+        "tooltip": true,
+        "on-click": "notify-send \"CPU Temperature Details\" \"$(~/.config/waybar/scripts/cpu_temp.sh | jq -r '.tooltip')\"",
+        "on-click-right": "kitty -e s-tui"
+    },
+
     "custom/power": {
         "format": "⏻",
         "tooltip": false,
@@ -164,17 +174,21 @@
 
     "cpu": {
         "format": " {usage}%",
-        "tooltip": false,
+        "tooltip": true,
         "interval": 1,
+        "tooltip-format": "CPU Usage\n***********************\nClick to open htop",
         "on-click": "kitty -e htop"
     },
 
     "memory": {
         "format": " {used:0.1f}G/{total:0.1f}G",
-        "interval": 1
+        "on-click": "kitty -e htop",
+        "tooltip": true,
+        "tooltip-format": "Memory Usage: {used:0.1f}G/{total:0.1f}G\n***********************\nClick to open htop",
+        "interval": 3
     },
 
-    "temperature": { // TODO: fix this as currently it's not working.
+    "temperature": {
         // "thermal-zone": 2,
         // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
         "critical-threshold": 80,
