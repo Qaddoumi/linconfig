@@ -1,7 +1,7 @@
 <domain type="kvm">
-    <name>002-win11-benchmark</name>
-    <uuid>9217f433-f8d3-4754-ab02-a578d7dbb3ae</uuid>
-    <title>002-win11-benchmark</title>
+    <name>003-win11-study</name>
+    <uuid>af0fafa4-c7dd-4274-87f2-6493948b5bbb</uuid>
+    <title>003-win11-study</title>
     <metadata>
         <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
             <libosinfo:os id="http://microsoft.com/win/11"/>
@@ -53,7 +53,7 @@
             <feature enabled="yes" name="secure-boot"/>
         </firmware>
         <loader readonly="yes" secure="yes" type="pflash" format="raw">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd</loader>
-        <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd" templateFormat="raw" format="raw">/var/lib/libvirt/qemu/nvram/002-win11-benchmark_VARS.fd</nvram>
+        <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd" templateFormat="raw" format="raw">/var/lib/libvirt/qemu/nvram/003-win11-study_VARS.fd</nvram>
     </os>
     <features>
         <acpi/>
@@ -105,7 +105,7 @@
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <disk type="file" device="disk">
             <driver name="qemu" type="qcow2" cache="none" io="native" discard="unmap" iothread="1"/>
-            <source file="/var/lib/libvirt/images/002-win11-benchmark.qcow2"/>
+            <source file="/var/lib/libvirt/images/003-win11-study.qcow2"/>
             <target dev="vda" bus="virtio"/>
             <iotune>
                 <read_iops_sec>10000</read_iops_sec>
@@ -214,7 +214,6 @@
             <source network="default"/>
             <model type="virtio"/>
             <driver name="vhost" queues="4"/>
-            <link state="down"/>
             <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
         </interface>
         <serial type="pty">
@@ -283,13 +282,6 @@
                 <product id="0x4853"/>
             </source>
             <address type="usb" bus="0" port="5"/>
-        </hostdev>
-        <hostdev mode="subsystem" type="usb" managed="yes">
-            <source>
-                <vendor id="0x1bcf"/>
-                <product id="0x08a0"/>
-            </source>
-            <address type="usb" bus="0" port="6"/>
         </hostdev>
         <redirdev bus="usb" type="spicevmc">
             <address type="usb" bus="0" port="3"/>
