@@ -1210,6 +1210,13 @@ newTask "==================================================\n===================
 info "Enabling openssh service"
 systemctl enable sshd || warn "Failed to enable sshd"
 
+newTask "==================================================\n=================================================="
+
+info "Setting shutdown timeout to 30 seconds"
+mkdir -p /etc/systemd/system/shutdown.target.d && printf '[Manager]\nDefaultTimeoutStopSec=30s\n' | tee /etc/systemd/system/shutdown.target.d/override.conf >/dev/null || warn "Failed to configure shutdown timeout"
+
+newTask "==================================================\n=================================================="
+
 # Clear sensitive variables in chroot
 unset ROOT_PASSWORD USER_PASSWORD
 
