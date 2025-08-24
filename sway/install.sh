@@ -138,6 +138,7 @@ sudo pacman -S --needed --noconfirm cliphist # Clipboard history manager
 sudo pacman -S --needed --noconfirm cpupower # CPU frequency scaling utility ==> change powersave to performance mode.
 sudo pacman -S --needed --noconfirm tlp # TLP for power management
 sudo pacman -S --needed --noconfirm lm_sensors # Hardware monitoring
+sudo pacman -S --needed --noconfirm thermald # Intel thermal daemon
 sudo pacman -S --needed --noconfirm dmidecode # Desktop Management Interface table related utilities
 
 yay -S --needed --noconfirm google-chrome || echo -e "${red}Failed to install google-chrome${no_color}" # Web browser
