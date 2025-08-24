@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script to unmount and power off the Mkohaa4TB external drive
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # GPU PCI ID Identifier Script for VFIO Passthrough
 # This script identifies GPU PCI IDs and generates VFIO configuration
@@ -343,7 +343,7 @@ echo ""
 echo -e "${green}Creating script to check IOMMU groups after reboot...${no_color}"
 CHECK_SCRIPT="/usr/local/bin/check-iommu-groups"
 cat << 'CHECK_SCRIPT_EOF' | sudo tee "$CHECK_SCRIPT" > /dev/null
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Colors for better readability
 red='\033[0;31m'
@@ -411,7 +411,7 @@ esac
 
 # Generate the GPU switch script
 cat << SWITCH_SCRIPT_EOF | sudo tee "$SWITCH_SCRIPT" > /dev/null
-#!/bin/bash
+#!/usr/bin/env bash
 
 red='\033[0;31m'
 green='\033[0;32m'
@@ -632,7 +632,7 @@ sudo mkdir -p "/etc/libvirt/hooks" || true
 echo -e "${green}Create libvirt hook to automate GPU switching, at $LIBVIRTHOOK_SCRIPT${no_color}"
 
 cat << LIBVIRTHOOK_SCRIPT_EOF | sudo tee "$LIBVIRTHOOK_SCRIPT" > /dev/null
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Reference : https://libvirt.org/hooks.html
 

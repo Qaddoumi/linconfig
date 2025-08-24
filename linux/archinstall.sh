@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # Arch Linux Installation Script
 
 set -uo pipefail  # Strict error handling
@@ -1229,7 +1230,8 @@ newTask "==================================================\n===================
 #========================================
 info "Creating hibernation test script"
 cat > /mnt/home/$USERNAME/test_hibernation.sh <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
+
 echo "Testing hibernation setup..."
 echo "1.0 Check if swap is active:"
 swapon --show

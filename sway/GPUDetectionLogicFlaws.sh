@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Fix: GPU Detection Logic Flaws
 # This script provides robust GPU detection and handling for multiple GPU scenarios

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Define the output file
 output="$HOME/Pictures/screenshots/shot_$(date +"%Y-%m-%d-%H-%M-%S").png"

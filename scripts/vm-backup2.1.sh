@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # VM Backup and Restore Script for libvirt/KVM with Real Compression
 # Usage: vm-backup.sh [backup|restore|list|stats] [options]

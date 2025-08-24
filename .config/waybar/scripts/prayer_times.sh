@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 no_json=false
 for arg in "$@"; do

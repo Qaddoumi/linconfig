@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Enhanced VM Backup Script with Real Compression
 # This version adds multiple compression strategies for better space savings

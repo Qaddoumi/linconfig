@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # VM Backup and Restore Script for libvirt/KVM
 # Usage: vm-backup.sh [backup|restore|list] [options]

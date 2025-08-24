@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Simple Offline Hijri date calculator (approximate)
 calculate_hijri() {

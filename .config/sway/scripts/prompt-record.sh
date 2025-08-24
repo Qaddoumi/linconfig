@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 swaynag -t warning -m "Do you want to screen record?" \
     -b "Yes" "exec kitty ~/.config/sway/scripts/record.sh" \

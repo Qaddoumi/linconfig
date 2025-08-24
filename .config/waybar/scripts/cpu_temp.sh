@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # CPU Temperature Waybar Module Script
 # Save as ~/.config/waybar/scripts/cpu_temp.sh
