@@ -6,11 +6,16 @@ start_time=$(date +%s)
 QCOW2_DIR="/var/lib/libvirt/images"
 XML_DIR="/etc/libvirt/qemu"
 
-# Destination directory for XML copies (change as needed)
-DEST_DIR="/run/media/moh/Mkohaa4TB/archBackup/vms/$(date +%Y%m%d_%H%M%S)"
+# Destination directory for the backups (change as needed)
+DRIVE_NAME="Mkohaa4TB"
+DEVICE="/dev/$(lsblk -no NAME,LABEL | grep "$DRIVE_NAME" | awk '{print $1}' | sed 's/^[^a-zA-Z0-9]*//')"
+MOUNT_POINT=$(lsblk -no MOUNTPOINTS $DEVICE | grep -v "^$" | head -1)
+DEST_DIR="$MOUNT_POINT/archBackup/vms/$(date +%Y%m%d_%H%M%S)"
+
+echo "Destination directory: $DEST_DIR"
 
 # Create destination directory if it doesn't exist
-sudo mkdir -p "$DEST_DIR"
+sudo mkdir -p "$DEST_DIR" || { echo "Failed to create destination directory: $DEST_DIR"; exit 1; }
 
 # Process all qcow2 files
 echo "Processing qcow2 files..."
