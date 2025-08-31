@@ -10,9 +10,11 @@ case "$ACTION" in
     "Delete") 
         SELECTION=$(cliphist list | wofi --dmenu --prompt "Search the clipboard...")
         echo "$SELECTION" | cliphist delete
+        rm -rf ~/.cache/wofi-dmenu
         ;;
     "Clear")
         rm -f ~/.cache/cliphist/db
         notify-send "Clipboard cleared"
+        rm -rf ~/.cache/wofi-dmenu 
         ;;
 esac
