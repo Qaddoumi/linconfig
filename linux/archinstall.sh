@@ -917,8 +917,11 @@ HOSTNAME="${USERNAME}Arch"
 
 # Set timezone
 info "Setting timezone to ${TIMEZONE}"
+timedatectl set-timezone ${TIMEZONE} || warn "Failed to set timezone"
 ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
 hwclock --systohc
+
+timedatectl set-ntp true || warn "Failed to enable NTP synchronization"
 
 # Set locale
 info "Setting locale to ${LOCALE}"
