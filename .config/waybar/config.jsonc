@@ -6,7 +6,7 @@
 
     "modules-left": ["sway/workspaces", "sway/mode", "sway/scratchpad", "sway/window"],
     "modules-center": [],
-    "modules-right": ["idle_inhibitor", "memory", "cpu", "disk", "battery", "custom/player", "network", "backlight", "custom/cpu_temp", "custom/prayer", "custom/hijri", "clock", "custom/notification", "custom/power", "tray"],
+    "modules-right": ["idle_inhibitor", "tray", "memory", "cpu", "disk", "battery", "custom/player", "network", "backlight", "custom/cpu_temp", "custom/prayer", "custom/hijri", "clock", "custom/notification", "custom/power"],
     "modules-right-alt": ["custom/uptime", "custom/updates", "custom/weather", "pulseaudio", "temperature"],
 
     "sway/workspaces": {
