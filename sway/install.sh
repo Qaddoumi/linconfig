@@ -100,6 +100,7 @@ sudo pacman -S --needed --noconfirm sway # Sway window manager
 sudo pacman -S --needed --noconfirm waybar # Status bar for sway
 sudo pacman -S --needed --noconfirm wofi # Application launcher
 sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for sway
+sudo pacman -S --needed --noconfirm libappindicator-gtk3 libayatana-appindicator # AppIndicator support for swaync tray
 sudo pacman -S --needed --noconfirm kitty # Terminal emulator
 sudo pacman -S --needed --noconfirm swayidle # Idle management for sway
 sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
