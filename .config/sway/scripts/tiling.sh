@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 
 swaynag -t warning -m "Use autotiling or not?" \

@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 
 sudo rm -rf ~/.config/sway ~/.config/waybar ~/.config/wofi ~/.config/kitty ~/.config/swaync \
