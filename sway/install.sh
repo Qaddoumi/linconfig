@@ -164,25 +164,6 @@ else
 fi
 echo -e "${yellow}You'll need to restart your session for this to take effect system-wide${no_color}"
 
-# Check if .bashrc exists
-BASHRC_FILE="$HOME/.bashrc"
-if [ ! -f "$BASHRC_FILE" ]; then
-    echo -e "${green}Creating .bashrc file${no_color}"
-    touch "$BASHRC_FILE"
-fi
-
-# Check if the export line already exists
-if grep -q "ELECTRON_OZONE_PLATFORM_HINT=wayland" "$BASHRC_FILE"; then
-    echo -e "${green}ELECTRON_OZONE_PLATFORM_HINT=wayland already exists in .bashrc${no_color}"
-else
-    echo -e "${green}Adding ELECTRON_OZONE_PLATFORM_HINT=wayland to .bashrc...${no_color}"
-    echo "" >> "$BASHRC_FILE"
-    echo "# Enable Wayland for Electron apps" >> "$BASHRC_FILE"
-    echo "ELECTRON_OZONE_PLATFORM_HINT=wayland" >> "$BASHRC_FILE"
-    echo -e "${green}Successfully added to .bashrc${no_color}"
-fi
-source ~/.bashrc || true
-
 # Check if running in vm
 systemType="$(systemd-detect-virt 2>/dev/null || echo "none")"
 if [[ "$systemType" == "none" ]]; then
@@ -201,14 +182,23 @@ fi
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
+# Check if .bashrc exists
+BASHRC_FILE="$HOME/.bashrc"
+if [ ! -f "$BASHRC_FILE" ]; then
+    echo -e "${green}Creating .bashrc file${no_color}"
+    touch "$BASHRC_FILE"
+fi
+
 echo -e "${green}Insuring XDG_RUNTIME_DIR is set so application like wl-clipboard works properly${no_color}"
-if grep -q 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' "$BASHRC_FILE"; then
+if grep -q "XDG_RUNTIME_DIR" "$BASHRC_FILE"; then
     echo -e "${green}XDG_RUNTIME_DIR is already set in .bashrc${no_color}"
 else
     echo -e "${green}Adding XDG_RUNTIME_DIR to .bashrc...${no_color}"
     echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> "$BASHRC_FILE"
     echo -e "${green}Successfully added to .bashrc${no_color}"
 fi
+
+source ~/.bashrc || true
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
