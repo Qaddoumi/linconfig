@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu # Exit on error and unset variable
+set -e # Exit on error
 
 # to get a list of installed packages, you can use:
 # pacman -Qqe
@@ -184,7 +184,7 @@ fi
 source ~/.bashrc || true
 
 # Check if running in vm
-systemType=$(systemd-detect-virt)
+systemType="$(systemd-detect-virt 2>/dev/null || echo "none")"
 if [[ "$systemType" == "none" ]]; then
     echo -e "${green}Not running in a VM, no need to set the cursor${no_color}"
 else
@@ -202,11 +202,11 @@ fi
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
 echo -e "${green}Insuring XDG_RUNTIME_DIR is set so application like wl-clipboard works properly${no_color}"
-if grep -q "export XDG_RUNTIME_DIR=/run/user/$(id -u)" "$BASHRC_FILE"; then
+if grep -q 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' "$BASHRC_FILE"; then
     echo -e "${green}XDG_RUNTIME_DIR is already set in .bashrc${no_color}"
 else
     echo -e "${green}Adding XDG_RUNTIME_DIR to .bashrc...${no_color}"
-    echo "export XDG_RUNTIME_DIR=/run/user/\$(id -u)" >> "$BASHRC_FILE"
+    echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> "$BASHRC_FILE"
     echo -e "${green}Successfully added to .bashrc${no_color}"
 fi
 
