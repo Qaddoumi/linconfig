@@ -64,6 +64,13 @@ extra/acpid 2.0.34-2
 - [ ] clipman &
 - [ ] volumeicon &
 - [ ] blueman-applet &
-- [ ] 
+- [ ] lxappearance - GUI tool for setting GTK themes
+- [ ] nwg-look - Sway-friendly GTK theme switcher
+- [ ] wpaperd or swaybg - For wallpaper management
+- [ ] Waybar’s temperature module relies on:
+lm-sensors (for CPU/GPU temp)
+hddtemp (for disk temp, optional)
+nvtop (for NVIDIA GPU temp, optional)
+- [ ] https://jasoncarloscox.com/creations/vim-sway-nav/
 - [ ] 
 - [ ] 
