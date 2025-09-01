@@ -2,6 +2,7 @@
 
 # Script to unmount and power off the Mkohaa4TB external drive
 
+DRIVE_NAME="0B3E53B57E8CD35B"
 DRIVE_NAME="Mkohaa4TB"
 
 echo "Starting unmount process for $DRIVE_NAME..."
