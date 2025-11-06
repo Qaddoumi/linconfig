@@ -231,282 +231,282 @@ ls /usr/share/icons/
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
-echo -e "${green}Performance Mode Setup ${no_color}"
-
-# Remove conflicting cpupower service if it exists
-echo -e "${green}Cleaning up any existing cpupower services...${no_color}"
-if systemctl is-enabled cpu-performance.service &>/dev/null; then
-    sudo systemctl disable cpu-performance.service
-    sudo systemctl stop cpu-performance.service
-    echo -e "${green}Disabled existing cpu-performance service${no_color}"
-fi
-
-if [ -f /etc/systemd/system/cpu-performance.service ]; then
-    sudo rm /etc/systemd/system/cpu-performance.service
-    echo -e "${green}Removed conflicting cpu-performance service${no_color}"
-fi
-
-# Disable any conflicting services
-echo -e "${green}Disabling conflicting power management services...${no_color}"
-for service in power-profiles-daemon thermald; do
-    if systemctl is-active "$service" &>/dev/null; then
-        sudo systemctl disable "$service"
-        sudo systemctl stop "$service"
-        echo -e "${green}Disabled $service (conflicts with TLP)${no_color}"
-    fi
-done
-
-echo -e "${green}Installing and configuring TLP for automatic performance management...${no_color}"
-
-# Install TLP if not present
-if ! pacman -Q tlp &>/dev/null; then
-    echo -e "${green}Installing TLP...${no_color}"
-    sudo pacman -S --noconfirm tlp
-fi
-
-# Backup and configure TLP
-echo -e "${green}Backing up original TLP config (/etc/tlp.conf)...${no_color}"
-backup_file /etc/tlp.conf
-
-echo -e "${green}Configuring TLP for automatic AC/Battery performance switching...${no_color}"
-
-# Create optimized TLP configuration for Lenovo LOQ
-sudo tee /etc/tlp.conf > /dev/null <<'EOF'
-
-# Processor
-CPU_SCALING_GOVERNOR_ON_AC=performance
-CPU_SCALING_GOVERNOR_ON_BAT=powersave
-
-# CPU Energy Performance Policy
-CPU_ENERGY_PERF_POLICY_ON_AC=performance
-CPU_ENERGY_PERF_POLICY_ON_BAT=power
-
-# CPU Boost
-CPU_BOOST_ON_AC=1
-CPU_BOOST_ON_BAT=0
-
-# CPU Frequency Scaling
-CPU_SCALING_MIN_FREQ_ON_AC=0
-CPU_SCALING_MAX_FREQ_ON_AC=0
-CPU_SCALING_MIN_FREQ_ON_BAT=0
-CPU_SCALING_MAX_FREQ_ON_BAT=0
-
-# Platform Profile (for modern laptops)
-PLATFORM_PROFILE_ON_AC=performance
-PLATFORM_PROFILE_ON_BAT=low-power
-
-# Disk devices
-DISK_APM_LEVEL_ON_AC="254 254"
-DISK_APM_LEVEL_ON_BAT="128 128"
-DISK_IOSCHED="mq-deadline mq-deadline"
-
-# SATA Link Power Management
-SATA_LINKPWR_ON_AC="med_power_with_dipm max_performance"
-SATA_LINKPWR_ON_BAT="med_power_with_dipm min_power"
-
-# PCI Express Active State Power Management
-PCIE_ASPM_ON_AC=default
-PCIE_ASPM_ON_BAT=powersupersave
-
-# Graphics (Intel integrated + NVIDIA discrete)
-INTEL_GPU_MIN_FREQ_ON_AC=0
-INTEL_GPU_MIN_FREQ_ON_BAT=0
-INTEL_GPU_MAX_FREQ_ON_AC=0
-INTEL_GPU_MAX_FREQ_ON_BAT=0
-INTEL_GPU_BOOST_FREQ_ON_AC=0
-INTEL_GPU_BOOST_FREQ_ON_BAT=0
-
-# NVIDIA GPU Power Management
-RUNTIME_PM_ON_AC=auto
-RUNTIME_PM_ON_BAT=auto
-
-# USB
-USB_AUTOSUSPEND=1
-USB_BLACKLIST_BTUSB=0
-USB_BLACKLIST_PHONE=0
-USB_BLACKLIST_PRINTER=1
-USB_BLACKLIST_WWAN=0
-
-# Audio
-SOUND_POWER_SAVE_ON_AC=0
-SOUND_POWER_SAVE_ON_BAT=1
-SOUND_POWER_SAVE_CONTROLLER=Y
-
-# WiFi Power Management
-WIFI_PWR_ON_AC=off
-WIFI_PWR_ON_BAT=on
-
-# Wake-on-LAN
-WOL_DISABLE=Y
-
-# Battery Care (for Lenovo laptops)
-#START_CHARGE_THRESH_BAT0=40
-#STOP_CHARGE_THRESH_BAT0=80
-#START_CHARGE_THRESH_BAT1=40
-#STOP_CHARGE_THRESH_BAT1=80
-
-# Restore charge thresholds on reboot
-#RESTORE_THRESHOLDS_ON_BAT=1
-#RESTORE_THRESHOLDS_ON_AC=1
-
-# ThinkPad specific (may work on some Lenovo models)
-NATACPI_ENABLE=1
-TPACPI_ENABLE=1
-TPSMAPI_ENABLE=1
-EOF
-
-echo -e "${green}Enabling and starting TLP service...${no_color}"
-sudo systemctl enable tlp.service
-sudo systemctl start tlp.service
-
-# Install TLP-RDW for additional NetworkManager integration
-if ! pacman -Q tlp-rdw &>/dev/null; then
-    echo -e "${green}Installing TLP-RDW for NetworkManager integration...${no_color}"
-    sudo pacman -S --noconfirm tlp-rdw
-fi
-
-# Check current power source and apply settings
-echo -e "${green}Applying TLP settings for current power source...${no_color}"
-sudo tlp start
-
-# Hardware sensors setup (keeping your existing logic but cleaned up)
-echo -e "${green}=== Automated Hardware Sensors Detection ===${no_color}"
-echo -e "${green}Backing up existing config (if exists)...${no_color}"
-backup_file /etc/conf.d/lm_sensors
-
-echo -e "${green}Detecting system information...${no_color}"
-SYSTEM_VENDOR=$(sudo dmidecode -s system-manufacturer 2>/dev/null | head -1)
-SYSTEM_MODEL=$(sudo dmidecode -s system-product-name 2>/dev/null | head -1)
-CPU_VENDOR=$(lscpu | grep "Vendor ID" | awk '{print $3}' | head -1)
-CPU_MODEL=$(lscpu | grep "Model name" | cut -d: -f2 | xargs)
-echo -e "${green}System: $SYSTEM_VENDOR $SYSTEM_MODEL${no_color}"
-echo -e "${green}CPU: $CPU_VENDOR - $CPU_MODEL${no_color}"
-
-echo -e "${green}Detecting and loading sensor modules...${no_color}"
-DETECTED_MODULES=""
-
-# Intel CPU thermal sensors
-if [[ "$CPU_VENDOR" == "GenuineIntel" ]]; then
-    echo "Detecting Intel CPU thermal sensors..."
-    if sudo modprobe coretemp 2>/dev/null; then
-        echo "✓ Intel coretemp module loaded"
-        DETECTED_MODULES="$DETECTED_MODULES coretemp"
-    fi
-# AMD CPU thermal sensors
-elif [[ "$CPU_VENDOR" == "AuthenticAMD" ]]; then
-    echo "Detecting AMD CPU thermal sensors..."
-    if sudo modprobe k10temp 2>/dev/null; then
-        echo "✓ AMD k10temp module loaded"
-        DETECTED_MODULES="$DETECTED_MODULES k10temp"
-    fi
-fi
-
-# Check for ACPI thermal zones
-if [ -d /sys/class/thermal ] && [ "$(ls -A /sys/class/thermal/thermal_zone* 2>/dev/null)" ]; then
-    echo "✓ ACPI thermal zones detected"
-    if sudo modprobe acpi-thermal 2>/dev/null; then
-        echo "✓ ACPI thermal module loaded"
-    fi
-fi
-
-# Check for NVMe drive temperatures
-if lspci | grep -i nvme >/dev/null 2>&1; then
-    echo "✓ NVMe drives detected"
-    if sudo modprobe nvme 2>/dev/null; then
-        echo "✓ NVMe temperature monitoring available"
-    fi
-fi
-
-# Common sensor chips for laptops
-CHIP_MODULES="it87 nct6775 w83627ehf"
-for module in $CHIP_MODULES; do
-    if sudo modprobe "$module" 2>/dev/null; then
-        echo "✓ Chip module $module loaded successfully"
-        DETECTED_MODULES="$DETECTED_MODULES $module"
-        sudo modprobe -r "$module" 2>/dev/null || true
-    fi
-done
-
-# I2C support
-if command -v i2cdetect &> /dev/null; then
-    if sudo modprobe i2c-i801 2>/dev/null; then
-        echo "✓ I2C support loaded"
-        DETECTED_MODULES="$DETECTED_MODULES i2c-i801"
-    fi
-fi
-
-# Create lm_sensors configuration
-echo -e "${green}Creating lm_sensors configuration...${no_color}"
-sudo tee /etc/conf.d/lm_sensors > /dev/null <<EOF
-# Generated by automated sensor detection script
-# $(date)
-# System: $SYSTEM_VENDOR $SYSTEM_MODEL
-
-# Kernel modules for hardware sensors
-HWMON_MODULES="$DETECTED_MODULES"
-EOF
-
-# Load detected modules
-if [ -n "$DETECTED_MODULES" ]; then
-    echo -e "${green}Loading detected sensor modules...${no_color}"
-    for module in $DETECTED_MODULES; do
-        if sudo modprobe "$module"; then
-            echo "✓ Module $module loaded successfully"
-        fi
-    done
-fi
-
-# Enable and start lm_sensors
-echo -e "${green}Enabling and starting lm_sensors service...${no_color}"
-sudo systemctl enable lm_sensors.service &>/dev/null || true
-sudo systemctl start lm_sensors.service &>/dev/null || true
-
-# Initialize sensors
-echo -e "${green}Initializing sensors...${no_color}"
-if command -v sensors &> /dev/null; then
-    sudo sensors -s 2>/dev/null || true
-    echo -e "${green}✓ Sensors initialized${no_color}"
-else
-    echo -e "${yellow}⚠ sensors command not available${no_color}"
-fi
-
-echo -e "${green}=== Setup Complete ===${no_color}"
-echo -e "${green}Current TLP Status:${no_color}"
-sudo tlp-stat -s
-
-echo -e "${green}Current Power Source and Settings:${no_color}"
-if [ -f /sys/class/power_supply/AC*/online ]; then
-    if [ "$(cat /sys/class/power_supply/AC*/online)" = "1" ]; then
-        echo "Power Source: AC (Performance mode active)"
-    else
-        echo "Power Source: Battery (Power-saving mode active)"
-    fi
-fi
-
-echo -e "${green}Current CPU Governor:${no_color}"
-if command -v cpupower &> /dev/null; then
-    cpupower frequency-info | grep -E "current policy" || echo "Install cpupower-tools to see detailed CPU info"
-else
-    cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo "CPU governor info not available"
-fi
-
-echo -e "${green}Temperature Monitoring:${no_color}"
-if command -v sensors &> /dev/null; then
-    sensors 2>/dev/null | head -20 || echo "Run 'sensors' to see detailed temperature data"
-else
-    echo "Install lm_sensors package for temperature monitoring"
-fi
-
-echo ""
-echo -e "${green}=== Usage Instructions ===${no_color}"
-echo -e "${green}• TLP automatically switches between performance/power-saving based on AC/Battery${no_color}"
-echo -e "${green}• Check status: sudo tlp-stat -s${no_color}"
-echo -e "${green}• Force AC mode: sudo tlp ac${no_color}"
-echo -e "${green}• Force Battery mode: sudo tlp bat${no_color}"
-echo -e "${green}• Check temperatures: sensors${no_color}"
-echo -e "${green}• Battery care: Charging limited to 80% to extend battery life${no_color}"
-echo ""
-echo -e "${yellow}Reboot recommended to ensure all settings take effect.${no_color}"
+# echo -e "${green}Performance Mode Setup ${no_color}"
+#
+# # Remove conflicting cpupower service if it exists
+# echo -e "${green}Cleaning up any existing cpupower services...${no_color}"
+# if systemctl is-enabled cpu-performance.service &>/dev/null; then
+#     sudo systemctl disable cpu-performance.service
+#     sudo systemctl stop cpu-performance.service
+#     echo -e "${green}Disabled existing cpu-performance service${no_color}"
+# fi
+#
+# if [ -f /etc/systemd/system/cpu-performance.service ]; then
+#     sudo rm /etc/systemd/system/cpu-performance.service
+#     echo -e "${green}Removed conflicting cpu-performance service${no_color}"
+# fi
+#
+# # Disable any conflicting services
+# echo -e "${green}Disabling conflicting power management services...${no_color}"
+# for service in power-profiles-daemon thermald; do
+#     if systemctl is-active "$service" &>/dev/null; then
+#         sudo systemctl disable "$service"
+#         sudo systemctl stop "$service"
+#         echo -e "${green}Disabled $service (conflicts with TLP)${no_color}"
+#     fi
+# done
+#
+# echo -e "${green}Installing and configuring TLP for automatic performance management...${no_color}"
+#
+# # Install TLP if not present
+# if ! pacman -Q tlp &>/dev/null; then
+#     echo -e "${green}Installing TLP...${no_color}"
+#     sudo pacman -S --noconfirm tlp
+# fi
+#
+# # Backup and configure TLP
+# echo -e "${green}Backing up original TLP config (/etc/tlp.conf)...${no_color}"
+# backup_file /etc/tlp.conf
+#
+# echo -e "${green}Configuring TLP for automatic AC/Battery performance switching...${no_color}"
+#
+# # Create optimized TLP configuration for Lenovo LOQ
+# sudo tee /etc/tlp.conf > /dev/null <<'EOF'
+#
+# # Processor
+# CPU_SCALING_GOVERNOR_ON_AC=performance
+# CPU_SCALING_GOVERNOR_ON_BAT=powersave
+#
+# # CPU Energy Performance Policy
+# CPU_ENERGY_PERF_POLICY_ON_AC=performance
+# CPU_ENERGY_PERF_POLICY_ON_BAT=power
+#
+# # CPU Boost
+# CPU_BOOST_ON_AC=1
+# CPU_BOOST_ON_BAT=0
+#
+# # CPU Frequency Scaling
+# CPU_SCALING_MIN_FREQ_ON_AC=0
+# CPU_SCALING_MAX_FREQ_ON_AC=0
+# CPU_SCALING_MIN_FREQ_ON_BAT=0
+# CPU_SCALING_MAX_FREQ_ON_BAT=0
+#
+# # Platform Profile (for modern laptops)
+# PLATFORM_PROFILE_ON_AC=performance
+# PLATFORM_PROFILE_ON_BAT=low-power
+#
+# # Disk devices
+# DISK_APM_LEVEL_ON_AC="254 254"
+# DISK_APM_LEVEL_ON_BAT="128 128"
+# DISK_IOSCHED="mq-deadline mq-deadline"
+#
+# # SATA Link Power Management
+# SATA_LINKPWR_ON_AC="med_power_with_dipm max_performance"
+# SATA_LINKPWR_ON_BAT="med_power_with_dipm min_power"
+#
+# # PCI Express Active State Power Management
+# PCIE_ASPM_ON_AC=default
+# PCIE_ASPM_ON_BAT=powersupersave
+#
+# # Graphics (Intel integrated + NVIDIA discrete)
+# INTEL_GPU_MIN_FREQ_ON_AC=0
+# INTEL_GPU_MIN_FREQ_ON_BAT=0
+# INTEL_GPU_MAX_FREQ_ON_AC=0
+# INTEL_GPU_MAX_FREQ_ON_BAT=0
+# INTEL_GPU_BOOST_FREQ_ON_AC=0
+# INTEL_GPU_BOOST_FREQ_ON_BAT=0
+#
+# # NVIDIA GPU Power Management
+# RUNTIME_PM_ON_AC=auto
+# RUNTIME_PM_ON_BAT=auto
+#
+# # USB
+# USB_AUTOSUSPEND=1
+# USB_BLACKLIST_BTUSB=0
+# USB_BLACKLIST_PHONE=0
+# USB_BLACKLIST_PRINTER=1
+# USB_BLACKLIST_WWAN=0
+#
+# # Audio
+# SOUND_POWER_SAVE_ON_AC=0
+# SOUND_POWER_SAVE_ON_BAT=1
+# SOUND_POWER_SAVE_CONTROLLER=Y
+#
+# # WiFi Power Management
+# WIFI_PWR_ON_AC=off
+# WIFI_PWR_ON_BAT=on
+#
+# # Wake-on-LAN
+# WOL_DISABLE=Y
+#
+# # Battery Care (for Lenovo laptops)
+# #START_CHARGE_THRESH_BAT0=40
+# #STOP_CHARGE_THRESH_BAT0=80
+# #START_CHARGE_THRESH_BAT1=40
+# #STOP_CHARGE_THRESH_BAT1=80
+#
+# # Restore charge thresholds on reboot
+# #RESTORE_THRESHOLDS_ON_BAT=1
+# #RESTORE_THRESHOLDS_ON_AC=1
+#
+# # ThinkPad specific (may work on some Lenovo models)
+# NATACPI_ENABLE=1
+# TPACPI_ENABLE=1
+# TPSMAPI_ENABLE=1
+# EOF
+#
+# echo -e "${green}Enabling and starting TLP service...${no_color}"
+# sudo systemctl enable tlp.service
+# sudo systemctl start tlp.service
+#
+# # Install TLP-RDW for additional NetworkManager integration
+# if ! pacman -Q tlp-rdw &>/dev/null; then
+#     echo -e "${green}Installing TLP-RDW for NetworkManager integration...${no_color}"
+#     sudo pacman -S --noconfirm tlp-rdw
+# fi
+#
+# # Check current power source and apply settings
+# echo -e "${green}Applying TLP settings for current power source...${no_color}"
+# sudo tlp start
+#
+# # Hardware sensors setup (keeping your existing logic but cleaned up)
+# echo -e "${green}=== Automated Hardware Sensors Detection ===${no_color}"
+# echo -e "${green}Backing up existing config (if exists)...${no_color}"
+# backup_file /etc/conf.d/lm_sensors
+#
+# echo -e "${green}Detecting system information...${no_color}"
+# SYSTEM_VENDOR=$(sudo dmidecode -s system-manufacturer 2>/dev/null | head -1)
+# SYSTEM_MODEL=$(sudo dmidecode -s system-product-name 2>/dev/null | head -1)
+# CPU_VENDOR=$(lscpu | grep "Vendor ID" | awk '{print $3}' | head -1)
+# CPU_MODEL=$(lscpu | grep "Model name" | cut -d: -f2 | xargs)
+# echo -e "${green}System: $SYSTEM_VENDOR $SYSTEM_MODEL${no_color}"
+# echo -e "${green}CPU: $CPU_VENDOR - $CPU_MODEL${no_color}"
+#
+# echo -e "${green}Detecting and loading sensor modules...${no_color}"
+# DETECTED_MODULES=""
+#
+# # Intel CPU thermal sensors
+# if [[ "$CPU_VENDOR" == "GenuineIntel" ]]; then
+#     echo "Detecting Intel CPU thermal sensors..."
+#     if sudo modprobe coretemp 2>/dev/null; then
+#         echo "✓ Intel coretemp module loaded"
+#         DETECTED_MODULES="$DETECTED_MODULES coretemp"
+#     fi
+# # AMD CPU thermal sensors
+# elif [[ "$CPU_VENDOR" == "AuthenticAMD" ]]; then
+#     echo "Detecting AMD CPU thermal sensors..."
+#     if sudo modprobe k10temp 2>/dev/null; then
+#         echo "✓ AMD k10temp module loaded"
+#         DETECTED_MODULES="$DETECTED_MODULES k10temp"
+#     fi
+# fi
+#
+# # Check for ACPI thermal zones
+# if [ -d /sys/class/thermal ] && [ "$(ls -A /sys/class/thermal/thermal_zone* 2>/dev/null)" ]; then
+#     echo "✓ ACPI thermal zones detected"
+#     if sudo modprobe acpi-thermal 2>/dev/null; then
+#         echo "✓ ACPI thermal module loaded"
+#     fi
+# fi
+#
+# # Check for NVMe drive temperatures
+# if lspci | grep -i nvme >/dev/null 2>&1; then
+#     echo "✓ NVMe drives detected"
+#     if sudo modprobe nvme 2>/dev/null; then
+#         echo "✓ NVMe temperature monitoring available"
+#     fi
+# fi
+#
+# # Common sensor chips for laptops
+# CHIP_MODULES="it87 nct6775 w83627ehf"
+# for module in $CHIP_MODULES; do
+#     if sudo modprobe "$module" 2>/dev/null; then
+#         echo "✓ Chip module $module loaded successfully"
+#         DETECTED_MODULES="$DETECTED_MODULES $module"
+#         sudo modprobe -r "$module" 2>/dev/null || true
+#     fi
+# done
+#
+# # I2C support
+# if command -v i2cdetect &> /dev/null; then
+#     if sudo modprobe i2c-i801 2>/dev/null; then
+#         echo "✓ I2C support loaded"
+#         DETECTED_MODULES="$DETECTED_MODULES i2c-i801"
+#     fi
+# fi
+#
+# # Create lm_sensors configuration
+# echo -e "${green}Creating lm_sensors configuration...${no_color}"
+# sudo tee /etc/conf.d/lm_sensors > /dev/null <<EOF
+# # Generated by automated sensor detection script
+# # $(date)
+# # System: $SYSTEM_VENDOR $SYSTEM_MODEL
+#
+# # Kernel modules for hardware sensors
+# HWMON_MODULES="$DETECTED_MODULES"
+# EOF
+#
+# # Load detected modules
+# if [ -n "$DETECTED_MODULES" ]; then
+#     echo -e "${green}Loading detected sensor modules...${no_color}"
+#     for module in $DETECTED_MODULES; do
+#         if sudo modprobe "$module"; then
+#             echo "✓ Module $module loaded successfully"
+#         fi
+#     done
+# fi
+#
+# # Enable and start lm_sensors
+# echo -e "${green}Enabling and starting lm_sensors service...${no_color}"
+# sudo systemctl enable lm_sensors.service &>/dev/null || true
+# sudo systemctl start lm_sensors.service &>/dev/null || true
+#
+# # Initialize sensors
+# echo -e "${green}Initializing sensors...${no_color}"
+# if command -v sensors &> /dev/null; then
+#     sudo sensors -s 2>/dev/null || true
+#     echo -e "${green}✓ Sensors initialized${no_color}"
+# else
+#     echo -e "${yellow}⚠ sensors command not available${no_color}"
+# fi
+#
+# echo -e "${green}=== Setup Complete ===${no_color}"
+# echo -e "${green}Current TLP Status:${no_color}"
+# sudo tlp-stat -s
+#
+# echo -e "${green}Current Power Source and Settings:${no_color}"
+# if [ -f /sys/class/power_supply/AC*/online ]; then
+#     if [ "$(cat /sys/class/power_supply/AC*/online)" = "1" ]; then
+#         echo "Power Source: AC (Performance mode active)"
+#     else
+#         echo "Power Source: Battery (Power-saving mode active)"
+#     fi
+# fi
+#
+# echo -e "${green}Current CPU Governor:${no_color}"
+# if command -v cpupower &> /dev/null; then
+#     cpupower frequency-info | grep -E "current policy" || echo "Install cpupower-tools to see detailed CPU info"
+# else
+#     cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo "CPU governor info not available"
+# fi
+#
+# echo -e "${green}Temperature Monitoring:${no_color}"
+# if command -v sensors &> /dev/null; then
+#     sensors 2>/dev/null | head -20 || echo "Run 'sensors' to see detailed temperature data"
+# else
+#     echo "Install lm_sensors package for temperature monitoring"
+# fi
+#
+# echo ""
+# echo -e "${green}=== Usage Instructions ===${no_color}"
+# echo -e "${green}• TLP automatically switches between performance/power-saving based on AC/Battery${no_color}"
+# echo -e "${green}• Check status: sudo tlp-stat -s${no_color}"
+# echo -e "${green}• Force AC mode: sudo tlp ac${no_color}"
+# echo -e "${green}• Force Battery mode: sudo tlp bat${no_color}"
+# echo -e "${green}• Check temperatures: sensors${no_color}"
+# echo -e "${green}• Battery care: Charging limited to 80% to extend battery life${no_color}"
+# echo ""
+# echo -e "${yellow}Reboot recommended to ensure all settings take effect.${no_color}"
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
