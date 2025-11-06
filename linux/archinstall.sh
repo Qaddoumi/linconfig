@@ -803,7 +803,6 @@ case "$CPU_VENDOR" in
     *) UCODE_PKG=""; warn "Unknown CPU vendor: $CPU_VENDOR" ;;
 esac
 
-info "Installing GPU packages :\n ${GPU_PKGS}"
 
 info "Adding pipwire packages for audio management"
 PIPWIRE_PKGS="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber"
@@ -832,9 +831,14 @@ INSTALL_PKGS_ARR=(
 
 # Add conditional packages
 [[ -n "$UCODE_PKG" ]] && INSTALL_PKGS_ARR+=($UCODE_PKG)
-[[ -n "$GPU_PKGS" ]] && INSTALL_PKGS_ARR+=($GPU_PKGS)
-[[ -n "$VIRT_PKGS" ]] && INSTALL_PKGS_ARR+=($VIRT_PKGS)
 
+if [ -z "$VIRT_PKGS" ]; then
+    info "No virtualization packages will be installed."
+else
+    info "Installing GPU packages :\n ${GPU_PKGS}"
+    [[ -n "$GPU_PKGS" ]] && INSTALL_PKGS_ARR+=($GPU_PKGS)
+    [[ -n "$VIRT_PKGS" ]] && INSTALL_PKGS_ARR+=($VIRT_PKGS)
+fi
 
 ## Check if package exists in repositories
 check_package() {
@@ -1310,10 +1314,11 @@ newTask "==================================================\n===================
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
     info "Running post-install script..."
 
-    arch-chroot /mnt /bin/bash -s -- "$USERNAME" "$login_manager_choice" <<'POSTINSTALLEOF' || error "Post-install script failed to run"
+    arch-chroot /mnt /bin/bash -s -- "$USERNAME" "$login_manager_choice" "$IS_VM" <<'POSTINSTALLEOF' || error "Post-install script failed to run"
 
 USER_NAME="$1"
 LOGIN_MANAGER="$2"
+isVM="$3"
 
 echo -e "\n"
 
@@ -1322,7 +1327,7 @@ echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 su "$USER_NAME" <<USEREOF
     echo "Running post-install script as user \$USER with login manager $LOGIN_MANAGER..."
-    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager "$LOGIN_MANAGER" || echo "Failed to run the install script"
+    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager "$LOGIN_MANAGER" --is-vm "$isVM" || echo "Failed to run the install script"
 USEREOF
 
 echo "Restoring sudo password requirement for wheel group"
@@ -1331,7 +1336,7 @@ POSTINSTALLEOF
 else
     warn "Skipping post-install script, you may reboot now."
     info "if you would like to run my post-install script later, you can run it with the command:"
-    info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager \"$login_manager_choice\""
+    info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager \"$login_manager_choice\"" --is-vm "$IS_VM"
 fi
 
 newTask "==================================================\n==================================================\n"
