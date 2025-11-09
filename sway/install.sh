@@ -206,6 +206,20 @@ else
     echo -e "${green}Successfully added to .bashrc${no_color}"
 fi
 
+if ! grep -q '^gitpush()' "$BASHRC_FILE"; then
+    cat >> "$BASHRC_FILE" <<'EOF'
+
+gitpush() {
+    git add .
+    git commit --allow-empty-message -m ""
+    git push
+}
+EOF
+    echo -e "${green}Added gitpush function to $BASHRC_FILE${no_color}"
+else
+    echo -e "${yellow}gitpush function already present in $BASHRC_FILE, skipping${no_color}"
+fi
+
 source ~/.bashrc || true
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
