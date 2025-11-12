@@ -217,6 +217,7 @@ input type:touchpad {
 
 input type:keyboard {
     xkb_layout "us"
+    xkb_numlock enabled
 }
 # input "type:keyboard" {
 #     xkb_layout us,ar

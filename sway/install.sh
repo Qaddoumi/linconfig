@@ -1141,8 +1141,7 @@ echo -e "${green}Setting up permissions for configuration files${no_color}"
 sudo chmod +x ~/.config/waybar/scripts/*.sh || true
 sudo chmod +x ~/.config/sway/scripts/*.sh || true
 
-sudo chown -R $USER:$USER ~/.config/gtk-3.0/
-sudo chown -R $USER:$USER ~/.config/gtk-4.0/
+sudo chown -R $USER:$USER ~/.config
 sudo chown -R $USER:$USER ~/.local
 
 # if ! grep -q 'export PATH="$PATH:$HOME/.local/bin"' ~/.bashrc; then

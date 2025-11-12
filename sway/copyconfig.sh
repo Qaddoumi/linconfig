@@ -11,8 +11,7 @@ sudo cp -r ~/projects/linconfig/.config/* ~/.config/
 sudo chmod +x ~/.config/waybar/scripts/*.sh
 sudo chmod +x ~/.config/sway/scripts/*.sh
 
-sudo chown -R $USER:$USER ~/.config/gtk-3.0/
-sudo chown -R $USER:$USER ~/.config/gtk-4.0/
+sudo chown -R $USER:$USER ~/.config
 sudo chown -R $USER:$USER ~/.local
 
 swaymsg reload
