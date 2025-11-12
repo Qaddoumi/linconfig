@@ -137,6 +137,9 @@ sudo pacman -S --needed --noconfirm imv # image viewer
 #sudo pacman -S --needed --noconfirm file-roller # Handling archive files
 sudo pacman -S --needed --noconfirm xarchiver # Lightweight archive manager
 sudo pacman -S --needed --noconfirm trash-cli # Command line trash management
+sudo mkdir -p ~/.local/share/Trash/{files,info}
+sudo chmod 700 ~/.local/share/Trash
+sudo chown -R $USER:$USER ~/.local
 sudo pacman -S --needed --noconfirm libxml2 # XML parsing library
 sudo pacman -S --needed --noconfirm pv # progress bar in terminal
 sudo pacman -S --needed --noconfirm network-manager-applet # Network management applet
