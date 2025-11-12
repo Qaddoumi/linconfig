@@ -117,7 +117,8 @@ sudo pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
 sudo pacman -S --needed --noconfirm htop # System monitor
 sudo pacman -S --needed --noconfirm wget # Download utility
-sudo pacman -S --needed --noconfirm nemo # File manager
+#sudo pacman -S --needed --noconfirm nemo # File manager
+sudo pacman -S --needed --noconfirm thunar thunar-archive-plugin thunar-volman thunar-media-tags-plugin # Lightweight file manager with plugins
 sudo pacman -S --needed --noconfirm kanshi # Automatic Display manager for Wayland
 sudo pacman -S --needed --noconfirm nano # Text editor
 sudo pacman -S --needed --noconfirm neovim # Neovim text editor
@@ -133,7 +134,9 @@ sudo pacman -S --needed --noconfirm man-db man-pages # Manual pages and database
 sudo pacman -S --needed --noconfirm mpv # video player
 sudo pacman -S --needed --noconfirm celluloid # frontend for mpv video player
 sudo pacman -S --needed --noconfirm imv # image viewer
-sudo pacman -S --needed --noconfirm file-roller # Handling archive files
+#sudo pacman -S --needed --noconfirm file-roller # Handling archive files
+sudo pacman -S --needed --noconfirm xarchiver # Lightweight archive manager
+sudo pacman -S --needed --noconfirm trash-cli # Command line trash management
 sudo pacman -S --needed --noconfirm libxml2 # XML parsing library
 sudo pacman -S --needed --noconfirm pv # progress bar in terminal
 sudo pacman -S --needed --noconfirm network-manager-applet # Network management applet

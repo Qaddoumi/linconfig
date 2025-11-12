@@ -3,7 +3,7 @@
 # Read `man 5 sway` for a complete reference.
 
 # Setting the cursor theme and size
-seat * xcursor_theme capitaine-cursors 32
+#seat * xcursor_theme capitaine-cursors 32
 
 # Enable XWayland for running X11 applications
 xwayland enable
