@@ -196,7 +196,6 @@ for_window [app_id="org.pulseaudio.pavucontrol"] floating enable, move position 
 for_window [class="GtkFileChooserDialog"] floating enable, move position center, resize set 800 600
 for_window [class="kdialog"] floating enable, move position center, resize set 400 300
 for_window [class="kde5-config-dialog"] floating enable, move position center, resize set 500 400
-for_window [app_id="wlogout"] move position center, resize set 500 400
 for_window [app_id="thunar" title="(File Operation Progress|Attention|Confirm|Progress)"] floating enable, move position center, resize set 500 400
 
 # Make polkit dialogs appear on focused workspace
@@ -204,6 +203,8 @@ for_window [app_id="gcr-prompter"] floating enable, move container to workspace 
 for_window [class="Polkit-gnome-authentication-agent-1"] floating enable, move container to workspace current
 for_window [title="Authentication Required"] floating enable, move container to workspace current
 for_window [title="Authentication"] floating enable, move container to workspace current
+
+for_window [app_id="wlogout"] move position center, resize set 500 400
 
 ### Input configuration
 #
@@ -217,6 +218,11 @@ input type:touchpad {
 input type:keyboard {
     xkb_layout "us"
 }
+# input "type:keyboard" {
+#     xkb_layout us,ar
+#     xkb_variant ,nodeadkeys
+#     xkb_options grp:alt_shift_toggle
+# }
 #
 # You can also configure each device individually.
 # Read `man 5 sway-input` for more information about this section.
