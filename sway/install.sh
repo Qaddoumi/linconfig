@@ -60,7 +60,7 @@ if [ -z "$login_manager" ]; then
 fi
 echo -e "${green}Login manager to be used : $login_manager${no_color}"
 echo -e "${green}Username to be used      : $USER${no_color}"
-echo -e "${green}Is VM                    : $is_vm${no_color}"
+# echo -e "${green}Is VM                    : $is_vm${no_color}"
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
@@ -176,7 +176,13 @@ fi
 echo -e "${yellow}You'll need to restart your session for this to take effect system-wide${no_color}"
 
 # Check if running in vm
-systemType="$(systemd-detect-virt 2>/dev/null || echo "none")"
+if [ "$is_vm" = true ]; then
+    echo -e "${green}is_vm flag is set to true${no_color}"
+    systemType="vm"
+else
+    echo -e "${green}is_vm flag is set to false, detecting system type...${no_color}"
+    systemType="$(systemd-detect-virt 2>/dev/null || echo "none")"
+fi
 if [[ "$systemType" == "none" ]]; then
     echo -e "${green}Not running in a VM, no need to set the cursor${no_color}"
 else
@@ -240,12 +246,12 @@ echo -e "${blue}==================================================\n============
 echo -e "${green}Setting Dark theme for GTK applications${no_color}"
 sudo pacman -S --needed --noconfirm materia-gtk-theme # Material Design GTK theme
 #sudo pacman -S --needed --noconfirm papirus-icon-theme # Icon theme
-sudo pacman -S --needed --noconfirm capitaine-cursors # Cursor theme
+# sudo pacman -S --needed --noconfirm capitaine-cursors # Cursor theme
 
 echo -e "${green}Showing available themes${no_color}"
 ls /usr/share/themes/
-echo -e "${green}Available icon and cursor themes:${no_color}"
-ls /usr/share/icons/
+# echo -e "${green}Available icon and cursor themes:${no_color}"
+# ls /usr/share/icons/
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
