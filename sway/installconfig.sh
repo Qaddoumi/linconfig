@@ -9,9 +9,10 @@ if ! git clone --depth 1 https://github.com/Qaddoumi/linconfig.git ~/swaytemp; t
     exit 1
 fi
 sudo rm -rf ~/.config/sway ~/.config/waybar ~/.config/wofi ~/.config/kitty ~/.config/swaync \
-    ~/.config/kanshi ~/.config/oh-my-posh ~/.config/fastfetch ~/.config/mimeapps.list ~/.config/looking-glass \
-    ~/.config/gtk-3.0 ~/.config/gtk-4.0
+    ~/.config/kanshi ~/.config/oh-my-posh ~/.config/fastfetch ~/.config/mimeapps.list ~/.local/share/applications/mimeapps.list \
+    ~/.config/looking-glass ~/.config/gtk-3.0 ~/.config/gtk-4.0
 sudo mkdir -p ~/.config && sudo cp -r ~/swaytemp/.config/* ~/.config/
+sudo cp -f ~/swaytemp/.config/mimeapps.list ~/.local/share/applications/mimeapps.list
 sudo rm -rf ~/swaytemp
 
 sudo chmod +x ~/.config/waybar/scripts/*.sh

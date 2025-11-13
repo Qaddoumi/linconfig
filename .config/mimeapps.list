@@ -15,7 +15,7 @@ text/plain=nvim.desktop
 text/x-shellscript=nvim.desktop
 
 # File Manager
-inode/directory=nemo.desktop
+inode/directory=thunar.desktop
 
 # PDF
 application/pdf=google-chrome.desktop  # (Note: Zathura would be better, but not in your list. Install it or use Firefox.)
