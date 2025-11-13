@@ -203,6 +203,7 @@ for_window [app_id="gcr-prompter"] floating enable, move container to workspace 
 for_window [class="Polkit-gnome-authentication-agent-1"] floating enable, move container to workspace current
 for_window [title="Authentication Required"] floating enable, move container to workspace current
 for_window [title="Authentication"] floating enable, move container to workspace current
+for_window [app_id="virt-manager" title="Virtual Machine Manager"] move left, resize set width 20 ppt
 
 for_window [app_id="wlogout"] move position center, resize set 500 400
 
