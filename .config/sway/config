@@ -22,7 +22,7 @@ set $term kitty
 # Your preferred application launcher
 set $menu wofi --show drun
 # Your preferred file manager
-set $fileManager nemo
+set $fileManager thunar
 # Your preferred web browser
 set $browser google-chrome-stable \
     --enable-features=UseOzonePlatform \
