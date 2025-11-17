@@ -40,6 +40,7 @@ for qcow_file in "$QCOW2_DIR"/*.qcow2; do
         echo "  Converting and copying the disk..."
         sudo qemu-img convert -p -O qcow2 -c "$QCOW2_DIR/$vm_name" "$DEST_DIR/$vm_name"
         
+        # this will trully defragment the image to save the space, but it takes a long time
         #sudo virt-sparsify -v --tmp $MOUNT_POINT/archBackup/temp/ "$QCOW2_DIR/$vm_name" "$DEST_DIR/$vm_name"
     fi
 done
