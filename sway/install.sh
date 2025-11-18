@@ -71,6 +71,8 @@ echo -e "${blue}==================================================\n============
 echo -e "${green}Installing yay (Yet Another Yaourt)${no_color}"
 
 sudo pacman -S --needed --noconfirm git base-devel go || true
+sudo rm -rf ~/go || true # Remove default Go workspace as i don't need it
+# you can add 'export GOPATH=/tmp/go' to your environment variable if you don't want to use the default GOPATH
 
 install_yay() {
     git clone --depth 1 https://aur.archlinux.org/yay.git ~/yay || true
