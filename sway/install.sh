@@ -46,6 +46,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --is-vm)
             is_vm="$2"
+            echo -e "${green}is_vm flag set to: $is_vm${no_color}"
             shift 2
             ;;
         *)
@@ -60,7 +61,8 @@ if [ -z "$login_manager" ]; then
 fi
 echo -e "${green}Login manager to be used : $login_manager${no_color}"
 echo -e "${green}Username to be used      : $USER${no_color}"
-# echo -e "${green}Is VM                    : $is_vm${no_color}"
+
+echo -e "${blue}==================================================\n==================================================${no_color}"
 
 info "Updating databases and upgrading packages..."
 pacman -Syy --noconfirm || warn "Failed to update package databases"
