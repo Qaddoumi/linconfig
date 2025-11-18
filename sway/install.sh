@@ -35,7 +35,7 @@ cd ~ || echo -e "${red}Failed to change directory to home${no_color}"
 echo -e "${green} ******************* Sway Installation Script ******************* ${no_color}"
 
 
-# Parse named arguments --login-manager
+# Parse named arguments --login-manager and --is-vm
 login_manager=""
 is_vm=false
 while [[ $# -gt 0 ]]; do
