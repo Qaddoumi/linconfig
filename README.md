@@ -29,13 +29,13 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux/
 ### Sway + SDDM Setup
 Install SwayWM with SDDM login manager:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager sddm
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager sddm --is-vm false
 ```
 
 ### Sway + Ly Setup
 Install SwayWM with Ly login manager:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager ly
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager ly --is-vm false
 ```
 
 ### Configuration Files Only
@@ -68,4 +68,4 @@ This script modifies system partitions and configurations. The authors are not r
 
 ---
 
-**Made with ❤️ for the Linux community**
+**Made with ❤️, so feel free to take what you like from it**
