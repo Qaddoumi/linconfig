@@ -13,14 +13,14 @@ MOUNT_POINT=$(lsblk -no MOUNTPOINTS $DEVICE | grep -v "^$" | head -1)
 DEST_DIR="$MOUNT_POINT/archBackup/vms/$(date +%Y%m%d_%H%M%S)"
 
 echo "Destination directory: $DEST_DIR"
-
+# Create destination directory if it doesn't exist
+sudo mkdir -p "$DEST_DIR" || { echo "Failed to create destination directory: $DEST_DIR"; exit 1; }
+#sudo chown -R $USER:$USER "$DEST_DIR"
 
 
 vm_name="003-win11-study.qcow2"
 
 sudo virt-sparsify -v --tmp $MOUNT_POINT/archBackup/temp/ "$QCOW2_DIR/$vm_name" "$DEST_DIR/$vm_name"
-
-
 
 
 

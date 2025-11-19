@@ -16,6 +16,7 @@ echo "Destination directory: $DEST_DIR"
 
 # Create destination directory if it doesn't exist
 sudo mkdir -p "$DEST_DIR" || { echo "Failed to create destination directory: $DEST_DIR"; exit 1; }
+#sudo chown -R $USER:$USER "$DEST_DIR"
 
 # Process all qcow2 files
 echo "Processing qcow2 files..."
