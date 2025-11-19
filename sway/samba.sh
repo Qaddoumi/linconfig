@@ -70,4 +70,9 @@ HOST_IP=$(ip addr show virbr0 | grep "inet " | awk '{print $2}' | cut -d'/' -f1)
 echo "$HOST_IP"
 
 echo ""
-echo "Setup complete! Connect from VMs using: \\\\$HOST_IP\\shared"
+echo ""
+echo -e "${green}To conncet on windows VM, open File Explorer and enter the following in the address bar:${no_color}"
+echo -e "${blue}\\\\$HOST_IP\\shared${no_color}"
+echo -e "${green}To connect on Linux VM, use the following address in your file manager${no_color}"
+echo -e "${blue}smb://$HOST_IP/shared${no_color}"
+
