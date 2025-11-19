@@ -1,4 +1,4 @@
-
+#!/usr/bin/env bash
 
 sudo pacman -S qemu-guest-agent spice-vdagent
 

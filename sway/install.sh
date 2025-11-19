@@ -129,6 +129,7 @@ sudo pacman -S --needed --noconfirm wget # Download utility
 sudo pacman -S --needed --noconfirm thunar thunar-archive-plugin thunar-volman thunar-media-tags-plugin # Lightweight file manager with plugins
 sudo pacman -S --needed --noconfirm udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives
 sudo systemctl enable --now udisks2.service || true
+sudo usermod -aG storage $USER || true
 sudo pacman -S --needed --noconfirm kanshi # Automatic Display manager for Wayland
 sudo pacman -S --needed --noconfirm nano # Text editor
 sudo pacman -S --needed --noconfirm neovim # Neovim text editor

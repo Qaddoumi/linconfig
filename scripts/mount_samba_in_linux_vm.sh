@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Samba Share Mount Script for Linux Mint
 # This script helps you connect to a Samba share
