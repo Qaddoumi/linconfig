@@ -463,8 +463,10 @@ include /etc/sway/config.d/*
     client.urgent $yellow $bg1 $fg $yellow $yellow
 
     # Borders and Gaps.
-    gaps inner 3
-    gaps outer 3
+    # To change the gaps for your existing workspaces, use swaymsg gaps inner all set 20 and they will react instantly.
+    # editing the config file and reloading doesn't work for existing workspaces, you need to login/logout or restart.
+    gaps inner 2
+    gaps outer 1
     default_border pixel 2
     titlebar_padding 8 2
     titlebar_border_thickness 2
