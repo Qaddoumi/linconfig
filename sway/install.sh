@@ -632,8 +632,8 @@ WantedBy=default.target
 SERVICE_EOF
 
 # Enable the service
-sudo systemctl --user daemon-reload
-sudo systemctl --user enable libvirt-post-login.service
+sudo systemctl --user daemon-reload > /dev/null || true
+sudo systemctl --user enable libvirt-post-login.service > /dev/null || true
 
 echo -e "${green}Post-login libvirt initialization service created${no_color}"
 echo -e "${green}It will run automatically on first login and remove itself${no_color}"
