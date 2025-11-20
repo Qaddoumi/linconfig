@@ -200,6 +200,7 @@ fi
 if [[ "$systemType" == "none" ]]; then
     echo -e "${green}Not running in a VM, no need to set the cursor${no_color}"
 else
+    is_vm = true
     echo -e "${green}Running in a VM: $systemType${no_color}"
     echo -e "${green}Setting the cursor rendering${no_color}"
 
@@ -577,9 +578,54 @@ echo -e "${green}Adding libvirt-qemu user to input group${no_color}"
 sudo usermod -aG input libvirt-qemu || true
 
 #TODO: does not work and needs to be applied after the reboot ...
+#TODO: test the new setup.
 echo -e "${green}Starting and autostarting the default network for libvirt${no_color}"
-sudo virsh net-start default || true
-sudo virsh net-autostart default || true
+echo -e "${green}Setting up post-login script for libvirt network initialization${no_color}"
+
+# Create a script that will run after first login
+POST_LOGIN_SCRIPT="$HOME/.local/bin/libvirt-post-login.sh"
+sudo mkdir -p "$HOME/.local/bin"
+sudo tee "$POST_LOGIN_SCRIPT" > /dev/null << 'SCRIPT_EOF'
+#!/bin/bash
+# Post-login initialization script for libvirt
+sleep 5  # Wait for libvirtd to fully initialize
+
+echo "Initializing libvirt default network..."
+virsh net-start default 2>/dev/null || true
+virsh net-autostart default 2>/dev/null || true
+
+# Remove this script and its systemd service after execution
+rm -f ~/.config/systemd/user/libvirt-post-login.service
+rm -f ~/.local/bin/libvirt-post-login.sh
+systemctl --user daemon-reload 2>/dev/null || true
+SCRIPT_EOF
+
+sudo chmod +x "$POST_LOGIN_SCRIPT"
+sudo chown $USER:$USER "$POST_LOGIN_SCRIPT"
+
+# Create systemd user service
+mkdir -p ~/.config/systemd/user
+tee ~/.config/systemd/user/libvirt-post-login.service > /dev/null << 'SERVICE_EOF'
+[Unit]
+Description=Libvirt Post-Login Initialization
+After=libvirtd.service
+Wants=libvirtd.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/libvirt-post-login.sh
+RemainAfterExit=no
+
+[Install]
+WantedBy=default.target
+SERVICE_EOF
+
+# Enable the service
+sudo systemctl --user daemon-reload
+sudo systemctl --user enable libvirt-post-login.service
+
+echo -e "${green}Post-login libvirt initialization service created${no_color}"
+echo -e "${green}It will run automatically on first login and remove itself${no_color}"
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
@@ -587,7 +633,13 @@ echo -e "${blue}==================================================\n============
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/gpu-passthrough.sh)
+if [ "$is_vm" = true ]; then
+    echo -e "${green}System is detected to be running in a VM, skipping GPU passthrough setup${no_color}"
+else
+    echo -e "${green}System is not detected to be running in a VM, proceeding with GPU passthrough setup${no_color}"
+    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/gpu-passthrough.sh)
+fi
+
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
@@ -891,59 +943,64 @@ echo -e "${blue}==================================================\n============
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
-echo -e "${green}Setting up looking-glass for low latency video streaming${no_color}"
-# Create the shared memory directory if it doesn't exist
-sudo mkdir -p /dev/shm || true
-
-# Add your user to the kvm group (if not already)
-sudo usermod -a -G kvm $USER || true
-
-# Create a udev rule for the shared memory device
-#echo "SUBSYSTEM==\"kvmfr\", OWNER=\"$USER\", GROUP=\"kvm\", MODE=\"0660\"" | sudo tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
-echo "SUBSYSTEM==\"kvmfr\", GROUP=\"kvm\", MODE=\"0660\", TAG+=\"uaccess\"" | sudo tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
-
-# Reload udev rules
-sudo udevadm control --reload-rules || true
-sudo udevadm trigger || true
-
-#Edit libvirt configuration:
-LIBVIRT_CONF="/etc/libvirt/qemu.conf"
-if grep -qE '^\s*#\s*user\s*=' "$LIBVIRT_CONF"; then
-    echo -e "${green}Uncommenting user line and setting to $USER in $LIBVIRT_CONF${no_color}"
-    sudo sed -i "s|^\s*#\s*user\s*=.*|user = \"$USER\"|" "$LIBVIRT_CONF" || true
-elif grep -q 'user = ' "$LIBVIRT_CONF"; then
-    echo -e "${green}Changing user in $LIBVIRT_CONF to $USER${no_color}"
-    sudo sed -i "s|user = \".*\"|user = \"$USER\"|" "$LIBVIRT_CONF" || true
+if [ "$is_vm" = true ]; then
+    echo -e "${green}System is detected to be running in a VM, skipping looking-glass-client setup${no_color}"
 else
-    echo -e "${green}Adding user = \"$USER\" to $LIBVIRT_CONF${no_color}"
-    echo "user = \"$USER\"" | sudo tee -a "$LIBVIRT_CONF" > /dev/null
-fi
+    echo -e "${green}System is not detected to be running in a VM, proceeding with looking-glass setup${no_color}"
 
-if grep -qE '^\s*#\s*group\s*=' "$LIBVIRT_CONF"; then
-    echo -e "${green}Uncommenting group line and setting to kvm in $LIBVIRT_CONF${no_color}"
-    sudo sed -i "s|^\s*#\s*group\s*=.*|group = \"kvm\"|" "$LIBVIRT_CONF" || true
-elif grep -q 'group = ' "$LIBVIRT_CONF"; then
-    echo -e "${green}Changing group in $LIBVIRT_CONF to kvm${no_color}"
-    sudo sed -i "s|group = \".*\"|group = \"kvm\"|" "$LIBVIRT_CONF" || true
-else
-    echo -e "${green}Adding group = \"kvm\" to $LIBVIRT_CONF${no_color}"
-    echo "group = \"kvm\"" | sudo tee -a "$LIBVIRT_CONF" > /dev/null
-fi
+    echo -e "${green}Setting up looking-glass for low latency video streaming${no_color}"
+    # Create the shared memory directory if it doesn't exist
+    sudo mkdir -p /dev/shm || true
 
-echo -e "${green}Restarting libvirtd service to apply changes...${no_color}"
-sudo systemctl restart libvirtd || true
+    # Add your user to the kvm group (if not already)
+    sudo usermod -a -G kvm $USER || true
 
-echo -e "${green}Make sure to add the following line to your VM XML configuration:
-<shmem name='looking-glass'>
-  <model type='ivshmem-plain'/>
-  <size unit='M'>128</size>
-</shmem>${no_color}"
-echo -e "${green}You can also use the following command to check if the shared memory device is created:${no_color}"
-echo -e "${green}ls -l /dev/shm/looking-glass*${no_color}"
+    # Create a udev rule for the shared memory device
+    #echo "SUBSYSTEM==\"kvmfr\", OWNER=\"$USER\", GROUP=\"kvm\", MODE=\"0660\"" | sudo tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
+    echo "SUBSYSTEM==\"kvmfr\", GROUP=\"kvm\", MODE=\"0660\", TAG+=\"uaccess\"" | sudo tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
 
-echo -e "${green}Creating desktop entries for Looking Glass Client to run in fullscreen${no_color}"
-sudo mkdir -p ~/.local/share/applications/ || true
-sudo tee ~/.local/share/applications/looking-glass-fullscreen.desktop > /dev/null << 'EOF'
+    # Reload udev rules
+    sudo udevadm control --reload-rules || true
+    sudo udevadm trigger || true
+
+    #Edit libvirt configuration:
+    LIBVIRT_CONF="/etc/libvirt/qemu.conf"
+    if grep -qE '^\s*#\s*user\s*=' "$LIBVIRT_CONF"; then
+        echo -e "${green}Uncommenting user line and setting to $USER in $LIBVIRT_CONF${no_color}"
+        sudo sed -i "s|^\s*#\s*user\s*=.*|user = \"$USER\"|" "$LIBVIRT_CONF" || true
+    elif grep -q 'user = ' "$LIBVIRT_CONF"; then
+        echo -e "${green}Changing user in $LIBVIRT_CONF to $USER${no_color}"
+        sudo sed -i "s|user = \".*\"|user = \"$USER\"|" "$LIBVIRT_CONF" || true
+    else
+        echo -e "${green}Adding user = \"$USER\" to $LIBVIRT_CONF${no_color}"
+        echo "user = \"$USER\"" | sudo tee -a "$LIBVIRT_CONF" > /dev/null
+    fi
+
+    if grep -qE '^\s*#\s*group\s*=' "$LIBVIRT_CONF"; then
+        echo -e "${green}Uncommenting group line and setting to kvm in $LIBVIRT_CONF${no_color}"
+        sudo sed -i "s|^\s*#\s*group\s*=.*|group = \"kvm\"|" "$LIBVIRT_CONF" || true
+    elif grep -q 'group = ' "$LIBVIRT_CONF"; then
+        echo -e "${green}Changing group in $LIBVIRT_CONF to kvm${no_color}"
+        sudo sed -i "s|group = \".*\"|group = \"kvm\"|" "$LIBVIRT_CONF" || true
+    else
+        echo -e "${green}Adding group = \"kvm\" to $LIBVIRT_CONF${no_color}"
+        echo "group = \"kvm\"" | sudo tee -a "$LIBVIRT_CONF" > /dev/null
+    fi
+
+    echo -e "${green}Restarting libvirtd service to apply changes...${no_color}"
+    sudo systemctl restart libvirtd || true
+
+    echo -e "${green}Make sure to add the following line to your VM XML configuration:
+    <shmem name='looking-glass'>
+    <model type='ivshmem-plain'/>
+    <size unit='M'>128</size>
+    </shmem>${no_color}"
+    echo -e "${green}You can also use the following command to check if the shared memory device is created:${no_color}"
+    echo -e "${green}ls -l /dev/shm/looking-glass*${no_color}"
+
+    echo -e "${green}Creating desktop entries for Looking Glass Client to run in fullscreen${no_color}"
+    sudo mkdir -p ~/.local/share/applications/ || true
+    sudo tee ~/.local/share/applications/looking-glass-fullscreen.desktop > /dev/null << 'EOF'
 [Desktop Entry]
 Name=Looking Glass Client (Fullscreen)
 Comment=View KVM guest desktop in fullscreen
@@ -953,9 +1010,10 @@ Terminal=false
 Type=Application
 Categories=Utility;System;
 EOF
-sudo chmod +x ~/.local/share/applications/looking-glass-fullscreen.desktop
+    sudo chmod +x ~/.local/share/applications/looking-glass-fullscreen.desktop
 
-echo -e "${green}Setting up looking-glass completed${no_color}"
+    echo -e "${green}Setting up looking-glass completed${no_color}"
+fi
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
