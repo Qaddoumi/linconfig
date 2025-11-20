@@ -64,7 +64,7 @@ echo -e "${green}Username to be used      : $USER${no_color}"
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
-echo -e "${green}"Updating databases and upgrading packages...${no_color}"
+echo -e "${green}Updating databases and upgrading packages...${no_color}"
 sudo pacman -Syy --noconfirm || echo -e "${yellow}Failed to update package databases${no_color}"
 sudo pacman -Syu --noconfirm || echo -e "${yellow}Failed to upgrade packages${no_color}"
 
