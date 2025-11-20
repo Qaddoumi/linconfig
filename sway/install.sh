@@ -62,6 +62,19 @@ fi
 echo -e "${green}Login manager to be used : $login_manager${no_color}"
 echo -e "${green}Username to be used      : $USER${no_color}"
 
+if [ "$is_vm" = true ]; then
+    echo -e "${green}is_vm flag is set to true${no_color}"
+else
+    echo -e "${green}is_vm flag is set to false, detecting system type...${no_color}"
+    systemType="$(systemd-detect-virt 2>/dev/null || echo "none")"
+    if [[ "$systemType" == "none" ]]; then
+        echo -e "${green}Not running in a VM${no_color}"
+    else
+        echo -e "${green}Running in a VM: systemtype = $systemType${no_color}"
+        is_vm=true
+    fi
+fi
+
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
 echo -e "${green}Updating databases and upgrading packages...${no_color}"
@@ -191,17 +204,7 @@ echo -e "${yellow}You'll need to restart your session for this to take effect sy
 
 # Check if running in vm
 if [ "$is_vm" = true ]; then
-    echo -e "${green}is_vm flag is set to true${no_color}"
-    systemType="vm"
-else
-    echo -e "${green}is_vm flag is set to false, detecting system type...${no_color}"
-    systemType="$(systemd-detect-virt 2>/dev/null || echo "none")"
-fi
-if [[ "$systemType" == "none" ]]; then
-    echo -e "${green}Not running in a VM, no need to set the cursor${no_color}"
-else
-    is_vm = true
-    echo -e "${green}Running in a VM: $systemType${no_color}"
+    echo -e "${green}Running in a VM:${no_color}"
     echo -e "${green}Setting the cursor rendering${no_color}"
 
     if grep -q "WLR_NO_HARDWARE_CURSORS" "$ENV_FILE"; then 
@@ -210,6 +213,8 @@ else
         echo -e "${green}Adding cursor to "$ENV_FILE"...${no_color}"
         echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a "$ENV_FILE" > /dev/null || true
     fi
+else
+    echo -e "${green}Not running in a VM, no need to set the cursor${no_color}"
 fi
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
@@ -269,6 +274,12 @@ ls /usr/share/themes/
 # ls /usr/share/icons/
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
+
+if [ "$is_vm" = true ]; then
+    echo -e "${green}Skipping Performance Mode Setup in VM environment${no_color}"
+else
+    echo -e "${green}Setting up Performance Mode for physical machine${no_color}"
+fi
 
 # echo -e "${green}Performance Mode Setup ${no_color}"
 #
