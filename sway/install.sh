@@ -65,8 +65,8 @@ echo -e "${green}Username to be used      : $USER${no_color}"
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
 info "Updating databases and upgrading packages..."
-pacman -Syy --noconfirm || warn "Failed to update package databases"
-pacman -Syu --noconfirm || warn "Failed to upgrade packages"
+pacman -Syy --noconfirm || echo -e "${yellow}Failed to update package databases${no_color}"
+pacman -Syu --noconfirm || echo -e "${yellow}Failed to upgrade packages${no_color}"
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
