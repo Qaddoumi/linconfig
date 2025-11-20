@@ -433,7 +433,7 @@ newTask "==================================================\n===================
 
 info "Would you like to reboot the system after the installation?"
 read -rp "Type 'y' to reboot, or hit enter to skip: " REBOOT_AFTER_INSTALL
-REBOOT_AFTER_INSTALL=${REBOOT_AFTER_INSTALL:-y}
+REBOOT_AFTER_INSTALL=${REBOOT_AFTER_INSTALL:-n}
 if [[ "$REBOOT_AFTER_INSTALL" == "y" ]]; then
     info "System will reboot after installation"
 else
