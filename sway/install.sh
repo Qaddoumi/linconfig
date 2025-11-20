@@ -573,7 +573,7 @@ sudo pacman -S --needed --noconfirm swtpm # Software TPM emulator
 sudo pacman -S --needed --noconfirm guestfs-tools # Tools for managing guest file systems
 sudo pacman -S --needed --noconfirm libosinfo # Library for managing OS information
 sudo pacman -S --needed --noconfirm tuned # system tuning service for linux allows us to optimise the hypervisor for speed.
-sudo pacman -S --needed --noconfirm spice-vdagent # SPICE agent for guest OS
+#sudo pacman -S --needed --noconfirm spice-vdagent # SPICE agent for guest OS
 sudo pacman -S --needed --noconfirm bridge-utils # Utilities for managing network bridges
 sudo pacman -S --needed --noconfirm linux-headers # for vfio modules
 sudo pacman -S --needed --noconfirm linux-zen-headers # for zen kernel vfio modules
@@ -651,6 +651,16 @@ else
     bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/gpu-passthrough.sh)
 fi
 
+echo -e "${blue}==================================================\n==================================================${no_color}"
+
+echo -e "${green}Installing QEMU Guest Agents and enabling their services${no_color}"
+sudo pacman -S --needed --noconfirm qemu-guest-agent spice-vdagent # QEMU Guest Agent and SPICE agent for better VM integration
+
+sudo systemctl enable qemu-guest-agent > /dev/null || true
+sudo systemctl start qemu-guest-agent > /dev/null || true
+
+sudo systemctl enable spice-vdagentd > /dev/null || true
+sudo systemctl start spice-vdagentd > /dev/null || true
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
