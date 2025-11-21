@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e # Exit on error
+# Color codes
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[1;33m'
+blue='\033[0;34m'
+no_color='\033[0m' # reset the color to default
+
+ip_address="${1:-notset}"
+ssh_user="${2:-root}"
+
+if [ "$ip_address" == "notset" ]; then
+    echo -e "${red}Error: No IP address provided.${no_color}"
+    echo "Usage: $0 <IP_ADDRESS> [SSH_USER]"
+    exit 1
+fi
+
+# Remove old host key and connect
+ssh-keygen -R "$ip_address" 2>/dev/null || true
+ssh "$ssh_user@$ip_address"
