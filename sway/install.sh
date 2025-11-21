@@ -124,65 +124,121 @@ echo -e "${blue}==================================================\n============
 
 echo -e "${green}Installing Sway and related packages${no_color}"
 sudo pacman -S --needed --noconfirm sway # Sway window manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm waybar # Status bar for sway
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wofi # Application launcher
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for sway
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm libappindicator-gtk3 libayatana-appindicator # AppIndicator support for swaync tray
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kitty # Terminal emulator
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swayidle # Idle management for sway
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-server-xwayland # XWayland for compatibility with X11 applications
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xdg-desktop-portal xdg-desktop-portal-wlr # Portal for Wayland
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm htop # System monitor
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wget # Download utility
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm nemo # File manager
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm thunar thunar-archive-plugin thunar-volman thunar-media-tags-plugin # Lightweight file manager with plugins
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo systemctl enable --now udisks2.service || true
 sudo usermod -aG storage $USER || true
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kanshi # Automatic Display manager for Wayland
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm nano # Text editor
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm neovim # Neovim text editor
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm brightnessctl # Brightness control
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm polkit-gnome # PolicyKit authentication agent (give sudo access to GUI apps)
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm s-tui # Terminal UI for monitoring CPU
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gdu # Disk usage analyzer
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm jq # JSON processor
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm bc # Arbitrary precision calculator language
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm fastfetch # Fast system information tool
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm less # Pager program for viewing text files
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm man-db man-pages # Manual pages and database
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm mpv # video player
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm celluloid # frontend for mpv video player
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm imv # image viewer
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm file-roller # Handling archive files
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xarchiver # Lightweight archive manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm trash-cli # Command line trash management
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo mkdir -p ~/.local/share/Trash/{files,info}
 sudo chmod 700 ~/.local/share/Trash
 sudo chown -R $USER:$USER ~/.local
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm libxml2 # XML parsing library
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm pv # progress bar in terminal
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm network-manager-applet # Network management applet
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm grim # Screenshot tool
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo mkdir -p ~/Screenshots || true
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm slurp # Selection tool for Wayland
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wl-clipboard # Clipboard management for Wayland
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm cliphist # Clipboard history manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm cpupower # CPU frequency scaling utility ==> change powersave to performance mode.
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm tlp # TLP for power management
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm lm_sensors # Hardware monitoring
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm thermald # Intel thermal daemon
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm dmidecode # Desktop Management Interface table related utilities
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 yay -S --needed --noconfirm google-chrome || echo -e "${red}Failed to install google-chrome${no_color}" # Web browser
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm brave-bin || echo -e "${red}Failed to install brave-bin${no_color}" # Brave browser
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm visual-studio-code-bin || echo -e "${red}Failed to install visual-studio-code-bin${no_color}" # Visual Studio Code
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm powershell-bin || echo -e "${red}Failed to install powershell-bin${no_color}" # PowerShell
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm oh-my-posh || echo -e "${red}Failed to install oh-my-posh${no_color}" # Theme engine for terminal
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
@@ -256,7 +312,9 @@ echo -e "${blue}==================================================\n============
 echo -e "${green}Installing fonts${no_color}"
 
 sudo pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd # Nerd font for JetBrains Mono
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm noto-fonts-emoji # Emoji font
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Refreshing font cache${no_color}"
 fc-cache -fv
@@ -265,8 +323,11 @@ echo -e "${blue}==================================================\n============
 
 echo -e "${green}Setting Dark theme for GTK applications${no_color}"
 sudo pacman -S --needed --noconfirm materia-gtk-theme # Material Design GTK theme
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm papirus-icon-theme # Icon theme
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 # sudo pacman -S --needed --noconfirm capitaine-cursors # Cursor theme
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Showing available themes${no_color}"
 ls /usr/share/themes/
@@ -562,21 +623,37 @@ echo -e "${blue}==================================================\n============
 
 echo -e "${green}Installing and configuring Qemu/Libvirt for virtualization${no_color}"
 sudo pacman -S --needed --noconfirm qemu-full # Full QEMU package with all features
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm qemu-img # QEMU disk image utility: provides create, convert, modify, and snapshot, offline disk images
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm libvirt # Libvirt for managing virtualization: provides a unified interface for managing virtual machines
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm virt-install # Tool for installing virtual machines: CLI tool to create guest VMs
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm virt-manager # GUI for managing virtual machines: GUI tool to create and manage guest VMs
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm virt-viewer # Viewer for virtual machines
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm edk2-ovmf # UEFI firmware for virtual machines
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm dnsmasq # DNS and DHCP server: lightweight DNS forwarder and DHCP server
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swtpm # Software TPM emulator
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm guestfs-tools # Tools for managing guest file systems
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm libosinfo # Library for managing OS information
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm tuned # system tuning service for linux allows us to optimise the hypervisor for speed.
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm spice-vdagent # SPICE agent for guest OS
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm bridge-utils # Utilities for managing network bridges
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm linux-headers # for vfio modules
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm linux-zen-headers # for zen kernel vfio modules
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Enabling and starting libvirtd service${no_color}"
 sudo systemctl enable libvirtd || true
