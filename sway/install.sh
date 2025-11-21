@@ -671,9 +671,17 @@ echo -e "${green}Starting and autostarting the default network for libvirt${no_c
 echo -e "${green}Setting up post-login script for libvirt network initialization${no_color}"
 
 # Create a script that will run after first login
-POST_LOGIN_SCRIPT="$HOME/.local/bin/libvirt-post-login.sh"
-sudo mkdir -p "$HOME/.local/bin"
-sudo tee "$POST_LOGIN_SCRIPT" > /dev/null << 'SCRIPT_EOF'
+# Get the actual username (not root)
+TARGET_USER="${SUDO_USER:-$USER}"
+TARGET_HOME=$(eval echo ~$TARGET_USER)
+
+# Create directory structure as the target user
+sudo -u $TARGET_USER mkdir -p "$TARGET_HOME/.local/bin"
+sudo -u $TARGET_USER mkdir -p "$TARGET_HOME/.config/systemd/user"
+
+# Create the post-login script
+POST_LOGIN_SCRIPT="$TARGET_HOME/.local/bin/libvirt-post-login.sh"
+sudo -u $TARGET_USER tee "$POST_LOGIN_SCRIPT" > /dev/null << 'SCRIPT_EOF'
 #!/bin/bash
 # Post-login initialization script for libvirt
 sleep 5  # Wait for libvirtd to fully initialize
@@ -688,12 +696,10 @@ rm -f ~/.local/bin/libvirt-post-login.sh
 systemctl --user daemon-reload 2>/dev/null || true
 SCRIPT_EOF
 
-sudo chmod +x "$POST_LOGIN_SCRIPT"
-sudo chown $USER:$USER "$POST_LOGIN_SCRIPT"
+sudo chmod +x "$POST_LOGIN_SCRIPT" || true
 
 # Create systemd user service
-mkdir -p ~/.config/systemd/user
-tee ~/.config/systemd/user/libvirt-post-login.service > /dev/null << 'SERVICE_EOF'
+sudo -u $TARGET_USER tee "$TARGET_HOME/.config/systemd/user/libvirt-post-login.service" > /dev/null << 'SERVICE_EOF'
 [Unit]
 Description=Libvirt Post-Login Initialization
 After=libvirtd.service
@@ -708,10 +714,12 @@ RemainAfterExit=no
 WantedBy=default.target
 SERVICE_EOF
 
-# Enable the service
-sudo systemctl --user daemon-reload > /dev/null || true
-sudo systemctl --user enable libvirt-post-login.service > /dev/null || true
+# Enable the service (this creates the symlink in the filesystem)
+sudo -u $TARGET_USER systemctl --user enable libvirt-post-login.service 2>/dev/null || \
+    ln -sf "$TARGET_HOME/.config/systemd/user/libvirt-post-login.service" \
+           "$TARGET_HOME/.config/systemd/user/default.target.wants/libvirt-post-login.service"
 
+echo "Libvirt post-login service configured successfully"
 echo -e "${green}Post-login libvirt initialization service created${no_color}"
 echo -e "${green}It will run automatically on first login and remove itself${no_color}"
 
