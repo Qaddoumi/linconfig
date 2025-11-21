@@ -964,6 +964,12 @@ fi
 
 newTask "==================================================\n=================================================="
 
+info "Updating databases and upgrading packages..."
+pacman -Syy --noconfirm || error "Failed to update package databases in chroot"
+pacman -Syu --noconfirm || error "Failed to update packages in chroot"
+
+newTask "==================================================\n=================================================="
+
 # Configure mkinitcpio for hibernation
 info "Configuring mkinitcpio for hibernation"
 # Backup original config
