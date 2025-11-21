@@ -46,7 +46,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --is-vm)
             is_vm="$2"
-            echo -e "${green}is_vm flag set to: $is_vm${no_color}"
             shift 2
             ;;
         *)
@@ -159,7 +158,8 @@ sudo pacman -S --needed --noconfirm thunar thunar-archive-plugin thunar-volman t
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo systemctl enable --now udisks2.service || true
+sudo systemctl enable udisks2.service || true
+sudo systemctl start udisks2.service || true
 sudo usermod -aG storage $USER || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kanshi # Automatic Display manager for Wayland
@@ -192,12 +192,9 @@ sudo pacman -S --needed --noconfirm celluloid # frontend for mpv video player
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm imv # image viewer
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-#sudo pacman -S --needed --noconfirm file-roller # Handling archive files
-echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xarchiver # Lightweight archive manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm trash-cli # Command line trash management
-echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo mkdir -p ~/.local/share/Trash/{files,info}
 sudo chmod 700 ~/.local/share/Trash
 sudo chown -R $USER:$USER ~/.local
@@ -209,7 +206,6 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm network-manager-applet # Network management applet
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm grim # Screenshot tool
-echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo mkdir -p ~/Screenshots || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm slurp # Selection tool for Wayland
