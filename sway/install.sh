@@ -655,7 +655,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${green}Enabling and starting libvirtd service${no_color}"
 sudo systemctl enable libvirtd || true
 sudo systemctl start libvirtd || true
-sleep 2  # Give libvirtd a moment to fully start
+sudo systemctl enable virtlogd.socket || true
+# sleep 2  # Give libvirtd a moment to fully start
 
 echo -e "${green}Adding current user to libvirt group${no_color}"
 sudo usermod -aG libvirt $(whoami) || true
@@ -664,58 +665,55 @@ sudo usermod -aG input libvirt-qemu || true
 
 #TODO: does not work and needs to be applied after the reboot ...
 #TODO: test the new setup.
-echo -e "${green}Starting and autostarting the default network for libvirt${no_color}"
+# echo -e "${green}Starting and autostarting the default network for libvirt${no_color}"
 echo -e "${green}Setting up post-login script for libvirt network initialization${no_color}"
 
 # Create a script that will run after first login
 # Get the actual username (not root)
 TARGET_USER="${SUDO_USER:-$USER}"
-TARGET_HOME=$(eval echo ~$TARGET_USER)
 
-# Create directory structure as the target user
-sudo -u $TARGET_USER mkdir -p "$TARGET_HOME/.local/bin"
-sudo -u $TARGET_USER mkdir -p "$TARGET_HOME/.config/systemd/user"
-sudo -u $TARGET_USER mkdir -p "$TARGET_HOME/.config/systemd/user/default.target.wants"
+# Add user to libvirt group for permissions
+usermod -aG libvirt $TARGET_USER
 
-# Create the post-login script
-POST_LOGIN_SCRIPT="$TARGET_HOME/.local/bin/libvirt-post-login.sh"
-sudo -u $TARGET_USER tee "$POST_LOGIN_SCRIPT" > /dev/null << 'SCRIPT_EOF'
+# Define and set the default network to autostart at system level
+# This will be executed on first boot via a system-level service
+cat > /usr/local/bin/libvirt-setup-network.sh << 'SETUP_EOF'
 #!/bin/bash
-# Post-login initialization script for libvirt
-sleep 5  # Wait for libvirtd to fully initialize
+# Wait for libvirtd to be ready
+sleep 10
 
-echo "Initializing libvirt default network..."
+# Start and autostart the default network
 virsh net-start default 2>/dev/null || true
-virsh net-autostart default 2>/dev/null || true
+virsh net-autostart default
 
-# Remove this script and its systemd service after execution
-rm -f ~/.config/systemd/user/libvirt-post-login.service
-rm -f ~/.config/systemd/user/default.target.wants/libvirt-post-login.service
-rm -f ~/.local/bin/libvirt-post-login.sh
-systemctl --user daemon-reload 2>/dev/null || true
-SCRIPT_EOF
+# Disable this service after successful execution
+systemctl disable libvirt-setup-network.service
+rm -f /usr/local/bin/libvirt-setup-network.sh
+SETUP_EOF
 
-sudo chmod +x "$POST_LOGIN_SCRIPT" || true
+chmod +x /usr/local/bin/libvirt-setup-network.sh
 
-# Create systemd user service
-sudo -u $TARGET_USER tee "$TARGET_HOME/.config/systemd/user/libvirt-post-login.service" > /dev/null << 'SERVICE_EOF'
+# Create a system-level oneshot service
+cat > /etc/systemd/system/libvirt-setup-network.service << 'SERVICE_EOF'
 [Unit]
-Description=Libvirt Post-Login Initialization
+Description=Setup libvirt default network
 After=libvirtd.service
-Wants=libvirtd.service
+Requires=libvirtd.service
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/bin/libvirt-post-login.sh
-RemainAfterExit=no
+ExecStart=/usr/local/bin/libvirt-setup-network.sh
+RemainAfterExit=yes
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
 SERVICE_EOF
 
-# Create the symlink manually
-sudo -u $TARGET_USER ln -sf "$TARGET_HOME/.config/systemd/user/libvirt-post-login.service" \
-                            "$TARGET_HOME/.config/systemd/user/default.target.wants/libvirt-post-login.service"
+# Enable the service
+systemctl enable libvirt-setup-network.service
+
+echo "Libvirt network will be configured on first boot"
+echo "User $TARGET_USER added to libvirt group (logout/login required)"
 
 echo "Libvirt post-login service configured successfully"
 echo -e "${green}Post-login libvirt initialization service created${no_color}"
