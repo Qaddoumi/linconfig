@@ -635,44 +635,6 @@ else
 fi
 newTask "==================================================\n=================================================="
 
-info "Enabling multilib repos"
-CONFIG_FILE="/mnt/etc/pacman.conf"
-info "Checking if config file exists"
-if [[ ! -f "$CONFIG_FILE" ]]; then
-    warn -e "Pacman configuration file not found at $CONFIG_FILE."
-else
-    info "Backup the original config file"
-    cp "$CONFIG_FILE" "${CONFIG_FILE}.bak" || {
-        warn -e "Failed to create a backup of $CONFIG_FILE."
-    }
-
-    multiline=$(grep -n "^[[:space:]]*#*[[:space:]]*\[multilib\]" "$CONFIG_FILE" | cut -d: -f1)
-    multiline_num=${multiline:-0}
-
-    info "check if mutilib section exist in the file"
-    if [[ "$multiline_num" -eq 0 ]]; then
-        info "Multilib section does not exist; append it"
-        echo -e "\n[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> "$CONFIG_FILE"
-        info "Added [multilib] repository to $CONFIG_FILE."
-    else
-        info "Multilib section exists; check if it's commented"
-        first_char=$(sed -n "${multiline_num}{s/^[[:space:]]*\(.\).*/\1/p; q}" "$CONFIG_FILE")
-        if [[ "$first_char" == "#" ]]; then
-            sed -i "${multiline_num}s/^\s*#\s*\(\[multilib\]\)/\1/" "$CONFIG_FILE"
-            info "Uncommented [multilib] section in $CONFIG_FILE."
-
-            include_line=$(($multiline_num + 1))
-            sed -i "${include_line}s/^\s*#\s*\(Include = \/etc\/pacman\.d\/mirrorlist\)/\1/" "$CONFIG_FILE"
-            info "Uncommented Include line for multilib repository in $CONFIG_FILE."
-        else
-            info "Multilib repository is already enabled in $CONFIG_FILE."
-        fi
-    fi
-    info "Multilib repository is now enabled"
-fi
-
-newTask "==================================================\n=================================================="
-
 info "Enabling NTP (timedate) synchronization"
 timedatectl set-ntp true || warn "Failed to enable NTP synchronization"
 info "Initializing pacman keyring"
@@ -961,6 +923,44 @@ mkdir -p "/home/$USERNAME" || error "Failed to create home directory"
 info "Setting ownership and permissions for /home/$USERNAME"
 chown "$USERNAME:$USERNAME" "/home/$USERNAME"
 chmod 755 "/home/$USERNAME"
+
+newTask "==================================================\n=================================================="
+
+info "Enabling multilib repos"
+CONFIG_FILE="/etc/pacman.conf"
+info "Checking if config file exists"
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    warn -e "Pacman configuration file not found at $CONFIG_FILE."
+else
+    info "Backup the original config file"
+    cp "$CONFIG_FILE" "${CONFIG_FILE}.bak" || {
+        warn -e "Failed to create a backup of $CONFIG_FILE."
+    }
+
+    multiline=$(grep -n "^[[:space:]]*#*[[:space:]]*\[multilib\]" "$CONFIG_FILE" | cut -d: -f1)
+    multiline_num=${multiline:-0}
+
+    info "check if mutilib section exist in the file"
+    if [[ "$multiline_num" -eq 0 ]]; then
+        info "Multilib section does not exist; append it"
+        echo -e "\n[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> "$CONFIG_FILE"
+        info "Added [multilib] repository to $CONFIG_FILE."
+    else
+        info "Multilib section exists; check if it's commented"
+        first_char=$(sed -n "${multiline_num}{s/^[[:space:]]*\(.\).*/\1/p; q}" "$CONFIG_FILE")
+        if [[ "$first_char" == "#" ]]; then
+            sed -i "${multiline_num}s/^\s*#\s*\(\[multilib\]\)/\1/" "$CONFIG_FILE"
+            info "Uncommented [multilib] section in $CONFIG_FILE."
+
+            include_line=$(($multiline_num + 1))
+            sed -i "${include_line}s/^\s*#\s*\(Include = \/etc\/pacman\.d\/mirrorlist\)/\1/" "$CONFIG_FILE"
+            info "Uncommented Include line for multilib repository in $CONFIG_FILE."
+        else
+            info "Multilib repository is already enabled in $CONFIG_FILE."
+        fi
+    fi
+    info "Multilib repository is now enabled"
+fi
 
 newTask "==================================================\n=================================================="
 
