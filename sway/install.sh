@@ -135,6 +135,16 @@ sudo pacman -S --needed --noconfirm libappindicator-gtk3 libayatana-appindicator
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kitty # Terminal emulator
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm tmux # Terminal multiplexer
+echo -e "${green}TMUX explanation tree${no_color}"
+echo -e "${green}Your Terminal (Kitty/Ghostty/etc)${no_color}"
+echo -e "${green}    └── tmux session${no_color}"
+echo -e "${green}          ├── Window 1 (like a tab)${no_color}"
+echo -e "${green}          │     ├── Pane 1 (split screen)${no_color}"
+echo -e "${green}          │     └── Pane 2${no_color}"
+echo -e "${green}          ├── Window 2${no_color}"
+echo -e "${green}          └── Window 3${no_color}"
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swayidle # Idle management for sway
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
