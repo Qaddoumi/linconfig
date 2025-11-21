@@ -684,8 +684,8 @@ TARGET_USER="${SUDO_USER:-$USER}"
 
 # Define and set the default network to autostart at system level
 # This will be executed on first boot via a system-level service
-cat > /usr/local/bin/libvirt-setup-network.sh << 'SETUP_EOF'
-#!/bin/bash
+sudo tee /usr/local/bin/libvirt-setup-network.sh > /dev/null << 'SETUP_EOF'
+#!/usr/bin/env bash
 # Wait for libvirtd to be ready
 sleep 10
 
@@ -701,7 +701,7 @@ SETUP_EOF
 sudo chmod +x /usr/local/bin/libvirt-setup-network.sh || true
 
 # Create a system-level oneshot service
-cat > /etc/systemd/system/libvirt-setup-network.service << 'SERVICE_EOF'
+sudo tee /etc/systemd/system/libvirt-setup-network.service << 'SERVICE_EOF'
 [Unit]
 Description=Setup libvirt default network
 After=libvirtd.service
