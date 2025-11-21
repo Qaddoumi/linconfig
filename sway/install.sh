@@ -718,8 +718,7 @@ echo -e "${green}It will run automatically on first login and remove itself${no_
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
 #bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/hugepages.sh)
-
-echo -e "${blue}==================================================\n==================================================${no_color}"
+# echo -e "${blue}==================================================\n==================================================${no_color}"
 
 if [ "$is_vm" = true ]; then
     echo -e "${green}System is detected to be running in a VM, skipping GPU passthrough setup${no_color}"
