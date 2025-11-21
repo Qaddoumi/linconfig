@@ -7,7 +7,7 @@ red='\033[0;31m'
 green='\033[0;32m'
 yellow='\033[1;33m'
 blue='\033[0;34m'
-no_color='\033[0m' # rest the color to default
+no_color='\033[0m' # reset the color to default
 
 backup_file() {
     local file="$1"

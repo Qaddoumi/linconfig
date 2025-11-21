@@ -12,7 +12,7 @@ red='\033[0;31m'
 green='\033[0;32m'
 yellow='\033[1;33m'
 blue='\033[0;34m'
-no_color='\033[0m' # rest the color to default
+no_color='\033[0m' # reset the color to default
 
 # # Check if running as root
 # if [[ $EUID -eq 0 ]]; then
@@ -1147,7 +1147,7 @@ if ! git clone --depth 1 https://github.com/Qaddoumi/linconfig.git ~/swaytemp; t
 fi
 sudo rm -rf ~/.config/sway ~/.config/waybar ~/.config/wofi ~/.config/kitty ~/.config/swaync \
     ~/.config/kanshi ~/.config/oh-my-posh ~/.config/fastfetch ~/.config/mimeapps.list ~/.local/share/applications/mimeapps.list \
-    ~/.config/looking-glass ~/.config/gtk-3.0 ~/.config/gtk-4.0
+    ~/.config/looking-glass ~/.config/gtk-3.0 ~/.config/gtk-4.0 ~/.config/tmux
 sudo mkdir -p ~/.config && sudo cp -r ~/swaytemp/.config/* ~/.config/
 sudo mkdir -p ~/.local/share/applications/ && sudo cp -f ~/swaytemp/.config/mimeapps.list ~/.local/share/applications/
 sudo rm -rf ~/swaytemp
