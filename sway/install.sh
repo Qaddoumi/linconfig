@@ -682,9 +682,6 @@ echo -e "${green}Setting up post-login script for libvirt network initialization
 # Get the actual username (not root)
 TARGET_USER="${SUDO_USER:-$USER}"
 
-# Add user to libvirt group for permissions
-usermod -aG libvirt $TARGET_USER
-
 # Define and set the default network to autostart at system level
 # This will be executed on first boot via a system-level service
 cat > /usr/local/bin/libvirt-setup-network.sh << 'SETUP_EOF'
@@ -701,7 +698,7 @@ systemctl disable libvirt-setup-network.service
 rm -f /usr/local/bin/libvirt-setup-network.sh
 SETUP_EOF
 
-chmod +x /usr/local/bin/libvirt-setup-network.sh
+sudo chmod +x /usr/local/bin/libvirt-setup-network.sh || true
 
 # Create a system-level oneshot service
 cat > /etc/systemd/system/libvirt-setup-network.service << 'SERVICE_EOF'
@@ -720,7 +717,7 @@ WantedBy=multi-user.target
 SERVICE_EOF
 
 # Enable the service
-systemctl enable libvirt-setup-network.service
+sudo systemctl enable libvirt-setup-network.service || true
 
 echo "Libvirt network will be configured on first boot"
 echo "User $TARGET_USER added to libvirt group (logout/login required)"
