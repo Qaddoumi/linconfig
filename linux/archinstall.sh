@@ -636,7 +636,7 @@ fi
 newTask "==================================================\n=================================================="
 
 info "Enabling multilib repos"
-CONFIG_FILE="/etc/pacman.conf"
+CONFIG_FILE="/mnt/etc/pacman.conf"
 info "Checking if config file exists"
 if [[ ! -f "$CONFIG_FILE" ]]; then
     warn -e "Pacman configuration file not found at $CONFIG_FILE."
@@ -1226,6 +1226,7 @@ mkdir -p /etc/systemd/system/shutdown.target.d && printf '[Manager]\nDefaultTime
 newTask "==================================================\n=================================================="
 
 # Clear sensitive variables in chroot
+info "Clearing sensitive variables in chroot"
 unset ROOT_PASSWORD USER_PASSWORD
 
 EOF
