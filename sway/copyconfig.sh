@@ -7,7 +7,7 @@ sudo rm -rf ~/.config/sway ~/.config/waybar ~/.config/wofi ~/.config/kitty ~/.co
 sudo mkdir -p ~/.config
 
 sudo cp -r ~/projects/linconfig/.config/* ~/.config/
-sudo cp -f ~/projects/linconfig/.config/mimeapps.list ~/.local/share/applications/mimeapps.list
+sudo mkdir -p ~/.local/share/applications/ && sudo cp -f ~/swaytemp/.config/mimeapps.list ~/.local/share/applications/
 
 sudo chmod +x ~/.config/waybar/scripts/*.sh
 sudo chmod +x ~/.config/sway/scripts/*.sh

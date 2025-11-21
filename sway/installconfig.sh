@@ -12,7 +12,7 @@ sudo rm -rf ~/.config/sway ~/.config/waybar ~/.config/wofi ~/.config/kitty ~/.co
     ~/.config/kanshi ~/.config/oh-my-posh ~/.config/fastfetch ~/.config/mimeapps.list ~/.local/share/applications/mimeapps.list \
     ~/.config/looking-glass ~/.config/gtk-3.0 ~/.config/gtk-4.0
 sudo mkdir -p ~/.config && sudo cp -r ~/swaytemp/.config/* ~/.config/
-sudo cp -f ~/swaytemp/.config/mimeapps.list ~/.local/share/applications/mimeapps.list
+sudo mkdir -p ~/.local/share/applications/ && sudo cp -f ~/swaytemp/.config/mimeapps.list ~/.local/share/applications/
 sudo rm -rf ~/swaytemp
 
 sudo chmod +x ~/.config/waybar/scripts/*.sh
