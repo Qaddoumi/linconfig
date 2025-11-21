@@ -674,6 +674,7 @@ TARGET_HOME=$(eval echo ~$TARGET_USER)
 # Create directory structure as the target user
 sudo -u $TARGET_USER mkdir -p "$TARGET_HOME/.local/bin"
 sudo -u $TARGET_USER mkdir -p "$TARGET_HOME/.config/systemd/user"
+sudo -u $TARGET_USER mkdir -p "$TARGET_HOME/.config/systemd/user/default.target.wants"
 
 # Create the post-login script
 POST_LOGIN_SCRIPT="$TARGET_HOME/.local/bin/libvirt-post-login.sh"
@@ -688,6 +689,7 @@ virsh net-autostart default 2>/dev/null || true
 
 # Remove this script and its systemd service after execution
 rm -f ~/.config/systemd/user/libvirt-post-login.service
+rm -f ~/.config/systemd/user/default.target.wants/libvirt-post-login.service
 rm -f ~/.local/bin/libvirt-post-login.sh
 systemctl --user daemon-reload 2>/dev/null || true
 SCRIPT_EOF
@@ -710,10 +712,9 @@ RemainAfterExit=no
 WantedBy=default.target
 SERVICE_EOF
 
-# Enable the service (this creates the symlink in the filesystem)
-sudo -u $TARGET_USER systemctl --user enable libvirt-post-login.service 2>/dev/null || \
-    ln -sf "$TARGET_HOME/.config/systemd/user/libvirt-post-login.service" \
-           "$TARGET_HOME/.config/systemd/user/default.target.wants/libvirt-post-login.service"
+# Create the symlink manually
+sudo -u $TARGET_USER ln -sf "$TARGET_HOME/.config/systemd/user/libvirt-post-login.service" \
+                            "$TARGET_HOME/.config/systemd/user/default.target.wants/libvirt-post-login.service"
 
 echo "Libvirt post-login service configured successfully"
 echo -e "${green}Post-login libvirt initialization service created${no_color}"
