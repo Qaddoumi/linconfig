@@ -1285,12 +1285,6 @@ newTask "==================================================\n===================
 echo
 info "====${BLUE} POST-CHROOT CONFIGURATION ${GREEN}===="
 echo
-# Add swapfile entry to fstab for hibernation
-#info "Configuring fstab for hibernation support" 
-#echo "# Swap file for hibernation" >> /mnt/etc/fstab
-#echo "/swapfile none swap defaults 0 0" >> /mnt/etc/fstab
-#info "Hibernation support configured in fstab and $BOOTLOADER"
-
 newTask "==================================================\n=================================================="
 
 info "Enabling NetworkManager service"
