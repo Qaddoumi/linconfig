@@ -670,58 +670,9 @@ sudo usermod -aG libvirt $(whoami) || true
 echo -e "${green}Adding libvirt-qemu user to input group${no_color}"
 sudo usermod -aG input libvirt-qemu || true
 
-echo -e "${green}Setting up post-login script for libvirt network initialization${no_color}"
-
-# Create a script that will run after first login
-
-# Define and set the default network to autostart at system level
-# This will be executed on first boot via a system-level service
-sudo tee /usr/local/bin/libvirt-setup-network.sh > /dev/null << 'SETUP_EOF'
-#!/usr/bin/env bash
-# Wait for libvirtd to be ready
-# Wait for libvirtd to be ready (max 10 seconds)
-for i in {1..10}; do
-    if virsh list >/dev/null 2>&1; then
-        break
-    fi
-    sleep 1
-done
-
-# Start and autostart the default network
-virsh net-start default 2>/dev/null || true
-virsh net-autostart default
-
-# Disable this service after successful execution
-systemctl disable libvirt-setup-network.service
-rm -f /usr/local/bin/libvirt-setup-network.sh
-SETUP_EOF
-
-sudo chmod +x /usr/local/bin/libvirt-setup-network.sh || true
-
-# Create a system-level oneshot service
-sudo tee /etc/systemd/system/libvirt-setup-network.service << 'SERVICE_EOF'
-[Unit]
-Description=Setup libvirt default network
-After=libvirtd.service
-Requires=libvirtd.service
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/libvirt-setup-network.sh
-RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target
-SERVICE_EOF
-
-# Enable the service
-sudo systemctl enable libvirt-setup-network.service || true
-
-echo "Libvirt network will be configured on first boot"
-
-echo "Libvirt post-login service configured successfully"
-echo -e "${green}Post-login libvirt initialization service created${no_color}"
-echo -e "${green}It will run automatically on first login and remove itself${no_color}"
+echo -e "${green}Starting and enabling default libvirt network${no_color}"
+sudo virsh net-start default 2>/dev/null || true
+sudo virsh net-autostart default 2>/dev/null || true
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
