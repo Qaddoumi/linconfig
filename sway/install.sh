@@ -215,6 +215,7 @@ sudo pacman -S --needed --noconfirm network-manager-applet # Network management 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm grim # Screenshot tool
 sudo mkdir -p ~/Screenshots || true
+sudo chown -R $USER:$USER ~/Screenshots || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm slurp # Selection tool for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -1067,6 +1068,7 @@ Type=Application
 Categories=Utility;System;
 EOF
     sudo chmod +x ~/.local/share/applications/looking-glass-fullscreen.desktop
+    sudo chown -R $USER:$USER ~/.local/share/applications/
 
     echo -e "${green}Setting up looking-glass completed${no_color}"
 fi
