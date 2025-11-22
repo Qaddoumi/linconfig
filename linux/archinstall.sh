@@ -1259,7 +1259,7 @@ echo "3.0 Check current bootloader configuration:"
 if [[ "$BOOTLOADER" == "grub" ]]; then
     sudo grep -i resume /proc/cmdline
 elif [[ "$BOOTLOADER" == "systemd-boot" ]]; then
-    sudo cat /boot/efi/loader/entries/arch.conf | grep resume
+    sudo cat /boot/efi/loader/entries/99-arch.conf | grep resume
 fi
 echo ""
 
