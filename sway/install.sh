@@ -686,12 +686,12 @@ echo -e "${green}Creating ~/.config/virt-manager-oneshot.sh${no_color}"
 sudo tee ~/.config/virt-manager-oneshot.sh > /dev/null << 'EOF'
 #!/usr/bin/env bash
 
-# 1. Your custom command goes here
-# Example: Notify user or run a configuration tool
 notify-send "Virt-Manager" "setting libvirt network"
+
 # Wait for libvirtd to be ready (max 30 seconds)
 for i in {1..30}; do
     if virsh list >/dev/null 2>&1; then
+        notify-send "virsh list ready"
         break
     fi
     sleep 1
@@ -699,7 +699,6 @@ done
 virsh net-start default 2>/dev/null || true
 virsh net-autostart default 2>/dev/null || true
 
-# 2. Self-Destruct Mechanism
 # This deletes the script file itself so it never runs again.
 rm -- "$0"
 EOF
