@@ -687,7 +687,13 @@ TARGET_USER="${SUDO_USER:-$USER}"
 sudo tee /usr/local/bin/libvirt-setup-network.sh > /dev/null << 'SETUP_EOF'
 #!/usr/bin/env bash
 # Wait for libvirtd to be ready
-sleep 10
+# Wait for libvirtd to be ready (max 10 seconds)
+for i in {1..10}; do
+    if virsh list >/dev/null 2>&1; then
+        break
+    fi
+    sleep 1
+done
 
 # Start and autostart the default network
 virsh net-start default 2>/dev/null || true
