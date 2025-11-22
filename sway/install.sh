@@ -1177,6 +1177,8 @@ if ! sudo grep -q "source ~/.config/oh-my-posh/gmay.omp.json" ~/.bashrc; then
     echo 'eval "$(oh-my-posh init bash --config ~/.config/oh-my-posh/gmay.omp.json)"' | sudo tee -a ~/.bashrc > /dev/null
 fi
 
+source ~/.bashrc || true
+
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
 if [[ "$login_manager" == "ly" ]]; then
