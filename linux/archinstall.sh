@@ -2,6 +2,10 @@
 
 # Arch Linux Installation Script
 
+# Redirect stdout and stderr to archsetuplogs.txt and still output to console
+exec > >(tee -i archsetuplogs.txt)
+exec 2>&1
+
 set -uo pipefail  # Strict error handling
 trap 'cleanup' EXIT  # Ensure cleanup runs on exit
 
@@ -1375,6 +1379,10 @@ time_str+="${seconds}s"
 
 echo -e "Operation completed in ${time_str}"
 
+cp archsetuplogs.txt /mnt/home/$USERNAME/
+chown $USERNAME:$USERNAME /mnt/home/$USERNAME/archsetuplogs.txt
+info "Installation log saved to /home/$USERNAME/archsetuplogs.txt"
+
 if [[ "$REBOOT_AFTER_INSTALL" == "y" ]]; then
     info "Rebooting system in 7 seconds..."
     i=1
@@ -1386,5 +1394,6 @@ if [[ "$REBOOT_AFTER_INSTALL" == "y" ]]; then
 else
     info "You can reboot the system manually when ready."
 fi
+
 
 ### version 0.7.4 ###
