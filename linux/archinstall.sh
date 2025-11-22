@@ -186,8 +186,6 @@ else
 
     # Physical hardware OR GPU passthrough - handle multiple GPU types
     info "Configuring physical GPU drivers if exists..."
-    
-    #TODO: (Learnaboutthem) Adding radeontop, intel-gpu-tools, and nvidia-prime for better GPU management 
 
     # Handle AMD GPUs
     if [[ ${#AMD_GPUS[@]} -gt 0 ]]; then
