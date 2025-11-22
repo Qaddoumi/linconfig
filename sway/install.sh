@@ -117,9 +117,6 @@ else
     install_yay || true
 fi
 
-sudo rm -rf ~/go || true # Remove default Go workspace as i don't need it
-# you can add 'export GOPATH=/tmp/go' to your environment variable if you don't want to use the default GOPATH
-
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
 echo -e "${green}Installing Sway and related packages${no_color}"
@@ -135,8 +132,7 @@ sudo pacman -S --needed --noconfirm libappindicator-gtk3 libayatana-appindicator
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kitty # Terminal emulator
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-#TODO: testing if Tmux what causing the issues.
-#sudo pacman -S --needed --noconfirm tmux # Terminal multiplexer
+sudo pacman -S --needed --noconfirm tmux # Terminal multiplexer
 echo -e "${green}TMUX explanation tree${no_color}"
 echo -e "${green}\nYour Terminal (Kitty/Ghostty/etc)${no_color}"
 echo -e "${green}    └── tmux session${no_color}"
@@ -674,14 +670,9 @@ sudo usermod -aG libvirt $(whoami) || true
 echo -e "${green}Adding libvirt-qemu user to input group${no_color}"
 sudo usermod -aG input libvirt-qemu || true
 
-#TODO: does not work and needs to be applied after the reboot ...
-#TODO: test the new setup.
-# echo -e "${green}Starting and autostarting the default network for libvirt${no_color}"
 echo -e "${green}Setting up post-login script for libvirt network initialization${no_color}"
 
 # Create a script that will run after first login
-# Get the actual username (not root)
-TARGET_USER="${SUDO_USER:-$USER}"
 
 # Define and set the default network to autostart at system level
 # This will be executed on first boot via a system-level service
@@ -727,7 +718,6 @@ SERVICE_EOF
 sudo systemctl enable libvirt-setup-network.service || true
 
 echo "Libvirt network will be configured on first boot"
-echo "User $TARGET_USER added to libvirt group (logout/login required)"
 
 echo "Libvirt post-login service configured successfully"
 echo -e "${green}Post-login libvirt initialization service created${no_color}"
