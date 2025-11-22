@@ -691,6 +691,7 @@ sudo tee ~/.config/virt-manager-oneshot.sh > /dev/null << 'EOF'
 notify-send "Virt-Manager" "setting libvirt network"
 
 # Wait for libvirtd to be ready (max 30 seconds)
+sleep 10
 for i in {1..30}; do
     if virsh list >/dev/null 2>&1; then
         notify-send "virsh list ready"
