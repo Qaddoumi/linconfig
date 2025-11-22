@@ -304,6 +304,9 @@ gitpush() {
     git commit --allow-empty-message -m ""
     git push
 }
+if [ -n "$TMUX" ]; then
+    fastfetch
+fi
 EOF
     echo -e "${green}Added gitpush function to $BASHRC_FILE${no_color}"
 else
