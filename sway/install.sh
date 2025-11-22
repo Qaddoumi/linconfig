@@ -1174,7 +1174,7 @@ sudo chown -R $USER:$USER ~/.local
 #     echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
 # fi
 if ! sudo grep -q "source ~/.config/oh-my-posh/gmay.omp.json" ~/.bashrc; then
-    echo 'eval "$(oh-my-posh init bash --config ~/.config/oh-my-posh/gmay.omp.json)"' | sudo tee ~/.bashrc > /dev/null
+    echo 'eval "$(oh-my-posh init bash --config ~/.config/oh-my-posh/gmay.omp.json)"' | sudo tee -a ~/.bashrc > /dev/null
 fi
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
