@@ -148,7 +148,13 @@ optimize_yay() {
 # ==============================================================================
 
 optimize_makepkg
+echo -e "\n${green}══════════════════════════════════════════════════════════════${no_color}"
+
 optimize_yay
+echo -e "\n${green}══════════════════════════════════════════════════════════════${no_color}"
+
+echo -e "{green}the new yay config file${no_color}"
+jq . ~/.config/yay/config.json
 
 echo -e "\n${green}══════════════════════════════════════════════════════════════${no_color}"
 echo -e "${green}Build System Optimization Completed!${no_color}"
