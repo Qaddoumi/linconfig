@@ -88,7 +88,7 @@ echo -e "${green}Installing yay (Yet Another Yaourt)${no_color}"
 
 sudo pacman -S --needed --noconfirm git base-devel go || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm jq || true# JSON processor
+sudo pacman -S --needed --noconfirm jq || true # JSON processor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 install_yay() {
