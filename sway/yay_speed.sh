@@ -9,8 +9,8 @@ yellow='\033[1;33m'
 blue='\033[0;34m'
 no_color='\033[0m' # reset the color to default
 
-# makepkg.conf optimization script
-# This script checks and optionally updates makepkg.conf for better performance
+# makepkg.conf optimization
+# checks and updates makepkg.conf for better performance
 
 backup_file() {
     local file="$1"
@@ -23,16 +23,9 @@ backup_file() {
 }
 
 MAKEPKG_CONF="/etc/makepkg.conf"
-backup_file "$MAKEPKG_CONF"
-
 
 echo -e "${blue}=== makepkg.conf Optimization Checker ===${no_color}\n"
 
-# Check if running as root
-if [ "$EUID" -ne 0 ]; then
-    echo -e "${red}Error: This script must be run as root (use sudo)${no_color}"
-    exit 1
-fi
 
 # Check if makepkg.conf exists
 if [ ! -f "$MAKEPKG_CONF" ]; then
@@ -90,15 +83,6 @@ if [ "$needs_changes" = false ]; then
     exit 0
 fi
 
-# Ask if user wants to apply changes
-echo -e "${yellow}Would you like to apply the optimizations? (y/n)${no_color}"
-read -r response
-
-if [[ ! "$response" =~ ^[Yy]$ ]]; then
-    echo "No changes made."
-    exit 0
-fi
-
 # Check for required packages
 echo -e "\n${blue}Checking for required compression tools...${no_color}"
 missing_packages=()
@@ -124,8 +108,7 @@ fi
 
 # Create backup
 echo -e "\n${blue}Creating backup...${no_color}"
-cp "$MAKEPKG_CONF" "$BACKUP_FILE"
-echo -e "${green}Backup created: $BACKUP_FILE${no_color}"
+backup_file "$MAKEPKG_CONF"
 
 # Apply optimizations
 echo -e "\n${blue}Applying optimizations...${no_color}"
@@ -138,11 +121,11 @@ update_setting() {
     
     if grep -q "^${pattern%%=*}=" "$MAKEPKG_CONF" || grep -q "^#${pattern%%=*}=" "$MAKEPKG_CONF"; then
         # Setting exists, update it
-        sed -i "s|^#\?${pattern%%=*}=.*|$replacement|" "$MAKEPKG_CONF"
+        sudo sed -i "s|^#\?${pattern%%=*}=.*|$replacement|" "$MAKEPKG_CONF"
         echo -e "${green}✓${no_color} Updated: $description"
     else
         # Setting doesn't exist, add it
-        echo "$replacement" >> "$MAKEPKG_CONF"
+        echo "$replacement" | sudo tee -a "$MAKEPKG_CONF" > /dev/null
         echo -e "${green}✓${no_color} Added: $description"
     fi
 }
@@ -162,6 +145,3 @@ echo -e "${green}═════════════════════
 echo -e "\nYour makepkg.conf has been optimized for:"
 echo -e "  • Parallel compilation using all CPU cores"
 echo -e "  • Faster multi-threaded compression"
-echo -e "\nBackup saved at: $BACKUP_FILE"
-echo -e "\nTo revert changes, run:"
-echo -e "  sudo cp $BACKUP_FILE $MAKEPKG_CONF"
