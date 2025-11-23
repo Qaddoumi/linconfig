@@ -1367,16 +1367,18 @@ time_str+="${seconds}s"
 echo -e "Operation completed in ${time_str}"
 
 cp archsetuplogs.txt /mnt/home/$USERNAME/
-chown -R $USERNAME:$USERNAME /mnt/home/$USERNAME/archsetuplogs.txt
+arch-chroot /mnt chown -R $USERNAME:$USERNAME /home/$USERNAME/archsetuplogs.txt
 info "Installation log saved to /home/$USERNAME/archsetuplogs.txt"
 
 if [[ "$REBOOT_AFTER_INSTALL" == "y" ]]; then
     info "Rebooting system in 7 seconds..."
+    circle=("-" "\\" "|" "/")
     i=1
     for ((i=1; i<=7; i++)); do
-        echo -ne "\rRebooting in $((8-i)) seconds..."
+        echo -ne "\rRebooting in $((8-i)) seconds... ${circle[$((i % 4))]}"
         sleep 1
     done
+    echo -e "\n"
     systemctl reboot || error "Failed to reboot system"
 else
     info "You can reboot the system manually when ready."

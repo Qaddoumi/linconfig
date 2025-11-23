@@ -129,10 +129,9 @@ optimize_yay() {
     echo -e "• ${blue}batchinstall: true${no_color} (Faster/safer installation)"
     sed -i 's/"batchinstall": false/"batchinstall": true/' "$CONFIG_FILE" && echo -e "${green}✓${no_color} Batch install enabled"
     echo -e "${blue}--------------------------------------------------\n${no_color}"
-    echo -e "• ${blue}sudoloop: true${no_color} (Prevents sudo timeouts)"
-    # Use sed to avoid password prompt from yay --save --sudoloop
-    sed -i 's/"sudoloop": false/"sudoloop": true/' "$CONFIG_FILE" && echo -e "${green}✓${no_color} Sudo loop enabled" || true
-    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    # echo -e "• ${blue}sudoloop: true${no_color} (Prevents sudo timeouts)"
+    # sed -i 's/"sudoloop": false/"sudoloop": true/' "$CONFIG_FILE" && echo -e "${green}✓${no_color} Sudo loop enabled" || true
+    # echo -e "${blue}--------------------------------------------------\n${no_color}"
     # echo -e "• ${blue}devel: false${no_color} (Faster updates, skip git checks)"
     # echo -e "• Use ${blue}yay -Syu --devel${no_color} to update -git packages when needed"
     # yay --save --nodevel && echo -e "${green}✓${no_color} Devel updates disabled"
