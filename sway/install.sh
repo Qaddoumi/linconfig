@@ -699,31 +699,21 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 notify-send "Virt-Manager" "Setting up libvirt network..."
 echo "Starting network setup at $(date)..."
 
-echo "Waiting for libvirtd to be ready (max 30 seconds)..."
-sleep 5
-for i in {1..30}; do
-    if virsh -c qemu:///system list >/dev/null 2>&1; then
-        notify-send "Libvirt ready"
-        echo "Libvirt socket is ready."
-        break
-    fi
-    sleep 1
-done
+virsh net-destroy default || true
+virsh net-undefine default || true
 
-echo "Define network if missing (self-healing)"
-if ! virsh -c qemu:///system net-info default >/dev/null 2>&1; then
-    echo "Default network not found. Attempting to define it..."
-    
-    HOST_IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')
-    HOST_SUBNET=$(echo "$HOST_IP" | cut -d. -f1-3)
-    LIBVIRT_SUBNET="192.168.122"
-    
-    if [ "$HOST_SUBNET" == "192.168.122" ]; then
-         LIBVIRT_SUBNET="192.168.150"
-         echo "Host is on 192.168.122.x, switching libvirt to $LIBVIRT_SUBNET.x"
-    fi
+echo "Define network default"
 
-    cat <<NETXML | virsh -c qemu:///system net-define /dev/stdin
+HOST_IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')
+HOST_SUBNET=$(echo "$HOST_IP" | cut -d. -f1-3)
+LIBVIRT_SUBNET="192.168.122"
+
+if [ "$HOST_SUBNET" == "192.168.122" ]; then
+    LIBVIRT_SUBNET="192.168.150"
+    echo "Host is on 192.168.122.x, switching libvirt to $LIBVIRT_SUBNET.x"
+fi
+
+cat <<NETXML | virsh -c qemu:///system net-define /dev/stdin
 <network>
   <name>default</name>
   <bridge name="virbr0"/>
@@ -735,7 +725,6 @@ if ! virsh -c qemu:///system net-info default >/dev/null 2>&1; then
   </ip>
 </network>
 NETXML
-fi
 
 echo "Attempting to start default network..."
 virsh -c qemu:///system net-start default || echo "Failed to start default network (might be already running)"
