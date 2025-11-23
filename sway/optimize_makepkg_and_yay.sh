@@ -40,78 +40,58 @@ optimize_makepkg() {
         return 1
     fi
 
-    # Function to check if a setting exists and is enabled
-    check_makepkg_setting() {
-        local setting=$1
-        local description=$2
+    # Install required packages first
+    echo -e "\n${blue}Checking for required compression tools...${no_color}"
+    local missing_packages=()
+    for pkg in pigz pbzip2 xz zstd; do
+        if ! command -v $pkg &> /dev/null; then
+            missing_packages+=($pkg)
+        fi
+    done
+
+    if [ ${#missing_packages[@]} -ne 0 ]; then
+        echo -e "${yellow}Installing missing packages: ${missing_packages[*]}${no_color}"
+        sudo pacman -S --needed --noconfirm "${missing_packages[@]}" || true
+    else
+        echo -e "${green}All compression tools are installed.${no_color}"
+    fi
+
+    # Create backup
+    echo -e "\n${blue}Creating backup of makepkg.conf...${no_color}"
+    backup_file "$MAKEPKG_CONF"
+
+    echo -e "\n${blue}Applying makepkg optimizations...${no_color}"
+
+    # Function to update or add setting
+    update_makepkg_setting() {
+        local pattern=$1
+        local replacement=$2
+        local description=$3
         
-        if grep -q "^${setting}" "$MAKEPKG_CONF"; then
-            echo -e "${green}✓${no_color} $description: ${green}ENABLED${no_color}"
-            return 0
-        elif grep -q "^#${setting}" "$MAKEPKG_CONF"; then
-            echo -e "${yellow}⚠${no_color} $description: ${yellow}COMMENTED OUT${no_color}"
-            return 1
+        if grep -q "^${pattern%%=*}=" "$MAKEPKG_CONF"; then
+            # Setting exists and is enabled, check if it matches
+            if grep -q "^${replacement}$" "$MAKEPKG_CONF"; then
+                 echo -e "${green}✓${no_color} $description: ${green}Already optimized${no_color}"
+            else
+                 sudo sed -i "s|^${pattern%%=*}=.*|$replacement|" "$MAKEPKG_CONF"
+                 echo -e "${green}✓${no_color} Updated: $description"
+            fi
+        elif grep -q "^#${pattern%%=*}=" "$MAKEPKG_CONF"; then
+            # Setting exists but is commented out
+            sudo sed -i "s|^#\?${pattern%%=*}=.*|$replacement|" "$MAKEPKG_CONF"
+            echo -e "${green}✓${no_color} Uncommented & Updated: $description"
         else
-            echo -e "${red}✗${no_color} $description: ${red}NOT FOUND${no_color}"
-            return 2
+            # Setting doesn't exist, add it
+            echo "$replacement" | sudo tee -a "$MAKEPKG_CONF" > /dev/null
+            echo -e "${green}✓${no_color} Added: $description"
         fi
     }
 
-    # Check current status
-    check_makepkg_setting "MAKEFLAGS=" "Parallel compilation (MAKEFLAGS)"
-    local makeflags_status=$?
-    
-    check_makepkg_setting "COMPRESSGZ=(pigz" "Parallel gzip compression"
-    local gz_status=$?
-    
-    check_makepkg_setting "COMPRESSBZ2=(pbzip2" "Parallel bzip2 compression"
-    local bz2_status=$?
-    
-    check_makepkg_setting "COMPRESSXZ=(xz.*--threads" "Parallel xz compression"
-    local xz_status=$?
-    
-    check_makepkg_setting "COMPRESSZST=(zstd.*--threads" "Parallel zstd compression"
-    local zst_status=$?
-
-    # Determine if changes are needed
-    if [ $makeflags_status -eq 0 ] && [ $gz_status -eq 0 ] && [ $bz2_status -eq 0 ] && [ $xz_status -eq 0 ] && [ $zst_status -eq 0 ]; then
-        echo -e "${green}All makepkg optimizations are already enabled!${no_color}"
-    else
-        echo -e "\n${yellow}Installing packages: ${missing_packages[*]}${no_color}"
-        sudo pacman -S --needed --noconfirm pigz || true
-        sudo pacman -S --needed --noconfirm pbzip2 || true
-        sudo pacman -S --needed --noconfirm xz || true
-        sudo pacman -S --needed --noconfirm zstd || true
-
-        # Create backup
-        echo -e "\n${blue}Creating backup of makepkg.conf...${no_color}"
-        backup_file "$MAKEPKG_CONF"
-
-        # Apply optimizations
-        echo -e "\n${blue}Applying makepkg optimizations...${no_color}"
-
-        update_makepkg_setting() {
-            local pattern=$1
-            local replacement=$2
-            local description=$3
-            
-            if grep -q "^${pattern%%=*}=" "$MAKEPKG_CONF" || grep -q "^#${pattern%%=*}=" "$MAKEPKG_CONF"; then
-                # Setting exists, update it
-                sudo sed -i "s|^#\?${pattern%%=*}=.*|$replacement|" "$MAKEPKG_CONF"
-                echo -e "${green}✓${no_color} Updated: $description"
-            else
-                # Setting doesn't exist, add it
-                echo "$replacement" | sudo tee -a "$MAKEPKG_CONF" > /dev/null
-                echo -e "${green}✓${no_color} Added: $description"
-            fi
-        }
-
-        update_makepkg_setting "MAKEFLAGS=" "MAKEFLAGS=\"-j\$(nproc)\"" "Parallel compilation"
-        update_makepkg_setting "COMPRESSGZ=" "COMPRESSGZ=(pigz -c -f -n)" "Parallel gzip"
-        update_makepkg_setting "COMPRESSBZ2=" "COMPRESSBZ2=(pbzip2 -c -f)" "Parallel bzip2"
-        update_makepkg_setting "COMPRESSXZ=" "COMPRESSXZ=(xz -c -z - --threads=0)" "Parallel xz"
-        update_makepkg_setting "COMPRESSZST=" "COMPRESSZST=(zstd -c -z -q - --threads=0)" "Parallel zstd"
-    fi
+    update_makepkg_setting "MAKEFLAGS=" "MAKEFLAGS=\"-j\$(nproc)\"" "Parallel compilation"
+    update_makepkg_setting "COMPRESSGZ=" "COMPRESSGZ=(pigz -c -f -n)" "Parallel gzip"
+    update_makepkg_setting "COMPRESSBZ2=" "COMPRESSBZ2=(pbzip2 -c -f)" "Parallel bzip2"
+    update_makepkg_setting "COMPRESSXZ=" "COMPRESSXZ=(xz -c -z - --threads=0)" "Parallel xz"
+    update_makepkg_setting "COMPRESSZST=" "COMPRESSZST=(zstd -c -z -q - --threads=0)" "Parallel zstd"
 }
 
 # ==============================================================================
