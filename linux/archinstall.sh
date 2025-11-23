@@ -21,6 +21,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NO_COLOR='\033[0m' # reset the color to default
 
 # Security cleanup function
@@ -32,29 +33,17 @@ cleanup() {
     fi
 }
 
-error() {
-    echo -e "${RED}[ERROR] $*${NO_COLOR}" >&2
-    exit 1
-}
-
-info() {
-    echo -e "${GREEN}[*] $*${NO_COLOR}"
-}
-
-newTask() {
-    echo -e "${BLUE}$*${NO_COLOR}"
-}
-
-warn() {
-    echo -e "${YELLOW}[WARN] $*${NO_COLOR}"
-}
+error() { echo -e "${RED}[ERROR] $*${NO_COLOR}" >&2; exit 1 }
+info() { echo -e "${CYAN}[*]${GREEN} $*${NO_COLOR}" }
+newTask() { echo -e "${BLUE}$*${NO_COLOR}" }
+warn() { echo -e "${YELLOW}[WARN] $*${NO_COLOR}" }
 
 # Check if running on Arch Linux
 if [ ! -f "/etc/arch-release" ]; then
     error "This script must be run on Arch Linux"
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Checking for root privileges"
 [[ $(id -u) -eq 0 ]] || error "This script must be run as root"
@@ -66,7 +55,7 @@ if ! ping -c 1 archlinux.org &>/dev/null; then
     [[ "$NO_NET" == "y" ]] || error "Aborted"
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 IS_VM=false
 VIRT_PKGS=""
@@ -232,7 +221,7 @@ else
     info "Selected GPU packages: $GPU_PKGS"
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Configuring mirrors..."
 info "Available regions:"
@@ -264,7 +253,7 @@ esac
 
 info "Mirror will be set to $REGION"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Detecting boot mode..."
 if [[ -d "/sys/firmware/efi" ]]; then
@@ -320,7 +309,7 @@ else
     info "Timeout, defaulting to quiet mode"
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 echo "Press Enter or wait 30 seconds to use defaults..."
 echo "Default root password: [hidden]"
@@ -393,7 +382,7 @@ while true; do
     warn "Passwords don't match!"
 done
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Available disks:"
 lsblk -d -o NAME,SIZE,MODEL,TRAN,MOUNTPOINT
@@ -409,7 +398,7 @@ lsblk "/dev/$DISK"
 read -rp "WARNING: ALL DATA ON /dev/$DISK WILL BE DESTROYED! Confirm (type 'y'): " CONFIRM
 [[ "$CONFIRM" == "y" ]] || error "Operation cancelled"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Would you like to run my post-install script? to install sway and other packages? with my configuration files ?"
 read -rp "Type 'y', or hit enter to run post-install script, and anything else to skip: " RUN_POST_INSTALL
@@ -431,7 +420,7 @@ else
     info "Skipping post-install script"
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Would you like to reboot the system after the installation?"
 read -rp "Type 'y' to reboot, or hit enter to skip: " REBOOT_AFTER_INSTALL
@@ -442,7 +431,7 @@ else
     info "Skipping reboot after installation"
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 cleanup_disks() {
     local attempts=3
@@ -506,12 +495,12 @@ if ! cleanup_disks; then
     warn "Proceeding with disk operations despite cleanup warnings"
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Wiping disk signatures..."
 wipefs -a "/dev/$DISK" || error "Failed to wipe disk"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 # Update partition naming (fix for NVMe disks)
 if [[ "$DISK" =~ "nvme" ]]; then
@@ -527,7 +516,7 @@ fi
 info "Creating new GPT partition table..."
 parted -s "/dev/$DISK" mklabel gpt || error "Partitioning failed"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 if [[ "$BOOT_MODE" == "UEFI" ]]; then
     info "Creating UEFI partitions..."
@@ -602,7 +591,7 @@ else
     mount "$BOOT_PART" /mnt/boot || error "Failed to mount boot partition"
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Verifying new layout:"
 fdisk -l "/dev/$DISK" || error "Verification failed"
@@ -623,7 +612,7 @@ if [[ "$BOOT_MODE" == "UEFI" ]]; then
     fi
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "\n${GREEN}[✓] Partitioning Summary:${NO_COLOR}"
 info "Boot Mode: $BOOT_MODE"
@@ -635,7 +624,7 @@ else
     info "Boot Partition: $BOOT_PART (mounted at /mnt/boot)"
     info "Root Partition: $ROOT_PART (mounted at /mnt)"
 fi
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Enabling NTP (timedate) synchronization"
 timedatectl set-ntp true || warn "Failed to enable NTP synchronization"
@@ -708,12 +697,12 @@ fi
 
 info "Mirror configuration process completed"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Updating package databases..."
 pacman -Sy --noconfirm || warn "Failed to update package databases"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Creating swap file with hibernation support..."
 create_swap() {
@@ -746,7 +735,7 @@ create_swap() {
 
 create_swap
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Preparing to install essential packages..."
 # Install essential packages
@@ -844,7 +833,7 @@ else
     sed -i '/\/boot\/efi.*vfat/s/defaults/defaults,fmask=0077,dmask=0077/' /mnt/etc/fstab
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 info "==== CHROOT SETUP ===="
 
 info "Configuring BOOTLOADER and hibernation in chroot..."
@@ -906,7 +895,7 @@ cat <<HOSTSEOF > /etc/hosts
 127.0.1.1   ${HOSTNAME}.localdomain ${HOSTNAME}
 HOSTSEOF
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 # Set root password
 info "Setting root password"
@@ -917,7 +906,7 @@ info "Creating user ${USERNAME} account"
 useradd -m -G wheel -s /bin/bash "${USERNAME}"
 echo "${USERNAME}:${USER_PASSWORD}" | chpasswd
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 # Ensure home directory exists and has correct permissions
 mkdir -p "/home/$USERNAME" || error "Failed to create home directory"
@@ -926,7 +915,7 @@ info "Setting ownership and permissions for /home/$USERNAME"
 chown "$USERNAME:$USERNAME" "/home/$USERNAME"
 chmod 755 "/home/$USERNAME"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Enabling multilib repos"
 CONFIG_FILE="/etc/pacman.conf"
@@ -964,13 +953,13 @@ else
     info "Multilib repository is now enabled"
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Updating databases and upgrading packages..."
 pacman -Syy --noconfirm || error "Failed to update package databases in chroot"
 pacman -Syu --noconfirm || error "Failed to update packages in chroot"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 # Configure mkinitcpio for hibernation
 info "Configuring mkinitcpio for hibernation"
@@ -1158,7 +1147,7 @@ info "Bootloader configuration completed for $BOOTLOADER in $BOOT_MODE mode"
 info "Resume UUID: $ROOT_UUID"
 info "Resume offset: $SWAPFILE_OFFSET"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Installing memtest86+ for memory testing"
 
@@ -1191,7 +1180,7 @@ MEMTESTEOF
     bootctl update || true
 fi
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 # (hibernate on lid close)
 info "Configuring systemd for hibernation on lid close"
@@ -1220,18 +1209,18 @@ info "${BOOTLOADER} installation and configuration completed for $BOOT_MODE mode
 info "Regenerating initramfs for hibernation support"
 mkinitcpio -P || error "Failed to regenerate initramfs"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 # Enable services
 info "Enabling openssh service"
 systemctl enable sshd || warn "Failed to enable sshd"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Setting shutdown timeout to 30 seconds"
 mkdir -p /etc/systemd/system/shutdown.target.d && printf '[Manager]\nDefaultTimeoutStopSec=30s\n' | tee /etc/systemd/system/shutdown.target.d/override.conf >/dev/null || warn "Failed to configure shutdown timeout"
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 # Clear sensitive variables in chroot
 info "Clearing sensitive variables in chroot"
@@ -1239,7 +1228,7 @@ unset ROOT_PASSWORD USER_PASSWORD
 
 EOF
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 #========================================
 #  HIBERNATION TESTING COMMANDS (for post-install)
@@ -1283,11 +1272,11 @@ chmod +x /mnt/home/$USERNAME/test_hibernation.sh
 chown 1000:1000 /mnt/home/$USERNAME/test_hibernation.sh
 
 
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 echo
 info "====${BLUE} POST-CHROOT CONFIGURATION ${GREEN}===="
 echo
-newTask "==================================================\n=================================================="
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Enabling NetworkManager service"
 arch-chroot /mnt systemctl enable NetworkManager || warn "NetworkManager not installed"
@@ -1312,7 +1301,7 @@ sync
 # cleanup  # no need to uncommit this line as it's redundant
 sleep 1
 
-newTask "==================================================\n==================================================\n"
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════\n"
 
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
     info "Running post-install script..."
@@ -1342,7 +1331,7 @@ else
     info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager \"$login_manager_choice\"" --is-vm "$IS_VM"
 fi
 
-newTask "==================================================\n==================================================\n"
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════\n"
 
 info "\n${GREEN}[✓] INSTALLATION COMPLETE!${NO_COLOR}"
 info "\n${YELLOW}Next steps:${NO_COLOR}"
@@ -1394,4 +1383,4 @@ else
 fi
 
 
-### version 0.7.4 ###
+### version 0.7.5 ###

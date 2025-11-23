@@ -2,17 +2,19 @@
 
 set -e # Exit on error
 
-# to get a list of installed packages, you can use:
-# pacman -Qqe
-# or to get a list of all installed packages with their installation time and dependencies:
-# grep "installed" /var/log/pacman.log
-
 # Color codes
 red='\033[0;31m'
 green='\033[0;32m'
 yellow='\033[1;33m'
 blue='\033[0;34m'
+cyan='\033[0;36m'
 no_color='\033[0m' # reset the color to default
+
+
+# to get a list of installed packages, you can use:
+# pacman -Qqe
+# or to get a list of all installed packages with their installation time and dependencies:
+# grep "installed" /var/log/pacman.log
 
 # # Check if running as root
 # if [[ $EUID -eq 0 ]]; then
@@ -74,17 +76,19 @@ else
     fi
 fi
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Updating databases and upgrading packages...${no_color}"
 sudo pacman -Syy --noconfirm || echo -e "${yellow}Failed to update package databases${no_color}"
 sudo pacman -Syu --noconfirm || echo -e "${yellow}Failed to upgrade packages${no_color}"
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Installing yay (Yet Another Yaourt)${no_color}"
 
 sudo pacman -S --needed --noconfirm git base-devel go || true
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm jq || true# JSON processor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 install_yay() {
@@ -118,11 +122,11 @@ else
     install_yay || true
 fi
 
-echo -e "\n${green}═══════════════════════════════════════${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 # Yay Configuration Optimizer ...
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/optimize_makepkg_and_yay.sh)
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Installing Sway and related packages${no_color}"
 sudo pacman -S --needed --noconfirm sway # Sway window manager
@@ -189,8 +193,6 @@ sudo pacman -S --needed --noconfirm s-tui # Terminal UI for monitoring CPU
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gdu # Disk usage analyzer
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm jq # JSON processor
-echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm bc # Arbitrary precision calculator language
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm fastfetch # Fast system information tool
@@ -251,7 +253,7 @@ yay -S --needed --noconfirm oh-my-posh || echo -e "${red}Failed to install oh-my
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Setting up environment variable for Electron apps so they lunch in wayland mode${no_color}"
 ENV_FILE="/etc/environment"
@@ -283,7 +285,7 @@ else
     echo -e "${green}Not running in a VM, no need to set the cursor${no_color}"
 fi
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 # Check if .bashrc exists
 BASHRC_FILE="$HOME/.bashrc"
@@ -322,7 +324,7 @@ fi
 
 source ~/.bashrc || true
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Installing fonts${no_color}"
 
@@ -334,7 +336,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${green}Refreshing font cache${no_color}"
 fc-cache -fv
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Setting Dark theme for GTK applications${no_color}"
 sudo pacman -S --needed --noconfirm materia-gtk-theme # Material Design GTK theme
@@ -349,7 +351,7 @@ ls /usr/share/themes/
 # echo -e "${green}Available icon and cursor themes:${no_color}"
 # ls /usr/share/icons/
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [ "$is_vm" = true ]; then
     echo -e "${green}Skipping Performance Mode Setup in VM environment${no_color}"
@@ -634,7 +636,7 @@ fi
 # echo ""
 # echo -e "${yellow}Reboot recommended to ensure all settings take effect.${no_color}"
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Installing and configuring Qemu/Libvirt for virtualization${no_color}"
 sudo pacman -S --needed --noconfirm qemu-full # Full QEMU package with all features
@@ -747,10 +749,10 @@ sudo sed -i 's|^Exec=virt-manager|Exec=/usr/local/bin/virt-manager|g' ~/.local/s
 
 echo -e "${green}Setting up virt-manager one-time network configuration completed${no_color}"
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 #bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/hugepages.sh)
-# echo -e "${blue}==================================================\n==================================================${no_color}"
+# echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [ "$is_vm" = true ]; then
     echo -e "${green}System is detected to be running in a VM, skipping GPU passthrough setup${no_color}"
@@ -759,7 +761,7 @@ else
     bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/gpu-passthrough.sh)
 fi
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Installing QEMU Guest Agents and enabling their services${no_color}"
 sudo pacman -S --needed --noconfirm qemu-guest-agent spice-vdagent # QEMU Guest Agent and SPICE agent for better VM integration
@@ -770,7 +772,7 @@ sudo systemctl start qemu-guest-agent > /dev/null || true
 sudo systemctl enable spice-vdagentd > /dev/null || true
 sudo systemctl start spice-vdagentd > /dev/null || true
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Nested Virtualization Setup${no_color}"
 echo -e "${green}Detecting CPU type and enabling nested virtualization${no_color}"
@@ -902,7 +904,7 @@ else
     enable_nested_virtualization || true
 fi
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}KVM ACL Setup Sets up ACL permissions for the libvirt images directory${no_color}"
 # Default KVM images directory
@@ -1064,13 +1066,13 @@ if [[ -n "$backup_file" ]]; then
     echo -e "${green}Backup file: $backup_file${no_color}"
 fi
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 #TODO: Add AMD SEV Support
 #TODO: Optimise Host with TuneD
 #TODO: Use taskset to pin QEMU emulator thread
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [ "$is_vm" = true ]; then
     echo -e "${green}System is detected to be running in a VM, skipping looking-glass-client setup${no_color}"
@@ -1145,7 +1147,7 @@ EOF
     echo -e "${green}Setting up looking-glass completed${no_color}"
 fi
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}adding user to necessary groups...${no_color}"
 
@@ -1153,7 +1155,7 @@ sudo usermod -aG video $USER || true
 sudo usermod -aG audio $USER || true
 sudo usermod -aG input $USER || true
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Cloning and setting up configuration files${no_color}"
 
@@ -1187,7 +1189,7 @@ fi
 
 source ~/.bashrc || true
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [[ "$login_manager" == "ly" ]]; then
     echo -e "${green}Installing and configuring ly (a lightweight display manager)${no_color}"
@@ -1210,10 +1212,10 @@ else
     echo -e "${red}Unsupported login manager: $login_manager${no_color}"
 fi
 
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo ""
 echo -e "${green}******************* Sway with my configuration Installation Script Completed *******************${no_color}"
 echo ""
 echo -e "${yellow}REBOOT REQUIRED - Please reboot your system now!${no_color}"
-echo -e "${blue}==================================================\n==================================================${no_color}"
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
