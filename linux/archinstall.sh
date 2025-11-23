@@ -33,10 +33,10 @@ cleanup() {
     fi
 }
 
-error() { echo -e "${RED}[ERROR] $*${NO_COLOR}" >&2; exit 1 }
-info() { echo -e "${CYAN}[*]${GREEN} $*${NO_COLOR}" }
-newTask() { echo -e "${BLUE}$*${NO_COLOR}" }
-warn() { echo -e "${YELLOW}[WARN] $*${NO_COLOR}" }
+error() { echo -e "${RED}[ERROR] $*${NO_COLOR}" >&2; exit 1; }
+info() { echo -e "${CYAN}[*]${GREEN} $*${NO_COLOR}"; }
+newTask() { echo -e "${BLUE}$*${NO_COLOR}"; }
+warn() { echo -e "${YELLOW}[WARN] $*${NO_COLOR}"; }
 
 # Check if running on Arch Linux
 if [ ! -f "/etc/arch-release" ]; then
