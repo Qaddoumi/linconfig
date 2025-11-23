@@ -108,6 +108,12 @@ optimize_yay() {
     # Create config directory if it doesn't exist
     mkdir -p "$CONFIG_DIR"
 
+    # Generate default config if it doesn't exist
+    if [ ! -f "$CONFIG_FILE" ]; then
+        echo -e "${yellow}Config file not found. Generating default configuration...${no_color}"
+        yay --save > /dev/null 2>&1 || true
+    fi
+
     # Function to check a setting
     check_yay_setting() {
         local setting=$1
