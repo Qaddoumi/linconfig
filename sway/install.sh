@@ -683,38 +683,7 @@ sudo usermod -aG libvirt $(whoami) || true
 echo -e "${green}Adding libvirt-qemu user to input group${no_color}"
 sudo usermod -aG input libvirt-qemu || true
 
-echo -e "${green}Ensuring default libvirt network is defined${no_color}"
-if ! sudo virsh net-info default > /dev/null 2>&1; then
-    echo -e "${yellow}Default network not found. Defining with conflict avoidance...${no_color}"
-    
-    # Dynamic Subnet Logic
-    HOST_IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')
-    HOST_SUBNET=$(echo "$HOST_IP" | cut -d. -f1-3)
-    LIBVIRT_SUBNET="192.168.122"
-    
-    if [ "$HOST_SUBNET" == "192.168.122" ]; then
-         LIBVIRT_SUBNET="192.168.150"
-         echo -e "${green}Host is on 192.168.122.x, switching libvirt to $LIBVIRT_SUBNET.x${no_color}"
-    fi
-    
-    cat <<EOF | sudo virsh net-define /dev/stdin
-<network>
-  <name>default</name>
-  <bridge name="virbr0"/>
-  <forward/>
-  <ip address="$LIBVIRT_SUBNET.1" netmask="255.255.255.0">
-    <dhcp>
-      <range start="$LIBVIRT_SUBNET.2" end="$LIBVIRT_SUBNET.254"/>
-    </dhcp>
-  </ip>
-</network>
-EOF
-    echo -e "${green}Default network defined${no_color}"
-fi
-
-echo -e "${green}Starting and enabling default libvirt network${no_color}"
-sudo virsh net-start default 2>/dev/null || true
-sudo virsh net-autostart default 2>/dev/null || true
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Setting up virt-manager one-time network configuration script${no_color}"
 
