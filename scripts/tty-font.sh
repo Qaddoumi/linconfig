@@ -3,7 +3,7 @@
 set -e  # Exit on any error
 
 echo "Installing required packages..."
-yay -S bdf2psf otf2bdf --needed --noconfirm
+yay -S bdf2psf otf2bdf --needed --noconfirm --nosudoloop
 
 echo "Creating custom fontset..."
 cat /usr/share/bdf2psf/fontsets/* | sort -u > custom-max.fontset

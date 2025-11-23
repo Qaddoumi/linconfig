@@ -241,17 +241,17 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm dmidecode # Desktop Management Interface table related utilities
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
-yay -S --needed --noconfirm google-chrome || echo -e "${red}Failed to install google-chrome${no_color}" # Web browser
+yay -S --needed --noconfirm --nosudoloop google-chrome || echo -e "${red}Failed to install google-chrome${no_color}" # Web browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-yay -S --needed --noconfirm brave-bin || echo -e "${red}Failed to install brave-bin${no_color}" # Brave browser
+yay -S --needed --noconfirm --nosudoloop brave-bin || echo -e "${red}Failed to install brave-bin${no_color}" # Brave browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-yay -S --needed --noconfirm visual-studio-code-bin || echo -e "${red}Failed to install visual-studio-code-bin${no_color}" # Visual Studio Code
+yay -S --needed --noconfirm --nosudoloop visual-studio-code-bin || echo -e "${red}Failed to install visual-studio-code-bin${no_color}" # Visual Studio Code
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-yay -S --needed --noconfirm powershell-bin || echo -e "${red}Failed to install powershell-bin${no_color}" # PowerShell
+yay -S --needed --noconfirm --nosudoloop powershell-bin || echo -e "${red}Failed to install powershell-bin${no_color}" # PowerShell
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-yay -S --needed --noconfirm oh-my-posh || echo -e "${red}Failed to install oh-my-posh${no_color}" # Theme engine for terminal
+yay -S --needed --noconfirm --nosudoloop oh-my-posh || echo -e "${red}Failed to install oh-my-posh${no_color}" # Theme engine for terminal
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
+yay -S --needed --noconfirm --nosudoloop looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
