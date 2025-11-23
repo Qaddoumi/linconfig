@@ -153,9 +153,9 @@ optimize_yay() {
     check_yay_setting "cleanafter" "true" "Auto-clean build files" || ((needs_changes++))
     check_yay_setting "batchinstall" "true" "Batch install packages" || ((needs_changes++))
     check_yay_setting "sudoloop" "true" "Keep sudo active" || ((needs_changes++))
-    check_yay_setting "provides" "true" "Search package providers" || ((needs_changes++))
+    # check_yay_setting "devel" "false" "Check devel updates" || ((needs_changes++))
     # check_yay_setting "removemake" "ask" "Remove make dependencies" || ((needs_changes++))
-    check_yay_setting "devel" "false" "Check devel updates" || ((needs_changes++))
+    check_yay_setting "provides" "true" "Search package providers" || ((needs_changes++))
 
     if [ $needs_changes -eq 0 ]; then
         echo -e "${green}All yay settings are already optimized!${no_color}"
@@ -165,7 +165,7 @@ optimize_yay() {
         echo -e "• ${blue}cleanafter: true${no_color} (Saves disk space)"
         echo -e "• ${blue}batchinstall: true${no_color} (Faster/safer installation)"
         echo -e "• ${blue}sudoloop: true${no_color} (Prevents sudo timeouts)"
-        echo -e "• ${blue}devel: false${no_color} (Faster updates, skip git checks)"
+        # echo -e "• ${blue}devel: false${no_color} (Faster updates, skip git checks)"
         # echo -e "• ${blue}removemake: ask${no_color} (Remove make dependencies)"
         echo -e "• ${blue}provides: true${no_color} (Search package providers)"
 
@@ -180,9 +180,10 @@ optimize_yay() {
         yay --save --cleanafter && echo -e "${green}✓${no_color} Auto-clean enabled"
         yay --save --batchinstall && echo -e "${green}✓${no_color} Batch install enabled"
         yay --save --sudoloop && echo -e "${green}✓${no_color} Sudo loop enabled"
-        yay --save --provides && echo -e "${green}✓${no_color} Provides search enabled"
+        # yay --save --nodevel && echo -e "${green}✓${no_color} Devel updates disabled"
+        # echo -e "• Use ${blue}yay -Syu --devel${no_color} to update -git packages when needed"
         # yay --save --removemake=ask && echo -e "${green}✓${no_color} Remove make dependencies set to ask"
-        yay --save --nodevel && echo -e "${green}✓${no_color} Devel updates disabled"
+        yay --save --provides && echo -e "${green}✓${no_color} Provides search enabled"
     fi
 }
 
@@ -200,6 +201,3 @@ echo -e "\n${cyan}Summary of improvements:${no_color}"
 echo -e "1. ${blue}Compilation${no_color}: Uses all CPU cores ($(( $(nproc) )) threads)"
 echo -e "2. ${blue}Compression${no_color}: Uses multi-threaded tools (pigz, pbzip2, etc.)"
 echo -e "3. ${blue}Workflow${no_color}: Batch installation, auto-cleaning, and sudo persistence"
-echo -e "\n${cyan}Tips for usage:${no_color}"
-echo -e "• Use ${blue}yay -Syu --devel${no_color} to update -git packages when needed"
-echo -e "• Use ${blue}yay -Yc${no_color} to clean unneeded dependencies"
