@@ -106,7 +106,7 @@ optimize_yay() {
     local CONFIG_DIR="$(dirname "$CONFIG_FILE")"
 
     # Create config directory if it doesn't exist
-    mkdir -p "$CONFIG_DIR"
+    mkdir -p "$CONFIG_DIR" || true
 
     # Generate default config if it doesn't exist
     if [ ! -f "$CONFIG_FILE" ]; then
@@ -114,74 +114,33 @@ optimize_yay() {
         yay --save --noconfirm --needed || true
     fi
 
-    # Function to check a setting
-    check_yay_setting() {
-        local setting=$1
-        local expected=$2
-        local description=$3
-        
-        local current
-        # Try to get from running yay config
-        current=$(yay -P -g 2>/dev/null | grep "\"$setting\":" | awk -F': ' '{print $2}' | tr -d ',')
-        
-        # If empty, try reading from config file directly
-        if [ -z "$current" ] && [ -f "$CONFIG_FILE" ]; then
-            current=$(grep "\"$setting\":" "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d ',')
-        fi
-
-        # If still empty, assume it's not set (unknown)
-        if [ -z "$current" ]; then
-            current="unknown"
-        fi
-        
-        if [ "$current" = "$expected" ]; then
-            echo -e "${green}✓${no_color} $description: ${green}$current${no_color}"
-            return 0
-        else
-            echo -e "${yellow}⚠${no_color} $description: ${yellow}$current${no_color} (recommended: ${green}$expected${no_color})"
-            return 1
-        fi
-    }
-
-    local needs_changes=0
-
-    # Check important settings
-    check_yay_setting "bottomup" "false" "Top-down search (faster)" || ((needs_changes++))
-    check_yay_setting "cleanafter" "true" "Auto-clean build files" || ((needs_changes++))
-    check_yay_setting "batchinstall" "true" "Batch install packages" || ((needs_changes++))
-    check_yay_setting "sudoloop" "true" "Keep sudo active" || ((needs_changes++))
-    # check_yay_setting "devel" "false" "Check devel updates" || ((needs_changes++))
-    # check_yay_setting "removemake" "ask" "Remove make dependencies" || ((needs_changes++))
-    check_yay_setting "provides" "true" "Search package providers" || ((needs_changes++))
-
-    if [ $needs_changes -eq 0 ]; then
-        echo -e "${green}All yay settings are already optimized!${no_color}"
-    else
-        echo -e "\n${cyan}Planned optimizations:${no_color}"
-        echo -e "• ${blue}bottomup: false${no_color} (Shows repo packages first)"
-        echo -e "• ${blue}cleanafter: true${no_color} (Saves disk space)"
-        echo -e "• ${blue}batchinstall: true${no_color} (Faster/safer installation)"
-        echo -e "• ${blue}sudoloop: true${no_color} (Prevents sudo timeouts)"
-        # echo -e "• ${blue}devel: false${no_color} (Faster updates, skip git checks)"
-        # echo -e "• ${blue}removemake: ask${no_color} (Remove make dependencies)"
-        echo -e "• ${blue}provides: true${no_color} (Search package providers)"
-
-        # Backup
-        echo -e "\n${blue}Creating backup of yay config...${no_color}"
-        backup_file "$CONFIG_FILE"
-
-        echo -e "\n${blue}Applying yay optimizations...${no_color}"
-        
-        # Apply settings
-        yay --save --bottomup=false && echo -e "${green}✓${no_color} Top-down search enabled"
-        yay --save --cleanafter && echo -e "${green}✓${no_color} Auto-clean enabled"
-        yay --save --batchinstall && echo -e "${green}✓${no_color} Batch install enabled"
-        yay --save --sudoloop && echo -e "${green}✓${no_color} Sudo loop enabled"
-        # yay --save --nodevel && echo -e "${green}✓${no_color} Devel updates disabled"
-        # echo -e "• Use ${blue}yay -Syu --devel${no_color} to update -git packages when needed"
-        # yay --save --removemake=ask && echo -e "${green}✓${no_color} Remove make dependencies set to ask"
-        yay --save --provides && echo -e "${green}✓${no_color} Provides search enabled"
-    fi
+    # Backup
+    echo -e "\n${blue}Creating backup of yay config...${no_color}"
+    backup_file "$CONFIG_FILE"
+    
+    echo -e "\n${blue}Applying yay optimizations...${no_color}"
+    
+    echo -e "• ${blue}bottomup: false${no_color} (Shows repo packages first)"
+    yay --save --bottomup=false && echo -e "${green}✓${no_color} Top-down search enabled"
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    echo -e "• ${blue}cleanafter: true${no_color} (Saves disk space)"
+    yay --save --cleanafter && echo -e "${green}✓${no_color} Auto-clean enabled"
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    echo -e "• ${blue}batchinstall: true${no_color} (Faster/safer installation)"
+    yay --save --batchinstall && echo -e "${green}✓${no_color} Batch install enabled"
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    echo -e "• ${blue}sudoloop: true${no_color} (Prevents sudo timeouts)"
+    yay --save --sudoloop && echo -e "${green}✓${no_color} Sudo loop enabled"
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    # echo -e "• ${blue}devel: false${no_color} (Faster updates, skip git checks)"
+    # echo -e "• Use ${blue}yay -Syu --devel${no_color} to update -git packages when needed"
+    # yay --save --nodevel && echo -e "${green}✓${no_color} Devel updates disabled"
+    # echo -e "${blue}--------------------------------------------------\n${no_color}"
+    # echo -e "• ${blue}removemake: ask${no_color} (Remove make dependencies)"
+    # yay --save --removemake=ask && echo -e "${green}✓${no_color} Remove make dependencies set to ask"
+    # echo -e "${blue}--------------------------------------------------\n${no_color}"
+    echo -e "• ${blue}provides: true${no_color} (Search package providers)"
+    yay --save --provides && echo -e "${green}✓${no_color} Provides search enabled"
 }
 
 # ==============================================================================

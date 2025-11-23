@@ -17,6 +17,8 @@ sudo pacman -Scc
 yay -Scc
 
 # Delete unwanted dependencies
+echo -e "• Use ${blue}yay -Ps to see yay statistics"
+echo -e "• Use ${blue}yay -Yc to clean unneeded dependencies"
 yay -Yc
 
 # Check Orphan packages
