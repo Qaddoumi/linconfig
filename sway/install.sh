@@ -119,9 +119,7 @@ else
 fi
 
 echo -e "\n${green}═══════════════════════════════════════${no_color}"
-echo -e "${green}Yay Configuration Optimizer${no_color}"
-echo -e "${green}═══════════════════════════════════════${no_color}"
-
+# Yay Configuration Optimizer ...
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/optimize_makepkg_and_yay.sh)
 
 echo -e "${blue}==================================================\n==================================================${no_color}"

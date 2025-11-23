@@ -21,7 +21,7 @@ backup_file() {
     fi
 }
 
-echo -e "${blue}=== Arch Build System Optimizer ===${no_color}\n"
+echo -e "${blue}=== yay Build System Optimizer ===${no_color}\n"
 echo -e "This will optimize both ${cyan}makepkg${no_color} (compilation) and ${cyan}yay${no_color} (AUR helper) settings."
 
 # ==============================================================================
