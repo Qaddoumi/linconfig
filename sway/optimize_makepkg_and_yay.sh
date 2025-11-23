@@ -157,17 +157,17 @@ optimize_yay() {
 # ==============================================================================
 
 optimize_makepkg
-echo -e "\n${green}══════════════════════════════════════════════════════════════${no_color}"
+echo -e "\n${blue}══════════════════════════════════════════════════════════════${no_color}"
 
 optimize_yay
-echo -e "\n${green}══════════════════════════════════════════════════════════════${no_color}"
+echo -e "\n${blue}══════════════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}the new yay config file${no_color}"
 jq . ~/.config/yay/config.json
 
-echo -e "\n${green}══════════════════════════════════════════════════════════════${no_color}"
+echo -e "\n${blue}══════════════════════════════════════════════════════════════${no_color}"
 echo -e "${green}Build System Optimization Completed!${no_color}"
-echo -e "${green}══════════════════════════════════════════════════════════════${no_color}"
+echo -e "${blue}══════════════════════════════════════════════════════════════${no_color}"
 echo -e "\n${cyan}Summary of improvements:${no_color}"
 echo -e "1. ${blue}Compilation${no_color}: Uses all CPU cores ($(( $(nproc) )) threads)"
 echo -e "2. ${blue}Compression${no_color}: Uses multi-threaded tools (pigz, pbzip2, etc.)"
