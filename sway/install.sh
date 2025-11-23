@@ -699,7 +699,7 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 notify-send "Virt-Manager" "Setting up libvirt network..."
 echo "Starting network setup at $(date)..."
 
-# Wait for libvirtd to be ready (max 30 seconds)
+echo "Waiting for libvirtd to be ready (max 30 seconds)..."
 sleep 5
 for i in {1..30}; do
     if virsh -c qemu:///system list >/dev/null 2>&1; then
@@ -710,7 +710,7 @@ for i in {1..30}; do
     sleep 1
 done
 
-# Define network if missing (self-healing)
+echo "Define network if missing (self-healing)"
 if ! virsh -c qemu:///system net-info default >/dev/null 2>&1; then
     echo "Default network not found. Attempting to define it..."
     
@@ -741,7 +741,7 @@ echo "Attempting to start default network..."
 virsh -c qemu:///system net-start default || echo "Failed to start default network (might be already running)"
 virsh -c qemu:///system net-autostart default || echo "Failed to autostart default network"
 
-notify-send "Virt-Manager" "Network setup completed"
+notify-send "Virt-Manager" "Network setup finished"
 echo "Setup finished at $(date)"
 
 # This deletes the script file itself so it never runs again.
