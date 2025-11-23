@@ -123,9 +123,9 @@ optimize_yay() {
     echo -e "• ${blue}bottomup: false${no_color} (Shows repo packages first)"
     sed -i 's/"bottomup": true/"bottomup": false/' "$CONFIG_FILE" && echo -e "${green}✓${no_color} Top-down search enabled"
     echo -e "${blue}--------------------------------------------------\n${no_color}"
-    echo -e "• ${blue}cleanafter: true${no_color} (Saves disk space)"
-    sed -i 's/"cleanAfter": false/"cleanAfter": true/' "$CONFIG_FILE" && echo -e "${green}✓${no_color} Auto-clean enabled"
-    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    # echo -e "• ${blue}cleanafter: true${no_color} (Saves disk space)"
+    # sed -i 's/"cleanAfter": false/"cleanAfter": true/' "$CONFIG_FILE" && echo -e "${green}✓${no_color} Auto-clean enabled"
+    # echo -e "${blue}--------------------------------------------------\n${no_color}"
     echo -e "• ${blue}batchinstall: true${no_color} (Faster/safer installation)"
     sed -i 's/"batchinstall": false/"batchinstall": true/' "$CONFIG_FILE" && echo -e "${green}✓${no_color} Batch install enabled"
     echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -143,12 +143,8 @@ optimize_yay() {
     echo -e "• ${blue}provides: true${no_color} (Search package providers)"
     # Note: "provides" key might not exist in older configs or might be false. 
     # If it exists as false, we change it to true. If missing, we don't add it (simplification).
-    if grep -q '"provides":' "$CONFIG_FILE"; then
-        sed -i 's/"provides": false/"provides": true/' "$CONFIG_FILE"
-    else
-        # If missing, insert it after "sudoloop" for example, or just before the end
-        sed -i '/"sudoloop":/a \	"provides": true,' "$CONFIG_FILE"
-    fi
+    sed -i 's/"provides": false/"provides": true/' "$CONFIG_FILE"
+    
     echo -e "${green}✓${no_color} Provides search enabled"
 }
 
