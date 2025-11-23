@@ -111,7 +111,7 @@ optimize_yay() {
     # Generate default config if it doesn't exist
     if [ ! -f "$CONFIG_FILE" ]; then
         echo -e "${yellow}Config file not found. Generating default configuration...${no_color}"
-        yay --save > /dev/null 2>&1 || true
+        yay --save --noconfirm --needed || true
     fi
 
     # Function to check a setting
