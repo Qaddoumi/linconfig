@@ -128,6 +128,46 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/o
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
+echo -e "${green}Setting up aria2 to speed up downlaod for pacman and yay...${no_color}"
+
+sudo pacman -S --needed --noconfirm aria2
+
+# Backup pacman.conf
+echo -e "${green}Backing up /etc/pacman.conf...${no_color}"
+backup_file "/etc/pacman.conf"
+
+# Configure pacman to use aria2
+echo -e "${green}Configuring pacman to use aria2...${no_color}"
+
+# Remove any existing uncommented XferCommand line
+sudo sed -i '/^[[:space:]]*XferCommand[[:space:]]*=/d' /etc/pacman.conf
+
+# Add XferCommand after the [options] section
+sudo sed -i '/^\[options\]/a XferCommand = /usr/bin/aria2c --allow-overwrite=true --continue=true --file-allocation=none --log-level=error --max-tries=2 --max-connection-per-server=2 --max-file-not-found=5 --min-split-size=5M --no-conf --remote-time=true --summary-interval=60 --timeout=5 --dir=/ --out %o %u' /etc/pacman.conf
+
+echo -e "${green}Setup complete! pacman (and yay) will now use aria2 for faster downloads.${no_color}"
+echo -e "${green}Your original pacman.conf has been backed up to /etc/pacman.conf.backup.${no_color}"
+
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
+
+echo -e "${green}Installing Chaotic-AUR repository...${no_color}"
+if ! grep -q "\[chaotic-aur\]" /etc/pacman.conf; then
+    echo -e "${green}Chaotic-AUR repository not found. Proceeding with installation...${no_color}"
+    # install and enable Chaotic-AUR
+    sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || true
+    sudo pacman-key --lsign-key 3056513887B78AEB || true
+    sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' || true
+    sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' || true
+    echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf > /dev/null || true
+    sudo pacman -Syu --noconfirm || true
+    # Print message indicating Chaotic-AUR has been installed and enabled
+    echo -e "${green}Chaotic-AUR repository installed and enabled${no_color}"
+else
+    echo -e "${green}Chaotic-AUR repository already exists. Skipping installation.${no_color}"
+fi
+
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
+
 echo -e "${green}Installing Sway and related packages${no_color}"
 sudo pacman -S --needed --noconfirm sway # Sway window manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
