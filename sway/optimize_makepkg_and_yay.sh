@@ -115,7 +115,12 @@ optimize_yay() {
         local description=$3
         
         local current
-        current=$(yay -P -g 2>/dev/null | grep "^$setting" | awk '{print $2}')
+        current=$(yay -P -g 2>/dev/null | grep "\"$setting\":" | awk -F': ' '{print $2}' | tr -d ',')
+        
+        # Handle empty/missing settings
+        if [ -z "$current" ]; then
+            current="unknown"
+        fi
         
         if [ "$current" = "$expected" ]; then
             echo -e "${green}✓${no_color} $description: ${green}$current${no_color}"
