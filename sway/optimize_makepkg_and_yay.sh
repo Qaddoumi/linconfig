@@ -77,28 +77,11 @@ optimize_makepkg() {
     if [ $makeflags_status -eq 0 ] && [ $gz_status -eq 0 ] && [ $bz2_status -eq 0 ] && [ $xz_status -eq 0 ] && [ $zst_status -eq 0 ]; then
         echo -e "${green}All makepkg optimizations are already enabled!${no_color}"
     else
-        # Check for required packages
-        echo -e "\n${blue}Checking for required compression tools...${no_color}"
-        local missing_packages=()
-        
-        for pkg in pigz pbzip2 xz zstd; do
-            if ! command -v $pkg &> /dev/null; then
-                echo -e "${yellow}⚠${no_color} $pkg not found"
-                missing_packages+=($pkg)
-            else
-                echo -e "${green}✓${no_color} $pkg installed"
-            fi
-        done
-        
-        if [ ${#missing_packages[@]} -ne 0 ]; then
-            echo -e "\n${yellow}Missing packages: ${missing_packages[*]}${no_color}"
-            echo -e "${yellow}Install them with: sudo pacman -S ${missing_packages[*]}${no_color}"
-            echo -e "${yellow}Continue anyway? (y/n)${no_color}"
-            read -r response
-            if [[ ! "$response" =~ ^[Yy]$ ]]; then
-                return 0
-            fi
-        fi
+        echo -e "\n${yellow}Installing packages: ${missing_packages[*]}${no_color}"
+        sudo pacman -S --needed --noconfirm pigz || true
+        sudo pacman -S --needed --noconfirm pbzip2 || true
+        sudo pacman -S --needed --noconfirm xz || true
+        sudo pacman -S --needed --noconfirm zstd || true
 
         # Create backup
         echo -e "\n${blue}Creating backup of makepkg.conf...${no_color}"
