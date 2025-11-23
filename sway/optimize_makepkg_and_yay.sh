@@ -121,13 +121,13 @@ optimize_yay() {
     echo -e "\n${blue}Applying yay optimizations...${no_color}"
     
     echo -e "• ${blue}bottomup: false${no_color} (Shows repo packages first)"
-    yay --save --bottomup=false && echo -e "${green}✓${no_color} Top-down search enabled"
+    sed -i 's/"bottomup": true/"bottomup": false/' "$CONFIG_FILE" && echo -e "${green}✓${no_color} Top-down search enabled"
     echo -e "${blue}--------------------------------------------------\n${no_color}"
     echo -e "• ${blue}cleanafter: true${no_color} (Saves disk space)"
-    yay --save --cleanafter && echo -e "${green}✓${no_color} Auto-clean enabled"
+    sed -i 's/"cleanAfter": false/"cleanAfter": true/' "$CONFIG_FILE" && echo -e "${green}✓${no_color} Auto-clean enabled"
     echo -e "${blue}--------------------------------------------------\n${no_color}"
     echo -e "• ${blue}batchinstall: true${no_color} (Faster/safer installation)"
-    yay --save --batchinstall && echo -e "${green}✓${no_color} Batch install enabled"
+    sed -i 's/"batchinstall": false/"batchinstall": true/' "$CONFIG_FILE" && echo -e "${green}✓${no_color} Batch install enabled"
     echo -e "${blue}--------------------------------------------------\n${no_color}"
     echo -e "• ${blue}sudoloop: true${no_color} (Prevents sudo timeouts)"
     # Use sed to avoid password prompt from yay --save --sudoloop
@@ -141,7 +141,15 @@ optimize_yay() {
     # yay --save --removemake=ask && echo -e "${green}✓${no_color} Remove make dependencies set to ask"
     # echo -e "${blue}--------------------------------------------------\n${no_color}"
     echo -e "• ${blue}provides: true${no_color} (Search package providers)"
-    yay --save --provides && echo -e "${green}✓${no_color} Provides search enabled"
+    # Note: "provides" key might not exist in older configs or might be false. 
+    # If it exists as false, we change it to true. If missing, we don't add it (simplification).
+    if grep -q '"provides":' "$CONFIG_FILE"; then
+        sed -i 's/"provides": false/"provides": true/' "$CONFIG_FILE"
+    else
+        # If missing, insert it after "sudoloop" for example, or just before the end
+        sed -i '/"sudoloop":/a \	"provides": true,' "$CONFIG_FILE"
+    fi
+    echo -e "${green}✓${no_color} Provides search enabled"
 }
 
 # ==============================================================================
@@ -154,7 +162,7 @@ echo -e "\n${green}════════════════════�
 optimize_yay
 echo -e "\n${green}══════════════════════════════════════════════════════════════${no_color}"
 
-echo -e "{green}the new yay config file${no_color}"
+echo -e "${green}the new yay config file${no_color}"
 jq . ~/.config/yay/config.json
 
 echo -e "\n${green}══════════════════════════════════════════════════════════════${no_color}"
