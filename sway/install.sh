@@ -683,6 +683,35 @@ sudo usermod -aG libvirt $(whoami) || true
 echo -e "${green}Adding libvirt-qemu user to input group${no_color}"
 sudo usermod -aG input libvirt-qemu || true
 
+echo -e "${green}Ensuring default libvirt network is defined${no_color}"
+if ! sudo virsh net-info default > /dev/null 2>&1; then
+    echo -e "${yellow}Default network not found. Defining with conflict avoidance...${no_color}"
+    
+    # Dynamic Subnet Logic
+    HOST_IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')
+    HOST_SUBNET=$(echo "$HOST_IP" | cut -d. -f1-3)
+    LIBVIRT_SUBNET="192.168.122"
+    
+    if [ "$HOST_SUBNET" == "192.168.122" ]; then
+         LIBVIRT_SUBNET="192.168.150"
+         echo -e "${green}Host is on 192.168.122.x, switching libvirt to $LIBVIRT_SUBNET.x${no_color}"
+    fi
+    
+    cat <<EOF | sudo virsh net-define /dev/stdin
+<network>
+  <name>default</name>
+  <bridge name="virbr0"/>
+  <forward/>
+  <ip address="$LIBVIRT_SUBNET.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="$LIBVIRT_SUBNET.2" end="$LIBVIRT_SUBNET.254"/>
+    </dhcp>
+  </ip>
+</network>
+EOF
+    echo -e "${green}Default network defined${no_color}"
+fi
+
 echo -e "${green}Starting and enabling default libvirt network${no_color}"
 sudo virsh net-start default 2>/dev/null || true
 sudo virsh net-autostart default 2>/dev/null || true
@@ -695,19 +724,56 @@ echo -e "${green}Creating ~/.config/virt-manager-oneshot.sh${no_color}"
 sudo tee ~/.config/virt-manager-oneshot.sh > /dev/null << 'EOF'
 #!/usr/bin/env bash
 
-notify-send "Virt-Manager" "setting libvirt network"
+LOG_FILE="$HOME/virt-network-setup.log"
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+notify-send "Virt-Manager" "Setting up libvirt network..."
+echo "Starting network setup at $(date)..."
 
 # Wait for libvirtd to be ready (max 30 seconds)
-sleep 10
+sleep 5
 for i in {1..30}; do
-    if virsh list >/dev/null 2>&1; then
-        notify-send "virsh list ready"
+    if virsh -c qemu:///system list >/dev/null 2>&1; then
+        notify-send "Libvirt ready"
+        echo "Libvirt socket is ready."
         break
     fi
     sleep 1
 done
-virsh net-start default 2>/dev/null || true
-virsh net-autostart default 2>/dev/null || true
+
+# Define network if missing (self-healing)
+if ! virsh -c qemu:///system net-info default >/dev/null 2>&1; then
+    echo "Default network not found. Attempting to define it..."
+    
+    HOST_IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')
+    HOST_SUBNET=$(echo "$HOST_IP" | cut -d. -f1-3)
+    LIBVIRT_SUBNET="192.168.122"
+    
+    if [ "$HOST_SUBNET" == "192.168.122" ]; then
+         LIBVIRT_SUBNET="192.168.150"
+         echo "Host is on 192.168.122.x, switching libvirt to $LIBVIRT_SUBNET.x"
+    fi
+
+    cat <<NETXML | virsh -c qemu:///system net-define /dev/stdin
+<network>
+  <name>default</name>
+  <bridge name="virbr0"/>
+  <forward/>
+  <ip address="$LIBVIRT_SUBNET.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="$LIBVIRT_SUBNET.2" end="$LIBVIRT_SUBNET.254"/>
+    </dhcp>
+  </ip>
+</network>
+NETXML
+fi
+
+echo "Attempting to start default network..."
+virsh -c qemu:///system net-start default || echo "Failed to start default network (might be already running)"
+virsh -c qemu:///system net-autostart default || echo "Failed to autostart default network"
+
+notify-send "Virt-Manager" "Network setup completed"
+echo "Setup finished at $(date)"
 
 # This deletes the script file itself so it never runs again.
 rm -- "$0"
@@ -722,20 +788,42 @@ sudo tee /usr/local/bin/virt-manager > /dev/null << 'EOF'
 # Define where the one-time payload lives
 PAYLOAD="$HOME/.config/virt-manager-oneshot.sh"
 
-# Start a background subshell that waits 5 seconds
+# Function to wait for libvirt socket
+wait_for_libvirt() {
+    local max_attempts=30
+    local attempt=1
+    while [ $attempt -le $max_attempts ]; do
+        if [ -S "/var/run/libvirt/libvirt-sock" ]; then
+            return 0
+        fi
+        sleep 1
+        ((attempt++))
+    done
+    return 1
+}
+
+# Start a background subshell to handle the network setup
 (
-    sleep 5
-    # Check if the payload still exists
-    if [ -f "$PAYLOAD" ] && [ -x "$PAYLOAD" ]; then
-        "$PAYLOAD"
+    # Wait for libvirt socket to be ready first
+    if wait_for_libvirt; then
+        # Give it a tiny bit more time to be fully responsive
+        sleep 2
+        
+        # Check if the payload still exists and run it
+        if [ -f "$PAYLOAD" ] && [ -x "$PAYLOAD" ]; then
+            "$PAYLOAD"
+        fi
     fi
 ) &
 
-# Disown the background job so it doesn't spam the terminal
+# Disown the background job
 disown
 
-# Launch the REAL virt-manager and replace this script with it
-# This ensures the terminal behaves exactly as expected
+# Wait for libvirt socket before starting virt-manager GUI
+# This prevents the "Connecting..." hang
+wait_for_libvirt
+
+# Launch the REAL virt-manager
 exec /usr/bin/virt-manager "$@"
 EOF
 
