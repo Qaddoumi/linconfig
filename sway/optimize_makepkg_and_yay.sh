@@ -115,9 +115,15 @@ optimize_yay() {
         local description=$3
         
         local current
+        # Try to get from running yay config
         current=$(yay -P -g 2>/dev/null | grep "\"$setting\":" | awk -F': ' '{print $2}' | tr -d ',')
         
-        # Handle empty/missing settings
+        # If empty, try reading from config file directly
+        if [ -z "$current" ] && [ -f "$CONFIG_FILE" ]; then
+            current=$(grep "\"$setting\":" "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d ',')
+        fi
+
+        # If still empty, assume it's not set (unknown)
         if [ -z "$current" ]; then
             current="unknown"
         fi
