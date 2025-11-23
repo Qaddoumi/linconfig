@@ -98,15 +98,6 @@ echo -e "${blue}removemake: ask${no_color} - Asks before removing make dependenc
 echo -e "${blue}devel: false${no_color} - Skips checking -git packages every time (much faster updates)"
 echo ""
 
-# Ask for confirmation
-echo -e "${yellow}Would you like to apply these optimizations? (y/n)${no_color}"
-read -r response
-
-if [[ ! "$response" =~ ^[Yy]$ ]]; then
-    echo "No changes made."
-    exit 0
-fi
-
 backup_file "$CONFIG_FILE"
 
 echo -e "\n${blue}Applying optimizations...${no_color}"

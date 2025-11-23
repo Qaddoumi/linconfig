@@ -85,6 +85,7 @@ echo -e "${blue}==================================================\n============
 echo -e "${green}Installing yay (Yet Another Yaourt)${no_color}"
 
 sudo pacman -S --needed --noconfirm git base-devel go || true
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 install_yay() {
     git clone --depth 1 https://aur.archlinux.org/yay.git ~/yay || true
@@ -116,6 +117,12 @@ else
     echo "yay is not installed. Proceeding with installation..."
     install_yay || true
 fi
+
+echo -e "\n${green}═══════════════════════════════════════${no_color}"
+echo -e "${green}Yay Configuration Optimizer${no_color}"
+echo -e "${green}═══════════════════════════════════════${no_color}"
+
+
 
 echo -e "${blue}==================================================\n==================================================${no_color}"
 
