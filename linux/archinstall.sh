@@ -1367,7 +1367,7 @@ time_str+="${seconds}s"
 echo -e "Operation completed in ${time_str}"
 
 cp archsetuplogs.txt /mnt/home/$USERNAME/
-chown $USERNAME:$USERNAME /mnt/home/$USERNAME/archsetuplogs.txt
+chown -R $USERNAME:$USERNAME /mnt/home/$USERNAME/archsetuplogs.txt
 info "Installation log saved to /home/$USERNAME/archsetuplogs.txt"
 
 if [[ "$REBOOT_AFTER_INSTALL" == "y" ]]; then
