@@ -700,8 +700,8 @@ notify-send "Virt-Manager" "Setting up libvirt network..."
 echo "Starting network setup at $(date)..."
 
 echo "Destroying default network"
-virsh net-destroy default || true
-virsh net-undefine default || true
+virsh -c qemu:///system net-destroy default || true
+virsh -c qemu:///system net-undefine default || true
 
 echo "Define network default"
 
