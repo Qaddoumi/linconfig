@@ -220,6 +220,8 @@ sudo systemctl enable udisks2.service || true
 sudo systemctl start udisks2.service || true
 sudo usermod -aG storage $USER || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm zenity # Dialogs from terminal,(used for thunar)
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kanshi # Automatic Display manager for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm nano # Text editor
