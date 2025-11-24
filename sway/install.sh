@@ -212,21 +212,21 @@ sudo pacman -S --needed --noconfirm wget # Download utility
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm thunar # File manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm thunar-media-tags-plugin # Required for thunar to handle external drives
+sudo pacman -S --needed --noconfirm thunar-media-tags-plugin # Plugin for editing audio/video metadata tags for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm thunar-archive-plugin # Required for thunar to handle external drives
+sudo pacman -S --needed --noconfirm thunar-archive-plugin # Plugin for creating/extracting archives (zip, tar, etc.) for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm thunar-volman # Required for thunar to handle external drives
+sudo pacman -S --needed --noconfirm thunar-volman # Automatic management of removable drives and media for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm tumbler # Image viewer for thunar
+sudo pacman -S --needed --noconfirm tumbler # Thumbnail service for generating image previews for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm ffmpegthumbnailer  #  video thumbnails for thunar
+sudo pacman -S --needed --noconfirm ffmpegthumbnailer # Video thumbnails for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm poppler-glib       #  PDF thumbnails for thunar
+sudo pacman -S --needed --noconfirm poppler-glib # PDF thumbnails for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libgsf             #  office documents for thunar
+sudo pacman -S --needed --noconfirm libgsf # Office document thumbnails for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives
+sudo pacman -S --needed --noconfirm udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives and MTP devices
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo systemctl enable udisks2.service || true
 sudo systemctl start udisks2.service || true
