@@ -880,6 +880,7 @@ ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
 hwclock --systohc
 
 timedatectl set-ntp true || warn "Failed to enable NTP synchronization"
+systemctl enable systemd-timesyncd || warn "Failed to enable systemd-timesyncd"
 
 # Set locale
 info "Setting locale to ${LOCALE}"
