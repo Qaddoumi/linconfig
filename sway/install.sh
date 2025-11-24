@@ -210,11 +210,21 @@ sudo pacman -S --needed --noconfirm htop # System monitor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wget # Download utility
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-#sudo pacman -S --needed --noconfirm nemo # File manager
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm thunar thunar-archive-plugin thunar-volman thunar-media-tags-plugin # Lightweight file manager with plugins
+sudo pacman -S --needed --noconfirm thunar # File manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm thunar-media-tags-plugin # Required for thunar to handle external drives
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm thunar-archive-plugin # Required for thunar to handle external drives
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm thunar-volman # Required for thunar to handle external drives
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm tumbler # Image viewer for thunar
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm ffmpegthumbnailer  #  video thumbnails for thunar
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm poppler-glib       #  PDF thumbnails for thunar
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm libgsf             #  office documents for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives
 echo -e "${blue}--------------------------------------------------\n${no_color}"
