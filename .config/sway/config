@@ -192,6 +192,7 @@ exec_always killall -q swaync && swaync -c ~/.config/swaync/config.json
 ### Window Rules
 # to get app_id or class, use `swaymsg -t get_tree | grep -A 23 "File Operation Progress"`
 for_window [app_id="yad"] floating enable, move position center, resize set 600 400
+for_window [app_id="zenity"] floating enable, move position center, resize set 600 400
 for_window [app_id="org.pulseaudio.pavucontrol"] floating enable, move position center, resize set 600 400
 for_window [class="GtkFileChooserDialog"] floating enable, move position center, resize set 800 600
 for_window [class="kdialog"] floating enable, move position center, resize set 400 300
