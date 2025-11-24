@@ -214,6 +214,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm thunar thunar-archive-plugin thunar-volman thunar-media-tags-plugin # Lightweight file manager with plugins
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm tumbler # Image viewer for thunar
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo systemctl enable udisks2.service || true
