@@ -39,9 +39,16 @@ info() { echo -e "${CYAN}[*]${GREEN} $*${NO_COLOR}"; }
 newTask() { echo -e "${BLUE}$*${NO_COLOR}"; }
 warn() { echo -e "${YELLOW}[WARN] $*${NO_COLOR}"; }
 
-# Check if running on Arch Linux
-if [ ! -f "/etc/arch-release" ]; then
-    error "This script must be run on Arch Linux"
+# Check if running from Arch Linux ISO (requires pacstrap)
+if [ ! -f /usr/bin/pacstrap ]; then
+    error "This script must be run from an Arch Linux ISO environment (pacstrap not found)."
+fi
+if [[ ! -e /etc/arch-release ]]; then
+    error "This script must be run in Arch Linux!"
+fi
+# Check if pacman is locked
+if [[ -f /var/lib/pacman/db.lck ]]; then
+    error "Pacman is locked. If no other instance is running, remove /var/lib/pacman/db.lck"
 fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
@@ -634,7 +641,13 @@ pacman-key --init || warn "Failed to initialize pacman keyring"
 info "Populating pacman keyring"
 pacman-key --populate archlinux || warn "Failed to populate pacman keyring"
 info "Syncing archlinux-keyring"
-pacman -Sy archlinux-keyring --noconfirm || warn "Failed to sync archlinux-keyring"
+pacman -Sy --noconfirm archlinux-keyring || warn "Failed to sync archlinux-keyring"
+info "Installing pacman-contrib to sort mirrors by speed"
+#TODO: sort the mirrors by speed
+pacman -S --noconfirm pacman-contrib || warn "Failed to install pacman-contrib"
+
+info "Enabling parallel downloads"
+sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf || warn "Failed to enable parallel downloads"
 
 info "Setting mirrors for $REGION"
 # Create pacman.d directory if it doesn't exist
@@ -734,6 +747,7 @@ create_swap() {
     swapon --show
 }
 
+#TODO: create the swap file after pacstrap not before
 create_swap
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
@@ -872,6 +886,7 @@ warn() { echo -e "${YELLOW}[WARN] $*${NO_COLOR}"; }
 TIMEZONE="Asia/Amman"
 LOCALE="en_US.UTF-8"
 HOSTNAME="${USERNAME}Arch"
+KEYMAP="us"
 
 # Set timezone
 info "Setting timezone to ${TIMEZONE}"
@@ -888,6 +903,12 @@ sed -i "s/^#${LOCALE}/${LOCALE}/" /etc/locale.gen
 locale-gen
 echo "LANG=${LOCALE}" > /etc/locale.conf
 
+# Set keymaps
+info "Setting keymap to ${KEYMAP}"
+echo "KEYMAP=${KEYMAP}" > /etc/vconsole.conf
+echo "XKBLAYOUT=${KEYMAP}" >> /etc/vconsole.conf
+echo "Keymap set to: ${KEYMAP}"
+
 # Set hostname and hosts
 info "Setting hostname to ${HOSTNAME}"
 echo "$HOSTNAME" > /etc/hostname
@@ -896,6 +917,10 @@ cat <<HOSTSEOF > /etc/hosts
 ::1         localhost
 127.0.1.1   ${HOSTNAME}.localdomain ${HOSTNAME}
 HOSTSEOF
+
+#Set colors and enable the easter egg
+info "Enabling colors and easter egg"
+sed -i 's/^#Color/Color\nILoveCandy/' /etc/pacman.conf
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
