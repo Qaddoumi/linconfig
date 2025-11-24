@@ -1304,6 +1304,8 @@ echo -e "${green}Cloning and setting up configuration files${no_color}"
 
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/installconfig.sh)
 
+echo -e "${green}Adding Neovim (tmux) to applications menu${no_color}"
+echo -e "${green}So i can open files in it with thunar${no_color}"
 cat >> ~/.local/share/applications/nvim.desktop <<'NVIM_EOF'
 [Desktop Entry]
 Name=Neovim (tmux)
