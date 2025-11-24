@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+	<action>
+		<icon>custom-folder-move</icon>
+		<name>Move into new folder</name>
+		<submenu></submenu>
+		<unique-id>1733631639349063-1</unique-id>
+		<command>NEW_FOLDER=$(/usr/bin/zenity --entry --title &apos;Move into new folder&apos; --text &apos;Please enter a name for the new folder&apos;) &amp;&amp; mkdir &quot;$NEW_FOLDER&quot; &amp;&amp; mv %F &quot;$NEW_FOLDER&quot;</command>
+		<description>Select any number of file/folders. A dialog will popup in which you can write the name of a new folder to create. Selected Files will be moved there.</description>
+		<range>*</range>
+		<patterns>*</patterns>
+		<directories/>
+		<audio-files/>
+		<image-files/>
+		<other-files/>
+		<text-files/>
+		<video-files/>
+	</action>
+	<action>
+		<icon>kitty</icon>
+		<name>Open Kitty Here</name>
+		<submenu></submenu>
+		<unique-id>1733636590577911-3</unique-id>
+		<command>kitty --directory %f tmux</command>
+		<description>Open Directory in Kitty</description>
+		<range>*</range>
+		<patterns>*</patterns>
+		<directories/>
+	</action>
+</actions>

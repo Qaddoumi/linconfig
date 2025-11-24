@@ -6,13 +6,13 @@ sudo rm -rf ~/.config/sway ~/.config/waybar ~/.config/wofi ~/.config/kitty ~/.co
 
 sudo mkdir -p ~/.config
 
-sudo cp -r ~/projects/linconfig/.config/* ~/.config/
-sudo mkdir -p ~/.local/share/applications/ && sudo cp -f ~/swaytemp/.config/mimeapps.list ~/.local/share/applications/
+sudo cp -r ~/shared/github/MyGithubs/linconfig/.config/* ~/.config/
+sudo mkdir -p ~/.local/share/applications/ && sudo cp -f ~/shared/github/MyGithubs/linconfig/.config/mimeapps.list ~/.local/share/applications/
 
-sudo chmod +x ~/.config/waybar/scripts/*.sh
-sudo chmod +x ~/.config/sway/scripts/*.sh
+sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
+sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
 
-sudo chown -R $USER:$USER ~/.config
-sudo chown -R $USER:$USER ~/.local
+sudo chown -R $USER:$USER ~/.config > /dev/null || true
+sudo chown -R $USER:$USER ~/.local > /dev/null || true
 
 swaymsg reload
