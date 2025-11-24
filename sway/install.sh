@@ -8,6 +8,7 @@ green='\033[0;32m'
 yellow='\033[1;33m'
 blue='\033[0;34m'
 cyan='\033[0;36m'
+bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
 
@@ -126,27 +127,27 @@ echo -e "${blue}═════════════════════�
 # Yay Configuration Optimizer ...
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/optimize_makepkg_and_yay.sh)
 
-echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
+# echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
-echo -e "${green}Setting up aria2 to speed up downlaod for pacman and yay...${no_color}"
+# echo -e "${green}Setting up aria2 to speed up downlaod for pacman and yay...${no_color}"
 
-sudo pacman -S --needed --noconfirm aria2
+# sudo pacman -S --needed --noconfirm aria2
 
-# Backup pacman.conf
-echo -e "${green}Backing up /etc/pacman.conf...${no_color}"
-backup_file "/etc/pacman.conf"
+# # Backup pacman.conf
+# echo -e "${green}Backing up /etc/pacman.conf...${no_color}"
+# backup_file "/etc/pacman.conf"
 
-# Configure pacman to use aria2
-echo -e "${green}Configuring pacman to use aria2...${no_color}"
+# # Configure pacman to use aria2
+# echo -e "${green}Configuring pacman to use aria2...${no_color}"
 
-# Remove any existing uncommented XferCommand line
-sudo sed -i '/^[[:space:]]*XferCommand[[:space:]]*=/d' /etc/pacman.conf
+# # Remove any existing uncommented XferCommand line
+# sudo sed -i '/^[[:space:]]*XferCommand[[:space:]]*=/d' /etc/pacman.conf
 
-# Add XferCommand after the [options] section
-sudo sed -i '/^\[options\]/a XferCommand = /usr/bin/aria2c --allow-overwrite=true --continue=true --file-allocation=none --log-level=error --max-tries=2 --max-connection-per-server=2 --max-file-not-found=5 --min-split-size=5M --no-conf --remote-time=true --summary-interval=60 --timeout=5 --dir=/ --out %o %u' /etc/pacman.conf
+# # Add XferCommand after the [options] section
+# sudo sed -i '/^\[options\]/a XferCommand = /usr/bin/aria2c --allow-overwrite=true --continue=true --file-allocation=none --log-level=error --max-tries=2 --max-connection-per-server=2 --max-file-not-found=5 --min-split-size=5M --no-conf --remote-time=true --summary-interval=60 --timeout=5 --dir=/ --out %o %u' /etc/pacman.conf
 
-echo -e "${green}Setup complete! pacman (and yay) will now use aria2 for faster downloads.${no_color}"
-echo -e "${green}Your original pacman.conf has been backed up to /etc/pacman.conf.backup.${no_color}"
+# echo -e "${green}Setup complete! pacman (and yay) will now use aria2 for faster downloads.${no_color}"
+# echo -e "${green}Your original pacman.conf has been backed up to /etc/pacman.conf.backup.${no_color}"
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
@@ -370,11 +371,64 @@ echo -e "${green}Installing fonts${no_color}"
 
 sudo pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd # Nerd font for JetBrains Mono
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm noto-fonts-emoji # Emoji font
+sudo pacman -S --needed --noconfirm noto-fonts noto-fonts-emoji # Noto fonts (English + Arabic) and Emoji font
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+
+echo -e "${green}Creating fontconfig directory...${no_color}"
+mkdir -p ~/.config/fontconfig > /dev/null || true
+
+FONTCONF=~/.config/fontconfig/fonts.conf
+echo -e "${green}Writing fonts.conf...${no_color}"
+cat > "$FONTCONF" <<'EOF'
+<?xml version='1.0'?>
+<!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
+<fontconfig>
+  <!-- Defaults -->
+  <alias>
+    <family>serif</family>
+    <prefer>
+      <family>Noto Serif</family>
+      <family>Noto Sans Arabic</family>
+    </prefer>
+  </alias>
+  <alias>
+    <family>sans-serif</family>
+    <prefer>
+      <family>Noto Sans</family>
+      <family>Noto Sans Arabic</family>
+    </prefer>
+  </alias>
+  <alias>
+    <family>sans</family>
+    <prefer>
+      <family>Noto Sans</family>
+      <family>Noto Sans Arabic</family>
+    </prefer>
+  </alias>
+  <alias>
+    <family>monospace</family>
+    <prefer>
+      <family>JetBrainsMono Nerd Font Mono</family>
+      <family>Noto Sans Mono</family>
+    </prefer>
+  </alias>
+  <!-- Arial -->
+  <alias>
+    <family>Arial</family>
+    <prefer>
+      <family>Noto Sans</family>
+      <family>Noto Sans Arabic</family>
+    </prefer>
+  </alias>
+</fontconfig>
+EOF
+echo -e "${green}fonts.conf written to $FONTCONF${no_color}"
 
 echo -e "${green}Refreshing font cache${no_color}"
 fc-cache -fv
+
+echo -e "\n${green}✅ Setup complete!${no_color}"
+echo -e "${green}Test with:\n  fc-match 'Noto Sans Arabic'\n  fc-match 'JetBrainsMono Nerd Font Mono'\n${no_color}"
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
