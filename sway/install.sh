@@ -1304,6 +1304,21 @@ echo -e "${green}Cloning and setting up configuration files${no_color}"
 
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/installconfig.sh)
 
+cat >> ~/.local/share/applications/nvim.desktop <<'NVIM_EOF'
+[Desktop Entry]
+Name=Neovim (tmux)
+GenericName=Text Editor
+Comment=Edit text files in tmux
+Exec=kitty tmux new-session nvim %F
+Terminal=false
+Type=Application
+Icon=nvim
+Categories=Utility;TextEditor;
+MimeType=text/plain;text/markdown;
+NVIM_EOF
+
+update-desktop-database ~/.local/share/applications/
+
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [[ "$login_manager" == "ly" ]]; then
