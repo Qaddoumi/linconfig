@@ -177,6 +177,9 @@ exec_always bash -c 'sleep 1; pkill kanshi 2>/dev/null || true; kanshi'
 exec_always wl-paste --type text --watch cliphist store
 exec_always wl-paste --type image --watch cliphist store
 
+## SPICE Agent (Clipboard Sharing for VMs)
+exec_always spice-vdagent
+
 # NetworkManager
 exec_always bash -c "killall -q nm-applet ; nm-applet --indicator"
 
