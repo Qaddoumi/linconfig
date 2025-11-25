@@ -242,7 +242,7 @@ sudo pacman -S --needed --noconfirm neovim # Neovim text editor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm brightnessctl # Brightness control
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm polkit-gnome # PolicyKit authentication agent (give sudo access to GUI apps)
+sudo pacman -S --needed --noconfirm hyprpolkitagent # PolicyKit authentication agent (give sudo access to GUI apps)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm s-tui # Terminal UI for monitoring CPU
 echo -e "${blue}--------------------------------------------------\n${no_color}"

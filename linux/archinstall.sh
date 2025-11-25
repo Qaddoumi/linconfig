@@ -777,10 +777,10 @@ PIPWIRE_PKGS="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber"
 
 # Base packages, adjusted for bootloader choice
 if [[ "$BOOTLOADER" == "grub" ]]; then
-    BASE_PKGS="base linux linux-headers linux-firmware linux-zen linux-zen-headers grub efibootmgr os-prober e2fsprogs archlinux-keyring polkit"
+    BASE_PKGS="base linux linux-headers linux-firmware linux-zen linux-zen-headers grub efibootmgr os-prober e2fsprogs archlinux-keyring"
 else
     # For systemd-boot package it's part of the base packages
-    BASE_PKGS="base linux linux-headers linux-firmware linux-zen linux-zen-headers efibootmgr e2fsprogs archlinux-keyring polkit"
+    BASE_PKGS="base linux linux-headers linux-firmware linux-zen linux-zen-headers efibootmgr e2fsprogs archlinux-keyring"
 fi
 OPTIONAL_PKGS="curl networkmanager sudo git openssh"
 
@@ -1308,8 +1308,8 @@ newTask "═══════════════════════�
 info "Enabling NetworkManager service"
 arch-chroot /mnt systemctl enable NetworkManager || warn "NetworkManager not installed"
 
-info "Enabling polkit service"
-arch-chroot /mnt systemctl enable polkit || warn "Failed to enable polkit"
+# info "Enabling polkit service"
+# arch-chroot /mnt systemctl enable polkit || warn "Failed to enable polkit"
 
 info "Enable PipeWire services"
 arch-chroot /mnt /bin/bash <<PIPWIREEOF

@@ -165,7 +165,7 @@ font pango:JetBrainsMono Nerd Font Propo 12
 #exec autotiling -l 2
 
 # Start polkit authentication agent
-exec_always /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec_always /usr/lib/hyprpolkitagent/hyprpolkitagent
 
 # Automatically manage display configurations
 exec_always bash -c 'sleep 1; pkill kanshi 2>/dev/null || true; kanshi'
@@ -194,6 +194,7 @@ exec_always killall -q swaync && swaync -c ~/.config/swaync/config.json
 
 ### Window Rules
 # to get app_id or class, use `swaymsg -t get_tree | grep -A 23 "File Operation Progress"`
+# sometime name or titleis the same as class in `swaymsg -t get_tree`
 for_window [app_id="yad"] floating enable, move position center, resize set 600 400
 for_window [app_id="zenity"] floating enable, move position center, resize set 600 400
 for_window [app_id="org.pulseaudio.pavucontrol"] floating enable, move position center, resize set 600 400
@@ -203,7 +204,6 @@ for_window [class="kde5-config-dialog"] floating enable, move position center, r
 for_window [app_id="thunar" title="(File Operation Progress|Attention|Confirm|Progress|Rename.*)"] floating enable, move position center, resize set 500 400
 for_window [app_id="google-chrome" title="(Save As|Open Files)"] floating enable, move position center, resize set 600 400
 
-# Make polkit dialogs appear on focused workspace
 for_window [app_id="gcr-prompter"] floating enable, move container to workspace current
 for_window [class="Polkit-gnome-authentication-agent-1"] floating enable, move container to workspace current
 for_window [title="Authentication Required"] floating enable, move container to workspace current
