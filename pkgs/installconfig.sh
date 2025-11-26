@@ -51,7 +51,7 @@ sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
 
 # Save the script (use the first artifact "X11 to Wayland Clipboard Bridge")
-sudo cp -f ~/swaytemp/sway/clipboard-bridge.sh ~/.local/bin/clipboard-bridge.sh > /dev/null || true
+sudo cp -f ~/swaytemp/pkgs/clipboard-bridge.sh ~/.local/bin/clipboard-bridge.sh > /dev/null || true
 sudo chmod +x ~/.local/bin/clipboard-bridge.sh
 
 sudo chown -R $USER:$USER ~/.config > /dev/null || true
