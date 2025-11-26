@@ -38,18 +38,18 @@ cd ~ || echo -e "${red}Failed to change directory to home${no_color}"
 echo -e "${green}\n\n ******************* Packages Installation Script ******************* ${no_color}"
 
 
-# Parse named arguments --login-manager and --is-vm
+# Parse named arguments
 login_manager=""
 window_manager=""
 is_vm=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --login-manager)
-            login_manager="$2"
-            shift 2
-            ;;
         --window-manager)
             window_manager="$2"
+            shift 2
+            ;;
+        --login-manager)
+            login_manager="$2"
             shift 2
             ;;
         --is-vm)
