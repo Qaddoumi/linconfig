@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# Arkscripts - https://github.com/arkboix/dotfiles
 # /* ---- 💫 https://github.com/JaKooLit 💫 ---- */
 # This script for selecting wallpapers
 

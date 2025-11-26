@@ -53,12 +53,6 @@ After installation, you can:
 2. Use `Super + Enter` to open a terminal
 3. Use `Super + d` to open the application launcher
 
-## 🙏 Acknowledgments
-
-- [arkboix/sway](https://github.com/arkboix/sway) - Original inspiration and configuration base
-- Arch Linux community for documentation and support
-- Sway development team for the excellent window manager
-
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
