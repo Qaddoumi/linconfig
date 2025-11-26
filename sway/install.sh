@@ -285,8 +285,8 @@ sudo pacman -S --needed --noconfirm wl-clipboard # Clipboard management for Wayl
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm cliphist # Clipboard history manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm xclip # Clipboard management for X11 (used to sync clipboard between vms and host)
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm xclip # Clipboard management for X11 (used to sync clipboard between vms and host)
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm cpupower # CPU frequency scaling utility ==> change powersave to performance mode.
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm tlp # TLP for power management

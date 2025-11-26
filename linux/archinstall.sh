@@ -409,8 +409,8 @@ read -rp "WARNING: ALL DATA ON /dev/$DISK WILL BE DESTROYED! Confirm (type 'y'):
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Would you like to run my post-install script? to install sway and other packages? with my configuration files ?"
-read -rp "Type 'y', or hit enter to run post-install script, and anything else to skip: " RUN_POST_INSTALL
-RUN_POST_INSTALL=${RUN_POST_INSTALL:-y}
+read -rp "Type 'y' to run post-install script, or hit enter to skip: " RUN_POST_INSTALL
+RUN_POST_INSTALL=${RUN_POST_INSTALL:-n}
 login_manager_choice="sddm" # Default login manager
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
     info "Post-install script will be run after installation"
