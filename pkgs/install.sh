@@ -306,10 +306,10 @@ sudo pacman -S --needed --noconfirm slurp # Selection tool for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wl-clipboard # Clipboard management for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm cliphist # Clipboard history manager
+sudo pacman -S --needed --noconfirm copyq # Clipboard history manager with tray
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xclip # Clipboard management for X11 (used to sync clipboard between vms and host)
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+# sudo pacman -S --needed --noconfirm xclip # Clipboard management for X11 (used to sync clipboard between vms and host)
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm cpupower # CPU frequency scaling utility ==> change powersave to performance mode.
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm tlp # TLP for power management

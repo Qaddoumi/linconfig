@@ -175,9 +175,9 @@ exec_always bash -c 'sleep 1; pkill kanshi 2>/dev/null || true; kanshi'
 
 ## Clipboard (with X11 sync for XWayland apps)
 # Wayland clipboard history
-exec_always wl-paste --type text --watch sh -c 'tee >(cliphist store) | xclip -selection clipboard'
+# exec_always wl-paste --type text --watch sh -c 'tee >(cliphist store) | xclip -selection clipboard'
 # exec_always wl-paste --type text --watch cliphist store
-exec_always wl-paste --type image --watch cliphist store
+# exec_always wl-paste --type image --watch cliphist store
 
 ## SPICE Agent (Clipboard Sharing for VMs)
 #exec_always bash -c "killall -q spice-vdagent; sleep 3; spice-vdagent"
@@ -185,6 +185,8 @@ exec_always wl-paste --type image --watch cliphist store
 ## X11 to Wayland Clipboard Bridge
 # This bridges clipboard from spice-vdagent (X11) to Wayland
 #exec_always bash -c "killall -q clipboard-bridge.sh; sleep 3; ~/.local/bin/clipboard-bridge.sh --bidirectional --interval 1.5 > /tmp/clipboard-bridge.log 2>&1"
+
+exec copyq --start-server
 
 # NetworkManager
 exec_always bash -c "killall -q nm-applet ; nm-applet --indicator"
@@ -196,7 +198,8 @@ exec_always bash -c "killall -q nm-applet ; nm-applet --indicator"
 exec_always killall -q swaync && swaync -c ~/.config/swaync/config.json
 
 ## Autostart Applications
-#exec bash -c 'sleep 4; swaymsg "workspace 1; exec kitty"'
+exec bash -c 'sleep 4; swaymsg "workspace 1; exec kitty"'
+
 
 ### Window Rules
 # to get app_id or class, use `swaymsg -t get_tree | grep -A 23 "File Operation Progress"`
@@ -211,6 +214,7 @@ for_window [app_id="thunar" title="(File Operation Progress|Attention|Confirm|Pr
 for_window [app_id="google-chrome" title="(Save As|Open Files)"] floating enable, move position center, resize set 600 400
 
 for_window [app_id="gcr-prompter"] floating enable, move container to workspace current
+for_window [app_id="com.github.hluk.copyq"] floating enable, move container to workspace current
 for_window [class="Polkit-gnome-authentication-agent-1"] floating enable, move container to workspace current
 for_window [title="Authentication Required"] floating enable, move container to workspace current
 for_window [title="Authentication"] floating enable, move container to workspace current
@@ -265,7 +269,8 @@ input type:keyboard {
     # Clipboard
     #bindsym $mod+v exec cliphist list | wofi --dmenu --prompt "Search the clipboard..." | cliphist decode | wl-copy
     #bindsym $mod+Shift+v exec cliphist list | wofi --dmenu --prompt "Delete from clipboard..." | cliphist delete
-    bindsym $mod+v exec ~/.config/sway/scripts/clipboard-menu.sh
+    # bindsym $mod+v exec ~/.config/sway/scripts/clipboard-menu.sh
+    bindsym $mod+v exec copyq toggle
 
 
     # Lock
