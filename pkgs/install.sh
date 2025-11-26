@@ -35,7 +35,7 @@ backup_file() {
 
 cd ~ || echo -e "${red}Failed to change directory to home${no_color}"
 
-echo -e "${green} ******************* Packages Installation Script ******************* ${no_color}"
+echo -e "${green}\n\n ******************* Packages Installation Script ******************* ${no_color}"
 
 
 # Parse named arguments --login-manager and --is-vm
