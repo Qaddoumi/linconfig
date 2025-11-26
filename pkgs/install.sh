@@ -72,6 +72,7 @@ if [ -z "$login_manager" ]; then
     login_manager="sddm" # Fallback to the default login manager
     echo -e "${yellow}Login manager cannot be empty. will use the default: $login_manager${no_color}"
 fi
+echo -e "${green}Window manager to be used: $window_manager${no_color}"
 echo -e "${green}Login manager to be used : $login_manager${no_color}"
 echo -e "${green}Username to be used      : $USER${no_color}"
 
