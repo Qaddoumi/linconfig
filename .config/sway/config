@@ -175,7 +175,7 @@ exec_always bash -c 'sleep 1; pkill kanshi 2>/dev/null || true; kanshi'
 
 ## Clipboard (with X11 sync for XWayland apps)
 # Wayland clipboard history
-exec_always wl-paste --type text --watch xclip -selection clipboard
+# exec_always wl-paste --type text --watch xclip -selection clipboard
 
 ## SPICE Agent (Clipboard Sharing for VMs)
 exec_always bash -c "killall -q spice-vdagentd; sleep 3; gtk_backend=x11 spice-vdagent"

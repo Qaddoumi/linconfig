@@ -27,6 +27,9 @@ case "$1" in
         ;;
 esac
 
+
+
+
 sudo mkdir -p ~/.config > /dev/null || true
 sudo mkdir -p ~/.local/bin > /dev/null || true
 sudo mkdir -p ~/.local/share/applications > /dev/null || true
