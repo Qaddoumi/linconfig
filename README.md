@@ -29,19 +29,20 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux/
 ### Sway + SDDM Setup
 Install SwayWM with SDDM login manager:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager sddm --is-vm false
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --window-manager sway --login-manager sddm --is-vm false
 ```
 
-### Sway + Ly Setup
-Install SwayWM with Ly login manager:
+### Hyprland + SDDM Setup
+Install HyprlandWM with SDDM login manager:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager ly --is-vm false
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --window-manager hyprland --login-manager sddm --is-vm false
 ```
+
 
 ### Configuration Files Only
 Install only the configuration files without system packages:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/installconfig.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/installconfig.sh) --window-manager sway
 ```
 
 ## 🔧 Configuration Details

@@ -415,14 +415,43 @@ login_manager_choice="sddm" # Default login manager
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
     info "Post-install script will be run after installation"
     echo ""
+
+    info "chose the window manager you want to use"
+    info "1) Sway (Wayland compositor)"
+    info "2) Hyprland (Modern Wayland compositor)"
+    window_manager="sway" # Default window manager
+    while true; do
+        read -r -p "Select window manager [1-2] (default: 1): " window_manager_choice_num
+        window_manager_choice_num=${window_manager_choice_num:-1}
+        if [[ "$window_manager_choice_num" == "1" ]]; then
+            window_manager="sway"
+            break
+        elif [[ "$window_manager_choice_num" == "2" ]]; then
+            window_manager="hyprland"
+            break
+        else
+            warn "Invalid choice. Please enter 1 or 2."
+        fi
+    done
+    info "$window_manager will be installed"
+    echo ""
+
     info "chose the login manager you want to use"
     info "1) SDDM (Simple Desktop Display Manager)"
     info "2) Ly  (TUI lightweight display manager)"
-    read -r -p "Select login manager [1-2] (default: 1): " login_manager_choice_num
-    login_manager_choice_num=${login_manager_choice_num:-1}
-    if [[ "$login_manager_choice_num" == "2" ]]; then
-        login_manager_choice="ly"
-    fi
+    while true; do
+        read -r -p "Select login manager [1-2] (default: 1): " login_manager_choice_num
+        login_manager_choice_num=${login_manager_choice_num:-1}
+        if [[ "$login_manager_choice_num" == "1" ]]; then
+            login_manager_choice="sddm"
+            break
+        elif [[ "$login_manager_choice_num" == "2" ]]; then
+            login_manager_choice="ly"
+            break
+        else
+            warn "Invalid choice. Please enter 1 or 2."
+        fi
+    done
     info "$login_manager_choice will be installed"
 else
     info "Skipping post-install script"
@@ -1333,11 +1362,12 @@ newTask "═══════════════════════�
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
     info "Running post-install script..."
 
-    arch-chroot /mnt /bin/bash -s -- "$USERNAME" "$login_manager_choice" "$IS_VM" <<'POSTINSTALLEOF' || error "Post-install script failed to run"
+    arch-chroot /mnt /bin/bash -s -- "$USERNAME" "$window_manager" "$login_manager_choice" "$IS_VM" <<'POSTINSTALLEOF' || error "Post-install script failed to run"
 
 USER_NAME="$1"
-LOGIN_MANAGER="$2"
-isVM="$3"
+WINDOW_MANAGER="$2"
+LOGIN_MANAGER="$3"
+isVM="$4"
 
 echo -e "\n"
 
@@ -1346,7 +1376,7 @@ echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 su "$USER_NAME" <<USEREOF
     echo "Running post-install script as user \$USER with login manager $LOGIN_MANAGER..."
-    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager "$LOGIN_MANAGER" --is-vm "$isVM" || echo "Failed to run the install script"
+    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --window-manager "$WINDOW_MANAGER" --login-manager "$LOGIN_MANAGER" --is-vm "$isVM" || echo "Failed to run the install script"
 USEREOF
 
 echo "Restoring sudo password requirement for wheel group"
@@ -1355,7 +1385,7 @@ POSTINSTALLEOF
 else
     warn "Skipping post-install script, you may reboot now."
     info "if you would like to run my post-install script later, you can run it with the command:"
-    info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/install.sh) --login-manager \"$login_manager_choice\"" --is-vm "$IS_VM"
+    info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --window-manager \"$window_manager\" --login-manager \"$login_manager_choice\" --is-vm \"$IS_VM\""
 fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════\n"

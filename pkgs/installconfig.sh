@@ -11,6 +11,22 @@ cyan='\033[0;36m'
 bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
+if [ -z "$1" ]; then
+    echo "Usage: $0 <window-manager>"
+    # exit 1
+fi
+
+case "$1" in
+    --window-manager)
+        window_manager="$2"
+        shift 2
+        ;;
+    *)
+        echo -e "${red}Unknown argument: $1${no_color}"
+        # exit 1
+        ;;
+esac
+
 sudo mkdir -p ~/.config > /dev/null || true
 sudo mkdir -p ~/.local/bin > /dev/null || true
 sudo mkdir -p ~/.local/share/applications > /dev/null || true

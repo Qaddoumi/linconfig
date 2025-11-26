@@ -73,4 +73,5 @@ hddtemp (for disk temp, optional)
 nvtop (for NVIDIA GPU temp, optional)
 - [ ] https://jasoncarloscox.com/creations/vim-sway-nav/
 - [ ] (Learnaboutthem) radeontop, intel-gpu-tools, and nvidia-prime for better GPU management
-- [ ]
+- [ ] uwsm: an advanced way to start desktop compositors as systemd units
+- [ ] 

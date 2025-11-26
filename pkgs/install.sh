@@ -35,16 +35,21 @@ backup_file() {
 
 cd ~ || echo -e "${red}Failed to change directory to home${no_color}"
 
-echo -e "${green} ******************* Sway Installation Script ******************* ${no_color}"
+echo -e "${green} ******************* Packages Installation Script ******************* ${no_color}"
 
 
 # Parse named arguments --login-manager and --is-vm
 login_manager=""
+window_manager=""
 is_vm=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --login-manager)
             login_manager="$2"
+            shift 2
+            ;;
+        --window-manager)
+            window_manager="$2"
             shift 2
             ;;
         --is-vm)
@@ -57,6 +62,12 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+if [ -z "$window_manager" ]; then
+    window_manager="sway" # Fallback to the default window manager
+    echo -e "${yellow}Window manager cannot be empty. will use the default: $window_manager${no_color}"
+fi
+
 if [ -z "$login_manager" ]; then
     login_manager="sddm" # Fallback to the default login manager
     echo -e "${yellow}Login manager cannot be empty. will use the default: $login_manager${no_color}"
@@ -169,7 +180,18 @@ fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
-echo -e "${green}Installing Sway and related packages${no_color}"
+echo -e "${green}Installing $window_manager and related packages${no_color}"
+
+if [ "$window_manager" == "hyprland" ]; then
+    echo ""
+elif [ "$window_manager" == "sway" ]; then
+    echo ""
+else 
+    echo -e "${red}Invalid window manager specified. Please choose either 'hyprland' or 'sway'.${no_color}"
+    exit 1
+fi
+
+
 sudo pacman -S --needed --noconfirm sway # Sway window manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm waybar # Status bar for sway
@@ -1318,7 +1340,7 @@ echo -e "${blue}═════════════════════�
 
 echo -e "${green}Cloning and setting up configuration files${no_color}"
 
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/installconfig.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/installconfig.sh) --window-manager $window_manager
 
 echo -e "${green}Adding Neovim (tmux) to applications menu${no_color}"
 echo -e "${green}So i can open files in it with thunar${no_color}"
