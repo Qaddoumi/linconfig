@@ -136,7 +136,7 @@ fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 # Yay Configuration Optimizer ...
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/optimize_makepkg_and_yay.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/optimize_makepkg_and_yay.sh)
 
 # echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
@@ -932,14 +932,14 @@ echo -e "${green}Setting up virt-manager one-time network configuration complete
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
-#bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/hugepages.sh)
+#bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/hugepages.sh)
 # echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [ "$is_vm" = true ]; then
     echo -e "${green}System is detected to be running in a VM, skipping GPU passthrough setup${no_color}"
 else
     echo -e "${green}System is not detected to be running in a VM, proceeding with GPU passthrough setup${no_color}"
-    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/sway/gpu-passthrough.sh)
+    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/gpu-passthrough.sh)
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
