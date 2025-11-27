@@ -201,8 +201,6 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm hypridle # Idle management for hyprland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm hyprlock # Screen locker for hyprland
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm hyprpaper # Background setting utility for hyprland
 
 echo -e "${green}Installing Sway...${no_color}"
 echo ""
@@ -211,8 +209,6 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swayidle # Idle management for sway
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
 
@@ -223,37 +219,19 @@ echo ""
 
 sudo pacman -S --needed --noconfirm xorg-xinit xorg-server # X11 display server and initialization
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm xorg-xprop # X11 property viewer
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm libx11 # Core X11 protocol library (required by dwm)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm libxinerama # Multi-monitor support (used by dwm)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libxft # Font rendering with anti-aliasing
+sudo pacman -S --needed --noconfirm libxft # Font rendering with anti-aliasing (used by dwm)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm imlib2 # Image loading library (for window icons in dwm)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm flameshot # Screenshot utility with annotation tools
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm feh # Wallpaper setter for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm rofi # Application launcher for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xclip # Clipboard management used by X11 (used to sync clipboard between vms and host)
-echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm picom # Compositor for X11 (used for animation, transparency and blur)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xorg-xprop # X11 property viewer
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm polybar # Status bar for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xscreensaver # Screen saver for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm dex # Application launcher for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm dunst # Notification daemon for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xdg-user-dirs xdg-desktop-portal-gtk # User directories and portal
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm flatpak # Flatpak package manager
 
 
 
@@ -274,11 +252,19 @@ sudo pacman -S --needed --noconfirm nwg-look # GTK theme configuration GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gnome-keyring # Authentication agent for privileged operations
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm waybar # Status bar for sway
+sudo pacman -S --needed --noconfirm polybar # Status bar for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm wofi # Application launcher
+sudo pacman -S --needed --noconfirm waybar # Status bar for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for sway
+sudo pacman -S --needed --noconfirm wofi # Application launcher for wayland
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm rofi # Application launcher for X11
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm dex # Autostart manager for X11
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for wayland
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm dunst # Notification daemon for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm libappindicator-gtk3 libayatana-appindicator # AppIndicator support for swaync tray
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -298,11 +284,19 @@ sudo pacman -S --needed --noconfirm xorg-server-xwayland # XWayland for compatib
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xdg-desktop-portal xdg-desktop-portal-wlr # Portal for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm xdg-user-dirs xdg-desktop-portal-gtk # User directories and portal
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm htop # System monitor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wget # Download utility
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm hyprpaper # Background setting utility for hyprland
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm feh # Wallpaper setter for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm thunar # File manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -371,6 +365,8 @@ sudo pacman -S --needed --noconfirm pv # progress bar in terminal
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm network-manager-applet # Network management applet
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm flameshot # Screenshot utility with annotation tools
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm grim # Screenshot tool
 sudo mkdir -p ~/Screenshots || true
 sudo chown -R $USER:$USER ~/Screenshots || true
@@ -380,6 +376,14 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wl-clipboard # Clipboard management for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm copyq # Clipboard history manager with tray
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm xclip # Clipboard management used by X11 (used to sync clipboard between vms and host)
+
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm flatpak # Flatpak package manager
+# Add Flathub repository
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo > /dev/null 2>&1 || true
+
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm cpupower # CPU frequency scaling utility ==> change powersave to performance mode.
 echo -e "${blue}--------------------------------------------------\n${no_color}"
