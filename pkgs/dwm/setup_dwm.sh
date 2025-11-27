@@ -42,22 +42,14 @@ setupDWM() {
     sudo pacman -S --needed --noconfirm base-devel libx11 libxinerama \
             libxft imlib2 git unzip flameshot nwg-look feh mate-polkit alsa-utils \
             kitty rofi xclip xarchiver thunar tumbler tldr gvfs thunar-archive-plugin \
-            dunst dex xscreensaver xorg-xprop polybar pamixer picom xdg-user-dirs \
-            xdg-desktop-portal-gtk pipewire pavucontrol gnome-keyring flatpak \
+            dunst dex xscreensaver xorg-xprop polybar pamixer playerctl picom \
+            xdg-user-dirs xdg-desktop-portal-gtk pipewire pavucontrol gnome-keyring flatpak \
             networkmanager network-manager-applet
 }
 
 makeDWM() {
-    [ ! -d "$HOME/.local/share" ] && mkdir -p "$HOME/.local/share/"
-    if [ ! -d "$HOME/.local/share/dwm-titus" ]; then
-        printf "%b\n" "${YELLOW}DWM-Titus not found, cloning repository...${no_color}"
-        # CD to Home directory to install dwm-titus This path can be changed (e.g. to linux-toolbox directory)
-        cd "$HOME/.local/share/" && git clone --depth 1 https://github.com/ChrisTitusTech/dwm-titus.git
-        cd dwm-titus/ # Hardcoded path, maybe not the best.
-        else
-        printf "%b\n" "${green}DWM-Titus directory already exists, replacing..${no_color}"
-        cd "$HOME/.local/share/dwm-titus" && git pull
-    fi
+    mkdir -p "$HOME/.local/share/dwm"
+    cd "$HOME/.local/share/dwm"
     sudo make clean install # Run make clean install
 }
 
@@ -97,27 +89,7 @@ install_nerd_font() {
     printf "%b\n" "${GREEN}'$FONT_NAME' installed successfully.${no_color}"
 }
 
-clone_config_folders() {
-    # Ensure the target directory exists
-    [ ! -d ~/.config ] && mkdir -p ~/.config
-    [ ! -d ~/.local/bin ] && mkdir -p ~/.local/bin
-    # Copy scripts to local bin
-    cp -rf "$HOME/.local/share/dwm-titus/scripts/." "$HOME/.local/bin/"
 
-    # Iterate over all directories in config/*
-    for dir in config/*/; do
-        # Extract the directory name
-        dir_name=$(basename "$dir")
-
-        # Clone the directory to ~/.config/
-        if [ -d "$dir" ]; then
-            cp -r "$dir" ~/.config/
-            printf "%b\n" "${GREEN}Cloned $dir_name to ~/.config/${no_color}"
-        else
-            printf "%b\n" "${RED}Directory $dir_name does not exist, skipping${no_color}"
-        fi
-    done
-}
 
 configure_backgrounds() {
     # Set the variable PIC_DIR which stores the path for images
@@ -157,5 +129,4 @@ setupDisplayManager
 setupDWM
 makeDWM
 install_nerd_font
-clone_config_folders
 configure_backgrounds

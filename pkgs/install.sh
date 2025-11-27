@@ -414,6 +414,8 @@ echo -e "${blue}═════════════════════�
 
 echo -e "${green}Installing fonts${no_color}"
 
+sudo pacman -S --needed --noconfirm font-manager # a gui to manage fonts, and review them
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd # Nerd font for JetBrains Mono
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm noto-fonts noto-fonts-emoji # Noto fonts (English + Arabic) and Emoji font
