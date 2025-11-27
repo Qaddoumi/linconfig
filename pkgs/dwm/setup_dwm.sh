@@ -14,6 +14,7 @@ no_color='\033[0m' # reset the color to default
 
 
 printf "%b\n" "${green}Installing DWM...${no_color}"
+
 sudo pacman -S --needed --noconfirm xorg-xinit xorg-server
 
 sudo pacman -S --needed --noconfirm base-devel libx11 libxinerama \
