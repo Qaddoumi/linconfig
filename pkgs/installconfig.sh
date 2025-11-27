@@ -34,27 +34,39 @@ sudo mkdir -p ~/.config > /dev/null || true
 sudo mkdir -p ~/.local/bin > /dev/null || true
 sudo mkdir -p ~/.local/share/applications > /dev/null || true
 
-if [ -d ~/swaytemp ]; then
-    sudo rm -rf ~/swaytemp > /dev/null || true
+if [ -d ~/configtemp ]; then
+    sudo rm -rf ~/configtemp > /dev/null || true
 fi
-if ! git clone --depth 1 https://github.com/Qaddoumi/linconfig.git ~/swaytemp; then
+if ! git clone --depth 1 https://github.com/Qaddoumi/linconfig.git ~/configtemp; then
     echo "Failed to clone repository" >&2
     exit 1
 fi
-sudo rm -rf ~/.config/sway ~/.config/waybar ~/.config/wofi ~/.config/kitty ~/.config/swaync \
-    ~/.config/kanshi ~/.config/oh-my-posh ~/.config/fastfetch ~/.config/mimeapps.list ~/.local/share/applications/mimeapps.list \
-    ~/.config/looking-glass ~/.config/gtk-3.0 ~/.config/gtk-4.0 ~/.config/tmux \
-    ~/.config/xfce4/ ~/.config/Thunar
 
-sudo cp -r ~/swaytemp/.config/* ~/.config/
-sudo cp -f ~/swaytemp/.config/mimeapps.list ~/.local/share/applications/
+# Remove existing config files/directories that are in the cloned repo
+echo -e "${blue}Removing existing config files that will be replaced...${no_color}"
+for item in ~/configtemp/.config/*; do
+    if [ -e "$item" ]; then
+        basename_item=$(basename "$item")
+        echo -e "${blue}Removing $basename_item...${no_color}"
+        sudo rm -rf ~/.config/"$basename_item"
+    fi
+done
+
+# Also remove mimeapps.list from .local/share/applications if it exists in the repo
+if [ -f ~/configtemp/.config/mimeapps.list ]; then
+    echo -e "${blue}Removing mimeapps.list...${no_color}"
+    sudo rm -rf ~/.local/share/applications/mimeapps.list ~/.config/mimeapps.list
+fi
+
+sudo cp -r ~/configtemp/.config/* ~/.config/
+sudo cp -f ~/configtemp/.config/mimeapps.list ~/.local/share/applications/
 
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
 
 # Save the script (use the first artifact "X11 to Wayland Clipboard Bridge")
-sudo cp -f ~/swaytemp/pkgs/clipboard-bridge.sh ~/.local/bin/clipboard-bridge.sh > /dev/null || true
+sudo cp -f ~/configtemp/pkgs/clipboard-bridge.sh ~/.local/bin/clipboard-bridge.sh > /dev/null || true
 sudo chmod +x ~/.local/bin/clipboard-bridge.sh
 
 sudo chown -R $USER:$USER ~/.config > /dev/null || true
@@ -67,6 +79,6 @@ fi
 
 source ~/.bashrc || true
 
-sudo rm -rf ~/swaytemp
+sudo rm -rf ~/configtemp
 
 #swaymsg reload

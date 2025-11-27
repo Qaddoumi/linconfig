@@ -333,7 +333,11 @@ yay -S --needed --noconfirm powershell-bin || echo -e "${red}Failed to install p
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm oh-my-posh || echo -e "${red}Failed to install oh-my-posh${no_color}" # Theme engine for terminal
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
+if [ "$is_vm" = true ]; then
+    echo -e "${red}Running in a VM, skipping looking-glass installation${no_color}"
+else
+    yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
+fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
