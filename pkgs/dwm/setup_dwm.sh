@@ -11,43 +11,16 @@ cyan='\033[0;36m'
 bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
-setupDisplayManager() {
-    printf "%b\n" "${green}Setting up Xorg${no_color}"
-    sudo pacman -S --needed --noconfirm xorg-xinit xorg-server
-    printf "%b\n" "${green}Xorg installed successfully${no_color}"
-    printf "%b\n" "${green}Setting up Display Manager${no_color}"
-    currentdm="none"
-    for dm in sddm ly; do
-        if command -v "$dm" >/dev/null 2>&1 || sudo systemctl is-active --quiet "$dm"; then
-            currentdm="$dm"
-            break
-        fi
-    done
-    printf "%b\n" "${green}Display Manager Setup: $currentdm${no_color}"
-    if [ "$currentdm" = "none" ] || [ "$currentdm" = "sddm" ]; then
-        echo -e "${yellow}Unkonwn display manager${no_color}"
-        sudo pacman -S --needed --noconfirm sddm
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/keyitdev/sddm-astronaut-theme/master/setup.sh)"
-        sudo systemctl enable sddm
-    elif [ "$currentdm" = "ly" ]; then
-        sudo pacman -S --needed --noconfirm ly
-        sudo systemctl enable ly
-    else
-        echo -e "${yellow}Unknown display manager${no_color}"
-    fi
-}
 
 setupDWM() {
-    printf "%b\n" "${green}Installing DWM-Titus...${no_color}"
+    printf "%b\n" "${green}Installing DWM...${no_color}"
+    sudo pacman -S --needed --noconfirm xorg-xinit xorg-server
     sudo pacman -S --needed --noconfirm base-devel libx11 libxinerama \
             libxft imlib2 git unzip flameshot nwg-look feh mate-polkit alsa-utils \
             kitty rofi xclip xarchiver thunar tumbler tldr gvfs thunar-archive-plugin \
             dunst dex xscreensaver xorg-xprop polybar pamixer playerctl picom \
             xdg-user-dirs xdg-desktop-portal-gtk pipewire pavucontrol gnome-keyring flatpak \
             networkmanager network-manager-applet
-}
-
-makeDWM() {
     mkdir -p "$HOME/.local/share/dwm"
     cd "$HOME/.local/share/dwm"
     sudo make clean install # Run make clean install
@@ -89,8 +62,6 @@ install_nerd_font() {
     printf "%b\n" "${GREEN}'$FONT_NAME' installed successfully.${no_color}"
 }
 
-
-
 configure_backgrounds() {
     # Set the variable PIC_DIR which stores the path for images
     PIC_DIR="$HOME/Pictures"
@@ -124,9 +95,6 @@ configure_backgrounds() {
 
 
 
-
-setupDisplayManager
 setupDWM
-makeDWM
 install_nerd_font
 configure_backgrounds
