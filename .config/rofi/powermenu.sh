@@ -37,7 +37,7 @@ run_cmd() {
 			;;
 		--suspend)
 			mpc -q pause
-			amixer set Master mute
+			pactl set-sink-mute @DEFAULT_SINK@ 1
 			systemctl suspend
 			;;
 		--logout)

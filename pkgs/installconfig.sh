@@ -11,14 +11,12 @@ cyan='\033[0;36m'
 bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
-if [ -z "$1" ]; then
-    echo "Usage: $0 --window-manager <window-manager>"
-    # exit 1
-fi
+
+update_dwm="true"
 
 case "$1" in
-    --window-manager)
-        window_manager="$2"
+    --update-dwm)
+        update_dwm="$2"
         shift 2
         ;;
     *)
@@ -26,8 +24,6 @@ case "$1" in
         # exit 1
         ;;
 esac
-
-
 
 
 sudo mkdir -p ~/.config > /dev/null || true
@@ -81,11 +77,15 @@ fi
 
 source ~/.bashrc || true
 
-mkdir -p ~/.local/share/dwm
-mkdir -p ~/.local/bin
-cp -rf ~/configtemp/pkgs/dwm/* ~/.local/share/dwm
-mv -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
-
+if [ "$update_dwm" = "true" ]; then
+    echo -e "${green}Installing dwm...${no_color}"
+    mkdir -p ~/.local/share/dwm
+    mkdir -p ~/.local/bin
+    cp -rf ~/configtemp/pkgs/dwm/* ~/.local/share/dwm
+    mv -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
+    cd ~/.local/share/dwm
+    sudo make clean install
+fi
 
 sudo rm -rf ~/configtemp
 

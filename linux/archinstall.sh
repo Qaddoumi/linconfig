@@ -1344,6 +1344,8 @@ info "Enable PipeWire services"
 arch-chroot /mnt /bin/bash <<PIPWIREEOF
 systemctl --user enable pipewire.service
 systemctl --user enable pipewire-pulse.service
+systemctl --user enable pipewire-jack.service
+systemctl --user enable pipewire-alsa.service
 systemctl --user enable wireplumber.service
 PIPWIREEOF
 
