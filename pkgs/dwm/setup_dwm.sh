@@ -42,7 +42,7 @@ setupDWM() {
     sudo pacman -S --needed --noconfirm base-devel libx11 libxinerama \
             libxft imlib2 git unzip flameshot nwg-look feh mate-polkit alsa-utils \
             kitty rofi xclip xarchiver thunar tumbler tldr gvfs thunar-archive-plugin \
-            dunst dex xscreensaver xorg-xprop polybar picom xdg-user-dirs \
+            dunst dex xscreensaver xorg-xprop polybar pamixer picom xdg-user-dirs \
             xdg-desktop-portal-gtk pipewire pavucontrol gnome-keyring flatpak \
             networkmanager network-manager-applet
 }
