@@ -26,42 +26,6 @@ setupDWM() {
     sudo make clean install # Run make clean install
 }
 
-install_nerd_font() {
-    # Check to see if the MesloLGS Nerd Font is installed (Change this to whatever font you would like)
-    FONT_NAME="MesloLGS Nerd Font Mono"
-    FONT_DIR="$HOME/.local/share/fonts"
-    FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip"
-    FONT_INSTALLED=$(fc-list | grep -i "Meslo")
-
-    if [ -n "$FONT_INSTALLED" ]; then
-        printf "%b\n" "${GREEN}Meslo Nerd-fonts are already installed.${no_color}"
-        return 0
-    fi
-
-    printf "%b\n" "${YELLOW}Installing Meslo Nerd-fonts${no_color}"
-
-    # Create the fonts directory if it doesn't exist
-    if [ ! -d "$FONT_DIR" ]; then
-        mkdir -p "$FONT_DIR" || {
-            printf "%b\n" "${RED}Failed to create directory: $FONT_DIR${no_color}"
-            return 1
-        }
-    fi
-
-    printf "%b\n" "${YELLOW}Installing font '$FONT_NAME'${no_color}"
-    # Change this URL to correspond with the correct font
-    FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip"
-    FONT_DIR="$HOME/.local/share/fonts"
-    TEMP_DIR=$(mktemp -d)
-    curl -sSLo "$TEMP_DIR"/"${FONT_NAME}".zip "$FONT_URL"
-    unzip "$TEMP_DIR"/"${FONT_NAME}".zip -d "$TEMP_DIR"
-    mkdir -p "$FONT_DIR"/"$FONT_NAME"
-    mv "${TEMP_DIR}"/*.ttf "$FONT_DIR"/"$FONT_NAME"
-    fc-cache -fv
-    rm -rf "${TEMP_DIR}"
-    printf "%b\n" "${GREEN}'$FONT_NAME' installed successfully.${no_color}"
-}
-
 configure_backgrounds() {
     # Set the variable PIC_DIR which stores the path for images
     PIC_DIR="$HOME/Pictures"
@@ -96,5 +60,4 @@ configure_backgrounds() {
 
 
 setupDWM
-install_nerd_font
 configure_backgrounds

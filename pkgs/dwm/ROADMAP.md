@@ -34,7 +34,6 @@ MINIMAL AT ALL COSTS. Do one thing and do it well. No bloat, no un-needed depend
 
 - Fix install script and make sure all dependancies are getting installed (fonts, programs, etc.)
 - Autostart
-- Fix Meslo font install
 - Keyring unlock issue (SDDM install with Astronaut script)
 - Move setup script to linutil
 - EWMH integration into DWM code
