@@ -12,10 +12,10 @@ bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
 setupDisplayManager() {
-    printf "%b\n" "${YELLOW}Setting up Xorg${no_color}"
+    printf "%b\n" "${green}Setting up Xorg${no_color}"
     sudo pacman -S --needed --noconfirm xorg-xinit xorg-server
-    printf "%b\n" "${GREEN}Xorg installed successfully${no_color}"
-    printf "%b\n" "${YELLOW}Setting up Display Manager${no_color}"
+    printf "%b\n" "${green}Xorg installed successfully${no_color}"
+    printf "%b\n" "${green}Setting up Display Manager${no_color}"
     currentdm="none"
     for dm in sddm ly; do
         if command -v "$dm" >/dev/null 2>&1 || sudo systemctl is-active --quiet "$dm"; then
@@ -23,7 +23,7 @@ setupDisplayManager() {
             break
         fi
     done
-    printf "%b\n" "${GREEN}Display Manager Setup: $currentdm${no_color}"
+    printf "%b\n" "${green}Display Manager Setup: $currentdm${no_color}"
     if [ "$currentdm" = "none" ] || [ "$currentdm" = "sddm" ]; then
         echo -e "${yellow}Unkonwn display manager${no_color}"
         sudo pacman -S --needed --noconfirm sddm
@@ -38,7 +38,7 @@ setupDisplayManager() {
 }
 
 setupDWM() {
-    printf "%b\n" "${YELLOW}Installing DWM-Titus...${no_color}"
+    printf "%b\n" "${green}Installing DWM-Titus...${no_color}"
     sudo pacman -S --needed --noconfirm base-devel libx11 libxinerama \
             libxft imlib2 git unzip flameshot nwg-look feh mate-polkit alsa-utils \
             kitty rofi xclip xarchiver thunar tumbler tldr gvfs thunar-archive-plugin \
@@ -50,13 +50,13 @@ setupDWM() {
 makeDWM() {
     [ ! -d "$HOME/.local/share" ] && mkdir -p "$HOME/.local/share/"
     if [ ! -d "$HOME/.local/share/dwm-titus" ]; then
-	printf "%b\n" "${YELLOW}DWM-Titus not found, cloning repository...${no_color}"
-    # CD to Home directory to install dwm-titus This path can be changed (e.g. to linux-toolbox directory)
-	cd "$HOME/.local/share/" && git clone --depth 1 https://github.com/ChrisTitusTech/dwm-titus.git 
-	cd dwm-titus/ # Hardcoded path, maybe not the best.
-    else
-	printf "%b\n" "${GREEN}DWM-Titus directory already exists, replacing..${no_color}"
-	cd "$HOME/.local/share/dwm-titus" && git pull
+        printf "%b\n" "${YELLOW}DWM-Titus not found, cloning repository...${no_color}"
+        # CD to Home directory to install dwm-titus This path can be changed (e.g. to linux-toolbox directory)
+        cd "$HOME/.local/share/" && git clone --depth 1 https://github.com/ChrisTitusTech/dwm-titus.git
+        cd dwm-titus/ # Hardcoded path, maybe not the best.
+        else
+        printf "%b\n" "${green}DWM-Titus directory already exists, replacing..${no_color}"
+        cd "$HOME/.local/share/dwm-titus" && git pull
     fi
     sudo make clean install # Run make clean install
 }
