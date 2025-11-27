@@ -13,44 +13,27 @@ no_color='\033[0m' # reset the color to default
 
 setupDisplayManager() {
     printf "%b\n" "${YELLOW}Setting up Xorg${no_color}"
-    case pacman in
-        pacman)
-            sudo pacman -S --needed --noconfirm xorg-xinit xorg-server
-            ;;
-        *)
-            printf "%b\n" "${RED}Unsupported package manager: pacman${no_color}"
-            exit 1
-            ;;
-    esac
+    sudo pacman -S --needed --noconfirm xorg-xinit xorg-server
     printf "%b\n" "${GREEN}Xorg installed successfully${no_color}"
     printf "%b\n" "${YELLOW}Setting up Display Manager${no_color}"
     currentdm="none"
-    for dm in gdm sddm lightdm; do
+    for dm in sddm ly; do
         if command -v "$dm" >/dev/null 2>&1 || sudo systemctl is-active --quiet "$dm"; then
             currentdm="$dm"
             break
         fi
     done
     printf "%b\n" "${GREEN}Display Manager Setup: $currentdm${no_color}"
-    if [ "$currentdm" = "none" ]; then
-        printf "%b\n" "${YELLOW}--------------------------${no_color}" 
-        DM="sddm"
-        case pacman in
-            pacman)
-                sudo pacman -S --needed --noconfirm "$DM"
-                if [ "$DM" = "lightdm" ]; then
-                    sudo pacman -S --needed --noconfirm lightdm-gtk-greeter
-                elif [ "$DM" = "sddm" ]; then
-                    sh -c "$(curl -fsSL https://raw.githubusercontent.com/keyitdev/sddm-astronaut-theme/master/setup.sh)"
-                fi
-                ;;
-            *)
-                printf "%b\n" "${RED}Unsupported package manager: pacman${no_color}"
-                exit 1
-                ;;
-        esac
-        printf "%b\n" "${GREEN}$DM installed successfully${no_color}"
-        sudo systemctl enable "$DM"
+    if [ "$currentdm" = "none" ] || [ "$currentdm" = "sddm" ]; then
+        echo -e "${yellow}Unkonwn display manager${no_color}"
+        sudo pacman -S --needed --noconfirm sddm
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/keyitdev/sddm-astronaut-theme/master/setup.sh)"
+        sudo systemctl enable sddm
+    elif [ "$currentdm" = "ly" ]; then
+        sudo pacman -S --needed --noconfirm ly
+        sudo systemctl enable ly
+    else
+        echo -e "${yellow}Unknown display manager${no_color}"
     fi
 }
 
