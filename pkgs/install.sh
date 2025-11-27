@@ -185,15 +185,33 @@ echo -e "${green}Installing $window_manager and related packages${no_color}"
 
 if [ "$window_manager" == "hyprland" ]; then
     echo ""
+    sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    sudo pacman -S --needed --noconfirm hyprlandidle # Idle management for hyprland
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    sudo pacman -S --needed --noconfirm hyprlandlock # Screen locker for hyprland
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    sudo pacman -S --needed --noconfirm hyprlandbg # Background setting utility for hyprland
 elif [ "$window_manager" == "sway" ]; then
     echo ""
+    sudo pacman -S --needed --noconfirm sway # Sway window manager
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    sudo pacman -S --needed --noconfirm swayidle # Idle management for sway
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
+    sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway
+    # echo -e "${blue}--------------------------------------------------\n${no_color}"
+    #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
+elif [ "$window_manager" == "dwm" ]; then
+    echo ""
+    # ./setup_dwm.sh
 else 
-    echo -e "${red}Invalid window manager specified. Please choose either 'hyprland' or 'sway'.${no_color}"
+    echo -e "${red}Invalid window manager specified.${no_color}"
     exit 1
 fi
 
 
-sudo pacman -S --needed --noconfirm sway # Sway window manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm waybar # Status bar for sway
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -215,20 +233,12 @@ echo -e "${green}          │     └── Pane 2${no_color}"
 echo -e "${green}          ├── Window 2${no_color}"
 echo -e "${green}          └── Window 3\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swayidle # Idle management for sway
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway
-echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-server-xwayland # XWayland for compatibility with X11 applications
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xdg-desktop-portal xdg-desktop-portal-wlr # Portal for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-#sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm htop # System monitor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wget # Download utility
