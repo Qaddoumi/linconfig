@@ -41,8 +41,8 @@ setupDWM() {
     printf "%b\n" "${YELLOW}Installing DWM-Titus...${no_color}"
     sudo pacman -S --needed --noconfirm base-devel libx11 libxinerama \
             libxft imlib2 git unzip flameshot nwg-look feh mate-polkit alsa-utils \
-            ghostty rofi xclip xarchiver thunar tumbler tldr gvfs thunar-archive-plugin \
-            dunst nwg-look dex xscreensaver xorg-xprop polybar picom xdg-user-dirs \
+            kitty rofi xclip xarchiver thunar tumbler tldr gvfs thunar-archive-plugin \
+            dunst dex xscreensaver xorg-xprop polybar picom xdg-user-dirs \
             xdg-desktop-portal-gtk pipewire pavucontrol gnome-keyring flatpak \
             networkmanager network-manager-applet
 }
