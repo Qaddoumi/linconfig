@@ -11,8 +11,6 @@ cyan='\033[0;36m'
 bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
-. ../common-script.sh
-. ../common-service-script.sh
 
 setupDWM() {
     printf "%b\n" "${YELLOW}Installing DWM-Titus...${RC}"
@@ -28,7 +26,8 @@ makeDWM() {
     [ ! -d "$HOME/.local/share" ] && mkdir -p "$HOME/.local/share/"
     if [ ! -d "$HOME/.local/share/dwm-titus" ]; then
 	printf "%b\n" "${YELLOW}DWM-Titus not found, cloning repository...${RC}"
-	cd "$HOME/.local/share/" && git clone https://github.com/ChrisTitusTech/dwm-titus.git # CD to Home directory to install dwm-titus This path can be changed (e.g. to linux-toolbox directory)
+    # CD to Home directory to install dwm-titus This path can be changed (e.g. to linux-toolbox directory)
+	cd "$HOME/.local/share/" && git clone --depth 1 https://github.com/ChrisTitusTech/dwm-titus.git 
 	cd dwm-titus/ # Hardcoded path, maybe not the best.
     else
 	printf "%b\n" "${GREEN}DWM-Titus directory already exists, replacing..${RC}"
@@ -58,18 +57,19 @@ install_nerd_font() {
             return 1
         }
     fi
-        printf "%b\n" "${YELLOW}Installing font '$FONT_NAME'${RC}"
-        # Change this URL to correspond with the correct font
-        FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip"
-        FONT_DIR="$HOME/.local/share/fonts"
-        TEMP_DIR=$(mktemp -d)
-        curl -sSLo "$TEMP_DIR"/"${FONT_NAME}".zip "$FONT_URL"
-        unzip "$TEMP_DIR"/"${FONT_NAME}".zip -d "$TEMP_DIR"
-        mkdir -p "$FONT_DIR"/"$FONT_NAME"
-        mv "${TEMP_DIR}"/*.ttf "$FONT_DIR"/"$FONT_NAME"
-        fc-cache -fv
-        rm -rf "${TEMP_DIR}"
-        printf "%b\n" "${GREEN}'$FONT_NAME' installed successfully.${RC}"
+
+    printf "%b\n" "${YELLOW}Installing font '$FONT_NAME'${RC}"
+    # Change this URL to correspond with the correct font
+    FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip"
+    FONT_DIR="$HOME/.local/share/fonts"
+    TEMP_DIR=$(mktemp -d)
+    curl -sSLo "$TEMP_DIR"/"${FONT_NAME}".zip "$FONT_URL"
+    unzip "$TEMP_DIR"/"${FONT_NAME}".zip -d "$TEMP_DIR"
+    mkdir -p "$FONT_DIR"/"$FONT_NAME"
+    mv "${TEMP_DIR}"/*.ttf "$FONT_DIR"/"$FONT_NAME"
+    fc-cache -fv
+    rm -rf "${TEMP_DIR}"
+    printf "%b\n" "${GREEN}'$FONT_NAME' installed successfully.${RC}"
 }
 
 clone_config_folders() {
@@ -140,7 +140,7 @@ setupDisplayManager() {
     printf "%b\n" "${YELLOW}Setting up Display Manager${RC}"
     currentdm="none"
     for dm in gdm sddm lightdm; do
-        if command -v "$dm" >/dev/null 2>&1 || isServiceActive "$dm"; then
+        if command -v "$dm" >/dev/null 2>&1 || sudo systemctl is-active --quiet "$dm"; then
             currentdm="$dm"
             break
         fi
@@ -164,13 +164,11 @@ setupDisplayManager() {
                 ;;
         esac
         printf "%b\n" "${GREEN}$DM installed successfully${RC}"
-        enableService "$DM"
-        
+        sudo systemctl enable "$DM"
     fi
 }
 
-checkEnv
-checkEscalationTool
+
 setupDisplayManager
 setupDWM
 makeDWM
