@@ -11,9 +11,51 @@ cyan='\033[0;36m'
 bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
+setupDisplayManager() {
+    printf "%b\n" "${YELLOW}Setting up Xorg${no_color}"
+    case pacman in
+        pacman)
+            sudo pacman -S --needed --noconfirm xorg-xinit xorg-server
+            ;;
+        *)
+            printf "%b\n" "${RED}Unsupported package manager: pacman${no_color}"
+            exit 1
+            ;;
+    esac
+    printf "%b\n" "${GREEN}Xorg installed successfully${no_color}"
+    printf "%b\n" "${YELLOW}Setting up Display Manager${no_color}"
+    currentdm="none"
+    for dm in gdm sddm lightdm; do
+        if command -v "$dm" >/dev/null 2>&1 || sudo systemctl is-active --quiet "$dm"; then
+            currentdm="$dm"
+            break
+        fi
+    done
+    printf "%b\n" "${GREEN}Display Manager Setup: $currentdm${no_color}"
+    if [ "$currentdm" = "none" ]; then
+        printf "%b\n" "${YELLOW}--------------------------${no_color}" 
+        DM="sddm"
+        case pacman in
+            pacman)
+                sudo pacman -S --needed --noconfirm "$DM"
+                if [ "$DM" = "lightdm" ]; then
+                    sudo pacman -S --needed --noconfirm lightdm-gtk-greeter
+                elif [ "$DM" = "sddm" ]; then
+                    sh -c "$(curl -fsSL https://raw.githubusercontent.com/keyitdev/sddm-astronaut-theme/master/setup.sh)"
+                fi
+                ;;
+            *)
+                printf "%b\n" "${RED}Unsupported package manager: pacman${no_color}"
+                exit 1
+                ;;
+        esac
+        printf "%b\n" "${GREEN}$DM installed successfully${no_color}"
+        sudo systemctl enable "$DM"
+    fi
+}
 
 setupDWM() {
-    printf "%b\n" "${YELLOW}Installing DWM-Titus...${RC}"
+    printf "%b\n" "${YELLOW}Installing DWM-Titus...${no_color}"
     sudo pacman -S --needed --noconfirm base-devel libx11 libxinerama \
             libxft imlib2 git unzip flameshot nwg-look feh mate-polkit alsa-utils \
             ghostty rofi xclip xarchiver thunar tumbler tldr gvfs thunar-archive-plugin \
@@ -25,12 +67,12 @@ setupDWM() {
 makeDWM() {
     [ ! -d "$HOME/.local/share" ] && mkdir -p "$HOME/.local/share/"
     if [ ! -d "$HOME/.local/share/dwm-titus" ]; then
-	printf "%b\n" "${YELLOW}DWM-Titus not found, cloning repository...${RC}"
+	printf "%b\n" "${YELLOW}DWM-Titus not found, cloning repository...${no_color}"
     # CD to Home directory to install dwm-titus This path can be changed (e.g. to linux-toolbox directory)
 	cd "$HOME/.local/share/" && git clone --depth 1 https://github.com/ChrisTitusTech/dwm-titus.git 
 	cd dwm-titus/ # Hardcoded path, maybe not the best.
     else
-	printf "%b\n" "${GREEN}DWM-Titus directory already exists, replacing..${RC}"
+	printf "%b\n" "${GREEN}DWM-Titus directory already exists, replacing..${no_color}"
 	cd "$HOME/.local/share/dwm-titus" && git pull
     fi
     sudo make clean install # Run make clean install
@@ -44,21 +86,21 @@ install_nerd_font() {
     FONT_INSTALLED=$(fc-list | grep -i "Meslo")
 
     if [ -n "$FONT_INSTALLED" ]; then
-        printf "%b\n" "${GREEN}Meslo Nerd-fonts are already installed.${RC}"
+        printf "%b\n" "${GREEN}Meslo Nerd-fonts are already installed.${no_color}"
         return 0
     fi
 
-    printf "%b\n" "${YELLOW}Installing Meslo Nerd-fonts${RC}"
+    printf "%b\n" "${YELLOW}Installing Meslo Nerd-fonts${no_color}"
 
     # Create the fonts directory if it doesn't exist
     if [ ! -d "$FONT_DIR" ]; then
         mkdir -p "$FONT_DIR" || {
-            printf "%b\n" "${RED}Failed to create directory: $FONT_DIR${RC}"
+            printf "%b\n" "${RED}Failed to create directory: $FONT_DIR${no_color}"
             return 1
         }
     fi
 
-    printf "%b\n" "${YELLOW}Installing font '$FONT_NAME'${RC}"
+    printf "%b\n" "${YELLOW}Installing font '$FONT_NAME'${no_color}"
     # Change this URL to correspond with the correct font
     FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip"
     FONT_DIR="$HOME/.local/share/fonts"
@@ -69,7 +111,7 @@ install_nerd_font() {
     mv "${TEMP_DIR}"/*.ttf "$FONT_DIR"/"$FONT_NAME"
     fc-cache -fv
     rm -rf "${TEMP_DIR}"
-    printf "%b\n" "${GREEN}'$FONT_NAME' installed successfully.${RC}"
+    printf "%b\n" "${GREEN}'$FONT_NAME' installed successfully.${no_color}"
 }
 
 clone_config_folders() {
@@ -87,9 +129,9 @@ clone_config_folders() {
         # Clone the directory to ~/.config/
         if [ -d "$dir" ]; then
             cp -r "$dir" ~/.config/
-            printf "%b\n" "${GREEN}Cloned $dir_name to ~/.config/${RC}"
+            printf "%b\n" "${GREEN}Cloned $dir_name to ~/.config/${no_color}"
         else
-            printf "%b\n" "${RED}Directory $dir_name does not exist, skipping${RC}"
+            printf "%b\n" "${RED}Directory $dir_name does not exist, skipping${no_color}"
         fi
     done
 }
@@ -104,69 +146,28 @@ configure_backgrounds() {
     # Check if the ~/Pictures directory exists
     if [ ! -d "$PIC_DIR" ]; then
         # If it doesn't exist, print an error message and return with a status of 1 (indicating failure)
-        printf "%b\n" "${RED}Pictures directory does not exist${RC}"
+        printf "%b\n" "${RED}Pictures directory does not exist${no_color}"
         mkdir ~/Pictures
-        printf "%b\n" "${GREEN}Directory was created in Home folder${RC}"
+        printf "%b\n" "${GREEN}Directory was created in Home folder${no_color}"
     fi
 
     # Check if the backgrounds directory (BG_DIR) exists
     if [ ! -d "$BG_DIR" ]; then
         # If the backgrounds directory doesn't exist, attempt to clone a repository containing backgrounds
-        if ! git clone https://github.com/ChrisTitusTech/nord-background.git "$PIC_DIR/backgrounds"; then
+        if ! git clone --depth 1 https://github.com/ChrisTitusTech/nord-background.git "$PIC_DIR/backgrounds"; then
             # If the git clone command fails, print an error message and return with a status of 1
-            printf "%b\n" "${RED}Failed to clone the repository${RC}"
+            printf "%b\n" "${RED}Failed to clone the repository${no_color}"
             return 1
         fi
         # Print a success message indicating that the backgrounds have been downloaded
-        printf "%b\n" "${GREEN}Downloaded desktop backgrounds to $BG_DIR${RC}"    
+        printf "%b\n" "${GREEN}Downloaded desktop backgrounds to $BG_DIR${no_color}"    
     else
         # If the backgrounds directory already exists, print a message indicating that the download is being skipped
-        printf "%b\n" "${GREEN}Path $BG_DIR exists for desktop backgrounds, skipping download of backgrounds${RC}"
+        printf "%b\n" "${GREEN}Path $BG_DIR exists for desktop backgrounds, skipping download of backgrounds${no_color}"
     fi
 }
 
-setupDisplayManager() {
-    printf "%b\n" "${YELLOW}Setting up Xorg${RC}"
-    case pacman in
-        pacman)
-            sudo pacman -S --needed --noconfirm xorg-xinit xorg-server
-            ;;
-        *)
-            printf "%b\n" "${RED}Unsupported package manager: pacman${RC}"
-            exit 1
-            ;;
-    esac
-    printf "%b\n" "${GREEN}Xorg installed successfully${RC}"
-    printf "%b\n" "${YELLOW}Setting up Display Manager${RC}"
-    currentdm="none"
-    for dm in gdm sddm lightdm; do
-        if command -v "$dm" >/dev/null 2>&1 || sudo systemctl is-active --quiet "$dm"; then
-            currentdm="$dm"
-            break
-        fi
-    done
-    printf "%b\n" "${GREEN}Display Manager Setup: $currentdm${RC}"
-    if [ "$currentdm" = "none" ]; then
-        printf "%b\n" "${YELLOW}--------------------------${RC}" 
-        DM="sddm"
-        case pacman in
-            pacman)
-                sudo pacman -S --needed --noconfirm "$DM"
-                if [ "$DM" = "lightdm" ]; then
-                    sudo pacman -S --needed --noconfirm lightdm-gtk-greeter
-                elif [ "$DM" = "sddm" ]; then
-                    sh -c "$(curl -fsSL https://raw.githubusercontent.com/keyitdev/sddm-astronaut-theme/master/setup.sh)"
-                fi
-                ;;
-            *)
-                printf "%b\n" "${RED}Unsupported package manager: pacman${RC}"
-                exit 1
-                ;;
-        esac
-        printf "%b\n" "${GREEN}$DM installed successfully${RC}"
-        sudo systemctl enable "$DM"
-    fi
-}
+
 
 
 setupDisplayManager
