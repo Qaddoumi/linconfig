@@ -12,7 +12,7 @@ bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
 if [ -z "$1" ]; then
-    echo "Usage: $0 <window-manager>"
+    echo "Usage: $0 --window-manager <window-manager>"
     # exit 1
 fi
 
