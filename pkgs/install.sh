@@ -200,7 +200,7 @@ sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
 
-echo -e "${green}Installing DWM...${no_color}"
+echo -e "${green}Installing X11 tools...${no_color}"
 echo ""
 
 
@@ -221,21 +221,7 @@ sudo pacman -S --needed --noconfirm picom # Compositor for X11 (used for animati
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xscreensaver # Screen saver for X11
 
-
-
-
 echo ""
-echo -e "${green}Building dwm...${no_color}"
-mkdir -p ~/.local/share/dwm
-mkdir -p ~/.local/bin
-# Copy both regular files and hidden files (like .xinitrc)
-cp -rf ~/configtemp/pkgs/dwm/* ~/.local/share/dwm/ 2>/dev/null || true
-cp -rf ~/configtemp/pkgs/dwm/.* ~/.local/share/dwm/ 2>/dev/null || true
-cp -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
-rm -rf "$HOME/.local/share/dwm/scripts"
-cd ~/.local/share/dwm
-sudo make clean install || { echo -e "${red}Failed to install dwm${no_color}"; true; }
-cd ~
 
 echo -e "\n\n"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -404,6 +390,20 @@ if [ "$is_vm" = true ]; then
 else
     yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
 fi
+
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
+echo -e "${green}Building and installing dwm...${no_color}"
+mkdir -p ~/.local/share/dwm
+mkdir -p ~/.local/bin
+# Copy both regular files and hidden files (like .xinitrc)
+cp -rf ~/configtemp/pkgs/dwm/* ~/.local/share/dwm/ 2>/dev/null || true
+cp -rf ~/configtemp/pkgs/dwm/.* ~/.local/share/dwm/ 2>/dev/null || true
+cp -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
+rm -rf "$HOME/.local/share/dwm/scripts"
+cd ~/.local/share/dwm
+sudo make clean install || { echo -e "${red}Failed to install dwm${no_color}"; true; }
+cd ~
+
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
