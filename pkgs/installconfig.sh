@@ -85,7 +85,8 @@ if [ "$update_dwm" = "true" ]; then
     mkdir -p ~/.local/share/dwm
     mkdir -p ~/.local/bin
     cp -rf ~/configtemp/pkgs/dwm/* ~/.local/share/dwm
-    mv -f "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
+    cp -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
+    rm -rf "$HOME/.local/share/dwm/scripts"
     cd ~/.local/share/dwm
     sudo make clean install
 fi
