@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # Simple power menu using rofi
 
 chosen=$(echo -e "⏻ Shutdown\n Reboot\n⏾ Suspend\n Lock\n Logout" | rofi -dmenu -i -p "Power Menu")

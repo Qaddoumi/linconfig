@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-dbus-run-session -- sh -c '~/.config/polybar/launch.sh & exec dwm'
+dbus-run-session -- sh -c '$HOME/.config/polybar/launch.sh & exec dwm'

@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # Advanced X11 to Wayland Clipboard Bridge
 # Supports text, images, and other MIME types
 

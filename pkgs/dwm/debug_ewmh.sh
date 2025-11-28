@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo "=== EWMH Desktop Properties ==="
 echo "Number of desktops:"

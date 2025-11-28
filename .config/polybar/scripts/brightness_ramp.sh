@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Get brightness percentage
 # brightnessctl -m output format: name,type,current,max,percent

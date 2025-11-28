@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # Requires swaync (sway notification center)
 if command -v swaync-client &> /dev/null; then
     count=$(swaync-client -c 2>/dev/null || echo "0")

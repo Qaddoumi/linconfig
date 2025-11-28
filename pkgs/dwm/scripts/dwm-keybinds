@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # A script to display DWM keybindings defined in config.h
 # using walker for an interactive search menu.

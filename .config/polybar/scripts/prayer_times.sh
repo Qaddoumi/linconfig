@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # You'll need to customize this with your actual prayer times API or calculation
 # This is a placeholder - replace with your actual prayer times script
 

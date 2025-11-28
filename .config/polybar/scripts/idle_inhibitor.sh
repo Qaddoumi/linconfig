@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # Simple idle inhibitor toggle using xdg-screensaver or caffeine
 # You may need to install 'caffeine' or use another tool
 

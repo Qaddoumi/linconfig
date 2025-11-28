@@ -2,3 +2,22 @@ notes.md
 test*
 .marscode*
 server-setup.sh
+
+
+
+
+# binaries
+pkgs/dwm/dwm
+
+# Patch Fail
+*.rej
+*.orig
+
+# Object Files
+*.o
+
+nohup.out
+.DS_STORE
+
+/release/**
+/release
