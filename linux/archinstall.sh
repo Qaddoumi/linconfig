@@ -1410,6 +1410,7 @@ cp archsetuplogs.txt /mnt/home/$USERNAME/
 arch-chroot /mnt chown -R $USERNAME:$USERNAME /home/$USERNAME/archsetuplogs.txt
 info "Installation log saved to /home/$USERNAME/archsetuplogs.txt"
 
+info "you may remove the installation media"
 if [[ "$REBOOT_AFTER_INSTALL" == "y" ]]; then
     info "Rebooting system in 7 seconds..."
     circle=("-" "\\" "|" "/")

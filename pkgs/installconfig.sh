@@ -85,6 +85,7 @@ echo -e "${green}Setting up polybar (launch script)...${no_color}"
 chmod +x ~/.config/polybar/launch.sh
 
 if [ "$update_dwm" = "true" ]; then
+    echo -e "${green}\$update_dwm is set to true${no_color}"
     echo -e "${green}Installing dwm...${no_color}"
     mkdir -p ~/.local/share/dwm
     mkdir -p ~/.local/bin
