@@ -234,7 +234,7 @@ cp -rf ~/configtemp/pkgs/dwm/.* ~/.local/share/dwm/ 2>/dev/null || true
 cp -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
 rm -rf "$HOME/.local/share/dwm/scripts"
 cd ~/.local/share/dwm
-sudo make clean install || echo -e "${red}Failed to install dwm${no_color}"
+sudo make clean install || { echo -e "${red}Failed to install dwm${no_color}"; true; }
 
 
 echo -e "\n\n"

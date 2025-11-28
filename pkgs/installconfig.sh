@@ -95,7 +95,7 @@ if [ "$update_dwm" = "true" ]; then
     rm -rf "$HOME/.local/share/dwm/scripts"
     cd ~/.local/share/dwm
     echo -e "${green}Building dwm...${no_color}"
-    sudo make clean install
+    sudo make clean install || { echo -e "${red}Failed to install dwm${no_color}"; true; }
 fi
 
 echo -e "${green}Removing temporary files...${no_color}"
