@@ -12,7 +12,7 @@ trap 'cleanup' EXIT  # Ensure cleanup runs on exit
 # Set default values
 DEFAULT_ROOT_PASSWORD="root123"
 DEFAULT_USERNAME="user"
-DEFAULT_USER_PASSWORD="root123"
+DEFAULT_USER_PASSWORD=$DEFAULT_ROOT_PASSWORD
 
 start_time=$(date +%s)
 
@@ -349,7 +349,7 @@ while true; do
     [[ "$ROOT_PASSWORD" == "$ROOT_PASSWORD_CONFIRM" ]] && break
     warn "Passwords don't match!"
 done
-
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 if read -rp "Enter username (default: $DEFAULT_USERNAME): " -t 30 USERNAME; then
     # If user pressed enter without typing anything, use default
     if [[ -z "$USERNAME" ]]; then
@@ -362,7 +362,7 @@ else
     echo "Timeout - using default username: $DEFAULT_USERNAME"
     USERNAME="$DEFAULT_USERNAME"
 fi
-
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 [[ "$USERNAME" =~ ^[a-z_][a-z0-9_-]*$ ]] || error "Invalid username"
 
 while true; do
