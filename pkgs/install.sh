@@ -241,7 +241,7 @@ echo -e "${green}Building dwm...${no_color}"
 mkdir -p ~/.local/share/dwm
 mkdir -p ~/.local/bin
 cp -rf ~/configtemp/pkgs/dwm/* ~/.local/share/dwm
-mv -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
+mv -f "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
 cd ~/.local/share/dwm
 sudo make clean install > /dev/null 2>&1 || echo -e "${red}Failed to install dwm${no_color}" >&2
 
