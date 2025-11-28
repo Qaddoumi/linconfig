@@ -415,7 +415,7 @@ RUN_POST_INSTALL=${RUN_POST_INSTALL:-n}
 login_manager_choice="sddm" # Default login manager
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
     info "Post-install script will be run after installation"
-    echo ""
+    echo -e "${blue}--------------------------------------------------\n${no_color}"
     info "chose the login manager you want to use"
     info "1) SDDM (Simple Desktop Display Manager)"
     info "2) Ly  (TUI lightweight display manager)"
