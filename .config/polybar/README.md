@@ -14,8 +14,7 @@ First of all, install Polybar:
 
 By default the font used is `JetBrainsMono` (you can change it in the **fonts.ini** file), you can download and install from [NerdFonts](https://www.nerdfonts.com/font-downloads):
 
-Also you'll need [MaterialIcons](https://github.com/google/material-design-icons) and [Feather](https://feathericons.com/).
-You can move both **MaterialIcons** and **feather** inside **fonts** to **$HOME/.fonts/** and run:
+Also run:
 
 ```bash
 $HOME
