@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 # Adjust the volume of the active application's audio stream using PipeWire (wpctl)
 
 # Usage:
