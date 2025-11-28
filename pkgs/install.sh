@@ -228,11 +228,13 @@ echo ""
 echo -e "${green}Building dwm...${no_color}"
 mkdir -p ~/.local/share/dwm
 mkdir -p ~/.local/bin
-cp -rf ~/configtemp/pkgs/dwm/* ~/.local/share/dwm
+# Copy both regular files and hidden files (like .xinitrc)
+cp -rf ~/configtemp/pkgs/dwm/* ~/.local/share/dwm/ 2>/dev/null || true
+cp -rf ~/configtemp/pkgs/dwm/.* ~/.local/share/dwm/ 2>/dev/null || true
 cp -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
 rm -rf "$HOME/.local/share/dwm/scripts"
 cd ~/.local/share/dwm
-sudo make clean install > /dev/null 2>&1 || echo -e "${red}Failed to install dwm${no_color}" >&2
+sudo make clean install || echo -e "${red}Failed to install dwm${no_color}"
 
 
 echo -e "\n\n"
