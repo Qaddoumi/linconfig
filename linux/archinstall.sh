@@ -17,13 +17,13 @@ DEFAULT_USER_PASSWORD=$DEFAULT_ROOT_PASSWORD
 start_time=$(date +%s)
 
 # Color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-BOLD="\e[1m"
-NO_COLOR='\033[0m' # reset the color to default
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[1;33m'
+blue='\033[0;34m'
+cyan='\033[0;36m'
+bold="\e[1m"
+no_color='\033[0m' # reset the color to default
 
 # Security cleanup function
 cleanup() {
@@ -34,10 +34,10 @@ cleanup() {
     fi
 }
 
-error() { echo -e "${RED}[ERROR] $*${NO_COLOR}" >&2; exit 1; }
-info() { echo -e "${CYAN}[*]${GREEN} $*${NO_COLOR}"; }
-newTask() { echo -e "${BLUE}$*${NO_COLOR}"; }
-warn() { echo -e "${YELLOW}[WARN] $*${NO_COLOR}"; }
+error() { echo -e "${red}[ERROR] $*${no_color}" >&2; exit 1; }
+info() { echo -e "${cyan}[*]${green} $*${no_color}"; }
+newTask() { echo -e "${blue}$*${no_color}"; }
+warn() { echo -e "${yellow}[WARN] $*${no_color}"; }
 
 # Check if running from Arch Linux ISO (requires pacstrap)
 if [ ! -f /usr/bin/pacstrap ]; then
@@ -300,6 +300,7 @@ fi
 info "Selected bootloader: $BOOTLOADER"
 
 echo
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 info "Bootloader kernel command line options:"
 echo "1) quiet (minimal output, recommended for daily use)"
 echo "2) debug (verbose output, useful for troubleshooting)"
@@ -630,7 +631,7 @@ fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
-info "\n${GREEN}[✓] Partitioning Summary:${NO_COLOR}"
+info "\n${green}[✓] Partitioning Summary:${no_color}"
 info "Boot Mode: $BOOT_MODE"
 if [[ "$BOOT_MODE" == "UEFI" ]]; then
     info "EFI System Partition: $EFI_PART (mounted at /mnt/boot/efi)"
@@ -880,16 +881,18 @@ BOOT_MODE="${8}"
 KERNEL_CMDLINE="${9}"
 
 # Color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NO_COLOR='\033[0m'
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[1;33m'
+blue='\033[0;34m'
+cyan='\033[0;36m'
+bold="\e[1m"
+no_color='\033[0m'
 
-error() { echo -e "${RED}[ERROR] $*${NO_COLOR}" >&2; exit 1; }
-info() { echo -e "${GREEN}[*] $*${NO_COLOR}"; }
-newTask() { echo -e "${BLUE}$*${NO_COLOR}"; }
-warn() { echo -e "${YELLOW}[WARN] $*${NO_COLOR}"; }
+error() { echo -e "${red}[ERROR] $*${no_color}" >&2; exit 1; }
+info() { echo -e "${green}[*] $*${no_color}"; }
+newTask() { echo -e "${blue}$*${no_color}"; }
+warn() { echo -e "${yellow}[WARN] $*${no_color}"; }
 
 TIMEZONE="Asia/Amman"
 LOCALE="en_US.UTF-8"
@@ -1309,7 +1312,7 @@ chown 1000:1000 /mnt/home/$USERNAME/test_hibernation.sh
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 echo
-info "====${BLUE} POST-CHROOT CONFIGURATION ${GREEN}===="
+info "====${blue} POST-CHROOT CONFIGURATION ${green}===="
 echo
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
@@ -1373,8 +1376,8 @@ fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════\n"
 
-info "\n${GREEN}[✓] INSTALLATION COMPLETE!${NO_COLOR}"
-info "\n${YELLOW}Next steps:${NO_COLOR}"
+info "\n${green}[✓] INSTALLATION COMPLETE!${no_color}"
+info "\n${yellow}Next steps:${no_color}"
 info "1. Reboot: systemctl reboot"
 info "2. After reboot, run the hibernation test script:"
 info "   /home/$USERNAME/test_hibernation.sh"
