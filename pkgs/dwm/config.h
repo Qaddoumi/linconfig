@@ -16,7 +16,7 @@ static const int topbar                       = 1;   /* 0 means bottom bar */
 static const int usealtbar                     = 1;   /* 1 means use non-dwm status bar */
 static const char *altbarclass                 = "Polybar"; /* Alternate bar class name */
 static const char *alttrayname                 = "tray";    /* Polybar tray instance name */
-static const char *altbarcmd                   = "$HOME/.config/polybar/launch.sh";
+static const char *altbarcmd                   = "sh -c ~/.config/polybar/launch.sh";
 #define ICONSIZE                              17     /* icon size */
 #define ICONSPACING                           5      /* space between icon and title */
 #define SHOWWINICON                           1      /* 0 means no winicon */
@@ -40,7 +40,7 @@ static const char *const autostart[] = {
     "flameshot", NULL,
     "dunst", NULL,
     "picom", "-b", NULL,
-    "sh", "-c", "feh --randomize --bg-fill ~/Pictures/backgrounds/*", NULL,
+    "sh", "-c", "feh --randomize --bg-fill /usr/share/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'", NULL,
     "sh", "-c", "/usr/bin/dex -a", NULL,
     NULL /* terminate */
 };
@@ -91,7 +91,7 @@ static const Layout layouts[] = {
 #define STATUSBAR "dwmblocks"
 /* commands */
 static const char *launchercmd[] = { "rofi", "-show", "drun", NULL };
-static const char *termcmd[]     = { "ghostty", NULL };
+static const char *termcmd[]     = { "kitty", NULL };
 /* Web app commands using xdg-open */
 static const char *gmailcmd[]     = { "webapp-launch", "https://gmail.com", NULL };
 static const char *youtubecmd[]   = { "webapp-launch", "https://youtube.com", NULL };
