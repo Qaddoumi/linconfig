@@ -10,9 +10,9 @@ set -uo pipefail  # Strict error handling
 trap 'cleanup' EXIT  # Ensure cleanup runs on exit
 
 # Set default values
-DEFAULT_ROOT_PASSWORD="root123"
+DEFAULT_ROOT_PASSWORD="" # the default is the same as user password
 DEFAULT_USERNAME="user"
-DEFAULT_USER_PASSWORD=$DEFAULT_ROOT_PASSWORD
+DEFAULT_USER_PASSWORD="user123"
 
 start_time=$(date +%s)
 
@@ -321,35 +321,10 @@ fi
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 echo "Press Enter or wait 30 seconds to use defaults..."
-echo "Default root password: [hidden]"
 echo "Default username: $DEFAULT_USERNAME"
 echo "Default user password: [hidden]"
 echo
 
-while true; do
-    if read -rsp "Enter root password (default: [hidden]): " -t 30 ROOT_PASSWORD; then
-        echo
-        # If user pressed enter without typing anything, use default
-        if [[ -z "$ROOT_PASSWORD" ]]; then
-            ROOT_PASSWORD="$DEFAULT_ROOT_PASSWORD"
-            echo "Using default root password"
-            break  # Skip confirmation for defaults
-        fi
-    else
-        # Timeout occurred
-        echo
-        echo "Timeout - using default root password"
-        ROOT_PASSWORD="$DEFAULT_ROOT_PASSWORD"
-        break  # Skip confirmation for defaults
-    fi
-    
-    [[ -n "$ROOT_PASSWORD" ]] || { warn "Password cannot be empty"; continue; }
-    
-    read -rsp "Confirm root password: " ROOT_PASSWORD_CONFIRM
-    echo
-    [[ "$ROOT_PASSWORD" == "$ROOT_PASSWORD_CONFIRM" ]] && break
-    warn "Passwords don't match!"
-done
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 if read -rp "Enter username (default: $DEFAULT_USERNAME): " -t 30 USERNAME; then
     # If user pressed enter without typing anything, use default
@@ -382,14 +357,20 @@ while true; do
         USER_PASSWORD="$DEFAULT_USER_PASSWORD"
         break  # Skip confirmation for defaults
     fi
-    
+
     [[ -n "$USER_PASSWORD" ]] || { warn "Password cannot be empty"; continue; }
-    
+
     read -rsp "Confirm password: " USER_PASSWORD_CONFIRM
     echo
     [[ "$USER_PASSWORD" == "$USER_PASSWORD_CONFIRM" ]] && break
     warn "Passwords don't match!"
 done
+
+if [[ -z "$DEFAULT_ROOT_PASSWORD" ]]; then
+    ROOT_PASSWORD="$USER_PASSWORD"
+else
+    ROOT_PASSWORD="$DEFAULT_ROOT_PASSWORD"
+fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
