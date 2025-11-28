@@ -77,14 +77,8 @@ fi
 
 source ~/.bashrc || true
 
-
-# Install Polybar
-echo -e "${green}Installing Polybar configuration...${no_color}"
-mkdir -p ~/.local/share/polybar
-cp -r ~/configtemp/pkgs/polybar/* ~/.local/share/polybar/
-chmod +x ~/.local/share/polybar/launch.sh
-echo -e "${green}Polybar installed successfully.${no_color}"
-
+# Ensure Polybar launch script is executable
+chmod +x ~/.config/polybar/launch.sh
 
 if [ "$update_dwm" = "true" ]; then
     echo -e "${green}Installing dwm...${no_color}"

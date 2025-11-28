@@ -4,8 +4,8 @@
 killall polybar
 while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
 
-CONFIG_FILE="$HOME/.local/share/polybar/themes/config.ini"
-LAPTOP_CONFIG_FILE="$HOME/.local/share/polybar/themes/laptop-config.ini"
+CONFIG_FILE="$HOME/.config/polybar/themes/config.ini"
+LAPTOP_CONFIG_FILE="$HOME/.config/polybar/themes/laptop-config.ini"
 
 if ls /sys/class/power_supply/ 2>/dev/null | grep -q '^BAT'; then
 	CONFIG_FILE=$LAPTOP_CONFIG_FILE
