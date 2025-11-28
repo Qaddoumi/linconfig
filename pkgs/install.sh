@@ -1432,6 +1432,8 @@ NVIM_EOF
 
 update-desktop-database ~/.local/share/applications/
 
+cd ~
+
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [[ "$login_manager" == "ly" ]]; then
