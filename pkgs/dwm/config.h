@@ -93,8 +93,8 @@ static const Layout layouts[] = {
 static const char *launchercmd[] = { "rofi", "-show", "drun", NULL };
 static const char *termcmd[]     = { "kitty", NULL };
 /* Web app commands using xdg-open */
-static const char *gmailcmd[]     = { "webapp-launch", "https://gmail.com", NULL };
-static const char *youtubecmd[]   = { "webapp-launch", "https://youtube.com", NULL };
+// static const char *gmailcmd[]     = { "webapp-launch", "https://gmail.com", NULL };
+// static const char *youtubecmd[]   = { "webapp-launch", "https://youtube.com", NULL };
 static const char *chatgptcmd[]   = { "webapp-launch", "https://chatgpt.com", NULL };
 static const char *grokcmd[]      = { "webapp-launch", "https://grok.com", NULL };
 static const char *xpostcmd[]      = { "webapp-launch", "https://x.com/compose/post", NULL };
