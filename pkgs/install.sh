@@ -235,7 +235,7 @@ cp -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
 rm -rf "$HOME/.local/share/dwm/scripts"
 cd ~/.local/share/dwm
 sudo make clean install || { echo -e "${red}Failed to install dwm${no_color}"; true; }
-
+cd ~
 
 echo -e "\n\n"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
