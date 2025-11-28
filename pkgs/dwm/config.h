@@ -40,7 +40,7 @@ static const char *const autostart[] = {
     "flameshot", NULL,
     "dunst", NULL,
     "picom", "-b", NULL,
-    "sh", "-c", "feh --randomize --bg-fill /usr/share/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'", NULL,
+    "sh", "-c", "feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'", NULL,
     "sh", "-c", "/usr/bin/dex -a", NULL,
     NULL /* terminate */
 };
