@@ -40,14 +40,9 @@ echo -e "${green}\n\n ******************* Packages Installation Script *********
 
 # Parse named arguments
 login_manager=""
-window_manager=""
 is_vm=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --window-manager)
-            window_manager="$2"
-            shift 2
-            ;;
         --login-manager)
             login_manager="$2"
             shift 2
@@ -63,16 +58,10 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [ -z "$window_manager" ]; then
-    window_manager="sway" # Fallback to the default window manager
-    echo -e "${yellow}Window manager cannot be empty. will use the default: $window_manager${no_color}"
-fi
-
 if [ -z "$login_manager" ]; then
     login_manager="sddm" # Fallback to the default login manager
     echo -e "${yellow}Login manager cannot be empty. will use the default: $login_manager${no_color}"
 fi
-echo -e "${green}Window manager to be used: $window_manager${no_color}"
 echo -e "${green}Login manager to be used : $login_manager${no_color}"
 echo -e "${green}Username to be used      : $USER${no_color}"
 

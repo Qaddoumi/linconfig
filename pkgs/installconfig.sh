@@ -54,6 +54,7 @@ if [ -f ~/configtemp/.config/mimeapps.list ]; then
     sudo rm -rf ~/.local/share/applications/mimeapps.list ~/.config/mimeapps.list
 fi
 
+echo -e "${green}Copying config files...${no_color}"
 sudo cp -r ~/configtemp/.config/* ~/.config/
 sudo cp -f ~/configtemp/.config/mimeapps.list ~/.local/share/applications/
 
@@ -64,19 +65,22 @@ sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/polybar/scripts/*.sh > /dev/null || true
 
 # Save the script (use the first artifact "X11 to Wayland Clipboard Bridge")
+echo -e "${green}Setting up clipboard-bridge.sh...${no_color}"
 sudo cp -f ~/configtemp/pkgs/clipboard-bridge.sh ~/.local/bin/clipboard-bridge.sh > /dev/null || true
 sudo chmod +x ~/.local/bin/clipboard-bridge.sh
 
+echo -e "${green}Setting up ownership for configuration files...${no_color}"
 sudo chown -R $USER:$USER ~/.config > /dev/null || true
 sudo chown -R $USER:$USER ~/.local > /dev/null || true
 
-
+echo -e "${green}Setting up oh-my-posh (bash prompt)...${no_color}"
 if ! sudo grep -q "source ~/.config/oh-my-posh/gmay.omp.json" ~/.bashrc; then
     echo 'eval "$(oh-my-posh init bash --config ~/.config/oh-my-posh/gmay.omp.json)"' | sudo tee -a ~/.bashrc > /dev/null
 fi
 
 source ~/.bashrc || true
 
+echo -e "${green}Setting up polybar (launch script)...${no_color}"
 # Ensure Polybar launch script is executable
 chmod +x ~/.config/polybar/launch.sh
 
@@ -88,9 +92,13 @@ if [ "$update_dwm" = "true" ]; then
     cp -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
     rm -rf "$HOME/.local/share/dwm/scripts"
     cd ~/.local/share/dwm
+    echo -e "${green}Building dwm...${no_color}"
     sudo make clean install
 fi
 
+echo -e "${green}Removing temporary files...${no_color}"
 sudo rm -rf ~/configtemp
 
 #swaymsg reload
+
+echo -e "${green}Setup completed!${no_color}"

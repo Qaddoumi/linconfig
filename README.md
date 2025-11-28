@@ -4,19 +4,19 @@
 
 # LinConfig - Arch Linux Configuration Suite
 
-An automated configuration suite for Arch Linux featuring SwayWM setup, SDDM/Ly login managers, and VM GPU passthrough capabilities.
+An automated configuration suite for Arch Linux featuring Sway/Hyprland/DWM setup, SDDM/Ly login managers, and VM GPU passthrough capabilities.
+
+## ⚠️ Important Notice
+
+This project is currently in active development. While functional, it may not work as expected in all environments and could potentially cause system issues. **Please backup your data and use at your own risk, I take no responsibility for any damage that may occur.**
 
 ## 🌟 Features
 
 - **Automated Arch Linux Installation**: Complete system setup with advanced configuration options
-- **SwayWM Configuration**: Pre-configured Sway window manager with optimized settings
+- **WM Configuration**: Pre-configured Sway/Hyprland/DWM window manager with optimized settings
 - **Multiple Login Managers**: Support for both SDDM and Ly display managers
 - **VM GPU Passthrough**: Configuration for virtual machine GPU passthrough
 - **Modular Installation**: Install complete system or just configuration files
-
-## ⚠️ Important Notice
-
-This project is currently in active development. While functional, it may not work as expected in all environments and could potentially cause system issues. **Please backup your data and use at your own risk.**
 
 ## 🚀 Quick Start
 
@@ -26,30 +26,23 @@ Install Arch Linux with advanced configuration options:
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux/archinstall.sh)
 ```
 
-### Sway + SDDM Setup
+### Sway/Hyprland/DWM + SDDM Setup
 Install SwayWM with SDDM login manager:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --window-manager sway --login-manager sddm --is-vm false
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --login-manager sddm --is-vm false
 ```
-
-### Hyprland + SDDM Setup
-Install HyprlandWM with SDDM login manager:
-```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --window-manager hyprland --login-manager sddm --is-vm false
-```
-
 
 ### Configuration Files Only
 Install only the configuration files without system packages:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/installconfig.sh) --window-manager sway
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/installconfig.sh) --login-manager sddm
 ```
 
 ## 🔧 Configuration Details
 
 ### Post-Installation
 After installation, you can:
-1. Log out and select Sway/Hyprland from your display manager
+1. Log out and select Sway/Hyprland/DWM from your display manager
 2. Use `Super + Enter` to open a terminal
 3. Use `Super + d` to open the application launcher
 
