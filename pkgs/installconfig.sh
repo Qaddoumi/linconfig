@@ -86,18 +86,22 @@ chmod +x ~/.config/polybar/launch.sh
 
 if [ "$update_dwm" = "true" ]; then
     echo -e "${green}\$update_dwm is set to true${no_color}"
-    echo -e "${green}Installing dwm...${no_color}"
+    echo -e "${green}Building and installing dwm...${no_color}"
+    echo -e "${green}Copying files...${no_color}"
+
     mkdir -p ~/.local/share/dwm
     mkdir -p ~/.local/bin
     # Copy both regular files and hidden files (like .xinitrc)
-    cp -rf ~/configtemp/pkgs/dwm/* ~/.local/share/dwm/ 2>/dev/null || true
-    cp -rf ~/configtemp/pkgs/dwm/.* ~/.local/share/dwm/ 2>/dev/null || true
-    cp -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
-    chmod +x $HOME/.local/bin/*
-    rm -rf "$HOME/.local/share/dwm/scripts"
+    cp -rf ~/configtemp/pkgs/dwm/. ~/.local/share/dwm/ 2>/dev/null || true
+    cp -rf ~/.local/share/dwm/scripts/. ~/.local/bin/ 2>/dev/null || true
+    chmod +x ~/.local/bin/* ~/.local/bin/.*
+
+    rm -rf ~/.local/share/dwm/scripts
+
+    echo -e "${green}Done copying files now ==> Building dwm...${no_color}"
     cd ~/.local/share/dwm
-    echo -e "${green}Building dwm...${no_color}"
     sudo make clean install || { echo -e "${red}Failed to install dwm${no_color}"; true; }
+    cd ~
 fi
 
 echo -e "${green}Removing temporary files...${no_color}"
