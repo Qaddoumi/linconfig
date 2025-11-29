@@ -26,7 +26,7 @@ no_color='\033[0m' # reset the color to default
 backup_file() {
     local file="$1"
     if sudo test -f "$file"; then
-        sudo cp "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
+        sudo cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
         echo -e "${green}Backed up $file${no_color}"
     else
         echo -e "${yellow}File $file does not exist, skipping backup${no_color}"
