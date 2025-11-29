@@ -454,14 +454,24 @@ gitpush() {
     git push
 }
 
+EOF
+    echo -e "${green}Added gitpush function to $BASHRC_FILE${no_color}"
+else
+    echo -e "${yellow}gitpush function already present in $BASHRC_FILE, skipping${no_color}"
+fi
+
+if grep -q "fastfetch" "$BASHRC_FILE"; then
+    echo -e "${green}fastfetch is already set in .bashrc${no_color}"
+else
+    echo -e "${green}Adding fastfetch to .bashrc...${no_color}"
+    cat >> "$BASHRC_FILE" <<'EOF'
+
 if [ -n "$TMUX" ]; then
     fastfetch
 fi
 
 EOF
-    echo -e "${green}Added gitpush function to $BASHRC_FILE${no_color}"
-else
-    echo -e "${yellow}gitpush function already present in $BASHRC_FILE, skipping${no_color}"
+    echo -e "${green}Successfully added fastfetch in tmux to .bashrc${no_color}"
 fi
 
 source ~/.bashrc || true
