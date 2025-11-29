@@ -974,7 +974,7 @@ mkinitcpio -P || error "Failed to regenerate initramfs"
 
 info "Installing ${BOOTLOADER} bootloader for $BOOT_MODE mode"
 if [[ "$BOOTLOADER" == "grub" ]]; then
-    info "Installing GRUB bootloader (running grub-install)"
+    info "Installing GRUB bootloader (using grub-install)"
     if [[ "$BOOT_MODE" == "UEFI" ]]; then
         grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --removable || {
             error "GRUB UEFI installation failed"
@@ -996,7 +996,7 @@ elif [[ "$BOOTLOADER" == "systemd-boot" ]]; then
         error "ESP not mounted at /boot for systemd-boot"
     fi
     
-    info "Installing systemd-boot (running bootctl)"
+    info "Installing systemd-boot (using bootctl)"
     bootctl install || {
         error "systemd-boot installation failed"
     }
@@ -1049,7 +1049,7 @@ if [[ "$BOOTLOADER" == "grub" ]]; then
     mkdir -p /boot/grub || error "Failed to create /boot/grub directory"
 
     info "Backing up original GRUB configuration"
-    cp /etc/default/grub /etc/default/grub.backup
+    cp -an /etc/default/grub /etc/default/grub.backup
 
     # Final validation for GRUB
     if [[ -z "$SWAPFILE_OFFSET" ]] || [[ "$SWAPFILE_OFFSET" == "0" ]]; then
