@@ -274,24 +274,24 @@ fi
 
 info "Select bootloader:"
 if [[ "$BOOT_MODE" == "UEFI" ]]; then
-    echo "1) systemd-boot (default for UEFI)"
-    echo "2) GRUB"
-    if read -rp "Select bootloader [1-2] (press Enter for systemd-boot): " -t 30 BOOTLOADER_CHOICE; then
+    echo "1) GRUB"
+    echo "2) systemd-boot"
+    if read -rp "Select bootloader [1-2] (press Enter for grub): " -t 30 BOOTLOADER_CHOICE; then
         BOOTLOADER_CHOICE=${BOOTLOADER_CHOICE:-1}
         if [[ -z "$BOOTLOADER_CHOICE" ]]; then
-            info "No choice made, defaulting to systemd-boot for UEFI"
-            BOOTLOADER="systemd-boot"
+            info "Choosing GRUB as bootloader"
+            BOOTLOADER="grub"
         else
             case $BOOTLOADER_CHOICE in
                 1) BOOTLOADER="systemd-boot" ;;
                 2) BOOTLOADER="grub" ;;
-                *) warn "Invalid choice. Defaulting to systemd-boot for UEFI."
-                    BOOTLOADER="systemd-boot" ;;
+                *) warn "Invalid choice. Defaulting to GRUB."
+                    BOOTLOADER="grub" ;;
             esac
         fi
     else
-        BOOTLOADER="systemd-boot"
-        info "Timeout, defaulting to systemd-boot for UEFI"
+        BOOTLOADER="grub"
+        info "Timeout, defaulting to GRUB"
     fi
 else
     BOOTLOADER="grub"
@@ -393,27 +393,8 @@ newTask "═══════════════════════�
 info "Would you like to run my post-install script? to install sway and other packages? with my configuration files ?"
 read -rp "Type 'y' to run post-install script, or hit enter to skip: " RUN_POST_INSTALL
 RUN_POST_INSTALL=${RUN_POST_INSTALL:-n}
-login_manager_choice="sddm" # Default login manager
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
     info "Post-install script will be run after installation"
-    echo -e "${blue}--------------------------------------------------\n${no_color}"
-    info "chose the login manager you want to use"
-    info "1) SDDM (Simple Desktop Display Manager)"
-    info "2) Ly  (TUI lightweight display manager)"
-    while true; do
-        read -r -p "Select login manager [1-2] (default: 1): " login_manager_choice_num
-        login_manager_choice_num=${login_manager_choice_num:-1}
-        if [[ "$login_manager_choice_num" == "1" ]]; then
-            login_manager_choice="sddm"
-            break
-        elif [[ "$login_manager_choice_num" == "2" ]]; then
-            login_manager_choice="ly"
-            break
-        else
-            warn "Invalid choice. Please enter 1 or 2."
-        fi
-    done
-    info "$login_manager_choice will be installed"
 else
     info "Skipping post-install script"
 fi
@@ -1344,11 +1325,10 @@ newTask "═══════════════════════�
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
     info "Running post-install script..."
 
-    arch-chroot /mnt /bin/bash -s -- "$USERNAME" "$login_manager_choice" "$IS_VM" <<'POSTINSTALLEOF' || error "Post-install script failed to run"
+    arch-chroot /mnt /bin/bash -s -- "$USERNAME" "$IS_VM" <<'POSTINSTALLEOF' || error "Post-install script failed to run"
 
 USER_NAME="$1"
-LOGIN_MANAGER="$2"
-isVM="$3"
+isVM="$2"
 
 echo -e "\n"
 
@@ -1356,8 +1336,8 @@ echo "Temporarily disabling sudo password for wheel group"
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 su "$USER_NAME" <<USEREOF
-    echo "Running post-install script as user \$USER with login manager $LOGIN_MANAGER..."
-    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --login-manager "$LOGIN_MANAGER" --is-vm "$isVM" || echo "Failed to run the install script"
+    echo "Running post-install script as user \$USER_NAME..."
+    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --is-vm "$isVM" || echo "Failed to run the install script"
 USEREOF
 
 echo "Restoring sudo password requirement for wheel group"
@@ -1366,7 +1346,7 @@ POSTINSTALLEOF
 else
     warn "Skipping post-install script, you may reboot now."
     info "if you would like to run my post-install script later, you can run it with the command:"
-    info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --login-manager \"$login_manager_choice\" --is-vm \"$IS_VM\""
+    info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --is-vm \"$IS_VM\""
 fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════\n"

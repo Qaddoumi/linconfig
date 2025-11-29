@@ -39,14 +39,9 @@ echo -e "${green}\n\n ******************* Packages Installation Script *********
 
 
 # Parse named arguments
-login_manager=""
 is_vm=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --login-manager)
-            login_manager="$2"
-            shift 2
-            ;;
         --is-vm)
             is_vm="$2"
             shift 2
@@ -58,11 +53,6 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [ -z "$login_manager" ]; then
-    login_manager="sddm" # Fallback to the default login manager
-    echo -e "${yellow}Login manager cannot be empty. will use the default: $login_manager${no_color}"
-fi
-echo -e "${green}Login manager to be used : $login_manager${no_color}"
 echo -e "${green}Username to be used      : $USER${no_color}"
 
 if [ "$is_vm" = true ]; then
@@ -1430,37 +1420,25 @@ Categories=Utility;TextEditor;
 MimeType=text/plain;text/markdown;
 NVIM_EOF
 
-update-desktop-database ~/.local/share/applications/
+update-desktop-database ~/.local/share/applications/ || true
 
 cd ~
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
-if [[ "$login_manager" == "ly" ]]; then
-    echo -e "${green}Installing and configuring ly (a lightweight display manager)${no_color}"
+echo -e "${green}Installing and configuring SDDM (Simple Desktop Display Manager)${no_color}"
 
-    sudo pacman -S --needed --noconfirm cmatrix
-    sudo pacman -S --needed --noconfirm ly
-    sudo systemctl disable display-manager.service || true
-    sudo systemctl enable ly.service || true
-    # Edit the configuration file /etc/ly/config.ini to use matrix for animation
-    sudo sed -i 's/^animation = .*/animation = matrix/' /etc/ly/config.ini || true
-elif [[ "$login_manager" == "sddm" ]]; then
-    echo -e "${green}Installing and configuring SDDM (Simple Desktop Display Manager)${no_color}"
-
-    sudo pacman -S --needed --noconfirm sddm || true
-    sudo systemctl disable display-manager.service || true
-    sudo systemctl enable sddm.service || true
-    echo -e "${green}Setting up my Hacker theme for SDDM${no_color}"
-    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sddm-hacker-theme/main/install.sh) || echo -e "${red}Failed to install the theme${no_color}"
-else
-    echo -e "${red}Unsupported login manager: $login_manager${no_color}"
-fi
+sudo pacman -S --needed --noconfirm sddm || true
+sudo systemctl disable display-manager.service || true
+sudo systemctl enable sddm.service || true
+echo -e "${green}Setting up my Hacker theme for SDDM${no_color}"
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sddm-hacker-theme/main/install.sh) || { echo -e "${red}Failed to install the theme${no_color}"; true ;}
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo ""
-echo -e "${green}******************* Sway with my configuration Installation Script Completed *******************${no_color}"
+echo -e "${green}******************* My Linux Configuration Script Completed *******************${no_color}"
 echo ""
 echo -e "${yellow}REBOOT REQUIRED - Please reboot your system now!${no_color}"
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
+echo ""
