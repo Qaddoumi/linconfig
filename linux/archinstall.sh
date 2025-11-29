@@ -1066,6 +1066,19 @@ if [[ "$BOOTLOADER" == "grub" ]]; then
     info "Configuring GRUB for dual boot"
     echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
 
+    info "Disabling GRUB submenu"
+    GRUB_CONFIG_FILE="/etc/default/grub"
+    NEW_LINE="GRUB_DISABLE_SUBMENU=y"
+
+    # Check 1: Check if the variable exists (commented or uncommented)
+    if grep -q "GRUB_DISABLE_SUBMENU" "$GRUB_CONFIG_FILE"; then
+        echo "Existing 'GRUB_DISABLE_SUBMENU' found. Updating/Uncommenting to 'y'..."
+        sed -i 's/^#*\s*GRUB_DISABLE_SUBMENU=.*/GRUB_DISABLE_SUBMENU=y/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_DISABLE_SUBMENU"
+    else
+        echo "'GRUB_DISABLE_SUBMENU' not found. Appending new line to file."
+        echo "$NEW_LINE" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_DISABLE_SUBMENU"
+    fi
+
     info "run grub-mkconfig to generate GRUB configuration"
     grub-mkconfig -o /boot/grub/grub.cfg || error "Failed to generate GRUB configuration"
 
