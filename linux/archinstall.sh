@@ -1096,6 +1096,16 @@ if [[ "$BOOTLOADER" == "grub" ]]; then
         echo "GRUB_TOP_LEVEL=\"$GRUB_TOP_LEVEL\"" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_TOP_LEVEL"
     fi
 
+    info "setting default timeout"
+    GRUB_TIMEOUT="2"
+    if grep -q "GRUB_TIMEOUT" "$GRUB_CONFIG_FILE"; then
+        echo "Existing 'GRUB_TIMEOUT' found. Updating/Uncommenting to '$GRUB_TIMEOUT'..."
+        sed -i 's/^#*\s*GRUB_TIMEOUT=.*/GRUB_TIMEOUT="$GRUB_TIMEOUT"/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TIMEOUT"
+    else
+        echo "'GRUB_TIMEOUT' not found. Appending to $GRUB_CONFIG_FILE."
+        echo "GRUB_TIMEOUT=\"$GRUB_TIMEOUT\"" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_TIMEOUT"
+    fi
+
     info "run grub-mkconfig to generate GRUB configuration"
     grub-mkconfig -o /boot/grub/grub.cfg || error "Failed to generate GRUB configuration"
 
