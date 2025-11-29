@@ -1382,7 +1382,7 @@ if [[ $minutes -gt 0 || $hours -gt 0 ]]; then
 fi
 time_str+="${seconds}s"
 
-echo -e "Operation completed in ${time_str}"
+echo -e "\nOperation completed in ${time_str}\n"
 
 cp archsetuplogs.txt /mnt/home/$USERNAME/
 arch-chroot /mnt chown -R $USERNAME:$USERNAME /home/$USERNAME/archsetuplogs.txt
