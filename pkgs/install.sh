@@ -448,15 +448,15 @@ echo -e "${green}Insuring XDG_RUNTIME_DIR is set so application like wl-clipboar
 if grep -q "XDG_RUNTIME_DIR" "$BASHRC_FILE"; then
     echo -e "${green}XDG_RUNTIME_DIR is already set in .bashrc${no_color}"
 else
-    echo -e "${green}Adding XDG_RUNTIME_DIR to .bashrc...${no_color}"
+    echo -e "${green}Adding XDG_RUNTIME_DIR to .bashrc${no_color}"
     echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> "$BASHRC_FILE"
     echo -e "${green}Successfully added to .bashrc${no_color}"
 fi
 
 if grep -q "export PATH" "$BASHRC_FILE"; then
-    echo "${green}PATH already set in $BASHRC_FILE${no_color}"
+    echo -e "${green}PATHs already set in $BASHRC_FILE${no_color}"
 else
-    echo "${green}Adding PATH to $BASHRC_FILE...${no_color}"
+    echo -e "${green}Adding PATHs to $BASHRC_FILE${no_color}"
     echo "export PATH=$PATH:\"$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin\"" >> "$BASHRC_FILE"
 fi
 
@@ -478,7 +478,7 @@ fi
 if grep -q "fastfetch" "$BASHRC_FILE"; then
     echo -e "${green}fastfetch is already set in .bashrc${no_color}"
 else
-    echo -e "${green}Adding fastfetch to .bashrc...${no_color}"
+    echo -e "${green}Adding fastfetch to .bashrc${no_color}"
     cat >> "$BASHRC_FILE" <<'EOF'
 
 if [ -n "$TMUX" ]; then
