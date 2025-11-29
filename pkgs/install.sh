@@ -215,9 +215,9 @@ echo ""
 
 echo -e "\n\n"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm nwg-look # GTK theme configuration GUI (wayland)
+sudo pacman -S --needed --noconfirm nwg-look # GTK theme configuration GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration GUI (X11 and wayland
+sudo pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gnome-keyring # Authentication agent for privileged operations
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -228,8 +228,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wofi # Application launcher for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm rofi # Application launcher for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm dex # Autostart manager for X11
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
+# sudo pacman -S --needed --noconfirm dex # Autostart manager for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -451,6 +451,13 @@ else
     echo -e "${green}Adding XDG_RUNTIME_DIR to .bashrc...${no_color}"
     echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> "$BASHRC_FILE"
     echo -e "${green}Successfully added to .bashrc${no_color}"
+fi
+
+if grep -q "export PATH" "$BASHRC_FILE"; then
+    echo "${green}PATH already set in $BASHRC_FILE${no_color}"
+else
+    echo "${green}Adding PATH to $BASHRC_FILE...${no_color}"
+    echo "export PATH=$PATH:\"$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin\"" >> "$BASHRC_FILE"
 fi
 
 if ! grep -q '^gitpush()' "$BASHRC_FILE"; then
