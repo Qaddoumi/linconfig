@@ -1063,11 +1063,18 @@ if [[ "$BOOTLOADER" == "grub" ]]; then
         sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 $KERNEL_CMDLINE resume=UUID=$ROOT_UUID resume_offset=$SWAPFILE_OFFSET\"/" /etc/default/grub
     fi
 
+    GRUB_CONFIG_FILE="/etc/default/grub"
+
     info "Configuring GRUB for dual boot"
-    echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+    if grep -q "GRUB_DISABLE_OS_PROBER" "$GRUB_CONFIG_FILE"; then
+        echo "Existing 'GRUB_DISABLE_OS_PROBER' found. Updating/Uncommenting to 'false'..."
+        sed -i 's/^#*\s*GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_DISABLE_OS_PROBER"
+    else
+        echo "'GRUB_DISABLE_OS_PROBER' not found. Appending new line to file."
+        echo "GRUB_DISABLE_OS_PROBER=false" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_DISABLE_OS_PROBER"
+    fi
 
     info "Disabling GRUB submenu"
-    GRUB_CONFIG_FILE="/etc/default/grub"
     NEW_LINE="GRUB_DISABLE_SUBMENU=y"
 
     # Check 1: Check if the variable exists (commented or uncommented)
@@ -1077,6 +1084,16 @@ if [[ "$BOOTLOADER" == "grub" ]]; then
     else
         echo "'GRUB_DISABLE_SUBMENU' not found. Appending new line to file."
         echo "$NEW_LINE" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_DISABLE_SUBMENU"
+    fi
+
+    info "Setting default option for grub"
+    GRUB_TOP_LEVEL="/boot/vmlinuz-linux"
+    if grep -q "GRUB_TOP_LEVEL" "$GRUB_CONFIG_FILE"; then
+        echo "Existing 'GRUB_TOP_LEVEL' found. Updating/Uncommenting to '$GRUB_TOP_LEVEL'..."
+        sed -i 's/^#*\s*GRUB_TOP_LEVEL=.*/GRUB_TOP_LEVEL="$GRUB_TOP_LEVEL"/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TOP_LEVEL"
+    else
+        echo "'GRUB_TOP_LEVEL' not found. Appending new line to file."
+        echo "GRUB_TOP_LEVEL=\"$GRUB_TOP_LEVEL\"" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_TOP_LEVEL"
     fi
 
     info "run grub-mkconfig to generate GRUB configuration"
