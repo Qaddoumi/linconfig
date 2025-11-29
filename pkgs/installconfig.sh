@@ -94,7 +94,7 @@ if [ "$update_dwm" = "true" ]; then
     # Copy both regular files and hidden files (like .xinitrc)
     cp -rf ~/configtemp/pkgs/dwm/. ~/.local/share/dwm/ 2>/dev/null || true
     cp -rf ~/.local/share/dwm/scripts/. ~/.local/bin/ 2>/dev/null || true
-    chmod +x ~/.local/bin/* ~/.local/bin/.*
+    find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
 
     rm -rf ~/.local/share/dwm/scripts
 

@@ -215,7 +215,9 @@ echo ""
 
 echo -e "\n\n"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm nwg-look # GTK theme configuration GUI
+sudo pacman -S --needed --noconfirm nwg-look # GTK theme configuration GUI (wayland)
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration GUI (X11 and wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gnome-keyring # Authentication agent for privileged operations
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -391,7 +393,7 @@ mkdir -p ~/.local/bin
 # Copy both regular files and hidden files (like .xinitrc)
 cp -rf ~/configtemp/pkgs/dwm/. ~/.local/share/dwm/ 2>/dev/null || true
 cp -rf ~/.local/share/dwm/scripts/. ~/.local/bin/ 2>/dev/null || true
-chmod +x ~/.local/bin/* ~/.local/bin/.*
+find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
 
 rm -rf ~/.local/share/dwm/scripts
 
