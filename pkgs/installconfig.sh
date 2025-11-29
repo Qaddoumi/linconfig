@@ -93,6 +93,7 @@ if [ "$update_dwm" = "true" ]; then
     cp -rf ~/configtemp/pkgs/dwm/* ~/.local/share/dwm/ 2>/dev/null || true
     cp -rf ~/configtemp/pkgs/dwm/.* ~/.local/share/dwm/ 2>/dev/null || true
     cp -rf "$HOME/.local/share/dwm/scripts/." "$HOME/.local/bin/"
+    chmod +x $HOME/.local/bin/*
     rm -rf "$HOME/.local/share/dwm/scripts"
     cd ~/.local/share/dwm
     echo -e "${green}Building dwm...${no_color}"

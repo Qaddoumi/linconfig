@@ -11,6 +11,10 @@ if ls /sys/class/power_supply/ 2>/dev/null | grep -q '^BAT'; then
 	CONFIG_FILE=$LAPTOP_CONFIG_FILE
 fi
 
+#TODO:
+my_config_file="$HOME/.config/polybar/config.ini"
+CONFIG_FILE="$my_config_file"
+
 # Check if xrandr is available and get monitor list
 if command -v xrandr > /dev/null 2>&1; then
     # Get list of connected monitors

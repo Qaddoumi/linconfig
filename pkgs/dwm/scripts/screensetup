@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+xrandr --output eDP-1 --mode 1920x1080 --rate 144
+xrandr --output DP-1 --mode 1920x1080 --rate 144
+xrandr --output HDMI-A-1 --mode 1920x1080 --rate 144
+xrandr --output Virtual-1 --mode 1920x1080 --rate 144
