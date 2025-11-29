@@ -1092,7 +1092,7 @@ if [[ "$BOOTLOADER" == "grub" ]]; then
         echo "Existing 'GRUB_TOP_LEVEL' found. Updating/Uncommenting to '$GRUB_TOP_LEVEL'..."
         sed -i 's/^#*\s*GRUB_TOP_LEVEL=.*/GRUB_TOP_LEVEL="$GRUB_TOP_LEVEL"/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TOP_LEVEL"
     else
-        echo "'GRUB_TOP_LEVEL' not found. Appending new line to file."
+        echo "'GRUB_TOP_LEVEL' not found. Appending to $GRUB_CONFIG_FILE."
         echo "GRUB_TOP_LEVEL=\"$GRUB_TOP_LEVEL\"" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_TOP_LEVEL"
     fi
 
