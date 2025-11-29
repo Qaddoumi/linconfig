@@ -283,8 +283,8 @@ if [[ "$BOOT_MODE" == "UEFI" ]]; then
             BOOTLOADER="grub"
         else
             case $BOOTLOADER_CHOICE in
-                1) BOOTLOADER="systemd-boot" ;;
-                2) BOOTLOADER="grub" ;;
+                1) BOOTLOADER="grub" ;;
+                2) BOOTLOADER="systemd-boot" ;;
                 *) warn "Invalid choice. Defaulting to GRUB."
                     BOOTLOADER="grub" ;;
             esac
