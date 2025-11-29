@@ -1088,6 +1088,20 @@ if [[ "$BOOTLOADER" == "grub" ]]; then
     info "run grub-mkconfig to generate GRUB configuration"
     grub-mkconfig -o /boot/grub/grub.cfg || error "Failed to generate GRUB configuration"
 
+    info "Installing grub CyberRe theme"
+    # Clone the repository
+    git clone --depth 1 https://github.com/Qaddoumi/grub-theme.git
+
+    # Navigate to the directory
+    cd grub-theme
+
+    # Run the installation script
+    ./install.sh
+
+    # Clean up
+    cd ..
+    rm -rf grub-theme
+
 elif [[ "$BOOTLOADER" == "systemd-boot" ]]; then
     # For systemd-boot, everything goes in /boot (which is the ESP)
     mkdir -p /boot/loader/entries || error "Failed to create /boot/loader/entries directory"
