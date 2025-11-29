@@ -1208,14 +1208,19 @@ info "Installing memtest86+ for memory testing"
 if [[ "$BOOTLOADER" == "grub" ]]; then
     info "Installing memtest86+ for GRUB"
     
-    # Install the traditional memtest86+ for GRUB compatibility
-    pacman -S --needed --noconfirm memtest86+ || warn "Failed to install memtest86+"
+    if [[ "$BOOT_MODE" == "UEFI" ]]; then
+        # For UEFI, we need the EFI version of memtest86+
+        pacman -S --needed --noconfirm memtest86+-efi || warn "Failed to install memtest86+-efi"
+    else
+        # For BIOS, use the standard version
+        pacman -S --needed --noconfirm memtest86+ || warn "Failed to install memtest86+"
+    fi
     
     # Update GRUB configuration to include memtest86+
     grub-mkconfig -o /boot/grub/grub.cfg || warn "Failed to update GRUB configuration"
     
     # Verify memtest86+ was added to GRUB menu
-    if grep -q "Memory test" /boot/grub/grub.cfg; then
+    if grep -q "memtest" /boot/grub/grub.cfg; then
         info "memtest86+ successfully added to GRUB menu"
     else
         warn "memtest86+ may not have been properly added to GRUB menu"
