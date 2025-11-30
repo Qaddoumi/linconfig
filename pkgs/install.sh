@@ -229,7 +229,7 @@ sudo pacman -S --needed --noconfirm wofi # Application launcher for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm rofi # Application launcher for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm dex # Autostart manager for X11 (i dont't know why, but it make spice runs without issues in vm)
+sudo pacman -S --needed --noconfirm dex # Autostart manager (i dont't know why, but it make spice runs without issues in vm)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"

@@ -164,6 +164,9 @@ font pango:JetBrainsMono Nerd Font Propo 12
 # Wide containers get vertical splits, tall containers get horizontal splits
 #exec autotiling -l 2
 
+# Autostart apps in /etc/xdg/autostart/ or ~/.config/autostart/
+exec dex -a
+
 # Start polkit authentication agent
 exec_always /usr/lib/hyprpolkitagent/hyprpolkitagent
 
@@ -178,7 +181,8 @@ exec_always bash -c 'sleep 1; pkill kanshi 2>/dev/null || true; kanshi'
 # exec_always wl-paste --type text --watch xclip -selection clipboard
 
 ## SPICE Agent (Clipboard Sharing for VMs)
-exec_always bash -c "killall -q spice-vdagentd; sleep 3; gtk_backend=x11 spice-vdagent"
+# should autostart with dex
+# exec_always bash -c "killall -q spice-vdagentd; sleep 3; gtk_backend=x11 spice-vdagent"
 
 ## X11 to Wayland Clipboard Bridge
 # This bridges clipboard from spice-vdagent (X11) to Wayland
