@@ -36,9 +36,10 @@ static const char *colors[][3] = {
 
 static const char *const autostart[] = {
     "dbus-update-activation-environment", "--systemd", "--all", NULL,
+    "disable-powersaving", NULL,
     "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1", NULL,
     "flameshot", NULL,
-    "sh", "-c", "~/.local/bin/screensetup", NULL, /*set the screen to 1920x1080@144hz*/
+    "screensetup", NULL, /*set the screen to 1920x1080@144hz*/
     "dunst", NULL,
     "picom", "-b", NULL,
     "sh", "-c", "feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'", NULL,
