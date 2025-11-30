@@ -1,28 +1,25 @@
 #!/usr/bin/env bash
 
-# Simple idle inhibitor toggle using xdg-screensaver or caffeine
-# You may need to install 'caffeine' or use another tool
-
+# Idle inhibitor for xautolock (DWM/X11)
 STATE_FILE="/tmp/polybar_idle_inhibitor"
 
 if [ "$1" = "toggle" ]; then
     if [ -f "$STATE_FILE" ]; then
-        # Disable inhibitor
-        pkill -f "xdg-screensaver reset" 2>/dev/null
+        # Disable inhibitor (Enable xautolock)
+        xautolock -enable
+        xset s on +dpms
         rm "$STATE_FILE"
     else
-        # Enable inhibitor
+        # Enable inhibitor (Disable xautolock)
         touch "$STATE_FILE"
-        while [ -f "$STATE_FILE" ]; do
-            xdg-screensaver reset
-            sleep 50
-        done &
+        xautolock -disable
+        xset s off -dpms
     fi
 else
     # Check status
     if [ -f "$STATE_FILE" ]; then
-        echo " "
+        echo "%{B#ecf0f1}%{F#2d3748}    %{F-}%{B-}"
     else
-        echo " "
+        echo "%{B#2d3748}%{F#ffffff}    %{F-}%{B-}"
     fi
 fi
