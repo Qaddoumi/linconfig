@@ -37,10 +37,10 @@ case $selected in
         ;;
 		esac
     ;;
-  "⏾ Suspend")
-    mpc -q pause
-    pactl set-sink-mute @DEFAULT_SINK@ 1
-    systemctl suspend;;
+  # "⏾ Suspend")
+  #   mpc -q pause
+  #   pactl set-sink-mute @DEFAULT_SINK@ 1
+  #   systemctl suspend;;
   "⏽ Hibernate")
     systemctl hibernate;;
   "↻ Reboot")
