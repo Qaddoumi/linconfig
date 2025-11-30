@@ -1,12 +1,3 @@
-/**
- *
- * Author : Aditya Shakya (adi1090x)
- * Github : @adi1090x
- * 
- * Rofi Theme File
- * Rofi Version: 1.7.3
- **/
-
 /*****----- Configuration -----*****/
 configuration {
     show-icons:                 false;
@@ -24,9 +15,9 @@ configuration {
     element-padding:             35px 40px;
     element-border-radius:       20px;
 
-    prompt-font:                 "JetBrainsMono Nerd Font Propo Bold 72";
-    textbox-font:                "JetBrainsMono Nerd Font Propo 14";
-    element-text-font:           "feather 64";
+    prompt-font:                 "JetBrainsMono Nerd Font Propo Bold 42";
+    textbox-font:                "JetBrainsMono Nerd Font Propo 7";
+    element-text-font:           "JetBrainsMono Nerd Font Propo 23";
 
     background-window:           black/30%;
     background-normal:           white/5%;
@@ -93,8 +84,8 @@ textbox {
 listview {
     enabled:                     true;
     expand:                      false;
-    columns:                     5;
-    lines:                       1;
+    columns:                     3;
+    lines:                       2;
     cycle:                       true;
     dynamic:                     true;
     scrollbar:                   false;
