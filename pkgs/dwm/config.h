@@ -42,7 +42,7 @@ static const char *const autostart[] = {
     "dunst", NULL,
     "picom", "-b", NULL,
     "sh", "-c", "feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'", NULL,
-    "sh", "-c", "/usr/bin/dex -a", NULL,
+    "sh", "-c", "/usr/bin/dex -a", NULL, /* autostart manager==> will auto start apps in /etc/xdg/autostart/ or ~/.config/autostart/ */
     NULL /* terminate */
 };
 
