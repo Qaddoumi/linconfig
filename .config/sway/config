@@ -202,6 +202,8 @@ exec_always killall -q swaync && swaync -c ~/.config/swaync/config.json
 ## Autostart Applications
 exec bash -c 'sleep 4; swaymsg "workspace 1; exec kitty"'
 
+exec flameshot
+
 
 ### Window Rules
 # to get app_id or class, use `swaymsg -t get_tree | grep -A 23 "File Operation Progress"`
