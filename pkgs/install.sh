@@ -228,8 +228,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wofi # Application launcher for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm rofi # Application launcher for X11
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm dex # Autostart manager for X11
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm dex # Autostart manager for X11 (i dont't know why, but it make spice runs without issues in vm)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -412,10 +412,19 @@ if [ ! -f "$ENV_FILE" ]; then
     sudo touch "$ENV_FILE"
 fi
 
+if grep -q "export PATH" "$ENV_FILE"; then
+    echo -e "${green}PATHs already set in $ENV_FILE${no_color}"
+else
+    echo -e "${green}Adding PATHs to $ENV_FILE${no_color}"
+    echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
+    echo "export PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin" | sudo tee -a "$ENV_FILE" > /dev/null || true
+fi
+
 if grep -q "ELECTRON_OZONE_PLATFORM_HINT" "$ENV_FILE"; then
     echo "${green}ELECTRON_OZONE_PLATFORM_HINT already exists in $ENV_FILE${no_color}"
 else
     echo -e "${green}Adding ELECTRON_OZONE_PLATFORM_HINT to $ENV_FILE...${no_color}"
+    echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
     echo "ELECTRON_OZONE_PLATFORM_HINT=wayland" | sudo tee -a "$ENV_FILE" > /dev/null || true
 fi
 echo -e "${yellow}You'll need to restart your session for this to take effect system-wide${no_color}"
@@ -429,6 +438,7 @@ if [ "$is_vm" = true ]; then
         echo -e "${green}Cursor is already set in $ENV_FILE${no_color}"
     else
         echo -e "${green}Adding cursor to "$ENV_FILE"...${no_color}"
+        echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
         echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a "$ENV_FILE" > /dev/null || true
     fi
 else
@@ -452,13 +462,6 @@ else
     echo "" >> "$BASHRC_FILE"
     echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> "$BASHRC_FILE"
     echo -e "${green}Successfully added to .bashrc${no_color}"
-fi
-
-if grep -q "export PATH" "$BASHRC_FILE"; then
-    echo -e "${green}PATHs already set in $BASHRC_FILE${no_color}"
-else
-    echo -e "${green}Adding PATHs to $BASHRC_FILE${no_color}"
-    echo "export PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin" >> "$BASHRC_FILE"
 fi
 
 if ! grep -q '^gitpush()' "$BASHRC_FILE"; then
