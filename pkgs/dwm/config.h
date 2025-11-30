@@ -99,21 +99,21 @@ static const char *termcmd[]     = { "kitty", NULL };
 // static const char *youtubecmd[]   = { "webapp-launch", "https://youtube.com", NULL };
 static const char *chatgptcmd[]   = { "webapp-launch", "https://chatgpt.com", NULL };
 static const char *grokcmd[]      = { "webapp-launch", "https://grok.com", NULL };
-static const char *xpostcmd[]      = { "webapp-launch", "https://x.com/compose/post", NULL };
+// static const char *xpostcmd[]      = { "webapp-launch", "https://x.com/compose/post", NULL };
 
 static Key keys[] = {
     /* modifier                     key                        function        argument */
-    { MODKEY,                       XK_r,                      spawn,          {.v = launchercmd} },
+    { MODKEY,                       XK_d,                      spawn,          {.v = launchercmd} },
     { MODKEY|ControlMask,           XK_r,                      spawn,          SHCMD ("protonrestart")},
-    { MODKEY,                       XK_x,                      spawn,          {.v = termcmd } },
+    { MODKEY,                       XK_Return,                 spawn,          {.v = termcmd } },
     { MODKEY,                       XK_a,                      spawn,          {.v = chatgptcmd } },
     { MODKEY|ShiftMask,             XK_a,                      spawn,          {.v = grokcmd } },
-    { MODKEY|ShiftMask,             XK_x,                      spawn,          {.v = xpostcmd } },
+    // { MODKEY|ShiftMask,             XK_x,                      spawn,          {.v = xpostcmd } },
     { MODKEY,                       XK_b,                      spawn,          SHCMD ("xdg-open https://")},
     { MODKEY,                       XK_p,                      spawn,          SHCMD ("flameshot full -p /media/drive/Screenshots/")},
     { MODKEY|ShiftMask,             XK_p,                      spawn,          SHCMD ("flameshot gui -p /media/drive/Screenshots/")},
     { MODKEY|ControlMask,           XK_p,                      spawn,          SHCMD ("flameshot gui --clipboard")},
-    { MODKEY,                       XK_e,                      spawn,          SHCMD ("xdg-open .")},
+    { MODKEY,                       XK_y,                      spawn,          SHCMD ("thunar")},
     { MODKEY,                       XK_slash,                  spawn,          SHCMD ("dwm-keybinds")},
     { MODKEY,                       XK_w,                      spawn,          SHCMD ("looking-glass-client -F")},
     { MODKEY|ShiftMask,             XK_w,                      spawn,          SHCMD ("feh --randomize --bg-fill ~/Pictures/backgrounds/*")},
@@ -128,20 +128,20 @@ static Key keys[] = {
     { MODKEY|ShiftMask,             XK_j,                      movestack,      {.i = +1 } },
     { MODKEY|ShiftMask,             XK_k,                      movestack,      {.i = -1 } },
     { MODKEY,                       XK_i,                      incnmaster,     {.i = +1 } },
-    { MODKEY,                       XK_d,                      incnmaster,     {.i = -1 } },
+    { MODKEY,                       XK_r,                      incnmaster,     {.i = -1 } },
     { MODKEY,                       XK_h,                      setmfact,       {.f = -0.05} },
     { MODKEY,                       XK_l,                      setmfact,       {.f = +0.05} },
     { MODKEY|ShiftMask,             XK_h,                      setcfact,       {.f = +0.25} },
     { MODKEY|ShiftMask,             XK_l,                      setcfact,       {.f = -0.25} },
     { MODKEY|ShiftMask,             XK_o,                      setcfact,       {.f =  0.00} },
-    { MODKEY,                       XK_Return,                 zoom,           {0} },
+    { MODKEY,                       XK_x,                      zoom,           {0} },
     { MODKEY,                       XK_Tab,                    view,           {0} },
-    { MODKEY,                       XK_q,                      killclient,     {0} },
-    { MODKEY,                       XK_t,                      setlayout,      {.v = &layouts[0]} },
-    { MODKEY,                       XK_f,                      setlayout,      {.v = &layouts[1]} },
-    { MODKEY,                       XK_m,                      fullscreen,     {0} },
+    { MODKEY|ShiftMask,             XK_q,                      killclient,     {0} },
+    { MODKEY|ShiftMask,             XK_m,                      setlayout,      {.v = &layouts[0]} },
+    { MODKEY,                       XK_m,                      setlayout,      {.v = &layouts[1]} },
+    { MODKEY,                       XK_f,                      fullscreen,     {0} },
     { MODKEY,                       XK_space,                  setlayout,      {0} },
-    { MODKEY|ShiftMask,             XK_m,                      togglefloating, {0} },
+    { MODKEY,                       XK_t,                      togglefloating, {0} },
     { MODKEY|ShiftMask,             XK_y,                      togglefakefullscreen, {0} },
     { MODKEY,                       XK_0,                      view,           {.ui = ~0 } },
     { MODKEY,                       XK_comma,                  focusmon,       {.i = -1 } },
@@ -157,7 +157,7 @@ static Key keys[] = {
     TAGKEYS(                        XK_7,                      6)
     TAGKEYS(                        XK_8,                      7)
     TAGKEYS(                        XK_9,                      8)
-    { MODKEY|ShiftMask,             XK_q,                      quit,           {0} },
+    { MODKEY|ShiftMask,             XK_e,                      quit,           {0} }, /*kill dwm and back to login screen*/
     { MODKEY|ControlMask,           XK_q,                      spawn,          SHCMD("$HOME/.config/rofi/powermenu.sh")},
     { MODKEY|ControlMask|ShiftMask, XK_r,                      spawn,          SHCMD("systemctl reboot")},
     { MODKEY|ControlMask|ShiftMask, XK_s,                      spawn,          SHCMD("systemctl suspend")},
