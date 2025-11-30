@@ -5,7 +5,7 @@ uptime="`uptime -p | sed -e 's/up //g'`"
 
 entries="⏻ Shutdown\n↻ Reboot\n⏽ Hibernate\n⇠ Logout\n🔒 Lock"
 if [[ -n "$WAYLAND_DISPLAY" ]]; then
-  selected=$(echo -e "$entries" | wofi --dmenu --cache-file /dev/null --hide-scroll --width 250 --height 215 --location center --style ~/.config/wofi/powermenu.css --prompt "Uptime: $uptime")
+  selected=$(echo -e "$entries" | wofi --dmenu --cache-file /dev/null --hide-scroll --style ~/.config/wofi/powermenu.css --prompt "Uptime: $uptime" --width 100% --height 100% --columns 3)
 else
   selected=$(echo -e "$entries" | rofi -dmenu -p "Uptime: $uptime" -width 250 -lines 5 -location 0 -theme ~/.config/rofi/powermenu.rasi)
 fi

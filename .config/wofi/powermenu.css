@@ -1,55 +1,65 @@
-window {
-    margin: 0px;
-    border: 2px solid #1e1e2e;
-    background-color: #1e1e2e;
-    border-radius: 10px;
+/* Wofi Power Menu Style */
+
+* {
+    font-family: "JetBrainsMono Nerd Font Propo";
+    font-weight: bold;
 }
 
-/* #input {
-    margin: 5px;
-    border: none;
-    color: #cdd6f4;
-    background-color: #313244;
-    border-radius: 5px;
-} */
+window {
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
 #input {
-    margin: 0px;
+    margin: 150px 400px 50px 400px;
+    padding: 15px;
     border: none;
-    color: #cdd6f4;
-    background-color: #313244;
-    border-radius: 5px;
-    min-height: 0;
-    font-size: 0;
-    border-width: 0;
-    outline: none;
-    opacity: 0;
-    height: 0;
+    border-radius: 15px;
+    background-color: transparent;
+    color: white;
+    font-size: 42px;
+    caret-color: transparent;
+    text-align: center;
 }
 
 #inner-box {
-    margin: 5px;
-    border: none;
-    background-color: #1e1e2e;
+    margin: 0 400px 150px 400px;
+    background-color: transparent;
 }
 
 #outer-box {
-    margin: 5px;
-    border: none;
-    background-color: #1e1e2e;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
 }
 
 #scroll {
-    margin: 0px;
-    border: none;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
 }
 
 #text {
-    margin: 5px;
+    margin: 0;
+    padding: 0;
+    color: white;
+}
+
+#entry {
+    margin: 25px;
+    padding: 35px 40px;
     border: none;
-    color: #cdd6f4;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 23px;
 }
 
 #entry:selected {
-    background-color: #585b70;
-    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    outline: none;
+}
+
+#entry:hover {
+    background-color: rgba(255, 255, 255, 0.15);
 }
