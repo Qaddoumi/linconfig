@@ -480,18 +480,28 @@ else
 fi
 
 if ! grep -q '^gitpush()' "$BASHRC_FILE"; then
+    echo -e "${green}Adding gitpush and gitbranch functions to $BASHRC_FILE${no_color}"
     cat >> "$BASHRC_FILE" <<'EOF'
 
 gitpush() {
-    git add .
-    git commit --allow-empty-message -m ""
-    git push
+    echo -e "\n\033[0;32mPushing changes\033[0m"
+    git add . || true
+    echo -e "\n\033[0;32mCommitting changes\033[0m"
+    git commit --allow-empty-message -m "" || true
+    echo -e "\n\033[0;32mPushing changes\033[0m"
+    git push || true
+}
+
+gitbranch () {
+    echo -e "\n\033[0;32mCreating and switching to branch \033[0;34m'$1'\033[0m"
+    git switch -c "$1" && \
+    echo -e "\033[0;32mSuccessfully switched to branch \033[0;34m'$1'\n\033[0m" || \
+    echo -e "\033[0;31mFailed to switch to branch \033[0;34m'$1'\n\033[0m"
 }
 
 EOF
-    echo -e "${green}Added gitpush function to $BASHRC_FILE${no_color}"
 else
-    echo -e "${yellow}gitpush function already present in $BASHRC_FILE, skipping${no_color}"
+    echo -e "${yellow}gitpush and gitbranch functions already present in $BASHRC_FILE, skipping${no_color}"
 fi
 
 if grep -q "fastfetch" "$BASHRC_FILE"; then
