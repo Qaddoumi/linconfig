@@ -1,6 +1,5 @@
 import QtQuick
 
-// Separator
 Text {
     text: "|"
     color: "#45475a"

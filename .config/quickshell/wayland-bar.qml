@@ -40,7 +40,7 @@ Scope {
                     font.family: "monospace"
                 }
                 
-                SeparatorWidget {}
+                BarSeparator {}
                 
                 // Window title placeholder
                 Text {
@@ -82,7 +82,7 @@ Scope {
                         font.pixelSize: 12
                     }
 
-                    SeparatorWidget {}
+                    BarSeparator {}
                     
                     // Network
                     Text {
@@ -91,11 +91,11 @@ Scope {
                         font.pixelSize: 12
                     }
                     
-                    SeparatorWidget {}
+                    BarSeparator {}
                     
                     DateWidget {}
 
-                    SeparatorWidget {}
+                    BarSeparator {}
 
                     PowerMenuWidget {}
                 }

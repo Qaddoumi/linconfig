@@ -1,7 +1,6 @@
 import QtQuick
 
 
-// Date
 Text {
     id: dateText
     text: Qt.formatDateTime(new Date(), "ddd, MMM dd")
