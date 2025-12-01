@@ -322,10 +322,10 @@ globalkeys = gears.table.join(
     awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
               {description = "run prompt", group = "launcher"}),
 
-    -- From Sway: Start application launcher ($mod+d) -> Awesome's prompt
-    awful.key({ modkey }, "d", function () awful.screen.focused().mypromptbox:run() end,
-              {description = "run prompt", group = "launcher"}),
-              
+    -- From Sway: Start application launcher ($mod+d)
+    awful.key({ modkey }, "d", function () awful.spawn("rofi -show drun") end,
+              {description = "start application launcher", group = "launcher"}),
+
     awful.key({ modkey }, "x",
               function ()
                   awful.prompt.run {
@@ -348,7 +348,7 @@ globalkeys = gears.table.join(
     -- From Sway: Start file manager ($mod+y)
     awful.key({ modkey }, "y", function () awful.spawn("thunar") end,
               {description = "start file manager", group = "launcher"}),
-              
+
     -- From Sway: Toggle copyq ($mod+v)
     awful.key({ modkey }, "v", function () awful.spawn("copyq toggle") end,
               {description = "toggle copyq", group = "utility"}),
