@@ -276,17 +276,11 @@ globalkeys = gears.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
-    -- From Sway: Reload the configuration file ($mod+Shift+c)
+    -- Reload the configuration file ($mod+Shift+c)
     awful.key({ modkey, "Shift"   }, "c", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
-    -- From Sway: Exit awesome ($mod+Shift+e)
-    awful.key({ modkey, "Shift"   }, "e", function() awful.spawn.with_shell("swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'awesome-client \"awesome.quit()\"'") end,
-              {description = "quit awesome", group = "awesome"}),
-    -- Existing awesome reload (retained as Control+r)
-    awful.key({ modkey, "Control" }, "r", awesome.restart,
-              {description = "reload awesome", group = "awesome"}),
-    -- Existing awesome quit (retained as Shift+q)
-    awful.key({ modkey, "Shift"   }, "q", awesome.quit,
+    -- Exit awesome ($mod+Shift+e)
+    awful.key({ modkey, "Shift"   }, "e", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
 
     awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
@@ -319,59 +313,44 @@ globalkeys = gears.table.join(
               {description = "restore minimized", group = "client"}),
 
     -- Prompt (Run prompt is already modkey+r)
-    awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
-              {description = "run prompt", group = "launcher"}),
-
-    -- From Sway: Start application launcher ($mod+d)
+    -- awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
+    --           {description = "run prompt", group = "launcher"}), -- not needed as im using rofi and quickshell
+    -- Start application launcher ($mod+d)
     awful.key({ modkey }, "d", function () awful.spawn("rofi -show drun") end,
               {description = "start application launcher", group = "launcher"}),
 
-    awful.key({ modkey }, "x",
-              function ()
-                  awful.prompt.run {
-                    prompt       = "Run Lua code: ",
-                    textbox      = awful.screen.focused().mypromptbox.widget,
-                    exe_callback = awful.util.eval,
-                    history_path = awful.util.get_cache_dir() .. "/history_eval"
-                  }
-              end,
-              {description = "lua execute prompt", group = "awesome"}),
+    -- awful.key({ modkey }, "x",
+    --           function ()
+    --               awful.prompt.run {
+    --                 prompt       = "Run Lua code: ",
+    --                 textbox      = awful.screen.focused().mypromptbox.widget,
+    --                 exe_callback = awful.util.eval,
+    --                 history_path = awful.util.get_cache_dir() .. "/history_eval"
+    --               }
+    --           end,
+    --           {description = "lua execute prompt", group = "awesome"}),
     -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end,
-              {description = "show the menubar", group = "launcher"}),
+    -- awful.key({ modkey }, "p", function() menubar.show() end,
+    --           {description = "show the menubar", group = "launcher"}),
               
     -- NEW KEYBINDS FROM SWAY CONFIG
-    -- From Sway: Start web browser ($mod+b)
+    -- Start web browser ($mod+b)
     awful.key({ modkey }, "b", function () awful.spawn("google-chrome-stable") end,
               {description = "start web browser", group = "launcher"}),
 
-    -- From Sway: Start file manager ($mod+y)
+    -- Start file manager ($mod+y)
     awful.key({ modkey }, "y", function () awful.spawn("thunar") end,
               {description = "start file manager", group = "launcher"}),
 
-    -- From Sway: Toggle copyq ($mod+v)
+    -- Toggle copyq ($mod+v)
     awful.key({ modkey }, "v", function () awful.spawn("copyq toggle") end,
               {description = "toggle copyq", group = "utility"}),
 
-    -- From Sway: Lock screen ($mod+Shift+t). NOTE: Replace 'i3lock-fancy' with your preferred locker (e.g., 'betterlockscreen').
+    -- Lock screen ($mod+Shift+t). TODO: Replace 'i3lock-fancy' with your preferred locker (e.g., 'betterlockscreen').
     awful.key({ modkey, "Shift" }, "t", function () awful.spawn("i3lock-fancy") end,
               {description = "lock screen", group = "utility"}),
               
-    -- From Sway: Move to scratchpad ($mod+Shift+minus) -> Mapping to minimize for AwesomeWM
-    awful.key({ modkey, "Shift" }, "-", function (c) if client.focus then client.focus.minimized = true end end,
-              {description = "minimize focused client", group = "client"}),
 
-    -- From Sway: Show scratchpad ($mod+minus) -> Mapping to unminimize/restore for AwesomeWM
-    awful.key({ modkey }, "-",
-              function ()
-                  local c = awful.client.restore()
-                  if c then
-                    c:emit_signal(
-                        "request::activate", "key.unminimize", {raise = true}
-                    )
-                  end
-              end,
-              {description = "restore minimized", group = "client"})
 )
 
 clientkeys = gears.table.join(
@@ -399,12 +378,6 @@ clientkeys = gears.table.join(
         function (c)
             -- The client currently has the input focus, so it cannot be
             -- minimized, since minimized clients can't have the focus.
-            c.minimized = true
-        end ,
-        {description = "minimize", group = "client"}),
-    awful.key({ modkey, "Shift"   }, "-",
-        function (c)
-            -- From Sway: Move to scratchpad ($mod+Shift+minus) -> minimize
             c.minimized = true
         end ,
         {description = "minimize", group = "client"}),
