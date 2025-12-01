@@ -19,7 +19,7 @@ Scope {
         // Wayland-specific layershell configuration
         WlrLayershell.layer: Layer.Top
         WlrLayershell.keyboardFocus: KeyboardFocus.None
-        exclusionMode: ExclusionMode.Normal
+        exclusionMode: ExclusionMode.Auto
         
         Rectangle {
             anchors.fill: parent
