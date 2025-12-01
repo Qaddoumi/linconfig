@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
+import "widgets"
 
 Scope {
     PanelWindow {
@@ -22,10 +23,7 @@ Scope {
             anchors.fill: parent
             color: "#1e1e2e"
             
-            Process {
-                id: powerMenuProcess
-                command: [Quickshell.env("HOME") + "/.config/waybar/scripts/powermenu.sh"]
-            }
+
             
             RowLayout {
                 anchors.fill: parent
@@ -40,12 +38,7 @@ Scope {
                     font.family: "monospace"
                 }
                 
-                // Separator
-                Text {
-                    text: "|"
-                    color: "#45475a"
-                    font.pixelSize: 13
-                }
+                SeparatorWidget {}
                 
                 // Layout indicator
                 Text {
@@ -87,6 +80,8 @@ Scope {
                         color: "#a6e3a1"
                         font.pixelSize: 12
                     }
+
+                    SeparatorWidget {}
                     
                     // Network
                     Text {
@@ -95,43 +90,14 @@ Scope {
                         font.pixelSize: 12
                     }
                     
-                    // Separator
-                    Text {
-                        text: "|"
-                        color: "#45475a"
-                        font.pixelSize: 13
-                    }
+                    SeparatorWidget {}
                     
-                    // Date
-                    Text {
-                        id: dateText
-                        text: Qt.formatDateTime(new Date(), "ddd, MMM dd")
-                        color: "#fab387"
-                        font.pixelSize: 12
-                        
-                        Timer {
-                            interval: 60000
-                            running: true
-                            repeat: true
-                            onTriggered: dateText.text = Qt.formatDateTime(new Date(), "ddd, MMM dd")
-                        }
-                    }
+                    DateWidget {}
 
-                    // Power menu indicator
-                    Text {
-                        text: "⏻"
-                        color: "#f38ba8"
-                        font.pixelSize: 14
-                        font.bold: true
-                        
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: powerMenuProcess.running = true
-                        }
-                    }
+                    SeparatorWidget {}
+
+                    PowerMenuWidget {}
                 }
-            }
         }
     }
 }
