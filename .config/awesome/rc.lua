@@ -276,8 +276,16 @@ globalkeys = gears.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
+    -- From Sway: Reload the configuration file ($mod+Shift+c)
+    awful.key({ modkey, "Shift"   }, "c", awesome.restart,
+              {description = "reload awesome", group = "awesome"}),
+    -- From Sway: Exit awesome ($mod+Shift+e)
+    awful.key({ modkey, "Shift"   }, "e", function() awful.spawn.with_shell("swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'awesome-client \"awesome.quit()\"'") end,
+              {description = "quit awesome", group = "awesome"}),
+    -- Existing awesome reload (retained as Control+r)
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
+    -- Existing awesome quit (retained as Shift+q)
     awful.key({ modkey, "Shift"   }, "q", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
 
@@ -310,10 +318,14 @@ globalkeys = gears.table.join(
               end,
               {description = "restore minimized", group = "client"}),
 
-    -- Prompt
+    -- Prompt (Run prompt is already modkey+r)
     awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
               {description = "run prompt", group = "launcher"}),
 
+    -- From Sway: Start application launcher ($mod+d) -> Awesome's prompt
+    awful.key({ modkey }, "d", function () awful.screen.focused().mypromptbox:run() end,
+              {description = "run prompt", group = "launcher"}),
+              
     awful.key({ modkey }, "x",
               function ()
                   awful.prompt.run {
@@ -326,7 +338,40 @@ globalkeys = gears.table.join(
               {description = "lua execute prompt", group = "awesome"}),
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
-              {description = "show the menubar", group = "launcher"})
+              {description = "show the menubar", group = "launcher"}),
+              
+    -- NEW KEYBINDS FROM SWAY CONFIG
+    -- From Sway: Start web browser ($mod+b)
+    awful.key({ modkey }, "b", function () awful.spawn("google-chrome-stable --enable-features=UseOzonePlatform --ozone-platform=wayland") end,
+              {description = "start web browser", group = "launcher"}),
+
+    -- From Sway: Start file manager ($mod+y)
+    awful.key({ modkey }, "y", function () awful.spawn("thunar") end,
+              {description = "start file manager", group = "launcher"}),
+              
+    -- From Sway: Toggle copyq ($mod+v)
+    awful.key({ modkey }, "v", function () awful.spawn("copyq toggle") end,
+              {description = "toggle copyq", group = "utility"}),
+
+    -- From Sway: Lock screen ($mod+Shift+t). NOTE: Replace 'i3lock-fancy' with your preferred locker (e.g., 'betterlockscreen').
+    awful.key({ modkey, "Shift" }, "t", function () awful.spawn("i3lock-fancy") end,
+              {description = "lock screen", group = "utility"}),
+              
+    -- From Sway: Move to scratchpad ($mod+Shift+minus) -> Mapping to minimize for AwesomeWM
+    awful.key({ modkey, "Shift" }, "-", function (c) if client.focus then client.focus.minimized = true end end,
+              {description = "minimize focused client", group = "client"}),
+
+    -- From Sway: Show scratchpad ($mod+minus) -> Mapping to unminimize/restore for AwesomeWM
+    awful.key({ modkey }, "-",
+              function ()
+                  local c = awful.client.restore()
+                  if c then
+                    c:emit_signal(
+                        "request::activate", "key.unminimize", {raise = true}
+                    )
+                  end
+              end,
+              {description = "restore minimized", group = "client"})
 )
 
 clientkeys = gears.table.join(
@@ -336,10 +381,17 @@ clientkeys = gears.table.join(
             c:raise()
         end,
         {description = "toggle fullscreen", group = "client"}),
+    -- From Sway: Kill focused window ($mod+Shift+q)
+    awful.key({ modkey, "Shift"   }, "q",      function (c) c:kill()                         end,
+              {description = "close", group = "client"}),
+    -- Existing Awesome Kill binding (retained as Shift+c)
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
               {description = "toggle floating", group = "client"}),
+    awful.key({ modkey,           }, "t",      function (c) awful.client.floating.toggle(c)  end,
+              {description = "toggle floating", group = "client"}), -- From Sway ($mod+t)
+
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
               {description = "move to master", group = "client"}),
     awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
@@ -350,6 +402,12 @@ clientkeys = gears.table.join(
         function (c)
             -- The client currently has the input focus, so it cannot be
             -- minimized, since minimized clients can't have the focus.
+            c.minimized = true
+        end ,
+        {description = "minimize", group = "client"}),
+    awful.key({ modkey, "Shift"   }, "-",
+        function (c)
+            -- From Sway: Move to scratchpad ($mod+Shift+minus) -> minimize
             c.minimized = true
         end ,
         {description = "minimize", group = "client"}),
