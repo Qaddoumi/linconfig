@@ -581,5 +581,14 @@ client.connect_signal("focus", function(c) c.border_color = beautiful.border_foc
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 
--- Autostart Quickshell
+-- Autostart applications
+awful.spawn.with_shell("dbus-update-activation-environment --systemd --all")
+awful.spawn.with_shell("disable-powersaving")
+awful.spawn.with_shell("/usr/lib/mate-polkit/polkit-mate-authentication-agent-1")
+awful.spawn.with_shell("flameshot")
+awful.spawn.with_shell("screensetup") -- this will set the screen resolution and refresh rate.
+awful.spawn.with_shell("dunst")
+awful.spawn.with_shell("picom -b")
+-- awful.spawn.with_shell("feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'")
+awful.spawn.with_shell("/usr/bin/dex -a")
 awful.spawn.with_shell("killall -q quickshell; quickshell -p ~/.config/quickshell/x11-bar.qml")
