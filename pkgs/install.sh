@@ -497,6 +497,8 @@ gitbranch () {
     git switch -c "$1" && \
     echo -e "\033[0;32mSuccessfully switched to branch \033[0;34m'$1'\n\033[0m" || \
     echo -e "\033[0;31mFailed to switch to branch \033[0;34m'$1'\n\033[0m"
+    echo -e "\n\033[0;32mPushing changes\033[0m"
+    git push-u origin "$1" || echo -e "\033[0;31mFailed to push changes\n\033[0m"
 }
 
 EOF
