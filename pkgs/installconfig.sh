@@ -33,7 +33,7 @@ sudo mkdir -p ~/.local/share/applications > /dev/null || true
 if [ -d ~/configtemp ]; then
     sudo rm -rf ~/configtemp > /dev/null || true
 fi
-if ! git clone --depth 1 https://github.com/Qaddoumi/linconfig.git ~/configtemp; then
+if ! git clone --depth 1 -b quickshell https://github.com/Qaddoumi/linconfig.git ~/configtemp; then
     echo "Failed to clone repository" >&2
     exit 1
 fi
