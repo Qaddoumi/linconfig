@@ -23,19 +23,19 @@ This project is currently in active development. While functional, it may not wo
 ### Complete Arch Linux Installation
 Install Arch Linux with advanced configuration options:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux/archinstall.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/quickshell/linux/archinstall.sh)
 ```
 
 ### Sway/Hyprland/DWM + SDDM Setup
 Install SwayWM with SDDM login manager:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --is-vm false
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/quickshell/pkgs/install.sh) --is-vm false
 ```
 
 ### Configuration Files Only
 Install only the configuration files without system packages:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/installconfig.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/quickshell/pkgs/installconfig.sh)
 ```
 
 ## 🔧 Configuration Details
