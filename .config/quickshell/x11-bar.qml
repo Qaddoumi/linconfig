@@ -97,6 +97,7 @@ Scope {
 
                     PowerMenuWidget {}
                 }
+            }
         }
     }
 }
