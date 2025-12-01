@@ -7,8 +7,6 @@ Scope {
     PanelWindow {
         id: bar
         
-        width: Screen.width
-        height: 30
         
         anchors {
             top: true
@@ -16,7 +14,9 @@ Scope {
             right: true
         }
         
+        implicitHeight: 30
         color: "#1e1e2e"
+        exclusionMode: ExclusionMode.Auto
         
         Rectangle {
             anchors.fill: parent
