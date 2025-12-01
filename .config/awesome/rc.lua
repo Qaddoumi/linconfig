@@ -454,7 +454,12 @@ awful.rules.rules = {
                      buttons = clientbuttons,
                      screen = awful.screen.preferred,
                      placement = awful.placement.no_overlap+awful.placement.no_offscreen
-     }
+      }
+    },
+
+    { rule_any = { type = { "normal" } },
+      except = { class = "quickshell" },
+      properties = { maximized = true }
     },
 
     -- Floating clients.
