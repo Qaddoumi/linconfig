@@ -373,8 +373,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 yay -S --needed --noconfirm google-chrome || echo -e "${red}Failed to install google-chrome${no_color}" # Web browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-yay -S --needed --noconfirm antigravity-bin || echo -e "${red}Failed to install antigravity-bin${no_color}" # AI IDE
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+# yay -S --needed --noconfirm antigravity-bin || echo -e "${red}Failed to install antigravity-bin${no_color}" # AI IDE
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm brave-bin || echo -e "${red}Failed to install brave-bin${no_color}" # Brave browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm visual-studio-code-bin || echo -e "${red}Failed to install visual-studio-code-bin${no_color}" # Visual Studio Code
