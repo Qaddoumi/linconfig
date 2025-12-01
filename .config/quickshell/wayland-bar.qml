@@ -2,7 +2,7 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
-import "./Widgets"
+import "./Widgets" as Widgets
 
 Scope {
     PanelWindow {
@@ -40,7 +40,7 @@ Scope {
                     font.family: "monospace"
                 }
                 
-                BarSeparator {}
+                Widgets.BarSeparator {}
                 
                 // Window title placeholder
                 Text {
@@ -82,7 +82,7 @@ Scope {
                         font.pixelSize: 12
                     }
 
-                    BarSeparator {}
+                    Widgets.BarSeparator {}
                     
                     // Network
                     Text {
@@ -91,13 +91,13 @@ Scope {
                         font.pixelSize: 12
                     }
                     
-                    BarSeparator {}
+                    Widgets.BarSeparator {}
                     
-                    DateWidget {}
+                    Widgets.DateWidget {}
 
-                    BarSeparator {}
+                    Widgets.BarSeparator {}
 
-                    PowerMenuWidget {}
+                    Widgets.PowerMenuWidget {}
                 }
             }
         }
