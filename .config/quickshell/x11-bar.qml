@@ -37,7 +37,7 @@ Scope {
                     font.family: "monospace"
                 }
                 
-                Widgets.BarSeparator {}
+                BarSeparator {}
                 
                 // Layout indicator
                 Text {
@@ -80,7 +80,7 @@ Scope {
                         font.pixelSize: 12
                     }
 
-                    Widgets.BarSeparator {}
+                    BarSeparator {}
                     
                     // Network
                     Text {
@@ -89,13 +89,13 @@ Scope {
                         font.pixelSize: 12
                     }
                     
-                    Widgets.BarSeparator {}
+                    BarSeparator {}
                     
-                    Widgets.DateWidget {}
+                    DateWidget {}
 
-                    Widgets.BarSeparator {}
+                    BarSeparator {}
 
-                    Widgets.PowerMenuWidget {}
+                    PowerMenuWidget {}
                 }
             }
         }
