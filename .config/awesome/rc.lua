@@ -45,7 +45,7 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
+beautiful.init(gears.filesystem.get_themes_dir() .. "gtk/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "kitty"
@@ -384,9 +384,6 @@ clientkeys = gears.table.join(
     -- From Sway: Kill focused window ($mod+Shift+q)
     awful.key({ modkey, "Shift"   }, "q",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),
-    -- Existing Awesome Kill binding (retained as Shift+c)
-    awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end,
-              {description = "close", group = "client"}),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
               {description = "toggle floating", group = "client"}),
     awful.key({ modkey,           }, "t",      function (c) awful.client.floating.toggle(c)  end,
@@ -513,11 +510,6 @@ awful.rules.rules = {
                      screen = awful.screen.preferred,
                      placement = awful.placement.no_overlap+awful.placement.no_offscreen
       }
-    },
-
-    { rule_any = { type = { "normal" } },
-      except = { class = "quickshell" },
-      properties = { tile = true }
     },
 
     -- Floating clients.
