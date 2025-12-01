@@ -1461,7 +1461,11 @@ echo -e "${blue}═════════════════════�
 
 echo -e "${green}Cloning and setting up configuration files${no_color}"
 
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/quickshell/pkgs/installconfig.sh) --update-dwm false
+touch ~/installconfig.sh
+curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/quickshell/pkgs/installconfig.sh > ~/installconfig.sh
+chmod +x ~/installconfig.sh
+
+~/installconfig.sh --update-dwm false
 
 echo -e "${green}Adding Neovim (tmux) to applications menu${no_color}"
 echo -e "${green}So i can open files in it with thunar${no_color}"
@@ -1481,6 +1485,7 @@ NVIM_EOF
 update-desktop-database ~/.local/share/applications/ || true
 
 cd ~
+
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
