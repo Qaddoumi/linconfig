@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-killall waybar
-while pgrep -u $UID -x waybar >/dev/null; do sleep 1; done
+killall quickshell
+while pgrep -u $UID -x quickshell >/dev/null; do sleep 1; done
 
-dbus-run-session -- sh -c "waybar & exec dwm"
+dbus-run-session -- sh -c "quickshell & exec dwm"
