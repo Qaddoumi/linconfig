@@ -1,7 +1,7 @@
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
-import "widgets"
+import qs("widgets")
 
 Scope {
     PanelWindow {
