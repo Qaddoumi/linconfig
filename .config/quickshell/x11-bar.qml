@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 
@@ -20,6 +21,11 @@ Scope {
         Rectangle {
             anchors.fill: parent
             color: "#1e1e2e"
+            
+            Process {
+                id: powerMenuProcess
+                command: [Quickshell.env("HOME") + "/.config/waybar/scripts/powermenu.sh"]
+            }
             
             RowLayout {
                 anchors.fill: parent
@@ -75,16 +81,16 @@ Scope {
                 RowLayout {
                     spacing: 15
                     
-                    // CPU placeholder
+                     // Volume
                     Text {
-                        text: "CPU: --"
+                        text: "󰕾 100%"
                         color: "#a6e3a1"
                         font.pixelSize: 12
                     }
                     
-                    // Memory placeholder
+                    // Network
                     Text {
-                        text: "MEM: --"
+                        text: "󰖩 Connected"
                         color: "#89dceb"
                         font.pixelSize: 12
                     }
@@ -108,6 +114,20 @@ Scope {
                             running: true
                             repeat: true
                             onTriggered: dateText.text = Qt.formatDateTime(new Date(), "ddd, MMM dd")
+                        }
+                    }
+
+                    // Power menu indicator
+                    Text {
+                        text: "⏻"
+                        color: "#f38ba8"
+                        font.pixelSize: 14
+                        font.bold: true
+                        
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: powerMenuProcess.running = true
                         }
                     }
                 }

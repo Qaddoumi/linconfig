@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
@@ -24,6 +25,11 @@ Scope {
         Rectangle {
             anchors.fill: parent
             color: "#1e1e2e"
+
+            Process {
+                id: powerMenuProcess
+                command: [Quickshell.env("HOME") + "/.config/waybar/scripts/powermenu.sh"]
+            }
             
             RowLayout {
                 anchors.fill: parent
@@ -121,6 +127,12 @@ Scope {
                         color: "#f38ba8"
                         font.pixelSize: 14
                         font.bold: true
+                        
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: powerMenuProcess.running = true
+                        }
                     }
                 }
             }
