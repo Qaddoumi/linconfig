@@ -348,9 +348,7 @@ globalkeys = gears.table.join(
 
     -- Lock screen ($mod+Shift+t). TODO: Replace 'i3lock-fancy' with your preferred locker (e.g., 'betterlockscreen').
     awful.key({ modkey, "Shift" }, "t", function () awful.spawn("i3lock-fancy") end,
-              {description = "lock screen", group = "utility"}),
-              
-
+              {description = "lock screen", group = "utility"})
 )
 
 clientkeys = gears.table.join(
