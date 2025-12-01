@@ -35,6 +35,9 @@ case $selected in
       hyprland)
         hyprctl dispatch exit
         ;;
+      awesome)
+        echo 'awesome.quit()' | awesome-client
+        ;;
 		esac
     ;;
   # "⏾ Suspend")

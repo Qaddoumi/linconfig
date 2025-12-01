@@ -196,26 +196,26 @@ awful.screen.connect_for_each_screen(function(s)
     }
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s })
+    -- s.mywibox = awful.wibar({ position = "top", screen = s })
 
     -- Add widgets to the wibox
-    s.mywibox:setup {
-        layout = wibox.layout.align.horizontal,
-        { -- Left widgets
-            layout = wibox.layout.fixed.horizontal,
-            mylauncher,
-            s.mytaglist,
-            s.mypromptbox,
-        },
-        s.mytasklist, -- Middle widget
-        { -- Right widgets
-            layout = wibox.layout.fixed.horizontal,
-            mykeyboardlayout,
-            wibox.widget.systray(),
-            mytextclock,
-            s.mylayoutbox,
-        },
-    }
+    -- s.mywibox:setup {
+    --     layout = wibox.layout.align.horizontal,
+    --     { -- Left widgets
+    --         layout = wibox.layout.fixed.horizontal,
+    --         mylauncher,
+    --         s.mytaglist,
+    --         s.mypromptbox,
+    --     },
+    --     s.mytasklist, -- Middle widget
+    --     { -- Right widgets
+    --         layout = wibox.layout.fixed.horizontal,
+    --         mykeyboardlayout,
+    --         wibox.widget.systray(),
+    --         mytextclock,
+    --         s.mylayoutbox,
+    --     },
+    -- }
 end)
 -- }}}
 
@@ -493,6 +493,17 @@ awful.rules.rules = {
       }, properties = { titlebars_enabled = true }
     },
 
+    { rule = { class = "quickshell" },
+        properties = { 
+            floating = true,
+            sticky = true,
+            ontop = false,
+            focusable = false,
+            titlebars_enabled = false,
+            border_width = 0,
+        }
+    },
+
     -- Set Firefox to always map on the tag named "2" on screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { screen = 1, tag = "2" } },
@@ -505,6 +516,13 @@ client.connect_signal("manage", function (c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
     -- if not awesome.startup then awful.client.setslave(c) end
+    if c.class == "quickshell" then
+        c.focusable = false
+        c.sticky = true
+        c:geometry({ x = 0, y = 0, width = c.screen.geometry.width })
+        -- Set struts to reserve top space (adjust height as needed)
+        c:struts({ top = 30 })  -- Change 30 to your bar height
+    end
 
     if awesome.startup
       and not c.size_hints.user_position
@@ -562,3 +580,6 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+
+-- Autostart Quickshell
+awful.spawn.with_shell("killall -q quickshell; quickshell -p ~/.config/quickshell/x11-bar.qml")
