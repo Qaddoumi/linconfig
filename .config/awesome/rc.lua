@@ -342,7 +342,7 @@ globalkeys = gears.table.join(
               
     -- NEW KEYBINDS FROM SWAY CONFIG
     -- From Sway: Start web browser ($mod+b)
-    awful.key({ modkey }, "b", function () awful.spawn("google-chrome-stable --enable-features=UseOzonePlatform --ozone-platform=wayland") end,
+    awful.key({ modkey }, "b", function () awful.spawn("google-chrome-stable") end,
               {description = "start web browser", group = "launcher"}),
 
     -- From Sway: Start file manager ($mod+y)
