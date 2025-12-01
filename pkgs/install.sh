@@ -225,6 +225,8 @@ sudo pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gnome-keyring # Authentication agent for privileged operations
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm quickshell # a shell for both wayland and x11
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm polybar # Status bar for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm waybar # Status bar for wayland
@@ -1488,7 +1490,7 @@ sudo pacman -S --needed --noconfirm sddm || true
 sudo systemctl disable display-manager.service || true
 sudo systemctl enable sddm.service || true
 echo -e "${green}Setting up my Hacker theme for SDDM${no_color}"
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sddm-hacker-theme/quickshell/install.sh) || { echo -e "${red}Failed to install the theme${no_color}"; true ;}
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sddm-hacker-theme/main/install.sh) || { echo -e "${red}Failed to install the theme${no_color}"; true ;}
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
