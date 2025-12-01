@@ -191,7 +191,7 @@ sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
 
 
-echo -e "${green}Installing X11 tools...${no_color}"
+echo -e "${green}Installing awesome an X11 window manager...${no_color}"
 echo ""
 
 sudo pacman -S --needed --noconfirm awesome # X11 window manager
