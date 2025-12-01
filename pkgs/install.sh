@@ -190,34 +190,20 @@ sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
 
+
 echo -e "${green}Installing X11 tools...${no_color}"
 echo ""
 
-
-
+sudo pacman -S --needed --noconfirm awesome # X11 window manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-xinit xorg-server # X11 display server and initialization
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xorg-xprop # X11 property viewer
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libx11 # Core X11 protocol library (required by dwm)
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libxinerama # Multi-monitor support (used by dwm)
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libxft # Font rendering with anti-aliasing (used by dwm)
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm imlib2 # Image loading library (for window icons in dwm)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm picom # Compositor for X11 (used for animation, transparency and blur)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xscreensaver # Screen saver for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}" #TODO: use xscreensaver instead of xautolock and i3lock-color
-yay -S --needed --noconfirm xautolock # Idle detection for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-yay -S --needed --noconfirm i3lock-color # Screen locker with color support
-
-echo ""
 
 echo -e "\n\n"
+
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm nwg-look # GTK theme configuration GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -226,10 +212,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gnome-keyring # Authentication agent for privileged operations
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm quickshell # a shell for both wayland and x11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm polybar # Status bar for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm waybar # Status bar for wayland
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
+# sudo pacman -S --needed --noconfirm waybar # Status bar for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wofi # Application launcher for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -388,25 +372,6 @@ if [ "$is_vm" = true ]; then
 else
     yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
 fi
-
-echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
-
-echo -e "${green}Building and installing dwm...${no_color}"
-echo -e "${green}Copying files...${no_color}"
-
-mkdir -p ~/.local/share/dwm
-mkdir -p ~/.local/bin
-# Copy both regular files and hidden files (like .xinitrc)
-cp -rf ~/configtemp/pkgs/dwm/. ~/.local/share/dwm/ 2>/dev/null || true
-cp -rf ~/.local/share/dwm/scripts/. ~/.local/bin/ 2>/dev/null || true
-find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
-
-rm -rf ~/.local/share/dwm/scripts
-
-echo -e "${green}Done copying files now ==> Building dwm...${no_color}"
-cd ~/.local/share/dwm
-sudo make clean install || { echo -e "${red}Failed to install dwm${no_color}"; true; }
-cd ~
 
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"

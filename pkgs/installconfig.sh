@@ -12,20 +12,6 @@ bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
 
-update_dwm="true"
-
-case "$1" in
-    --update-dwm)
-        update_dwm="$2"
-        shift 2
-        ;;
-    *)
-        echo -e "${red}Unknown argument: $1${no_color}"
-        # exit 1
-        ;;
-esac
-
-
 sudo mkdir -p ~/.config > /dev/null || true
 sudo mkdir -p ~/.local/bin > /dev/null || true
 sudo mkdir -p ~/.local/share/applications > /dev/null || true
@@ -80,29 +66,16 @@ fi
 
 source ~/.bashrc || true
 
-echo -e "${green}Setting up polybar (launch script)...${no_color}"
-# Ensure Polybar launch script is executable
-chmod +x ~/.config/polybar/launch.sh
 
-if [ "$update_dwm" = "true" ]; then
-    echo -e "${green}\$update_dwm is set to true${no_color}"
-    echo -e "${green}Building and installing dwm...${no_color}"
-    echo -e "${green}Copying files...${no_color}"
+echo -e "${green}Copying script files...${no_color}"
 
-    mkdir -p ~/.local/share/dwm
-    mkdir -p ~/.local/bin
-    # Copy both regular files and hidden files (like .xinitrc)
-    cp -rf ~/configtemp/pkgs/dwm/. ~/.local/share/dwm/ 2>/dev/null || true
-    cp -rf ~/.local/share/dwm/scripts/. ~/.local/bin/ 2>/dev/null || true
-    find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
+mkdir -p ~/.local/bin
+# Copy both regular files and hidden files (like .xinitrc)
+cp -rf ~/configtemp/pkgs/scripts/. ~/.local/bin/ 2>/dev/null || true
+find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
 
-    rm -rf ~/.local/share/dwm/scripts
+cd ~
 
-    echo -e "${green}Done copying files now ==> Building dwm...${no_color}"
-    cd ~/.local/share/dwm
-    sudo make clean install || { echo -e "${red}Failed to install dwm${no_color}"; true; }
-    cd ~
-fi
 
 echo -e "${green}Removing temporary files...${no_color}"
 sudo rm -rf ~/configtemp
