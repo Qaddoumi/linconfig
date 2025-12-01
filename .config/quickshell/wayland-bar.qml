@@ -2,7 +2,7 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
-import "widgets"
+import "./Widgets"
 
 Scope {
     PanelWindow {
