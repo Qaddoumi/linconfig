@@ -193,8 +193,8 @@ exec copyq --start-server
 # NetworkManager
 exec_always bash -c "killall -q nm-applet ; nm-applet --indicator"
 
-## Waybar
-#exec waybar
+## quickshell
+#exec quickshell
 
 ## SwayNC Notification & system tray
 exec_always killall -q swaync && swaync -c ~/.config/swaync/config.json
@@ -465,7 +465,7 @@ bindsym $mod+r mode "resize"
 # Read `man 5 sway-bar` for more information about this section.
 bar {
     position top
-    swaybar_command waybar
+    swaybar_command quickshell
 }
 
 include /etc/sway/config.d/*
