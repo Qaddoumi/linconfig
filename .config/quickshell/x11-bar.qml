@@ -7,7 +7,6 @@ Scope {
     PanelWindow {
         id: bar
         
-        
         anchors {
             top: true
             left: true
@@ -21,8 +20,6 @@ Scope {
         Rectangle {
             anchors.fill: parent
             color: "#1e1e2e"
-            
-
             
             RowLayout {
                 anchors.fill: parent
