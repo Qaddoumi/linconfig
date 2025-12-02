@@ -18,8 +18,8 @@ Scope {
         color: "#1e1e2e"
         
         // Wayland-specific layershell configuration
-        WlrLayershell.layer: WlrLayershell.Layer.Top
-        WlrLayershell.keyboardFocus: WlrLayershell.KeyboardFocus.None
+        layer: WlrLayershell.Layer.Top
+        keyboardFocus: WlrLayershell.KeyboardFocus.None
         exclusionMode: ExclusionMode.Auto
         
         Rectangle {
