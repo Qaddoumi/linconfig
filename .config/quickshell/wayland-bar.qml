@@ -14,7 +14,7 @@ Scope {
             right: true
         }
         
-        height: 30
+        implicitHeight: 30
         color: "#1e1e2e"
         
         // Wayland-specific layershell configuration
