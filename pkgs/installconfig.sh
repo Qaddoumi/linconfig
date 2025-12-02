@@ -74,10 +74,11 @@ find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
 
 cd ~
 
+cp -f ~/configtemp/pkgs/installconfig.sh ~/installconfig.sh
+chmod +x ~/installconfig.sh
 
 echo -e "${green}Removing temporary files...${no_color}"
 sudo rm -rf ~/configtemp
 
-#swaymsg reload
 
-echo -e "${green}Setup completed!${no_color}"
+echo -e "${green}Setup completed!${no_color}\n"
