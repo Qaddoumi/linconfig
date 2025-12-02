@@ -24,16 +24,6 @@ if ! git clone --depth 1 -b quickshell https://github.com/Qaddoumi/linconfig.git
     exit 1
 fi
 
-# Remove existing config files/directories that are in the cloned repo
-echo -e "${blue}Removing existing config files that will be replaced...${no_color}"
-for item in ~/configtemp/.config/*; do
-    if [ -e "$item" ]; then
-        basename_item=$(basename "$item")
-        echo -e "${blue}Removing $basename_item...${no_color}"
-        sudo rm -rf ~/.config/"$basename_item"
-    fi
-done
-
 # Also remove mimeapps.list from .local/share/applications if it exists in the repo
 if [ -f ~/configtemp/.config/mimeapps.list ]; then
     echo -e "${blue}Removing mimeapps.list...${no_color}"
@@ -41,7 +31,7 @@ if [ -f ~/configtemp/.config/mimeapps.list ]; then
 fi
 
 echo -e "${green}Copying config files...${no_color}"
-sudo cp -r ~/configtemp/.config/* ~/.config/
+sudo cp -rf ~/configtemp/.config/* ~/.config/
 sudo cp -f ~/configtemp/.config/mimeapps.list ~/.local/share/applications/
 
 echo -e "${green}Setting up permissions for configuration files${no_color}"
