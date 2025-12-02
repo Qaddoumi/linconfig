@@ -195,7 +195,7 @@ echo -e "${green}Installing awesome an X11 window manager...${no_color}"
 echo ""
 
 sudo pacman -S --needed --noconfirm awesome # X11 window manager
-
+# the next lines is needed to setup variables like $XDG_CURRENT_DESKTOP and $XDG_SESSION_DESKTOP by sddm
 if grep -q "DesktopNames" "/usr/share/xsessions/awesome.desktop"; then
     echo "Existing 'DesktopNames' found. Updating/Uncommenting to 'awesome'..."
     sed -i "s/^#*\s*DesktopNames=.*/DesktopNames=awesome/" "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to update DesktopNames${no_color}"
