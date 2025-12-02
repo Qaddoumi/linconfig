@@ -1090,17 +1090,17 @@ if [[ "$BOOTLOADER" == "grub" ]]; then
     GRUB_TOP_LEVEL="/boot/vmlinuz-linux"
     if grep -q "GRUB_TOP_LEVEL" "$GRUB_CONFIG_FILE"; then
         echo "Existing 'GRUB_TOP_LEVEL' found. Updating/Uncommenting to '$GRUB_TOP_LEVEL'..."
-        sed -i 's/^#*\s*GRUB_TOP_LEVEL=.*/GRUB_TOP_LEVEL="$GRUB_TOP_LEVEL"/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TOP_LEVEL"
+        sed -i "s/^#*\s*GRUB_TOP_LEVEL=.*/GRUB_TOP_LEVEL=\"$GRUB_TOP_LEVEL\"/" "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TOP_LEVEL"
     else
         echo "'GRUB_TOP_LEVEL' not found. Appending to $GRUB_CONFIG_FILE."
         echo "GRUB_TOP_LEVEL=\"$GRUB_TOP_LEVEL\"" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_TOP_LEVEL"
     fi
 
     info "setting default timeout"
-    GRUB_TIMEOUT="2"
+    GRUB_TIMEOUT="1"
     if grep -q "GRUB_TIMEOUT" "$GRUB_CONFIG_FILE"; then
         echo "Existing 'GRUB_TIMEOUT' found. Updating/Uncommenting to '$GRUB_TIMEOUT'..."
-        sed -i 's/^#*\s*GRUB_TIMEOUT=.*/GRUB_TIMEOUT="$GRUB_TIMEOUT"/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TIMEOUT"
+        sed -i "s/^#*\s*GRUB_TIMEOUT=.*/GRUB_TIMEOUT=\"$GRUB_TIMEOUT\"/" "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TIMEOUT"
     else
         echo "'GRUB_TIMEOUT' not found. Appending to $GRUB_CONFIG_FILE."
         echo "GRUB_TIMEOUT=\"$GRUB_TIMEOUT\"" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_TIMEOUT"
