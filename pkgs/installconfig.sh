@@ -80,5 +80,15 @@ chmod +x ~/installconfig.sh
 echo -e "${green}Removing temporary files...${no_color}"
 sudo rm -rf ~/configtemp
 
+if [  $XDG_SESSION_DESKTOP = "Hyprland" ]; then
+    echo -e "${green}Reloading Hyprland...${no_color}"
+    hyprctl reload
+elif [  $XDG_SESSION_DESKTOP = "sway" ]; then
+    echo -e "${green}Reloading Sway...${no_color}"
+    swaymsg reload
+elif [  $XDG_SESSION_DESKTOP = "awesome" ]; then
+    echo -e "${green}Reloading Awesome...${no_color}"
+    echo 'awesome.restart()' | awesome-client
+fi
 
 echo -e "${green}Setup completed!${no_color}\n"

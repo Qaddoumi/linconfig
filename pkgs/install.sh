@@ -195,6 +195,15 @@ echo -e "${green}Installing awesome an X11 window manager...${no_color}"
 echo ""
 
 sudo pacman -S --needed --noconfirm awesome # X11 window manager
+
+if grep -q "DesktopNames" "/usr/share/xsessions/awesome.desktop"; then
+    echo "Existing 'DesktopNames' found. Updating/Uncommenting to 'awesome'..."
+    sed -i "s/^#*\s*DesktopNames=.*/DesktopNames=awesome/" "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to update DesktopNames${no_color}"
+else
+    echo "'DesktopNames' not found. Appending to /usr/share/xsessions/awesome.desktop."
+    echo "DesktopNames=awesome" | sudo tee -a "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to append DesktopNames${no_color}"
+fi
+
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-xinit xorg-server # X11 display server and initialization
 echo -e "${blue}--------------------------------------------------\n${no_color}"
