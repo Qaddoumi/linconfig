@@ -223,8 +223,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gnome-keyring # Authentication agent for privileged operations
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm quickshell # a shell for both wayland and x11
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm waybar # Status bar for wayland
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm waybar # Status bar for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wofi # Application launcher for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"

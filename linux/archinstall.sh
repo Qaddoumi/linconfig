@@ -77,11 +77,7 @@ if systemd-detect-virt --vm &>/dev/null; then
 
     case "$VIRT_TYPE" in
         "kvm"|"qemu"|"microsoft")
-            VIRT_PKGS="qemu-guest-agent"
-            info "Checking if SPICE/QXL availables"
-            if [[ -e "/dev/virtio-ports/com.redhat.spice.0" ]] || [[ -e "/dev/virtio-ports/org.spice-space.webdav.0" ]] || lspci | grep -qi "qxl"; then
-                VIRT_PKGS="$VIRT_PKGS spice-vdagent"
-            fi
+            VIRT_PKGS="qemu-guest-agent spice-vdagent"
             ;;
         "virtualbox")
             VIRT_PKGS="virtualbox-guest-utils-nox"
