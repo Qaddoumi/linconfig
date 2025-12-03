@@ -39,7 +39,7 @@ echo -e "${green}\n\n ******************* Packages Installation Script *********
 
 
 # Parse named arguments
-is_vm=false
+is_vm=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --is-vm)
@@ -55,13 +55,15 @@ done
 
 echo -e "${green}Username to be used      : $USER${no_color}"
 
-if [ "$is_vm" = true ]; then
-    echo -e "${green}is_vm flag is set to true${no_color}"
+if [ -n "$is_vm" ]; then
+    echo -e "${green}is_vm manually set to: $is_vm${no_color}"
 else
-    echo -e "${green}is_vm flag is set to false, detecting system type...${no_color}"
-    systemType="$(systemd-detect-virt 2>/dev/null || echo "none")"
+    echo -e "${green}is_vm not set, detecting system type...${no_color}"
+    # the -v flag is used to get the type of virtualization ignoring containers/chroots.
+    systemType="$(systemd-detect-virt -v 2>/dev/null || echo "none")"
     if [[ "$systemType" == "none" ]]; then
         echo -e "${green}Not running in a VM${no_color}"
+        is_vm=false
     else
         echo -e "${green}Running in a VM: systemtype = $systemType${no_color}"
         is_vm=true
@@ -460,7 +462,7 @@ if ! grep -q '^gitpush()' "$BASHRC_FILE"; then
     cat >> "$BASHRC_FILE" <<'EOF'
 
 gitpush() {
-    echo -e "\n\033[0;32mPushing changes\033[0m"
+    echo -e "\n\033[0;32mAdding changes\033[0m"
     git add . || true
     echo -e "\n\033[0;32mCommitting changes\033[0m"
     git commit --allow-empty-message -m "" || true
