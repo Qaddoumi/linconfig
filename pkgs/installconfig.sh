@@ -24,12 +24,6 @@ if ! git clone --depth 1 -b quickshell https://github.com/Qaddoumi/linconfig.git
     exit 1
 fi
 
-# Also remove mimeapps.list from .local/share/applications if it exists in the repo
-if [ -f ~/configtemp/.config/mimeapps.list ]; then
-    echo -e "${blue}Removing mimeapps.list...${no_color}"
-    sudo rm -rf ~/.local/share/applications/mimeapps.list ~/.config/mimeapps.list
-fi
-
 echo -e "${green}Copying config files...${no_color}"
 sudo cp -rf ~/configtemp/.config/* ~/.config/
 sudo cp -f ~/configtemp/.config/mimeapps.list ~/.local/share/applications/

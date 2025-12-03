@@ -162,18 +162,6 @@ fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
-echo -e "${green}Cloning linconfig repository...${no_color}"
-if [ -d ~/configtemp ]; then
-    cd ~/configtemp
-    git pull
-elif ! git clone --depth 1 https://github.com/Qaddoumi/linconfig.git ~/configtemp; then
-    echo "Failed to clone repository" >&2
-    exit 1
-fi
-
-echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
-
-
 echo -e "${green}Installing Hyprland...${no_color}"
 echo ""
 sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
