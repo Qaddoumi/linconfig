@@ -790,7 +790,6 @@ for pkg in "${INSTALL_PKGS_ARR[@]}"; do
     [ -z "$pkg" ] && continue  # Skip empty elements
     if ! check_package "$pkg"; then
         warn "Skipping package $pkg as it is not available in repositories"
-        # Remove from array instead of string manipulation
         INSTALL_PKGS_ARR=("${INSTALL_PKGS_ARR[@]/$pkg}")
     fi
 done
