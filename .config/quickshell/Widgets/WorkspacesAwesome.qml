@@ -11,42 +11,42 @@ Text {
     property int activeWorkspace: 1
     property int totalWorkspaces: 9
     
-    // Poll awesome-client for current tag (workspace)
+    // Poll xprop for current workspace (more reliable than awesome-client)
     Timer {
-        interval: 1000
+        interval: 500
         running: true
         repeat: true
         onTriggered: getWorkspace()
     }
     
     Process {
-        id: awesomeProcess
-        command: ["bash", "-c", "echo 'return awful.screen.focused().selected_tag.index' | awesome-client"]
+        id: xpropProcess
+        command: ["xprop", "-root", "_NET_CURRENT_DESKTOP"]
         
         stdout: SplitParser {
             onRead: data => {
-                console.log("awesome-client output:", data)
-                // Parse output like "   double 1"
-                let match = data.match(/\d+/)
+                console.log("xprop output:", data)
+                // Parse output like "_NET_CURRENT_DESKTOP(CARDINAL) = 0"
+                let match = data.match(/=\s*(\d+)/)
                 if (match) {
-                    activeWorkspace = parseInt(match[0])
+                    activeWorkspace = parseInt(match[1]) + 1  // xprop is 0-indexed, we want 1-indexed
                     updateWorkspaces()
                 } else {
-                    console.warn("Failed to parse workspace from awesome-client")
+                    console.warn("Failed to parse workspace from xprop")
                 }
             }
         }
         
         stderr: SplitParser {
             onRead: data => {
-                console.error("awesome-client error:", data)
+                console.error("xprop error:", data)
             }
         }
     }
     
     function getWorkspace() {
-        awesomeProcess.running = false
-        awesomeProcess.running = true
+        xpropProcess.running = false
+        xpropProcess.running = true
     }
     
     function updateWorkspaces() {
