@@ -56,11 +56,13 @@ Text {
         
         stdout: SplitParser {
             onRead: data => {
+                console.log("wmctrl output line:", data)
                 // Parse wmctrl output like: "0x03200003  0 hostname window title"
                 // Second column is the desktop/workspace number
                 let match = data.match(/^\S+\s+(\d+)/)
                 if (match) {
                     let wsNum = parseInt(match[1]) + 1  // wmctrl is 0-indexed
+                    console.log("Found window on workspace:", wsNum)
                     if (wsNum >= 1 && wsNum <= totalWorkspaces && !workspacesWithWindows.includes(wsNum)) {
                         workspacesWithWindows.push(wsNum)
                     }
@@ -68,7 +70,14 @@ Text {
             }
         }
         
+        stderr: SplitParser {
+            onRead: data => {
+                console.error("wmctrl error:", data)
+            }
+        }
+        
         onExited: {
+            console.log("wmctrl completed, workspaces with windows:", workspacesWithWindows)
             updateWorkspaces()
         }
     }

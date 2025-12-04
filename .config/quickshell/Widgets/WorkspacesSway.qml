@@ -45,18 +45,24 @@ Text {
                     let workspaces = JSON.parse(data)
                     workspacesWithWindows = []
                     
+                    console.log("Sway workspaces data:", JSON.stringify(workspaces))
+                    
                     for (let ws of workspaces) {
                         // Track active workspace
                         if (ws.focused) {
                             activeWorkspace = ws.num
                         }
-                        // Track workspaces with windows
-                        if (ws.windows && ws.windows > 0) {
+                        // In Sway, check if workspace has a representation (indicates windows)
+                        // Empty workspaces have representation: null
+                        if (ws.representation && ws.representation !== null && ws.representation !== "") {
                             workspacesWithWindows.push(ws.num)
+                            console.log("Workspace", ws.num, "has windows, representation:", ws.representation)
                         }
                     }
                     updateWorkspaces()
-                } catch (e) {}
+                } catch (e) {
+                    console.error("Sway parse error:", e)
+                }
             }
         }
     }
