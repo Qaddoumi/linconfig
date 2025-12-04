@@ -57,7 +57,7 @@ Text {
     function updateWorkspaces() {
         let workspaceText = "󰕰 "
         for (let i = 1; i <= 10; i++) {
-            workspaceText += (i === activeWorkspace ? "<span style='font-size: 16pt;'><b>" + i + "</b></span> " : i + " ")
+            workspaceText += (i === activeWorkspace ? "<span style='font-size: 14pt;'><b>" + i + "</b></span> " : i + " ")
         }
         text = workspaceText.trim()
     }
