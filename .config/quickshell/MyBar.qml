@@ -10,13 +10,44 @@ RowLayout {
     spacing: 10
     
     
-    // Left side - Workspaces
-    Text {
-        id: workspaces
-        text: "󰕰 1 2 3 4 5"
-        color: "#cdd6f4"
-        font.pixelSize: 13
-        font.family: "monospace"
+    //Workspaces based on WM
+    Loader {
+        id: loader
+        
+        property string sessionType: Quickshell.env("XDG_SESSION_TYPE")
+        property string desktop: Quickshell.env("XDG_CURRENT_DESKTOP")
+        
+        sourceComponent: {
+            console.log("Detecting WM - Session:", sessionType, "Desktop:", desktop)
+            
+            // Check for Hyprland
+            if (desktop === "Hyprland" || Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE") !== "") {
+                console.log("Hyprland detected")
+                return Qt.createComponent("./Widgets/WorkspacesHyprland.qml")
+            }
+            
+            // Check for Sway
+            if (desktop === "sway" || Quickshell.env("SWAYSOCK") !== "") {
+                console.log("Sway detected")
+                return Qt.createComponent("./Widgets/WorkspacesSway.qml")
+            }
+            
+            // Check for Awesome (X11)
+            if (desktop === "awesome" || sessionType === "x11") {
+                console.log("Awesome detected")
+                return Qt.createComponent("./Widgets/WorkspacesAwesome.qml")
+            }
+            
+            // Fallback
+            console.warn("Unknown WM, using static workspaces")
+            return Qt.createComponent("./Widgets/WorkspacesFallback.qml")
+        }
+
+        onStatusChanged: {
+            if (status === Loader.Error) {
+                console.error("Failed to load workspace widget:", source)
+            }
+        }
     }
     
     Widgets.BarSeparator {}
