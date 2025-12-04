@@ -47,6 +47,8 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(gears.filesystem.get_themes_dir() .. "gtk/theme.lua")
 beautiful.font = "JetBrainsMono Nerd Font Propo 10"
+theme.font = "JetBrainsMono Nerd Font Propo 10"
+theme.wallpaper = "/usr/share/awesome/themes/default/background.png"
 
 -- This is used later as the default terminal and editor to run.
 terminal = "kitty"
