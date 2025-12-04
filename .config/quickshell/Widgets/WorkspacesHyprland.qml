@@ -5,7 +5,7 @@ import Quickshell.Hyprland
 Text {
     id: workspaces
     color: "#cdd6f4"
-    font.pixelSize: 13
+    font.pixelSize: 12
     font.family: "JetBrainsMono Nerd Font Propo"
     textFormat: Text.RichText
     
@@ -19,7 +19,7 @@ Text {
         let workspaceText = "󰕰 "
         
         for (let i = 1; i <= 10; i++) {
-            workspaceText += (i === active ? "<span style='font-size: 14pt;'><b>" + i + "</b></span> " : i + " ")
+            workspaceText += (i === active ? "<span style='font-size: 13pt;'><b>" + i + "</b></span> " : i + " ")
         }
         
         text = workspaceText.trim()
