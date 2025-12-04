@@ -17,16 +17,20 @@ Text {
     Process {
         id: countProcess
         command: ["swaync-client", "-c"]
-        running: false
         
         stdout: SplitParser {
             onRead: data => {
                 let count = parseInt(data.trim())
                 if (!isNaN(count)) {
                     notificationCount = count
+                    console.log("Notification count:", notificationCount)
                     updateDisplay()
                 }
             }
+        }
+        
+        stderr: SplitParser {
+            onRead: data => console.error("Count error:", data)
         }
     }
     
@@ -34,13 +38,17 @@ Text {
     Process {
         id: dndProcess
         command: ["swaync-client", "-D"]
-        running: false
         
         stdout: SplitParser {
             onRead: data => {
                 dndEnabled = data.trim() === "true"
+                console.log("DND enabled:", dndEnabled)
                 updateDisplay()
             }
+        }
+        
+        stderr: SplitParser {
+            onRead: data => console.error("DND error:", data)
         }
     }
     
@@ -49,22 +57,38 @@ Text {
         interval: 2000
         running: true
         repeat: true
-        onTriggered: {
-            countProcess.running = true
-            dndProcess.running = true
-        }
+        onTriggered: refresh()
     }
     
     // Toggle notification center
     Process {
         id: toggleProcess
         command: ["swaync-client", "-t"]
+        onExited: {
+            // Small delay before refreshing
+            refreshTimer.start()
+        }
     }
     
     // Toggle DND
     Process {
         id: toggleDndProcess
         command: ["swaync-client", "-dn"]
+        onExited: {
+            // Small delay before refreshing
+            refreshTimer.start()
+        }
+    }
+    
+    Timer {
+        id: refreshTimer
+        interval: 300
+        onTriggered: refresh()
+    }
+    
+    function refresh() {
+        countProcess.running = true
+        dndProcess.running = true
     }
     
     function updateDisplay() {
@@ -75,6 +99,8 @@ Text {
         } else {
             text = icon
         }
+        
+        console.log("Display updated:", text)
     }
     
     MouseArea {
@@ -84,21 +110,17 @@ Text {
         
         onClicked: (mouse) => {
             if (mouse.button === Qt.LeftButton) {
+                console.log("Toggle notification center")
                 toggleProcess.running = true
             } else if (mouse.button === Qt.RightButton) {
+                console.log("Toggle DND")
                 toggleDndProcess.running = true
-                // Refresh after toggling
-                Timer {
-                    interval: 200
-                    running: true
-                    onTriggered: dndProcess.running = true
-                }
             }
         }
     }
     
     Component.onCompleted: {
-        countProcess.running = true
-        dndProcess.running = true
+        console.log("Notification widget loaded")
+        refresh()
     }
 }
