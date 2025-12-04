@@ -25,7 +25,7 @@ Text {
         
         stdout: SplitParser {
             onRead: data => {
-                console.log("xprop output:", data)
+                // console.log("xprop output:", data)
                 // Parse output like "_NET_CURRENT_DESKTOP(CARDINAL) = 0"
                 let match = data.match(/=\s*(\d+)/)
                 if (match) {
