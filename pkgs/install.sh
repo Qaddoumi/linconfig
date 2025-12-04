@@ -576,7 +576,7 @@ if [ "$is_vm" = true ]; then
     echo -e "${green}Skipping Performance Mode Setup in VM environment${no_color}"
 else
     echo -e "${green}Setting up Performance Mode for physical machine${no_color}"
-    # bash <(curl -s https://raw.githubusercontent.com/Qaddoumi/linconfig/quickshell/pkgs/performance1.sh)
+    # bash <(curl -s https://raw.githubusercontent.com/Qaddoumi/linconfig/quickshell/pkgs/performance.sh)
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
