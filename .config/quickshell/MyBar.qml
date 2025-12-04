@@ -23,21 +23,28 @@ RowLayout {
             // Check for Sway first (before Hyprland)
             // Check both exact match and if desktop contains "sway" (e.g., "sway:wlroots")
             let swaysock = Quickshell.env("SWAYSOCK")
-            if (desktop.indexOf("sway") !== -1 || (swaysock && swaysock !== "")) {
+            console.log("SWAYSOCK value:", swaysock)
+            if (desktop && desktop.indexOf("sway") !== -1 || (swaysock && swaysock !== "")) {
                 console.log("Sway detected")
                 return "./Widgets/WorkspacesSway.qml"
             }
             
             // Check for Hyprland
             let hyprlandSig = Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")
-            if (desktop.indexOf("Hyprland") !== -1 || (hyprlandSig && hyprlandSig !== "")) {
+            if (desktop && desktop.indexOf("Hyprland") !== -1 || (hyprlandSig && hyprlandSig !== "")) {
                 console.log("Hyprland detected")
                 return "./Widgets/WorkspacesHyprland.qml"
             }
             
-            // Check for Awesome (X11)
-            if (desktop.indexOf("awesome") !== -1 || sessionType === "x11") {
-                console.log("Awesome detected")
+            // Check for Awesome - only if desktop explicitly contains "awesome" or if X11 with no desktop set
+            if (desktop && desktop.indexOf("awesome") !== -1) {
+                console.log("Awesome detected (by name)")
+                return "./Widgets/WorkspacesAwesome.qml"
+            }
+            
+            // X11 fallback only if desktop is empty/null (minimal X11 setup)
+            if (sessionType === "x11" && (!desktop || desktop === "")) {
+                console.log("Awesome detected (X11 fallback)")
                 return "./Widgets/WorkspacesAwesome.qml"
             }
             

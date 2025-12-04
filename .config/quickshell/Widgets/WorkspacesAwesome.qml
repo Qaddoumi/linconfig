@@ -7,7 +7,6 @@ Text {
     color: "#cdd6f4"
     font.pixelSize: 13
     font.family: "JetBrainsMono Nerd Font Propo"
-    textFormat: Text.RichText  // Enable HTML tags like <b>
     
     property int activeWorkspace: 1
     property int totalWorkspaces: 9
@@ -26,12 +25,21 @@ Text {
         
         stdout: SplitParser {
             onRead: data => {
+                console.log("awesome-client output:", data)
                 // Parse output like "   double 1"
                 let match = data.match(/\d+/)
                 if (match) {
                     activeWorkspace = parseInt(match[0])
                     updateWorkspaces()
+                } else {
+                    console.warn("Failed to parse workspace from awesome-client")
                 }
+            }
+        }
+        
+        stderr: SplitParser {
+            onRead: data => {
+                console.error("awesome-client error:", data)
             }
         }
     }
