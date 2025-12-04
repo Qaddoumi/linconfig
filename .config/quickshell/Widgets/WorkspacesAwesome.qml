@@ -89,7 +89,7 @@ Text {
     }
     
     function updateWorkspaces() {
-        let workspaceText = "󰕰 "
+        let workspaceText = ""
         
         for (let i = 1; i <= totalWorkspaces; i++) {
             if (workspacesWithWindows.includes(i) || i === activeWorkspace) {

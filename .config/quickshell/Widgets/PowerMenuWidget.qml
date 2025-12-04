@@ -6,6 +6,7 @@ Text {
     text: "⏻"
     color: "#f38ba8"
     font.pixelSize: 14
+    font.family: "JetBrainsMono Nerd Font Propo"
     font.bold: true
     
     Process {

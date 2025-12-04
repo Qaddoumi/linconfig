@@ -94,7 +94,7 @@ Text {
     }
     
     function updateWorkspaces() {
-        let workspaceText = "󰕰 "
+        let workspaceText = ""
         
         // Show only workspaces with windows, plus the active workspace
         for (let i = 1; i <= 10; i++) {

@@ -8,7 +8,9 @@ RowLayout {
     anchors.fill: parent
     anchors.margins: 5
     spacing: 10
-    
+
+
+    Widgets.LauncherMenu {}
     
     //Workspaces based on WM
     Loader {
