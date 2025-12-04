@@ -11,64 +11,138 @@ Text {
     
     property int notificationCount: 0
     property bool dndEnabled: false
-    property string outputBuffer: ""
+    property string notificationDaemon: "none"
+    property bool initialized: false
     
-    // Poll swaync for notification status
+    // Detect which notification daemon is running
+    Process {
+        id: detectDaemon
+        command: ["bash", "-c", "pgrep -x swaync > /dev/null && echo 'swaync' || (pgrep -x dunst > /dev/null && echo 'dunst' || echo 'none')"]
+        
+        stdout: SplitParser {
+            onRead: data => {
+                notificationDaemon = data.trim()
+                console.log("Detected notification daemon:", notificationDaemon)
+                initialized = true
+                if (notificationDaemon !== "none") {
+                    getNotificationStatus()
+                } else {
+                    text = "󰂚"  // Bell with slash (no daemon)
+                }
+            }
+        }
+    }
+    
+    // Poll for notification status
     Timer {
         interval: 2000
-        running: true
+        running: initialized && notificationDaemon !== "none"
         repeat: true
         onTriggered: getNotificationStatus()
     }
     
+    // SWAYNC status
     Process {
         id: swayncProcess
         command: ["swaync-client", "-swb"]
         
+        property string buffer: ""
+        
         stdout: SplitParser {
             onRead: data => {
-                outputBuffer += data
+                swayncProcess.buffer += data
             }
         }
         
         onExited: {
-            if (outputBuffer.length > 0) {
+            if (swayncProcess.buffer.length > 0) {
                 try {
-                    let status = JSON.parse(outputBuffer)
+                    let status = JSON.parse(swayncProcess.buffer)
                     notificationCount = status.count || 0
                     dndEnabled = status.dnd || false
                     updateDisplay()
                 } catch (e) {
-                    console.error("Notification parse error:", e)
+                    console.error("Swaync parse error:", e, "Buffer:", swayncProcess.buffer)
                 }
-                outputBuffer = ""
+                swayncProcess.buffer = ""
+            }
+        }
+        
+        stderr: SplitParser {
+            onRead: data => {
+                console.error("Swaync error:", data)
             }
         }
     }
     
+    // DUNST status (dunst doesn't provide count easily, so we show icon only)
     Process {
-        id: toggleProcess
+        id: dunstProcess
+        command: ["dunstctl", "is-paused"]
+        
+        stdout: SplitParser {
+            onRead: data => {
+                dndEnabled = data.trim() === "true"
+                // Dunst doesn't easily provide count, so we just show the icon
+                notificationCount = 0
+                updateDisplay()
+            }
+        }
+        
+        stderr: SplitParser {
+            onRead: data => {
+                console.error("Dunst error:", data)
+            }
+        }
+    }
+    
+    // Toggle processes
+    Process {
+        id: swayncToggle
         command: ["swaync-client", "-t", "-sw"]
+        onExited: Qt.callLater(() => { getNotificationStatus() })
     }
     
     Process {
-        id: dndProcess
+        id: swayncDnd
         command: ["swaync-client", "-d", "-sw"]
+        onExited: Qt.callLater(() => { getNotificationStatus() })
+    }
+    
+    Process {
+        id: dunstToggle
+        command: ["dunstctl", "history-pop"]
+    }
+    
+    Process {
+        id: dunstDnd
+        command: ["dunstctl", "set-paused", "toggle"]
+        onExited: Qt.callLater(() => { getNotificationStatus() })
     }
     
     function getNotificationStatus() {
-        outputBuffer = ""
-        swayncProcess.running = false
-        swayncProcess.running = true
+        if (notificationDaemon === "swaync") {
+            swayncProcess.buffer = ""
+            swayncProcess.running = false
+            swayncProcess.running = true
+        } else if (notificationDaemon === "dunst") {
+            dunstProcess.running = false
+            dunstProcess.running = true
+        }
     }
     
     function updateDisplay() {
         let icon = ""
         
+        if (notificationDaemon === "none") {
+            text = "󰂚"  // No daemon
+            return
+        }
+        
         if (dndEnabled) {
-            icon = ""  // DND icon
+            icon = "󰂛"  // Bell with slash (DND)
         } else {
-            icon = ""  // Bell icon
+            icon = "󰂚"  // Bell
         }
         
         if (notificationCount > 0) {
@@ -84,19 +158,23 @@ Text {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         
         onClicked: (mouse) => {
-            if (mouse.button === Qt.LeftButton) {
-                // Toggle notification center
-                toggleProcess.running = true
-                // Refresh status after toggle
-                Qt.callLater(() => { getNotificationStatus() })
-            } else if (mouse.button === Qt.RightButton) {
-                // Toggle DND
-                dndProcess.running = true
-                // Refresh status after toggle
-                Qt.callLater(() => { getNotificationStatus() })
+            if (notificationDaemon === "swaync") {
+                if (mouse.button === Qt.LeftButton) {
+                    swayncToggle.running = true
+                } else if (mouse.button === Qt.RightButton) {
+                    swayncDnd.running = true
+                }
+            } else if (notificationDaemon === "dunst") {
+                if (mouse.button === Qt.LeftButton) {
+                    dunstToggle.running = true
+                } else if (mouse.button === Qt.RightButton) {
+                    dunstDnd.running = true
+                }
             }
         }
     }
     
-    Component.onCompleted: getNotificationStatus()
+    Component.onCompleted: {
+        detectDaemon.running = true
+    }
 }
