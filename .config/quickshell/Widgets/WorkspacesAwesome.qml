@@ -7,6 +7,7 @@ Text {
     color: "#cdd6f4"
     font.pixelSize: 13
     font.family: "JetBrainsMono Nerd Font Propo"
+    textFormat: Text.RichText  // Enable HTML tags like <b>
     
     property int activeWorkspace: 1
     property int totalWorkspaces: 9
