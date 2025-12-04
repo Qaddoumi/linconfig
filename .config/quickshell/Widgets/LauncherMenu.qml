@@ -15,7 +15,7 @@ Text {
         id: launcherProcess
         command: isWayland 
             ? ["wofi", "--show", "drun", "--location", "top_left"]
-            : ["rofi", "-show", "drun", "-yoffset", "30", "-xoffset", "0"]
+            : ["rofi", "-show", "drun", "-yoffset", "30"]
         
         onExited: {
             launcherOpen = false
