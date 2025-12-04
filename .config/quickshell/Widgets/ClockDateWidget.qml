@@ -6,6 +6,7 @@ Text {
     property bool showAltFormat: false
     property string normalFormat: "hh:mm a"  // 12-hour with am/pm
     property string altFormat: "yyyy-MM-dd hh:mm a"  // Date + time
+    //TODO: add hijri date on tooltip
     
     text: Qt.formatDateTime(new Date(), showAltFormat ? altFormat : normalFormat)
     color: "#fab387"

@@ -16,6 +16,7 @@ RowLayout {
     Widgets.BarSeparator {}
     
     //Workspaces based on WM
+    //TODO: make the workspaces a seperate items so i can click on them
     Loader {
         id: loader
         
@@ -76,6 +77,7 @@ RowLayout {
         color: "#89b4fa"
         font.pixelSize: 12
     }
+
     
     // Center spacer
     Item { Layout.fillWidth: true }
@@ -86,15 +88,34 @@ RowLayout {
     // System info section
     RowLayout {
         spacing: 9
-        
         Widgets.BarSeparator {}
-        
+        Widgets.IdleInhibitor {}
+        Widgets.BarSeparator {}
+        Widgets.Tray {}
+        Widgets.BarSeparator {}
+        Widgets.RAM {}
+        Widgets.BarSeparator {}
+        Widgets.CPU {}
+        Widgets.BarSeparator {}
+        Widgets.Storage {}
+        Widgets.BarSeparator {}
+        Widgets.Battery {}
+        Widgets.BarSeparator {}
+        Widgets.Volume {}
+        Widgets.BarSeparator {}
+        Widgets.Network {}
+        Widgets.BarSeparator {}
+        Widgets.Brightness {}
+        Widgets.BarSeparator {}
+        Widgets.HardwareTemperature {}
+        Widgets.BarSeparator {}
+        Widgets.PrayerTimes {}
+        Widgets.BarSeparator {}
         Widgets.ClockDateWidget {}
-
         Widgets.BarSeparator {}
-
+        Widgets.Notification {}
+        Widgets.BarSeparator {}
         Widgets.PowerMenuWidget {}
-
         Widgets.BarSeparator {}
     }
 }
