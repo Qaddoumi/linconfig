@@ -23,10 +23,10 @@ configuration {
     element-text-font:           "JetBrainsMono Nerd Font Propo 23";
 
     background-window:           black/80%;
-    background-normal:           white/5%;
-    background-selected:         white/15%;
+    background-normal:           white/20%;
+    background-selected:         white/35%;
     foreground-normal:           white;
-    foreground-selected:         white;
+    foreground-selected:         #20fb10ff;
 }
 
 /*****----- Main Window -----*****/
