@@ -78,4 +78,4 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     fi
 fi
 
-echo -e "${green}Setup completed!${no_color}\n"
+echo -e "${green}\n\nSetup completed!${no_color}\n"
