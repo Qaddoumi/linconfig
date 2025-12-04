@@ -54,7 +54,7 @@ Text {
                     let workspaces = JSON.parse(swayOutputBuffer)
                     workspacesWithWindows = []
                     
-                    console.log("Sway parsed", workspaces.length, "workspaces")
+                    // console.log("Sway parsed", workspaces.length, "workspaces")
                     
                     for (let ws of workspaces) {
                         // Track active workspace
@@ -65,7 +65,7 @@ Text {
                         // Empty workspaces have representation: null
                         if (ws.representation && ws.representation !== null && ws.representation !== "") {
                             workspacesWithWindows.push(ws.num)
-                            console.log("Workspace", ws.num, "has windows, representation:", ws.representation)
+                            // console.log("Workspace", ws.num, "has windows, representation:", ws.representation)
                         }
                     }
                     updateWorkspaces()
