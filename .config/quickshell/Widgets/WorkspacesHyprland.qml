@@ -10,6 +10,7 @@ Text {
     textFormat: Text.RichText
     
     property int activeWorkspace: 1
+    property string outputBuffer: ""
     
     // Poll hyprctl for current workspace
     Timer {
@@ -25,13 +26,21 @@ Text {
         
         stdout: SplitParser {
             onRead: data => {
+                // Accumulate data
+                outputBuffer += data
+            }
+        }
+        
+        onExited: {
+            if (outputBuffer.length > 0) {
                 try {
-                    let workspace = JSON.parse(data)
+                    let workspace = JSON.parse(outputBuffer)
                     activeWorkspace = workspace.id
                     updateWorkspaces()
                 } catch (e) {
-                    console.error("Hyprland parse error:", e)
+                    console.error("Hyprland parse error:", e, "Data:", outputBuffer)
                 }
+                outputBuffer = ""
             }
         }
     }
