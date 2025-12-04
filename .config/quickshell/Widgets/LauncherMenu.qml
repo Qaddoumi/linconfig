@@ -8,20 +8,38 @@ Text {
     font.pixelSize: 12
     font.family: "JetBrainsMono Nerd Font Propo"
 
+    property bool isWayland: Quickshell.env("WAYLAND_DISPLAY") !== ""
+    property bool launcherOpen: false
+
     Process {
         id: launcherProcess
-        command: {
-            if (Quickshell.env("WAYLAND_DISPLAY")) {
-                return ["wofi", "--show", "drun", "--location", "top_left"]
-            } else {
-                return ["rofi", "-show", "drun", "-yoffset", "30"]
-            }
+        command: isWayland 
+            ? ["wofi", "--show", "drun", "--location", "top_left"]
+            : ["rofi", "-show", "drun", "-yoffset", "30", "-xoffset", "0"]
+        
+        onExited: {
+            launcherOpen = false
         }
+    }
+    
+    Process {
+        id: killProcess
+        command: isWayland ? ["pkill", "wofi"] : ["pkill", "rofi"]
     }
 
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: launcherProcess.running = true
+        onClicked: {
+            if (launcherOpen) {
+                // Kill the launcher
+                killProcess.running = true
+                launcherOpen = false
+            } else {
+                // Launch it
+                launcherProcess.running = true
+                launcherOpen = true
+            }
+        }
     }
 }
