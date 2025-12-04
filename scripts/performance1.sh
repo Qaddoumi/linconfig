@@ -120,6 +120,12 @@ echo -e "${green}Enabling and starting TLP service...${no_color}"
 sudo systemctl enable tlp.service
 sudo systemctl start tlp.service
 
+# Install TLP-RDW for additional NetworkManager integration
+if ! pacman -Q tlp-rdw &>/dev/null; then
+    echo -e "${green}Installing TLP-RDW for NetworkManager integration...${no_color}"
+    sudo pacman -S --noconfirm tlp-rdw
+fi
+
 # Check current power source and apply settings
 echo -e "${green}Applying TLP settings for current power source...${no_color}"
 sudo tlp start
