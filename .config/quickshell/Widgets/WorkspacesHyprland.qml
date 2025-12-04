@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell
-import Quickshell.Hyprland
+import Quickshell.Io
 
 Text {
     id: workspaces
@@ -9,21 +9,50 @@ Text {
     font.family: "JetBrainsMono Nerd Font Propo"
     textFormat: Text.RichText
     
-    Hyprland {
-        id: hyprland
-        onActiveWorkspaceChanged: updateWorkspaces()
+    property int activeWorkspace: 1
+    
+    // Poll hyprctl for current workspace
+    Timer {
+        interval: 500
+        running: true
+        repeat: true
+        onTriggered: getWorkspace()
+    }
+    
+    Process {
+        id: hyprctlProcess
+        command: ["hyprctl", "activeworkspace", "-j"]
+        
+        stdout: SplitParser {
+            onRead: data => {
+                try {
+                    let workspace = JSON.parse(data)
+                    activeWorkspace = workspace.id
+                    updateWorkspaces()
+                } catch (e) {
+                    console.error("Hyprland parse error:", e)
+                }
+            }
+        }
+    }
+    
+    function getWorkspace() {
+        hyprctlProcess.running = false
+        hyprctlProcess.running = true
     }
     
     function updateWorkspaces() {
-        let active = hyprland.activeWorkspace?.id ?? 1
         let workspaceText = "󰕰 "
         
         for (let i = 1; i <= 10; i++) {
-            workspaceText += (i === active ? "<span style='font-size: 13pt;'><b>" + i + "</b></span> " : i + " ")
+            workspaceText += (i === activeWorkspace ? "<span style='font-size: 13pt;'><b>" + i + "</b></span> " : i + " ")
         }
         
         text = workspaceText.trim()
     }
     
-    Component.onCompleted: updateWorkspaces()
+    Component.onCompleted: {
+        getWorkspace()
+        updateWorkspaces()
+    }
 }
