@@ -194,9 +194,7 @@ exec copyq --start-server
 exec_always bash -c "killall -q nm-applet ; nm-applet --indicator"
 
 ## quickshell
-exec quickshell
 exec_always bash -c "killall -q quickshell ; quickshell"
-exec waybar
 exec_always bash -c "killall -q waybar ; waybar"
 
 ## SwayNC Notification & system tray

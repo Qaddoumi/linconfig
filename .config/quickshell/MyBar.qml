@@ -17,6 +17,7 @@ RowLayout {
     
     //Workspaces based on WM
     //TODO: make the workspaces a seperate items so i can click on them
+    //TODO: get the state of the workspace and color it based on it (hover, focused, urgent)
     Loader {
         id: loader
         
