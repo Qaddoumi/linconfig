@@ -87,22 +87,6 @@ RowLayout {
     RowLayout {
         spacing: 15
         
-        // Volume
-        Text {
-            text: "󰕾 100%"
-            color: "#a6e3a1"
-            font.pixelSize: 12
-        }
-
-        Widgets.BarSeparator {}
-        
-        // Network
-        Text {
-            text: "󰖩 Connected"
-            color: "#89dceb"
-            font.pixelSize: 12
-        }
-        
         Widgets.BarSeparator {}
         
         Widgets.ClockDateWidget {}

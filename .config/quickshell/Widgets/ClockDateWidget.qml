@@ -10,6 +10,7 @@ Text {
     text: Qt.formatDateTime(new Date(), showAltFormat ? altFormat : normalFormat)
     color: "#fab387"
     font.pixelSize: 12
+    font.family: "JetBrainsMono Nerd Font Propo"
     
     // Make it clickable
     MouseArea {

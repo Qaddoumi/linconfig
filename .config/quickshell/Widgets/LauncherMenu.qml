@@ -12,7 +12,7 @@ Text {
 
     Process {
         id: launcherProcess
-        command: ["rofi", "-show", "drun", "-yoffset", "30"]
+        command: ["rofi", "-show", "drun"]
         
         onExited: {
             launcherOpen = false
