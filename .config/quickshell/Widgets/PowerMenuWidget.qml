@@ -11,7 +11,7 @@ Text {
     
     Process {
         id: powerMenuProcess
-        command: [Quickshell.env("HOME") + "/.config/waybar/scripts/powermenu.sh"]
+        command: [Quickshell.env("HOME") + "/.config/quickshell/scripts/powermenu.sh"]
     }
 
     MouseArea {

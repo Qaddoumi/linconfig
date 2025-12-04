@@ -8,14 +8,11 @@ Text {
     font.pixelSize: 12
     font.family: "JetBrainsMono Nerd Font Propo"
 
-    property bool isWayland: Quickshell.env("WAYLAND_DISPLAY") !== ""
     property bool launcherOpen: false
 
     Process {
         id: launcherProcess
-        command: isWayland 
-            ? ["wofi", "--show", "drun", "--location", "top_left"]
-            : ["rofi", "-show", "drun", "-yoffset", "30"]
+        command: ["rofi", "-show", "drun", "-yoffset", "30"]
         
         onExited: {
             launcherOpen = false
@@ -24,7 +21,7 @@ Text {
     
     Process {
         id: killProcess
-        command: isWayland ? ["pkill", "wofi"] : ["pkill", "rofi"]
+        command: ["pkill", "rofi"]
     }
 
     MouseArea {
