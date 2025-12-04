@@ -620,3 +620,12 @@ awful.spawn.with_shell("picom -b")
 -- awful.spawn.with_shell("feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'")
 awful.spawn.with_shell("/usr/bin/dex -a")
 awful.spawn.with_shell("killall -q quickshell; quickshell")
+awful.spawn.with_shell("kitty", {
+    callback = function(c)
+        local screen = awful.screen.focused()
+        local tag = screen.tags[1]  -- First tag (workspace 1)
+        if tag then
+            c:move_to_tag(tag)
+        end
+    end
+})
