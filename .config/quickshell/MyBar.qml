@@ -31,22 +31,6 @@ RowLayout {
     // Center spacer
     Item { Layout.fillWidth: true }
     
-    // Clock
-    Text {
-        id: clock
-        text: Qt.formatDateTime(new Date(), "hh:mm:ss")
-        color: "#f5e0dc"
-        font.pixelSize: 13
-        font.bold: true
-        
-        Timer {
-            interval: 1000
-            running: true
-            repeat: true
-            onTriggered: clock.text = Qt.formatDateTime(new Date(), "hh:mm:ss")
-        }
-    }
-    
     // Right spacer
     Item { Layout.fillWidth: true }
     
@@ -72,7 +56,7 @@ RowLayout {
         
         Widgets.BarSeparator {}
         
-        Widgets.DateWidget {}
+        Widgets.ClockDateWidget {}
 
         Widgets.BarSeparator {}
 
