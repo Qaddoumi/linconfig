@@ -77,5 +77,7 @@ RowLayout {
         Widgets.BarSeparator {}
 
         Widgets.PowerMenuWidget {}
+
+        Widgets.BarSeparator {}
     }
 }
