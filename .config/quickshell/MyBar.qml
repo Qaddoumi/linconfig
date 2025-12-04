@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Layouts  // Add this import
+import QtQuick.Layouts
 import Quickshell
 import "./Widgets" as Widgets
 
