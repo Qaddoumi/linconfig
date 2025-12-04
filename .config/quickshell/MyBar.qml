@@ -7,7 +7,7 @@ import "./Widgets" as Widgets
 RowLayout {
     anchors.fill: parent
     anchors.margins: 5
-    spacing: 10
+    spacing: 9
 
     Widgets.BarSeparator {}
 
@@ -85,7 +85,7 @@ RowLayout {
     
     // System info section
     RowLayout {
-        spacing: 15
+        spacing: 9
         
         Widgets.BarSeparator {}
         
