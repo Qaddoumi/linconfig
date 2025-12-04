@@ -19,7 +19,7 @@ configuration {
     textbox-font:                "JetBrainsMono Nerd Font Propo 7";
     element-text-font:           "JetBrainsMono Nerd Font Propo 23";
 
-    background-window:           black/30%;
+    background-window:           black/80%;
     background-normal:           white/5%;
     background-selected:         white/15%;
     foreground-normal:           white;
