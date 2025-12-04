@@ -56,12 +56,12 @@ Text {
         
         stdout: SplitParser {
             onRead: data => {
-                console.log("Window desktop output:", data)
+                // console.log("Window desktop output:", data)
                 // Each line is a desktop number (0-indexed)
                 let desktopNum = parseInt(data.trim())
                 if (!isNaN(desktopNum)) {
                     let wsNum = desktopNum + 1  // Convert to 1-indexed
-                    console.log("Found window on workspace:", wsNum)
+                    // console.log("Found window on workspace:", wsNum)
                     if (wsNum >= 1 && wsNum <= totalWorkspaces && !workspacesWithWindows.includes(wsNum)) {
                         workspacesWithWindows.push(wsNum)
                     }
@@ -76,7 +76,7 @@ Text {
         }
         
         onExited: {
-            console.log("Window list completed, workspaces with windows:", workspacesWithWindows)
+            // console.log("Window list completed, workspaces with windows:", workspacesWithWindows)
             updateWorkspaces()
         }
     }
