@@ -12,13 +12,16 @@ bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
 
+echo -e "${green}Setting up directories...${no_color}"
 sudo mkdir -p ~/.config > /dev/null || true
 sudo mkdir -p ~/.local/bin > /dev/null || true
 sudo mkdir -p ~/.local/share/applications > /dev/null || true
 
 if [ -d ~/configtemp ]; then
+    echo -e "${green}Removing the old directory...${no_color}"
     sudo rm -rf ~/configtemp > /dev/null || true
 fi
+echo -e "${green}Cloning the repository...${no_color}"
 if ! git clone --depth 1 -b quickshell https://github.com/Qaddoumi/linconfig.git ~/configtemp; then
     echo "Failed to clone repository" >&2
     exit 1
