@@ -7,6 +7,7 @@ Text {
     color: "#cdd6f4"
     font.pixelSize: 13
     font.family: "JetBrainsMono Nerd Font Propo"
+    textFormat: Text.RichText
     
     property var activeWorkspace: 1
     
@@ -56,7 +57,7 @@ Text {
     function updateWorkspaces() {
         let workspaceText = "󰕰 "
         for (let i = 1; i <= 10; i++) {
-            workspaceText += (i === activeWorkspace ? "<span style='font-size: 14pt;'><b>" + i + "</b></span> " : i + " ")
+            workspaceText += (i === activeWorkspace ? "<span style='font-size: 16pt;'><b>" + i + "</b></span> " : i + " ")
         }
         text = workspaceText.trim()
     }

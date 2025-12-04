@@ -31,12 +31,13 @@ RowLayout {
             
             // Check for Hyprland
             let hyprlandSig = Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")
+            console.log("HYPRLAND_INSTANCE_SIGNATURE value:", hyprlandSig)
             if (desktop && desktop.indexOf("Hyprland") !== -1 || (hyprlandSig && hyprlandSig !== "")) {
                 console.log("Hyprland detected")
                 return "./Widgets/WorkspacesHyprland.qml"
             }
             
-            // Check for Awesome - only if desktop explicitly contains "awesome" or if X11 with no desktop set
+            // Check for Awesome - only if desktop explicitly contains "awesome" or if X11 with no desktop sets
             if (desktop && desktop.indexOf("awesome") !== -1) {
                 console.log("Awesome detected (by name)")
                 return "./Widgets/WorkspacesAwesome.qml"
