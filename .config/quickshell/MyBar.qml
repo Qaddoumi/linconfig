@@ -9,8 +9,11 @@ RowLayout {
     anchors.margins: 5
     spacing: 10
 
+    Widgets.BarSeparator {}
 
     Widgets.LauncherMenu {}
+
+    Widgets.BarSeparator {}
     
     //Workspaces based on WM
     Loader {

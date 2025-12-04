@@ -3,7 +3,7 @@ import Quickshell
 import Quickshell.Io
 
 Text {
-    text: " 󰕰 "
+    text: ""
     color: "#89b4fa"
     font.pixelSize: 12
     font.family: "JetBrainsMono Nerd Font Propo"
