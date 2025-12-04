@@ -108,7 +108,7 @@ Text {
     }
     
     Component.onCompleted: {
-        getWorkspace()
+        getWorkspaces()
         updateWorkspaces()
     }
 }
