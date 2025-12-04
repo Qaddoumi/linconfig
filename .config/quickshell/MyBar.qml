@@ -17,32 +17,34 @@ RowLayout {
         property string sessionType: Quickshell.env("XDG_SESSION_TYPE")
         property string desktop: Quickshell.env("XDG_CURRENT_DESKTOP")
         
-        sourceComponent: {
+        function detectWindowManager() {
             console.log("Detecting WM - Session:", sessionType, "Desktop:", desktop)
             
             // Check for Hyprland
             if (desktop === "Hyprland" || Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE") !== "") {
                 console.log("Hyprland detected")
-                return Qt.createComponent("./Widgets/WorkspacesHyprland.qml")
+                return "./Widgets/WorkspacesHyprland.qml"
             }
             
             // Check for Sway
             if (desktop === "sway" || Quickshell.env("SWAYSOCK") !== "") {
                 console.log("Sway detected")
-                return Qt.createComponent("./Widgets/WorkspacesSway.qml")
+                return "./Widgets/WorkspacesSway.qml"
             }
             
             // Check for Awesome (X11)
             if (desktop === "awesome" || sessionType === "x11") {
                 console.log("Awesome detected")
-                return Qt.createComponent("./Widgets/WorkspacesAwesome.qml")
+                return "./Widgets/WorkspacesAwesome.qml"
             }
             
             // Fallback
             console.warn("Unknown WM, using static workspaces")
-            return Qt.createComponent("./Widgets/WorkspacesFallback.qml")
+            return "./Widgets/WorkspacesFallback.qml"
         }
-
+        
+        source: detectWindowManager()
+        
         onStatusChanged: {
             if (status === Loader.Error) {
                 console.error("Failed to load workspace widget:", source)
