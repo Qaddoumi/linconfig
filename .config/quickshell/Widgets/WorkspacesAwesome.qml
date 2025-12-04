@@ -10,6 +10,7 @@ Text {
     textFormat: Text.RichText
     
     property int activeWorkspace: 1
+    property var workspacesWithWindows: []
     property int totalWorkspaces: 9
     
     // Poll xprop for current workspace (more reliable than awesome-client)
@@ -17,7 +18,10 @@ Text {
         interval: 500
         running: true
         repeat: true
-        onTriggered: getWorkspace()
+        onTriggered: {
+            getWorkspace()
+            getWorkspacesWithWindows()
+        }
     }
     
     Process {
@@ -45,15 +49,49 @@ Text {
         }
     }
     
+    // Use wmctrl to get windows and their workspaces
+    Process {
+        id: wmctrlProcess
+        command: ["wmctrl", "-l"]
+        
+        stdout: SplitParser {
+            onRead: data => {
+                // Parse wmctrl output like: "0x03200003  0 hostname window title"
+                // Second column is the desktop/workspace number
+                let match = data.match(/^\S+\s+(\d+)/)
+                if (match) {
+                    let wsNum = parseInt(match[1]) + 1  // wmctrl is 0-indexed
+                    if (wsNum >= 1 && wsNum <= totalWorkspaces && !workspacesWithWindows.includes(wsNum)) {
+                        workspacesWithWindows.push(wsNum)
+                    }
+                }
+            }
+        }
+        
+        onExited: {
+            updateWorkspaces()
+        }
+    }
+    
     function getWorkspace() {
         xpropProcess.running = false
         xpropProcess.running = true
     }
     
+    function getWorkspacesWithWindows() {
+        workspacesWithWindows = []
+        wmctrlProcess.running = false
+        wmctrlProcess.running = true
+    }
+    
     function updateWorkspaces() {
         let workspaceText = "󰕰 "
+        // Show only workspaces with windows, plus the active workspace
         for (let i = 1; i <= totalWorkspaces; i++) {
-            workspaceText += (i === activeWorkspace ? "<span style='font-size: 13pt;'><b>" + i + "</b></span> " : i + " ")
+            // Show if it has windows OR is the active workspace
+            if (workspacesWithWindows.includes(i) || i === activeWorkspace) {
+                workspaceText += (i === activeWorkspace ? "<span style='font-size: 13pt;'><b>" + i + "</b></span> " : i + " ")
+            }
         }
         text = workspaceText.trim()
     }
