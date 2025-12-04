@@ -20,20 +20,23 @@ RowLayout {
         function detectWindowManager() {
             console.log("Detecting WM - Session:", sessionType, "Desktop:", desktop)
             
-            // Check for Hyprland
-            if (desktop === "Hyprland" || Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE") !== "") {
-                console.log("Hyprland detected")
-                return "./Widgets/WorkspacesHyprland.qml"
-            }
-            
-            // Check for Sway
-            if (desktop === "sway" || Quickshell.env("SWAYSOCK") !== "") {
+            // Check for Sway first (before Hyprland)
+            // Check both exact match and if desktop contains "sway" (e.g., "sway:wlroots")
+            let swaysock = Quickshell.env("SWAYSOCK")
+            if (desktop.indexOf("sway") !== -1 || (swaysock && swaysock !== "")) {
                 console.log("Sway detected")
                 return "./Widgets/WorkspacesSway.qml"
             }
             
+            // Check for Hyprland
+            let hyprlandSig = Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")
+            if (desktop.indexOf("Hyprland") !== -1 || (hyprlandSig && hyprlandSig !== "")) {
+                console.log("Hyprland detected")
+                return "./Widgets/WorkspacesHyprland.qml"
+            }
+            
             // Check for Awesome (X11)
-            if (desktop === "awesome" || sessionType === "x11") {
+            if (desktop.indexOf("awesome") !== -1 || sessionType === "x11") {
                 console.log("Awesome detected")
                 return "./Widgets/WorkspacesAwesome.qml"
             }
