@@ -49,19 +49,17 @@ Text {
         }
     }
     
-    // Use wmctrl to get windows and their workspaces
+    // Use xdotool to get windows and their desktops (more widely available than wmctrl)
     Process {
-        id: wmctrlProcess
-        command: ["wmctrl", "-l"]
+        id: xdotoolProcess
+        command: ["sh", "-c", "xdotool search --onlyvisible --name '.*' 2>/dev/null | while read wid; do xdotool get_desktop_for_window $wid 2>/dev/null; done"]
         
         stdout: SplitParser {
             onRead: data => {
-                console.log("wmctrl output line:", data)
-                // Parse wmctrl output like: "0x03200003  0 hostname window title"
-                // Second column is the desktop/workspace number
-                let match = data.match(/^\S+\s+(\d+)/)
-                if (match) {
-                    let wsNum = parseInt(match[1]) + 1  // wmctrl is 0-indexed
+                // Each line is a desktop number (0-indexed)
+                let desktopNum = parseInt(data.trim())
+                if (!isNaN(desktopNum)) {
+                    let wsNum = desktopNum + 1  // Convert to 1-indexed
                     console.log("Found window on workspace:", wsNum)
                     if (wsNum >= 1 && wsNum <= totalWorkspaces && !workspacesWithWindows.includes(wsNum)) {
                         workspacesWithWindows.push(wsNum)
@@ -72,12 +70,12 @@ Text {
         
         stderr: SplitParser {
             onRead: data => {
-                console.error("wmctrl error:", data)
+                // Ignore stderr, xdotool can be noisy
             }
         }
         
         onExited: {
-            console.log("wmctrl completed, workspaces with windows:", workspacesWithWindows)
+            console.log("xdotool completed, workspaces with windows:", workspacesWithWindows)
             updateWorkspaces()
         }
     }
@@ -89,8 +87,8 @@ Text {
     
     function getWorkspacesWithWindows() {
         workspacesWithWindows = []
-        wmctrlProcess.running = false
-        wmctrlProcess.running = true
+        xdotoolProcess.running = false
+        xdotoolProcess.running = true
     }
     
     function updateWorkspaces() {

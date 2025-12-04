@@ -11,6 +11,7 @@ Text {
     
     property var activeWorkspace: 1
     property var workspacesWithWindows: []
+    property string swayOutputBuffer: ""
     
     // Use swaymsg to get workspace info
     Process {
@@ -24,7 +25,8 @@ Text {
                     let workspace = JSON.parse(data)
                     if (workspace.change === "focus") {
                         activeWorkspace = workspace.current.num
-                        updateWorkspaces()
+                        // Refresh workspace list when focus changes
+                        getInitialWorkspaces()
                     }
                 } catch (e) {
                     console.error("Sway parse error:", e)
@@ -36,16 +38,23 @@ Text {
     // Get initial workspace
     Process {
         id: initialWorkspace
-        running: true
+        running: false
         command: ["swaymsg", "-t", "get_workspaces"]
         
         stdout: SplitParser {
             onRead: data => {
+                // Accumulate data
+                swayOutputBuffer += data
+            }
+        }
+        
+        onExited: {
+            if (swayOutputBuffer.length > 0) {
                 try {
-                    let workspaces = JSON.parse(data)
+                    let workspaces = JSON.parse(swayOutputBuffer)
                     workspacesWithWindows = []
                     
-                    console.log("Sway workspaces data:", JSON.stringify(workspaces))
+                    console.log("Sway parsed", workspaces.length, "workspaces")
                     
                     for (let ws of workspaces) {
                         // Track active workspace
@@ -61,10 +70,17 @@ Text {
                     }
                     updateWorkspaces()
                 } catch (e) {
-                    console.error("Sway parse error:", e)
+                    console.error("Sway parse error:", e, "Buffer:", swayOutputBuffer)
                 }
+                swayOutputBuffer = ""
             }
         }
+    }
+    
+    function getInitialWorkspaces() {
+        swayOutputBuffer = ""
+        initialWorkspace.running = false
+        initialWorkspace.running = true
     }
     
     function updateWorkspaces() {
@@ -79,5 +95,5 @@ Text {
         text = workspaceText.trim()
     }
     
-    Component.onCompleted: updateWorkspaces()
+    Component.onCompleted: getInitialWorkspaces()
 }
