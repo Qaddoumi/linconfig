@@ -49,13 +49,14 @@ Text {
         }
     }
     
-    // Use xdotool to get windows and their desktops (more widely available than wmctrl)
+    // Use xprop to get windows and their desktops (most reliable X11 approach)
     Process {
-        id: xdotoolProcess
-        command: ["sh", "-c", "xdotool search --onlyvisible --name '.*' 2>/dev/null | while read wid; do xdotool get_desktop_for_window $wid 2>/dev/null; done"]
+        id: windowListProcess
+        command: ["sh", "-c", "xprop -root _NET_CLIENT_LIST | grep -o '0x[0-9a-f]*' | while read wid; do xprop -id $wid _NET_WM_DESKTOP 2>/dev/null | grep -o '[0-9]*$'; done"]
         
         stdout: SplitParser {
             onRead: data => {
+                console.log("Window desktop output:", data)
                 // Each line is a desktop number (0-indexed)
                 let desktopNum = parseInt(data.trim())
                 if (!isNaN(desktopNum)) {
@@ -70,12 +71,12 @@ Text {
         
         stderr: SplitParser {
             onRead: data => {
-                // Ignore stderr, xdotool can be noisy
+                console.error("xprop window list error:", data)
             }
         }
         
         onExited: {
-            console.log("xdotool completed, workspaces with windows:", workspacesWithWindows)
+            console.log("Window list completed, workspaces with windows:", workspacesWithWindows)
             updateWorkspaces()
         }
     }
@@ -87,8 +88,8 @@ Text {
     
     function getWorkspacesWithWindows() {
         workspacesWithWindows = []
-        xdotoolProcess.running = false
-        xdotoolProcess.running = true
+        windowListProcess.running = false
+        windowListProcess.running = true
     }
     
     function updateWorkspaces() {
