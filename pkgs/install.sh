@@ -222,8 +222,8 @@ sudo pacman -S --needed --noconfirm dex # Autostart manager (i dont't know why, 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm dunst # Notification daemon for X11
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm dunst # Notification daemon for X11
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm libappindicator-gtk3 libayatana-appindicator # AppIndicator support for swaync tray
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kitty # Terminal emulator
@@ -354,8 +354,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm dmidecode # Desktop Management Interface table related utilities
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
-yay -S --needed --noconfirm 12to11-git || echo -e "${red}Failed to install 12to11-git${no_color}" # run wayland apps on xorg
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+# yay -S --needed --noconfirm 12to11-git || echo -e "${red}Failed to install 12to11-git${no_color}" # run wayland apps on xorg
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm google-chrome || echo -e "${red}Failed to install google-chrome${no_color}" # Web browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm antigravity-bin || echo -e "${red}Failed to install antigravity-bin${no_color}" # AI IDE
