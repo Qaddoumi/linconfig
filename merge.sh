@@ -1,4 +1,4 @@
-gitbransh quickshell
+gitbranch quickshell
 git merge testing
 gitpush
-gitbransh testing
+gitbranch testing
