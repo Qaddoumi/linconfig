@@ -2,7 +2,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-
 Text {
     id: notification
     color: root.colCyan
@@ -103,22 +102,18 @@ Text {
         onExited: {
             if (dunstCount.buffer.length > 0) {
                 try {
-                    // dunstctl count returns plain text like:
+                    // Parse plain text format:
                     //               Waiting: 0
                     //   Currently displayed: 0
                     //               History: 1
-                    let displayed = 0
-                    let waiting = 0
                     
-                    let displayedMatch = dunstCount.buffer.match(/Currently displayed:\s*(\d+)/)
-                    let waitingMatch = dunstCount.buffer.match(/Waiting:\s*(\d+)/)
+                    let historyMatch = dunstCount.buffer.match(/History:\s*(\d+)/)
                     
-                    if (displayedMatch) displayed = parseInt(displayedMatch[1])
-                    if (waitingMatch) waiting = parseInt(waitingMatch[1])
-                    
-                    notificationCount = displayed + waiting
-                    console.log("Dunst count - Displayed:", displayed, "Waiting:", waiting, "Total:", notificationCount)
-                    updateDisplay()
+                    if (historyMatch) {
+                        notificationCount = parseInt(historyMatch[1])
+                        console.log("Dunst history count:", notificationCount)
+                        updateDisplay()
+                    }
                 } catch (e) {
                     console.error("Dunst count parse error:", e, "Buffer:", dunstCount.buffer)
                 }
@@ -149,8 +144,14 @@ Text {
     }
     
     Process {
-        id: dunstToggle
+        id: dunstHistoryPop
         command: ["dunstctl", "history-pop"]
+        onExited: refreshTimer.start()
+    }
+    
+    Process {
+        id: dunstCloseAll
+        command: ["dunstctl", "close-all"]
         onExited: refreshTimer.start()
     }
     
@@ -205,8 +206,9 @@ Text {
                 }
             } else if (notificationDaemon === "dunst") {
                 if (mouse.button === Qt.LeftButton) {
+                    // Show most recent notification from history
                     console.log("Show last dunst notification")
-                    dunstToggle.running = true
+                    dunstHistoryPop.running = true
                 } else if (mouse.button === Qt.RightButton) {
                     console.log("Toggle dunst DND")
                     dunstDndToggle.running = true
