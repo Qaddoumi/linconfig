@@ -43,7 +43,7 @@ configuration {
     }
 
     matching: "normal";
-    font: "monospace 11";
+    font: "JetBrainsMono Nerd Font Propo 11";
     show-icons: true;
     scroll-method: 0;
     cycle: false;
