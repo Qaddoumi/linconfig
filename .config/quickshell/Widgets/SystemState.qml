@@ -201,5 +201,5 @@ RowLayout {
 
     PowerMenuWidget {}
 
-    Item { width: 8 }
+    Item { width: 9 }
 }
