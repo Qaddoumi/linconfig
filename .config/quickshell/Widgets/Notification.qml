@@ -81,7 +81,7 @@ Text {
     
     Process {
         id: swayncDndToggle
-        command: ["swaync-client", "-dn"]
+        command: ["swaync-client", "-d"]
         onExited: refreshTimer.start()
     }
     
