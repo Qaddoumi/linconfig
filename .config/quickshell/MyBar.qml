@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import "./Widgets" as Widgets
 
+
 RowLayout {
     anchors.fill: parent
     spacing: 0
