@@ -534,6 +534,20 @@ awful.rules.rules = {
         }
     },
 
+    -- Rofi window should appear below the bar
+    { rule = { class = "Rofi" },
+        properties = {
+            floating = true,
+            ontop = false,
+            placement = awful.placement.no_offscreen,
+            border_width = 0,
+        },
+        callback = function(c)
+            -- Position rofi below the bar (30px from top)
+            awful.placement.top(c, { honor_workarea = true, margins = { top = 30 } })
+        end
+    },
+
     -- Set Firefox to always map on the tag named "2" on screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { screen = 1, tag = "2" } },

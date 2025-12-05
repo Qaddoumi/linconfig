@@ -5,6 +5,7 @@ configuration {
   icon-theme: "Papirus";
   display-drun: "  ";
   display-window: "﩯 ";
-  display-combi: "  ";
+  display-combi: "  ";
+  y-offset: 30;  // Position rofi 30px from top (below the bar)
 }
 @theme "themes/sidetab-nord.rasi"
