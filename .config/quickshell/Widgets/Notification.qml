@@ -111,7 +111,7 @@ Text {
                     
                     if (historyMatch) {
                         notificationCount = parseInt(historyMatch[1])
-                        console.log("Dunst history count:", notificationCount)
+                        // console.log("Dunst history count:", notificationCount)
                         updateDisplay()
                     }
                 } catch (e) {
@@ -133,7 +133,7 @@ Text {
         stdout: SplitParser {
             onRead: data => {
                 dndEnabled = data.trim() === "true"
-                console.log("Dunst DND:", dndEnabled)
+                // console.log("Dunst DND:", dndEnabled)
                 updateDisplay()
             }
         }
@@ -198,19 +198,19 @@ Text {
         onClicked: (mouse) => {
             if (notificationDaemon === "swaync") {
                 if (mouse.button === Qt.LeftButton) {
-                    console.log("Toggle swaync notification center")
+                    // console.log("Toggle swaync notification center")
                     swayncToggle.running = true
                 } else if (mouse.button === Qt.RightButton) {
-                    console.log("Toggle swaync DND")
+                    // console.log("Toggle swaync DND")
                     swayncDndToggle.running = true
                 }
             } else if (notificationDaemon === "dunst") {
                 if (mouse.button === Qt.LeftButton) {
                     // Show most recent notification from history
-                    console.log("Show last dunst notification")
+                    // console.log("Show last dunst notification")
                     dunstHistoryPop.running = true
                 } else if (mouse.button === Qt.RightButton) {
-                    console.log("Toggle dunst DND")
+                    // console.log("Toggle dunst DND")
                     dunstDndToggle.running = true
                 }
             }
@@ -218,7 +218,7 @@ Text {
     }
     
     Component.onCompleted: {
-        console.log("Notification widget initialized")
+        // console.log("Notification widget initialized")
         detectDaemon.running = true
     }
 }
