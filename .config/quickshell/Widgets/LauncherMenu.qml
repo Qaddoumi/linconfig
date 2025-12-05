@@ -1,12 +1,17 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
+
 
 Text {
     text: ""
-    color: "#89b4fa"
-    font.pixelSize: 12
-    font.family: "JetBrainsMono Nerd Font Propo"
+    color: root.colCyan
+    font.pixelSize: root.fontSize
+    font.family: root.fontFamily
+    font.bold: true
+    Layout.rightMargin: 8
+    Layout.leftMargin: 7
 
     property bool launcherOpen: false
 

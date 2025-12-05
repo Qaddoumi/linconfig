@@ -7,6 +7,10 @@ RowLayout {
     anchors.fill: parent
     spacing: 0
 
+    Widgets.LauncherMenu {}
+
+    Widgets.BarSeparator {}
+
     Loader {
         id: loader
         Layout.fillHeight: true

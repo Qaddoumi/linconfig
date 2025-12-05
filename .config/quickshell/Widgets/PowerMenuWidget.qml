@@ -1,13 +1,16 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
+
 
 Text {
     text: "⏻"
-    color: "#f38ba8"
-    font.pixelSize: 13
-    font.family: "JetBrainsMono Nerd Font Propo"
+    color: root.colRed
+    font.pixelSize: root.fontSize
+    font.family: root.fontFamily
     font.bold: true
+    Layout.rightMargin: 7
     
     Process {
         id: powerMenuProcess

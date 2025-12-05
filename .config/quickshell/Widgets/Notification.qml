@@ -1,12 +1,16 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
+
 
 Text {
     id: notification
-    color: "#cdd6f4"
-    font.pixelSize: 12
-    font.family: "JetBrainsMono Nerd Font Propo"
+    color: root.colCyan
+    font.pixelSize: root.fontSize
+    font.family: root.fontFamily
+    font.bold: true
+    Layout.rightMargin: 8
     
     property int notificationCount: 0
     property bool dndEnabled: false

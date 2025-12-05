@@ -1,8 +1,12 @@
 import QtQuick
+import QtQuick.Layouts
+
 
 Text {
     text: "Brightness"
-    color: "#cdd6f4"
-    font.pixelSize: 10
-    font.family: "JetBrainsMono Nerd Font Propo"
+    color: root.colCyan
+    font.pixelSize: root.fontSize
+    font.family: root.fontFamily
+    font.bold: true
+    Layout.rightMargin: 8
 }

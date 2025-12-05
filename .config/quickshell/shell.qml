@@ -16,7 +16,7 @@ ShellRoot {
 
     // Font
     property string fontFamily: "JetBrainsMono Nerd Font Propo"
-    property int fontSize: 12
+    property int fontSize: 11
     
     // Detect session type
     property bool isWayland: Quickshell.env("XDG_SESSION_TYPE") === "wayland"

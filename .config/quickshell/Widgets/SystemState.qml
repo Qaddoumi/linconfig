@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 
+
 RowLayout {
     spacing: 0
     // System info properties
@@ -109,6 +110,13 @@ RowLayout {
         }
     }
 
+    IdleInhibitor {}
+
+    BarSeparator {}
+
+    Tray {}
+
+    BarSeparator {}
 
     Text {
         text: "CPU: " + cpuUsage + "%"
@@ -143,6 +151,10 @@ RowLayout {
 
     BarSeparator {}
 
+    Battery {}
+
+    BarSeparator {}
+
     Text {
         text: "Vol: " + volumeLevel + "%"
         color: root.colPurple
@@ -151,6 +163,22 @@ RowLayout {
         font.bold: true
         Layout.rightMargin: 8
     }
+
+    BarSeparator {}
+
+    Network {}
+
+    BarSeparator {}
+
+    Brightness {}
+
+    BarSeparator {}
+
+    HardwareTemperature {}
+
+    BarSeparator {}
+
+    PrayerTimes {}
 
     BarSeparator {}
 
@@ -170,6 +198,14 @@ RowLayout {
             onTriggered: clockText.text = Qt.formatDateTime(new Date(), "ddd, MMM dd - HH:mm")
         }
     }
+
+    BarSeparator {}
+
+    Notification {}
+
+    BarSeparator {}
+
+    PowerMenuWidget {}
 
     Item { width: 8 }
 }
