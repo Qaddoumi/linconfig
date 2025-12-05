@@ -3,26 +3,34 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
-Scope {
+Variants {
+    model: Quickshell.screens
+
     PanelWindow {
-        id: bar
-        
+        property var modelData
+        screen: modelData
+
+        // Wayland-specific layershell configuration
+        WlrLayershell.layer: WlrLayer.Top
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+        exclusionMode: ExclusionMode.Auto
+
         anchors {
             top: true
             left: true
             right: true
         }
-        
+
         implicitHeight: 30
-        color: "#1e1e2e"
-        
-        // Wayland-specific layershell configuration
-        WlrLayershell.layer: WlrLayer.Top
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        exclusionMode: ExclusionMode.Auto
-        
-        MyBar {
-            anchors.fill: parent
+        color: root.colBg
+
+        margins {
+            top: 0
+            bottom: 0
+            left: 0
+            right: 0
         }
+
+        MyBar {}
     }
 }

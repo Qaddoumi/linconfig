@@ -1,8 +1,12 @@
 import QtQuick
+import QtQuick.Layouts
 
-Text {
-    text: "|"
-    color: "#45475a"
-    font.pixelSize: 13
-    font.family: "JetBrainsMono Nerd Font Propo"
+
+Rectangle {
+    Layout.preferredWidth: 1
+    Layout.preferredHeight: 16
+    Layout.alignment: Qt.AlignVCenter
+    Layout.leftMargin: 0
+    Layout.rightMargin: 8
+    color: root.colMuted
 }

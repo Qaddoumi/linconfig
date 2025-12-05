@@ -3,23 +3,13 @@ import QtQuick.Layouts
 import Quickshell
 import "./Widgets" as Widgets
 
-
 RowLayout {
     anchors.fill: parent
-    anchors.margins: 5
-    spacing: 9
+    spacing: 0
 
-    Widgets.BarSeparator {}
-
-    Widgets.LauncherMenu {}
-
-    Widgets.BarSeparator {}
-    
-    //Workspaces based on WM
-    //TODO: make the workspaces a seperate items so i can click on them
-    //TODO: get the state of the workspace and color it based on it (hover, focused, urgent)
     Loader {
         id: loader
+        Layout.fillHeight: true
         
         property string sessionType: Quickshell.env("XDG_SESSION_TYPE")
         property string desktop: Quickshell.env("XDG_CURRENT_DESKTOP")
@@ -69,54 +59,13 @@ RowLayout {
             }
         }
     }
-    
-    Widgets.BarSeparator {}
-    
-    // Window title placeholder
-    Text {
-        text: "Hyprland"
-        color: "#89b4fa"
-        font.pixelSize: 12
+
+    // Spacer to push SystemState to the right
+    Item {
+        Layout.fillWidth: true
     }
 
-    
-    // Center spacer
-    Item { Layout.fillWidth: true }
-    
-    // Right spacer
-    Item { Layout.fillWidth: true }
-    
-    // System info section
-    RowLayout {
-        spacing: 9
-        Widgets.BarSeparator {}
-        Widgets.IdleInhibitor {}
-        Widgets.BarSeparator {}
-        Widgets.Tray {}
-        Widgets.BarSeparator {}
-        Widgets.RAM {}
-        Widgets.BarSeparator {}
-        Widgets.CPU {}
-        Widgets.BarSeparator {}
-        Widgets.Storage {}
-        Widgets.BarSeparator {}
-        Widgets.Battery {}
-        Widgets.BarSeparator {}
-        Widgets.Volume {}
-        Widgets.BarSeparator {}
-        Widgets.Network {}
-        Widgets.BarSeparator {}
-        Widgets.Brightness {}
-        Widgets.BarSeparator {}
-        Widgets.HardwareTemperature {}
-        Widgets.BarSeparator {}
-        Widgets.PrayerTimes {}
-        Widgets.BarSeparator {}
-        Widgets.ClockDateWidget {}
-        Widgets.BarSeparator {}
-        Widgets.Notification {}
-        Widgets.BarSeparator {}
-        Widgets.PowerMenuWidget {}
-        Widgets.BarSeparator {}
-    }
+    Widgets.BarSeparator {}
+
+    Widgets.SystemState {}
 }
