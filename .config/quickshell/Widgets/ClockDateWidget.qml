@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Controls
 
 Item {
     id: clockWidget
@@ -96,4 +97,9 @@ Item {
             tooltipRect.visible = false
         }
     }
+
+    // ---- Tooltip Definition ----
+    ToolTip.visible: mouseArea.containsMouse && hijriTooltip !== ""
+    ToolTip.delay: 0
+    ToolTip.text: hijriTooltip
 }
