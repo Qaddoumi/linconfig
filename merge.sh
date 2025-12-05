@@ -1,4 +1,6 @@
-gitbranch quickshell
+git switch quickshell
+git push -u origin
 git merge testing
 gitpush
-gitbranch testing
+git switch testing
+git push -u origin
