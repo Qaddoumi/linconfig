@@ -13,6 +13,8 @@ Variants {
         // Wayland-specific layershell configuration
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+        WlrLayershell.exclusive: true
+        WlrLayershell.focusable: false
         exclusionMode: ExclusionMode.Auto
 
         anchors {

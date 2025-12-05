@@ -1,34 +1,99 @@
 import QtQuick
+import Quickshell
+import Quickshell.Io
 
-Text {
-    id: dateText
+Item {
+    id: clockWidget
+    implicitWidth: dateText.implicitWidth
+    implicitHeight: dateText.implicitHeight
     
-    property bool showAltFormat: false
-    property string normalFormat: "hh:mm a"  // 12-hour with am/pm
-    property string altFormat: "yyyy-MM-dd hh:mm a"  // Date + time
-    //TODO: add hijri date on tooltip
+    property string hijriTooltip: ""
+    property string normalFormat: "ddd, MMM dd - hh:mm a"
     
-    text: Qt.formatDateTime(new Date(), showAltFormat ? altFormat : normalFormat)
-    color: "#fab387"
-    font.pixelSize: 12
-    font.family: "JetBrainsMono Nerd Font Propo"
-    
-    // Make it clickable
-    MouseArea {
-        anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            dateText.showAltFormat = !dateText.showAltFormat
-            dateText.text = Qt.formatDateTime(new Date(), dateText.showAltFormat ? dateText.altFormat : dateText.normalFormat)
+    Text {
+        id: dateText
+        text: Qt.formatDateTime(new Date(), normalFormat)
+        color: root.colYellow
+        font.pixelSize: root.fontSize
+        font.family: root.fontFamily
+        
+        // Update clock every second
+        Timer {
+            interval: 1000
+            running: true
+            repeat: true
+            onTriggered: {
+                dateText.text = Qt.formatDateTime(new Date(), clockWidget.normalFormat)
+            }
         }
     }
     
-    Timer {
-        interval: 1000  // Update every second
-        running: true
-        repeat: true
-        onTriggered: {
-            dateText.text = Qt.formatDateTime(new Date(), dateText.showAltFormat ? dateText.altFormat : dateText.normalFormat)
+    // Process to get Hijri date (only runs on hover)
+    Process {
+        id: hijriProcess
+        command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/hijri_clock.sh"]
+        
+        stdout: SplitParser {
+            onRead: data => {
+                if (!data) return
+                try {
+                    var json = JSON.parse(data)
+                    if (json.tooltip) {
+                        // Replace \n with actual newlines
+                        clockWidget.hijriTooltip = json.tooltip.replace(/\\n/g, "\n")
+                        tooltipRect.visible = true
+                    }
+                } catch (e) {
+                    console.error("Failed to parse Hijri date:", e)
+                    console.error("Raw data:", data)
+                }
+            }
+        }
+    }
+    
+    // Floating tooltip rectangle
+    Rectangle {
+        id: tooltipRect
+        visible: false
+        z: 1000
+        
+        // Position above the clock
+        x: -width / 2 + dateText.width / 2
+        y: dateText.height + 8
+        
+        width: tooltipText.implicitWidth + 16
+        height: tooltipText.implicitHeight + 16
+        
+        color: root.colBg
+        border.color: root.colMuted
+        border.width: 1
+        radius: 4
+        
+        Text {
+            id: tooltipText
+            anchors.centerIn: parent
+            text: clockWidget.hijriTooltip
+            color: root.colFg
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+        }
+    }
+    
+    // Mouse area for hover detection
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        
+        onEntered: {
+            // Fetch Hijri date when mouse enters
+            hijriProcess.running = true
+        }
+        
+        onExited: {
+            // Hide tooltip when mouse leaves
+            tooltipRect.visible = false
         }
     }
 }
