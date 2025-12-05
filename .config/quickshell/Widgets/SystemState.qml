@@ -124,7 +124,6 @@ RowLayout {
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true
-        Layout.rightMargin: 8
     }
 
     BarSeparator {}
@@ -135,7 +134,6 @@ RowLayout {
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true
-        Layout.rightMargin: 8
     }
 
     BarSeparator {}
@@ -146,7 +144,6 @@ RowLayout {
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true
-        Layout.rightMargin: 8
     }
 
     BarSeparator {}
@@ -161,7 +158,6 @@ RowLayout {
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true
-        Layout.rightMargin: 8
     }
 
     BarSeparator {}
@@ -189,8 +185,6 @@ RowLayout {
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true
-        Layout.rightMargin: 8
-
         Timer {
             interval: 1000
             running: true

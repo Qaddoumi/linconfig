@@ -1,6 +1,8 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
+
 
 Text {
     id: workspaces
@@ -8,6 +10,7 @@ Text {
     font.pixelSize: root.fontSize
     font.family: root.fontFamily
     textFormat: Text.RichText
+    Layout.rightMargin: root.margin
     
     property var activeWorkspace: 1
     property var workspacesWithWindows: []

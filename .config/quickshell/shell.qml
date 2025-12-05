@@ -17,7 +17,10 @@ ShellRoot {
     // Font
     property string fontFamily: "JetBrainsMono Nerd Font Propo"
     property int fontSize: 11
-    
+
+    // Margins
+    property int margin: 8
+
     // Detect session type
     property bool isWayland: Quickshell.env("XDG_SESSION_TYPE") === "wayland"
     
@@ -25,16 +28,16 @@ ShellRoot {
         console.log("Session type:", isWayland ? "Wayland" : "X11")
         console.log("Desktop:", Quickshell.env("XDG_CURRENT_DESKTOP"))
     }
-    
+
     // Load appropriate bar based on session type
     Loader {
         id: barLoader
         source: root.isWayland ? "wayland-bar.qml" : "x11-bar.qml"
-        
+
         onLoaded: {
             console.log("Loaded:", root.isWayland ? "Wayland bar" : "X11 bar")
         }
-        
+
         onStatusChanged: {
             if (status === Loader.Error) {
                 console.error("Failed to load bar:", source)

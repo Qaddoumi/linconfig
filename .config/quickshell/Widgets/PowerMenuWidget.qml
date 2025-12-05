@@ -11,7 +11,6 @@ Text {
     font.family: root.fontFamily
     font.bold: true
     Layout.rightMargin: 5
-    Layout.leftMargin: 5
     
     Process {
         id: powerMenuProcess

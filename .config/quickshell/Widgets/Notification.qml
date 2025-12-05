@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import QtQuick.Layouts
 
 
 Text {
@@ -10,7 +9,6 @@ Text {
     font.pixelSize: root.fontSize
     font.family: root.fontFamily
     font.bold: true
-    Layout.rightMargin: 8
     
     property int notificationCount: 0
     property bool dndEnabled: false
