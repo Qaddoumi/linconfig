@@ -67,18 +67,16 @@ chmod +x ~/installconfig.sh
 echo -e "${green}Removing temporary files...${no_color}"
 sudo rm -rf ~/configtemp
 
-read -p "would you like to reload your session? (y/n) " -n 1 -r
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    if [  "$XDG_SESSION_DESKTOP" = "Hyprland" ]; then
-        echo -e "${green}Reloading Hyprland...${no_color}"
-        hyprctl reload
-    elif [  "$XDG_SESSION_DESKTOP" = "sway" ]; then
-        echo -e "${green}Reloading Sway...${no_color}"
-        swaymsg reload
-    elif [  "$XDG_SESSION_DESKTOP" = "awesome" ]; then
-        echo -e "${green}Reloading Awesome...${no_color}"
-        echo 'awesome.restart()' | awesome-client
-    fi
+
+if [  "$XDG_SESSION_DESKTOP" = "Hyprland" ]; then
+    echo -e "${green}Reloading Hyprland...${no_color}"
+    hyprctl reload > /dev/null || true
+elif [  "$XDG_SESSION_DESKTOP" = "sway" ]; then
+    echo -e "${green}Reloading Sway...${no_color}"
+    swaymsg reload > /dev/null || true
+elif [  "$XDG_SESSION_DESKTOP" = "awesome" ]; then
+    echo -e "${green}Reloading Awesome...${no_color}"
+    echo 'awesome.restart()' | awesome-client > /dev/null || true
 fi
 
 echo -e "${green}\n\nSetup completed!${no_color}\n"
