@@ -1,7 +1,7 @@
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
-import QtQuick.Controls
 
 Item {
     id: clockWidget
@@ -10,6 +10,8 @@ Item {
     
     property string hijriTooltip: ""
     property string normalFormat: "ddd, MMM dd - hh:mm a"
+    property bool failed
+	property string errorString
     
     Text {
         id: dateText
@@ -42,41 +44,13 @@ Item {
                     if (json.tooltip) {
                         // Replace \n with actual newlines
                         clockWidget.hijriTooltip = json.tooltip.replace(/\\n/g, "\n")
-                        tooltipRect.visible = true
+                        // console.log("Hijri date:", clockWidget.hijriTooltip)
                     }
                 } catch (e) {
                     console.error("Failed to parse Hijri date:", e)
                     console.error("Raw data:", data)
                 }
             }
-        }
-    }
-    
-    // Floating tooltip rectangle
-    Rectangle {
-        id: tooltipRect
-        visible: false
-        z: 1000
-        
-        // Position above the clock
-        x: -width / 2 + dateText.width / 2
-        y: dateText.height + 8
-        
-        width: tooltipText.implicitWidth + 16
-        height: tooltipText.implicitHeight + 16
-        
-        color: root.colBg
-        border.color: root.colMuted
-        border.width: 1
-        radius: 4
-        
-        Text {
-            id: tooltipText
-            anchors.centerIn: parent
-            text: clockWidget.hijriTooltip
-            color: root.colFg
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
         }
     }
     
@@ -88,18 +62,112 @@ Item {
         cursorShape: Qt.PointingHandCursor
         
         onEntered: {
-            // Fetch Hijri date when mouse enters
+            console.log("Mouse entered - fetching Hijri date")
             hijriProcess.running = true
+            popupLoader.loading = true
         }
         
         onExited: {
-            // Hide tooltip when mouse leaves
-            tooltipRect.visible = false
+            console.log("Mouse exited - hiding popup")
+            // clockWidget.showPopup = false
+            hijriProcess.running = false
+            popupLoader.loading = false
         }
     }
 
-    // ---- Tooltip Definition ----
-    ToolTip.visible: mouseArea.containsMouse && hijriTooltip !== ""
-    ToolTip.delay: 0
-    ToolTip.text: hijriTooltip
+    LazyLoader {
+		id: popupLoader
+
+		PanelWindow {
+			id: popup
+
+			anchors {
+				top: true
+				right: true
+			}
+
+			margins {
+				top: 25
+				right: 25
+			}
+
+			implicitWidth: rect.width
+			implicitHeight: rect.height
+
+			// color blending is a bit odd as detailed in the type reference.
+			color: "transparent"
+
+			Rectangle {
+				id: rect
+				color: failed ?  "#40802020" : "#40009020"
+
+				implicitHeight: layout.implicitHeight + 50
+				implicitWidth: layout.implicitWidth + 30
+
+				// Fills the whole area of the rectangle, making any clicks go to it,
+				// which dismiss the popup.
+				MouseArea {
+					id: mouseArea
+					anchors.fill: parent
+					onClicked: popupLoader.active = false
+
+					// makes the mouse area track mouse hovering, so the hide animation
+					// can be paused when hovering.
+					hoverEnabled: true
+				}
+
+				ColumnLayout {
+					id: layout
+					anchors {
+						top: parent.top
+						topMargin: 20
+						horizontalCenter: parent.horizontalCenter
+					}
+
+					Text {
+						text: clockWidget.failed ? "Reload failed." : clockWidget.hijriTooltip
+						color: "white"
+					}
+
+					Text {
+						text: clockWidget.errorString
+						color: "white"
+						// When visible is false, it also takes up no space.
+						visible: clockWidget.errorString != ""
+					}
+				}
+
+				// A progress bar on the bottom of the screen, showing how long until the
+				// popup is removed.
+				Rectangle {
+					id: bar
+					color: "#20ffffff"
+					anchors.bottom: parent.bottom
+					anchors.left: parent.left
+					height: 20
+
+					PropertyAnimation {
+						id: anim
+						target: bar
+						property: "width"
+						from: rect.width
+						to: 0
+						duration: failed ? 10000 : 800
+						onFinished: popupLoader.active = false
+
+						// Pause the animation when the mouse is hovering over the popup,
+						// so it stays onscreen while reading. This updates reactively
+						// when the mouse moves on and off the popup.
+						paused: mouseArea.containsMouse
+					}
+				}
+
+				// We could set `running: true` inside the animation, but the width of the
+				// rectangle might not be calculated yet, due to the layout.
+				// In the `Component.onCompleted` event handler, all of the component's
+				// properties and children have been initialized.
+				Component.onCompleted: anim.start()
+			}
+		}
+	}
 }
