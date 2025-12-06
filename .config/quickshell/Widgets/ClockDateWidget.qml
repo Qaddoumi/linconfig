@@ -71,7 +71,7 @@ Item {
             console.log("Mouse exited - hiding popup")
             // clockWidget.showPopup = false
             hijriProcess.running = false
-            popupLoader.loading = false
+            popupLoader.active = false
         }
     }
 
@@ -136,37 +136,6 @@ Item {
 						visible: clockWidget.errorString != ""
 					}
 				}
-
-				// A progress bar on the bottom of the screen, showing how long until the
-				// popup is removed.
-				Rectangle {
-					id: bar
-					color: "#20ffffff"
-					anchors.bottom: parent.bottom
-					anchors.left: parent.left
-					height: 20
-
-					PropertyAnimation {
-						id: anim
-						target: bar
-						property: "width"
-						from: rect.width
-						to: 0
-						duration: failed ? 10000 : 800
-						onFinished: popupLoader.active = false
-
-						// Pause the animation when the mouse is hovering over the popup,
-						// so it stays onscreen while reading. This updates reactively
-						// when the mouse moves on and off the popup.
-						paused: mouseArea.containsMouse
-					}
-				}
-
-				// We could set `running: true` inside the animation, but the width of the
-				// rectangle might not be calculated yet, due to the layout.
-				// In the `Component.onCompleted` event handler, all of the component's
-				// properties and children have been initialized.
-				Component.onCompleted: anim.start()
 			}
 		}
 	}
