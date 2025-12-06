@@ -121,10 +121,13 @@ RowLayout {
             hardwareTemperatureWidget.process.running = true
             brightnessWidget.process.running = true
             volumeWidget.process.running = true
+            idleInhibitorWidget.process.running = true
         }
     }
 
-    IdleInhibitor {}
+    IdleInhibitor {
+        id: idleInhibitorWidget
+    }
 
     BarSeparator {}
 
