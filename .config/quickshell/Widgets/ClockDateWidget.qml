@@ -5,29 +5,38 @@ import Quickshell.Io
 
 
 Item {
-    id: clockWidget
+    id: clockDateWidget
     implicitWidth: dateText.implicitWidth
     implicitHeight: dateText.implicitHeight
-    
+
     property string hijriTooltip: ""
-    property string normalFormat: "ddd, MMM dd - hh:mm a"
+    // property string normalFormat: "ddd, MMM dd - hh:mm a"
+    property string dateTime : "Loading..."
     property bool failed
 	property string errorString
-    
+
+    property alias process: clockDateProcess
+
     Text {
         id: dateText
-        text: Qt.formatDateTime(new Date(), normalFormat)
+        // text: Qt.formatDateTime(new Date(), normalFormat)
+        text : clockDateWidget.dateTime
         color: root.colYellow
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
+        // dateText.text = Qt.formatDateTime(new Date(), clockDateWidget.normalFormat)
+    }
+
+    Process {
+        id: clockDateProcess
+        command: ["sh", "-c", "date \"+%a, %b %d - %I:%M %p\""]
         
-        // Update clock every second
-        Timer {
-            interval: 1000
-            running: true
-            repeat: true
-            onTriggered: {
-                dateText.text = Qt.formatDateTime(new Date(), clockWidget.normalFormat)
+        stdout: SplitParser {
+            onRead: data => {
+                if (data) {
+                    clockDateWidget.dateTime = data.trim()
+                    // console.log("Date:", clockDateWidget.dateTime)
+                }
             }
         }
     }
@@ -44,14 +53,14 @@ Item {
                     var json = JSON.parse(data)
                     if (json.tooltip) {
                         // Replace \n with actual newlines
-                        clockWidget.hijriTooltip = json.tooltip.replace(/\\n/g, "\n")
-                        // console.log("Hijri date:", clockWidget.hijriTooltip)
+                        clockDateWidget.hijriTooltip = json.tooltip.replace(/\\n/g, "\n")
+                        // console.log("Hijri date:", clockDateWidget.hijriTooltip)
                     }
                 } catch (e) {
                     console.error("Failed to parse Hijri date:", e)
                     console.error("Raw data:", data)
-                    clockWidget.failed = true
-                    clockWidget.errorString = "Failed to parse Hijri date"
+                    clockDateWidget.failed = true
+                    clockDateWidget.errorString = "Failed to parse Hijri date"
                 }
             }
         }
@@ -97,7 +106,7 @@ Item {
             id: popup
 
             anchor {
-                item: clockWidget
+                item: clockDateWidget
                 edges: Qt.BottomEdge
                 gravity: Qt.BottomEdge
                 margins.top: 3  // Small gap below the widget; adjust as needed
@@ -112,7 +121,7 @@ Item {
 
             Text {
                 id: popupText
-                text: clockWidget.failed ? "Reload failed." : clockWidget.hijriTooltip
+                text: clockDateWidget.failed ? "Reload failed." : clockDateWidget.hijriTooltip
                 color: root.colCyan
                 font.pixelSize: root.fontSize
                 font.family: root.fontFamily

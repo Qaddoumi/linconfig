@@ -97,6 +97,16 @@ RowLayout {
         Component.onCompleted: running = true
     }
 
+    // Fast timer for widgets like clock (every second)
+    Timer {
+        interval: 1000
+        running: true
+        repeat: true
+        onTriggered: {
+            clockDateWidget.process.running = true
+        }
+    }
+
     // Slow timer for system stats
     Timer {
         interval: 2000
@@ -184,7 +194,9 @@ RowLayout {
 
     BarSeparator {}
 
-    ClockDateWidget {}
+    ClockDateWidget {
+        id: clockDateWidget
+    }
 
     BarSeparator {}
 
