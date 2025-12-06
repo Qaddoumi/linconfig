@@ -4,7 +4,7 @@
 
 # LinConfig - Arch Linux Configuration Suite
 
-An automated configuration suite for Arch Linux featuring Sway/Hyprland/DWM setup, SDDM/Ly login managers, and VM GPU passthrough capabilities.
+An automated configuration suite for Arch Linux featuring Sway/Hyprland/Awesome setup, SDDM login manager, and VM GPU passthrough capabilities.
 
 ## ⚠️ Important Notice
 
@@ -13,7 +13,7 @@ This project is currently in active development. While functional, it may not wo
 ## 🌟 Features
 
 - **Automated Arch Linux Installation**: Complete system setup with advanced configuration options
-- **WM Configuration**: Pre-configured Sway/Hyprland/DWM window manager with optimized settings
+- **WM Configuration**: Pre-configured Sway/Hyprland/Awesome window manager with optimized settings
 - **Multiple Login Managers**: Support for both SDDM and Ly display managers
 - **VM GPU Passthrough**: Configuration for virtual machine GPU passthrough
 - **Modular Installation**: Install complete system or just configuration files
@@ -26,7 +26,7 @@ Install Arch Linux with advanced configuration options:
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/quickshell/linux/archinstall.sh)
 ```
 
-### Sway/Hyprland/DWM + SDDM Setup
+### Sway/Hyprland/Awesome + SDDM Setup
 Install SwayWM with SDDM login manager:
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/quickshell/pkgs/install.sh) --is-vm false
@@ -38,22 +38,15 @@ Install only the configuration files without system packages:
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/quickshell/pkgs/installconfig.sh)
 ```
 
-## 🔧 Configuration Details
-
-### Post-Installation
+## Post-Installation
 After installation, you can:
-1. Log out and select Sway/Hyprland/DWM from your display manager
+1. Log out and select Sway/Hyprland/Awesome from your display manager
 2. Use `Super + Enter` to open a terminal
 3. Use `Super + d` to open the application launcher
 
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## ⚠️ Disclaimer
 
-This script modifies system partitions and configurations. The authors are not responsible for any data loss or system damage. Always backup your data before using these scripts and test in a virtual machine first if possible.
+This script modifies system partitions and configurations. The authors are not responsible for any data loss or system and hardware damages. Always backup your data before using these scripts and test in a virtual machine first if possible.
 
 ---
-
-**Made with ❤️, so feel free to take what you like from it**
