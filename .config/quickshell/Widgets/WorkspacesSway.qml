@@ -60,6 +60,7 @@ Item {
         command: ["sh", "-c", "swaymsg -t get_workspaces | jq -r '.[] | select(.focused == true) | .num'"]
         stdout: SplitParser {
             onRead: data => {
+                // console.log("workspaceProc (Focused Workspace): " + data)
                 if (data && data.trim()) {
                     var num = parseInt(data.trim())
                     if (!isNaN(num)) {
@@ -74,12 +75,17 @@ Item {
     // Occupied workspaces (sway)
     Process {
         id: occupiedProc
-        command: ["sh", "-c", "swaymsg -t get_workspaces | jq -r '.[].num'"]
+        command: ["sh", "-c", "swaymsg -t get_workspaces | jq -c '[.[].num]'"]
         stdout: SplitParser {
             onRead: data => {
+                // console.log("occupiedProc (Occupied Workspaces): " + data)
                 if (data && data.trim()) {
-                    var nums = data.trim().split('\n').map(n => parseInt(n)).filter(n => !isNaN(n))
-                    occupiedWorkspaces = nums
+                    try {
+                        occupiedWorkspaces = JSON.parse(data.trim())
+                        // console.log("occupiedWorkspaces: " + occupiedWorkspaces)
+                    } catch (e) {
+                        console.error("Failed to parse occupied workspaces:", e)
+                    }
                 }
             }
         }
@@ -117,7 +123,10 @@ Item {
                     color: "transparent"
 
                     property bool isActive: focusedWorkspace === (index + 1)
-                    property bool hasWindows: occupiedWorkspaces.indexOf(index + 1) !== -1
+                    property bool hasWindows: occupiedWorkspaces.includes(index + 1)
+
+                    // Hide if not active and has no windows
+                    visible: isActive || hasWindows
 
                     Text {
                         text: index + 1
