@@ -120,6 +120,7 @@ RowLayout {
             prayerWidget.process.running = true
             hardwareTemperatureWidget.process.running = true
             brightnessWidget.process.running = true
+            volumeWidget.process.running = true
         }
     }
 
@@ -165,12 +166,8 @@ RowLayout {
 
     BarSeparator {}
 
-    Text {
-        text: "Vol: " + volumeLevel + "%"
-        color: root.colPurple
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    Volume {
+        id: volumeWidget
     }
 
     BarSeparator {}
