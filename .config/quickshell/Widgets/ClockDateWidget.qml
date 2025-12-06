@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 
+
 Item {
     id: clockWidget
     implicitWidth: dateText.implicitWidth
@@ -56,6 +57,13 @@ Item {
         }
     }
     
+    // Process for notification (triggered on click)
+    Process {
+        id: notifyProcess
+        command: ["sh", "-c", "notify-send \"******************\" \"$(~/.config/quickshell/scripts/hijri_clock.sh | jq -r '.tooltip')\""]
+        running: false
+    }
+
     // Mouse area for hover detection
     MouseArea {
         id: mouseArea
@@ -73,6 +81,10 @@ Item {
             // console.log("Mouse exited - hiding popup")
             hijriProcess.running = false
             popupLoader.active = false
+        }
+
+        onClicked: {
+            notifyProcess.running = true
         }
     }
 
@@ -92,52 +104,19 @@ Item {
 				right: 25
 			}
 
-			implicitWidth: rect.width
-			implicitHeight: rect.height
+            implicitHeight: popupText.implicitHeight + 30
+            implicitWidth: popupText.implicitWidth + 30
 
-			// color blending is a bit odd as detailed in the type reference.
-			color: "transparent"
+            color: failed ? root.colRed : root.colBg
 
-			Rectangle {
-				id: rect
-				color: failed ? root.colRed : root.colGreen
-
-				implicitHeight: layout.implicitHeight + 50
-				implicitWidth: layout.implicitWidth + 30
-
-				// Fills the whole area of the rectangle, making any clicks go to it,
-				// which dismiss the popup.
-				MouseArea {
-					id: mouseArea
-					anchors.fill: parent
-					onClicked: popupLoader.active = false
-
-					// makes the mouse area track mouse hovering, so the hide animation
-					// can be paused when hovering.
-					hoverEnabled: true
-				}
-
-				ColumnLayout {
-					id: layout
-					anchors {
-						top: parent.top
-						topMargin: 20
-						horizontalCenter: parent.horizontalCenter
-					}
-
-					Text {
-						text: clockWidget.failed ? "Reload failed." : clockWidget.hijriTooltip
-						color: root.colFg
-					}
-
-					Text {
-						text: clockWidget.errorString
-						color: root.colFg
-						// When visible is false, it also takes up no space.
-						visible: clockWidget.errorString != ""
-					}
-				}
-			}
+            Text {
+                id: popupText
+                text: clockWidget.failed ? "Reload failed." : clockWidget.hijriTooltip
+                color: root.colCyan
+                font.pixelSize: root.fontSize
+                font.family: root.fontFamily
+                anchors.centerIn: parent
+            }
 		}
 	}
 }
