@@ -107,7 +107,7 @@ RowLayout {
         }
     }
 
-    // Slow timer for system stats
+    // Slow timer for widgets like system stats
     Timer {
         interval: 2000
         running: true
@@ -119,6 +119,7 @@ RowLayout {
             volProc.running = true
             prayerWidget.process.running = true
             hardwareTemperatureWidget.process.running = true
+            brightnessWidget.process.running = true
         }
     }
 
@@ -178,7 +179,9 @@ RowLayout {
 
     BarSeparator {}
 
-    Brightness {}
+    Brightness {
+        id: brightnessWidget
+    }
 
     BarSeparator {}
 
