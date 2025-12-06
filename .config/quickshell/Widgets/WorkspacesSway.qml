@@ -4,99 +4,171 @@ import Quickshell.Io
 import QtQuick.Layouts
 
 
-Text {
-    id: workspaces
-    color: root.colCyan
-    font.pixelSize: root.fontSize
-    font.family: root.fontFamily
-    textFormat: Text.RichText
-    Layout.rightMargin: root.margin
-    
-    property var activeWorkspace: 1
-    property var workspacesWithWindows: []
-    property string swayOutputBuffer: ""
-    
-    // Use swaymsg to get workspace info
+Item {
+
+    // System info properties
+    property string activeWindow: "Window"
+    property string currentLayout: "Tile"
+    property int focusedWorkspace: 1
+    property var occupiedWorkspaces: []
+
+    // Active window title (sway)
     Process {
-        id: swayProcess
+        id: windowProc
+        command: ["sh", "-c", "swaymsg -t get_tree | jq -r '.. | select(.focused? == true) | .name // empty' | head -1"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (data && data.trim()) {
+                    activeWindow = data.trim()
+                }
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
+    // Current layout (sway: splith, splitv, tabbed, stacking)
+    Process {
+        id: layoutProc
+        command: ["sh", "-c", "swaymsg -t get_tree | jq -r '.. | select(.focused? == true) | .layout // empty' | head -1"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (data && data.trim()) {
+                    var layout = data.trim()
+                    // Convert sway layout names to friendly names
+                    if (layout === "splith") {
+                        currentLayout = "Horizontal"
+                    } else if (layout === "splitv") {
+                        currentLayout = "Vertical"
+                    } else if (layout === "tabbed") {
+                        currentLayout = "Tabbed"
+                    } else if (layout === "stacking") {
+                        currentLayout = "Stacking"
+                    } else if (layout === "output" || layout === "none") {
+                        currentLayout = "Tiled"
+                    } else {
+                        currentLayout = layout.charAt(0).toUpperCase() + layout.slice(1)
+                    }
+                }
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
+    // Focused workspace (sway)
+    Process {
+        id: workspaceProc
+        command: ["sh", "-c", "swaymsg -t get_workspaces | jq -r '.[] | select(.focused == true) | .num'"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (data && data.trim()) {
+                    var num = parseInt(data.trim())
+                    if (!isNaN(num)) {
+                        focusedWorkspace = num
+                    }
+                }
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
+    // Occupied workspaces (sway)
+    Process {
+        id: occupiedProc
+        command: ["sh", "-c", "swaymsg -t get_workspaces | jq -r '.[].num'"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (data && data.trim()) {
+                    var nums = data.trim().split('\n').map(n => parseInt(n)).filter(n => !isNaN(n))
+                    occupiedWorkspaces = nums
+                }
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
+    // Fast timer for window/layout/workspace (sway doesn't have event hooks in quickshell)
+    Timer {
+        interval: 200
         running: true
-        command: ["sh", "-c", "swaymsg -t subscribe -m '[ \"workspace\" ]'"]
-        
-        stdout: SplitParser {
-            onRead: data => {
-                try {
-                    let workspace = JSON.parse(data)
-                    if (workspace.change === "focus") {
-                        activeWorkspace = workspace.current.num
-                        // Refresh workspace list when focus changes
-                        getInitialWorkspaces()
+        repeat: true
+        onTriggered: {
+            windowProc.running = true
+            layoutProc.running = true
+            workspaceProc.running = true
+            occupiedProc.running = true
+        }
+    }
+
+    
+    Rectangle {
+        anchors.fill: parent
+        color: root.colBg
+
+        RowLayout {
+            anchors.fill: parent
+            spacing: 0
+
+            Repeater {
+                model: 9
+
+                Rectangle {
+                    Layout.preferredWidth: 20
+                    Layout.preferredHeight: parent.height
+                    color: "transparent"
+
+                    property bool isActive: focusedWorkspace === (index + 1)
+                    property bool hasWindows: occupiedWorkspaces.indexOf(index + 1) !== -1
+
+                    Text {
+                        text: index + 1
+                        color: parent.isActive ? root.colCyan : (parent.hasWindows ? root.colCyan : root.colMuted)
+                        font.pixelSize: root.fontSize
+                        font.family: root.fontFamily
+                        font.bold: true
+                        anchors.centerIn: parent
                     }
-                } catch (e) {
-                    console.error("Sway parse error:", e)
+
+                    Rectangle {
+                        width: 20
+                        height: 3
+                        color: parent.isActive ? root.colPurple : root.colBg
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottom: parent.bottom
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            var proc = Qt.createQmlObject('import Quickshell.Io; Process { }', parent)
+                            proc.command = ["swaymsg", "workspace", String(index + 1)]
+                            proc.running = true
+                        }
+                    }
                 }
             }
-        }
-    }
-    
-    // Get initial workspace
-    Process {
-        id: initialWorkspace
-        running: false
-        command: ["swaymsg", "-t", "get_workspaces"]
-        
-        stdout: SplitParser {
-            onRead: data => {
-                // Accumulate data
-                swayOutputBuffer += data
+
+            BarSeparator {}
+
+            Text {
+                text: currentLayout
+                color: root.colFg
+                font.pixelSize: root.fontSize - 2
+                font.family: root.fontFamily
+                font.bold: true
             }
-        }
-        
-        onExited: {
-            if (swayOutputBuffer.length > 0) {
-                try {
-                    let workspaces = JSON.parse(swayOutputBuffer)
-                    workspacesWithWindows = []
-                    
-                    // console.log("Sway parsed", workspaces.length, "workspaces")
-                    
-                    for (let ws of workspaces) {
-                        // Track active workspace
-                        if (ws.focused) {
-                            activeWorkspace = ws.num
-                        }
-                        // In Sway, check if workspace has a representation (indicates windows)
-                        // Empty workspaces have representation: null
-                        if (ws.representation && ws.representation !== null && ws.representation !== "") {
-                            workspacesWithWindows.push(ws.num)
-                            // console.log("Workspace", ws.num, "has windows, representation:", ws.representation)
-                        }
-                    }
-                    updateWorkspaces()
-                } catch (e) {
-                    console.error("Sway parse error:", e, "Buffer:", swayOutputBuffer)
-                }
-                swayOutputBuffer = ""
+
+            BarSeparator {}
+
+            Text {
+                text: activeWindow
+                color: root.colPurple
+                font.pixelSize: root.fontSize
+                font.family: root.fontFamily
+                font.bold: true
+                Layout.fillWidth: true
+                elide: Text.ElideRight
+                maximumLineCount: 1
             }
         }
     }
-    
-    function getInitialWorkspaces() {
-        swayOutputBuffer = ""
-        initialWorkspace.running = false
-        initialWorkspace.running = true
-    }
-    
-    function updateWorkspaces() {
-        let workspaceText = ""
-        // Show only workspaces with windows, plus the active workspace
-        for (let i = 1; i <= 10; i++) {
-            // Show if it has windows OR is the active workspace
-            if (workspacesWithWindows.includes(i) || i === activeWorkspace) {
-                workspaceText += (i === activeWorkspace ? "<span style='font-size: 13pt;'><b>" + i + "</b></span> " : i + " ")
-            }
-        }
-        text = workspaceText.trim()
-    }
-    
-    Component.onCompleted: getInitialWorkspaces()
 }

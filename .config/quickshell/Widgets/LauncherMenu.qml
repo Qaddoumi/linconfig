@@ -10,7 +10,6 @@ Text {
     font.pixelSize: root.fontSize
     font.family: root.fontFamily
     font.bold: true
-    Layout.leftMargin: 7
 
     property bool launcherOpen: false
 

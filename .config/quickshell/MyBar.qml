@@ -8,6 +8,8 @@ RowLayout {
     anchors.fill: parent
     spacing: 0
 
+    Item { width: 8 }
+
     Widgets.LauncherMenu {}
 
     Widgets.BarSeparator {}
