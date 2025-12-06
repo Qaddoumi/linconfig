@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 
-
+//TODO: implement classes like waybar to change the background color of the widget
 RowLayout {
     spacing: 0
     // System info properties
