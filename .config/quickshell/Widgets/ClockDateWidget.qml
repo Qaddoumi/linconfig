@@ -62,14 +62,13 @@ Item {
         cursorShape: Qt.PointingHandCursor
         
         onEntered: {
-            console.log("Mouse entered - fetching Hijri date")
+            // console.log("Mouse entered - fetching Hijri date")
             hijriProcess.running = true
             popupLoader.loading = true
         }
         
         onExited: {
-            console.log("Mouse exited - hiding popup")
-            // clockWidget.showPopup = false
+            // console.log("Mouse exited - hiding popup")
             hijriProcess.running = false
             popupLoader.active = false
         }
@@ -99,7 +98,7 @@ Item {
 
 			Rectangle {
 				id: rect
-				color: failed ?  "#40802020" : "#40009020"
+				color: failed ? root.colRed : root.colGreen
 
 				implicitHeight: layout.implicitHeight + 50
 				implicitWidth: layout.implicitWidth + 30
