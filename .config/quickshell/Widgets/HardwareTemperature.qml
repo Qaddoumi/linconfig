@@ -80,23 +80,22 @@ Item {
     LazyLoader {
         id: popupLoader
 
-        PanelWindow {
+        PopupWindow {
             id: popup
 
-            anchors {
-                top: true
-                right: true
-            }
-
-            margins {
-                top: 3
-                right: 25
+            anchor {
+                item: hardwareTemperatureWidget
+                edges: Qt.BottomEdge
+                gravity: Qt.BottomEdge
+                margins.top: 3  // Small gap below the widget; adjust as needed
             }
 
             implicitHeight: popupText.implicitHeight + 30
             implicitWidth: popupText.implicitWidth + 30
 
             color: failed ? root.colRed : root.colBg
+
+            visible: true  // Required for PopupWindow to show (defaults to false)
 
             Text {
                 id: popupText
