@@ -11,7 +11,9 @@ Item {
     property string hardwareTemperatureDisplay: "Loading..."
     property bool failed: false
     property string errorString: ""
-    
+
+    property alias process: hardwareTemperatureProcess // Expose for external triggering
+
     Text {
         id: hardwareTemperatureText
         text: hardwareTemperatureWidget.hardwareTemperatureDisplay

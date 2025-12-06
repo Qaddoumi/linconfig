@@ -107,6 +107,8 @@ RowLayout {
             memProc.running = true
             diskProc.running = true
             volProc.running = true
+            prayerWidget.process.running = true
+            hardwareTemperatureWidget.process.running = true
         }
     }
 
@@ -170,11 +172,15 @@ RowLayout {
 
     BarSeparator {}
 
-    HardwareTemperature {}
+    HardwareTemperature {
+        id: hardwareTemperatureWidget
+    }
 
     BarSeparator {}
 
-    PrayerTimes {}
+    PrayerTimes {
+        id: prayerWidget
+    }
 
     BarSeparator {}
 

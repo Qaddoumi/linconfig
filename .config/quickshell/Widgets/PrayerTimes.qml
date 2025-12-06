@@ -13,7 +13,9 @@ Item {
     property string prayerDisplay: "Loading..."
     property bool failed: false
     property string errorString: ""
-    
+
+    property alias process: prayerProcess  // Expose for external triggering
+
     Text {
         id: prayerText
         text: prayerWidget.prayerDisplay
