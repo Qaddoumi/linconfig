@@ -49,6 +49,8 @@ Item {
                 } catch (e) {
                     console.error("Failed to parse Hijri date:", e)
                     console.error("Raw data:", data)
+                    clockWidget.failed = true
+                    clockWidget.errorString = "Failed to parse Hijri date"
                 }
             }
         }
@@ -86,7 +88,7 @@ Item {
 			}
 
 			margins {
-				top: 25
+				top: 3
 				right: 25
 			}
 
@@ -125,12 +127,12 @@ Item {
 
 					Text {
 						text: clockWidget.failed ? "Reload failed." : clockWidget.hijriTooltip
-						color: "white"
+						color: root.colFg
 					}
 
 					Text {
 						text: clockWidget.errorString
-						color: "white"
+						color: root.colFg
 						// When visible is false, it also takes up no space.
 						visible: clockWidget.errorString != ""
 					}
