@@ -85,6 +85,8 @@ Item {
 
         onClicked: {
             notifyProcess.running = true
+            hijriProcess.running = false
+            popupLoader.active = false
         }
     }
 

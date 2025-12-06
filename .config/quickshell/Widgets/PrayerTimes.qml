@@ -77,6 +77,8 @@ Item {
 
         onClicked: {
             notifyProcess.running = true
+            prayerProcess.running = false
+            popupLoader.active = false
         }
     }
 
@@ -88,12 +90,12 @@ Item {
 
             anchors {
                 top: true
+                // bottom: false
                 right: true
             }
 
             margins {
                 top: 3
-                right: 25
             }
 
             implicitHeight: popupText.implicitHeight + 30

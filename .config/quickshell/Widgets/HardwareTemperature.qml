@@ -72,6 +72,8 @@ Item {
 
         onClicked: {
             notifyProcess.running = true
+            hardwareTemperatureProcess.running = false
+            popupLoader.active = false
         }
     }
 
