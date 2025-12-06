@@ -5,7 +5,7 @@ import QtQuick.Layouts
 
 
 Item {
-    // System info properties
+
     property string activeWindow: "Window"
     property string currentLayout: "Tile"
     property int focusedWorkspace: 1

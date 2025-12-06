@@ -104,33 +104,17 @@ Item {
                 }
             }
 
-            Rectangle {
-                Layout.preferredWidth: 1
-                Layout.preferredHeight: 16
-                Layout.alignment: Qt.AlignVCenter
-                Layout.leftMargin: 8
-                Layout.rightMargin: 8
-                color: root.colMuted
-            }
+            BarSeparator {}
 
             Text {
                 text: currentLayout
                 color: root.colFg
-                font.pixelSize: root.fontSize
+                font.pixelSize: root.fontSize - 2
                 font.family: root.fontFamily
                 font.bold: true
-                Layout.leftMargin: 5
-                Layout.rightMargin: 5
             }
 
-            Rectangle {
-                Layout.preferredWidth: 1
-                Layout.preferredHeight: 16
-                Layout.alignment: Qt.AlignVCenter
-                Layout.leftMargin: 2
-                Layout.rightMargin: 8
-                color: root.colMuted
-            }
+            BarSeparator {}
 
             Text {
                 text: activeWindow
@@ -139,7 +123,6 @@ Item {
                 font.family: root.fontFamily
                 font.bold: true
                 Layout.fillWidth: true
-                Layout.leftMargin: 8
                 elide: Text.ElideRight
                 maximumLineCount: 1
             }
