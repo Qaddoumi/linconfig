@@ -49,6 +49,7 @@ Item {
                             menuAnchor.open();
                             // console.log("right clicked")
                         }
+                        popupLoader.active = false
                     }
 
                     onWheel: event => {
@@ -69,6 +70,50 @@ Item {
                             const widgetRect = window.contentItem.mapFromItem(delegate, 0, delegate.height, delegate.width, delegate.height);
 
                             menuAnchor.anchor.rect = widgetRect;
+                        }
+                    }
+
+                    onEntered: {
+                        popupLoader.loading = true
+                    }
+
+                    onExited: {
+                        popupLoader.active = false
+                    }
+
+                    LazyLoader {
+                        id: popupLoader
+
+                        PopupWindow {
+                            id: popup
+
+                            anchor {
+                                item: delegate
+                                edges: Qt.BottomEdge
+                                gravity: Qt.BottomEdge
+                                margins.top: 3
+                            }
+
+                            implicitHeight: popupText.implicitHeight + 30
+                            implicitWidth: popupText.implicitWidth + 30
+                            color : "transparent"
+
+                            visible: true
+
+                            Rectangle {
+                                anchors.fill: parent
+                                color: root.colBg
+                                radius: 7
+                                Text {
+                                    id: popupText
+
+                                    text: delegate.item.tooltipTitle || delegate.item.id
+                                    color: root.colCyan
+                                    font.pixelSize: root.fontSize
+                                    font.family: root.fontFamily
+                                    font.bold: true
+                                }
+                            }
                         }
                     }
                 }
