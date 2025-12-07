@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+//TODO: use ==> import Quickshell.Services.UPower
 
 Item {
     id: batteryWidget
