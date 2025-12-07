@@ -167,6 +167,7 @@ Text {
     Timer {
         id: refreshTimer
         interval: 300
+        repeat: false
         onTriggered: refresh()
     }
     
