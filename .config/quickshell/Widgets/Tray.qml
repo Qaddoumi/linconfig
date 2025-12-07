@@ -107,7 +107,7 @@ Item {
                                 Text {
                                     id: popupText
 
-                                    text: delegate.item.tooltipTitle || delegate.item.id
+                                    text: item.tooltipTitle || item.id
                                     color: root.colCyan
                                     font.pixelSize: root.fontSize
                                     font.family: root.fontFamily
