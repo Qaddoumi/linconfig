@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 
 
@@ -11,69 +12,75 @@ Item {
 
     RowLayout {
         id: trayRow
-        spacing: root.margin
+        spacing: root.margin / 2
 
         Repeater {
-            model: SystemTray.items
+                model: ScriptModel {
+                values: {[...SystemTray.items.values]
+                    .filter((item) => {
+                    return (item.id != "spotify-client"
+                        && item.id != "chrome_status_icon_1")
+                    })
+                }
+            }
 
-            Item {
-                id: trayItem
-                implicitWidth: 18
-                implicitHeight: 18
-                Layout.alignment: Qt.AlignVCenter
-
+            MouseArea {
+                id: delegate
                 required property SystemTrayItem modelData
+                property alias item: delegate.modelData
 
-                Image {
-                    id: iconImage
-                    anchors.fill: parent
-                    source: trayItem.modelData.icon
-                    sourceSize.width: 18
-                    sourceSize.height: 18
-                    fillMode: Image.PreserveAspectFit
-                    smooth: true
-                    
-                    // Fallback if icon is empty
-                    visible: source !== ""
+                Layout.fillHeight: true
+                implicitWidth: icon.implicitWidth + 5
+
+                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                hoverEnabled: true
+
+                onClicked: event => {
+                    if (event.button == Qt.LeftButton) {
+                        item.activate();
+                    } else if (event.button == Qt.MiddleButton) {
+                        item.secondaryActivate();
+                    } else if (event.button == Qt.RightButton) {
+                        menuAnchor.open();
+                    }
                 }
 
-                // Fallback text if no icon
-                Text {
+                onWheel: event => {
+                    event.accepted = true;
+                    const points = event.angleDelta.y / 120
+                    item.scroll(points, false);
+                }
+
+                IconImage {
+                    id: icon
                     anchors.centerIn: parent
-                    text: trayItem.modelData.title ? trayItem.modelData.title.charAt(0).toUpperCase() : "?"
-                    color: root.colCyan
-                    font.pixelSize: root.fontSize - 2
-                    font.family: root.fontFamily
-                    font.bold: true
-                    visible: !iconImage.visible
+                    source: item.icon
+                    implicitSize: 16
                 }
 
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                QsMenuAnchor {
+                    id: menuAnchor
+                    menu: item.menu
 
-                    onClicked: function(mouse) {
-                        // Get global position for the menu
-                        var globalPos = mapToGlobal(mouse.x, mouse.y)
-                        
-                        if (mouse.button === Qt.LeftButton) {
-                            trayItem.modelData.activate(globalPos.x, globalPos.y)
-                        } else if (mouse.button === Qt.RightButton) {
-                            trayItem.modelData.menu?.open(globalPos.x, globalPos.y)
-                        } else if (mouse.button === Qt.MiddleButton) {
-                            trayItem.modelData.secondaryActivate(globalPos.x, globalPos.y)
-                        }
-                    }
+                    anchor.window: delegate.QsWindow.window
+                    anchor.adjustment: PopupAdjustment.Flip
 
-                    onWheel: function(wheel) {
-                        // Scroll action (e.g., for volume mixer)
-                        var delta = wheel.angleDelta.y !== 0 ? wheel.angleDelta.y / 120 : wheel.angleDelta.x / 120
-                        trayItem.modelData.scroll(delta, wheel.angleDelta.x !== 0)
+                    anchor.onAnchoring: {
+                        const window = delegate.QsWindow.window;
+                        const widgetRect = window.contentItem.mapFromItem(delegate, 0, delegate.height, delegate.width, delegate.height);
+
+                        menuAnchor.anchor.rect = widgetRect;
                     }
                 }
+
+                // Tooltip {
+                //     relativeItem: delegate.containsMouse ? delegate : null
+
+                //     Label {
+                //         text: delegate.item.tooltipTitle || delegate.item.id
+                //     }
+                // }
+
             }
         }
     }

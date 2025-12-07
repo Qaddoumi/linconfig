@@ -572,6 +572,12 @@ ls /usr/share/themes/
 # echo -e "${green}Available icon and cursor themes:${no_color}"
 # ls /usr/share/icons/
 
+
+# # Additional theming setup
+# gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact'
+# gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+# gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors'
+
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [ "$is_vm" = true ]; then
