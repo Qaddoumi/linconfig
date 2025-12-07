@@ -10,7 +10,6 @@ RowLayout {
     property int cpuUsage: 0
     property int memUsage: 0
     property int diskUsage: 0
-    property int volumeLevel: 0
 
     // CPU tracking
     property var lastCpuIdle: 0
@@ -81,22 +80,6 @@ RowLayout {
         Component.onCompleted: running = true
     }
 
-    // Volume level (wpctl for PipeWire)
-    Process {
-        id: volProc
-        command: ["wpctl", "get-volume", "@DEFAULT_AUDIO_SINK@"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (!data) return
-                var match = data.match(/Volume:\s*([\d.]+)/)
-                if (match) {
-                    volumeLevel = Math.round(parseFloat(match[1]) * 100)
-                }
-            }
-        }
-        Component.onCompleted: running = true
-    }
-
     // Fast timer for widgets like clock (every second)
     Timer {
         interval: 1000
@@ -116,7 +99,6 @@ RowLayout {
         onTriggered: {
             memProc.running = true
             diskProc.running = true
-            volProc.running = true
             prayerWidget.process.running = true
             hardwareTemperatureWidget.process.running = true
             brightnessWidget.process.running = true
