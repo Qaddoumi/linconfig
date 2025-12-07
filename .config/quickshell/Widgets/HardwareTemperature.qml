@@ -12,6 +12,7 @@ Item {
     property bool failed: false
     property string errorString: ""
     property bool showWidget: true
+    property color tmpColor: root.colCyan
 
     property alias process: hardwareTemperatureProcess // Expose for external triggering
 
@@ -20,7 +21,7 @@ Item {
     Text {
         id: hardwareTemperatureText
         text: hardwareTemperatureWidget.hardwareTemperatureDisplay
-        color: root.colCyan
+        color: hardwareTemperatureWidget.tmpColor
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true
@@ -37,6 +38,18 @@ Item {
                     var json = JSON.parse(data)
                     if (json.text) {
                         hardwareTemperatureWidget.hardwareTemperatureDisplay = " " + json.text
+                    }
+                    if (json.class){
+                        var tmpClass = json.class
+                        if (tmpClass === "cool") {
+                            hardwareTemperatureWidget.tmpColor = root.colGreen
+                        } else if (tmpClass === "warm") {
+                            hardwareTemperatureWidget.tmpColor = root.colYellow
+                        } else if (tmpClass === "hot") {
+                            hardwareTemperatureWidget.tmpColor = root.colRed
+                        } else if (tmpClass === "critical") {
+                            hardwareTemperatureWidget.tmpColor = root.colRed
+                        }
                     }
                     if (json.tooltip) {
                         // Replace \\n with actual newlines
