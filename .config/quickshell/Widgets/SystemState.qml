@@ -127,16 +127,6 @@ RowLayout {
         }
     }
 
-    IdleInhibitor {
-        id: idleInhibitorWidget
-    }
-
-    BarSeparator {}
-
-    Tray {}
-
-    BarSeparator {}
-
     Text {
         text: "CPU: " + cpuUsage + "%"
         color: root.colYellow
@@ -209,6 +199,17 @@ RowLayout {
 
     Notification {
         id: notificationWidget
+    }
+
+    BarSeparator {}
+
+
+    Tray {}
+
+    BarSeparator {}
+
+    IdleInhibitor {
+        id: idleInhibitorWidget
     }
 
     BarSeparator {}
