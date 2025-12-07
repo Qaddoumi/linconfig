@@ -33,6 +33,7 @@ sudo cp -f ~/configtemp/.config/mimeapps.list ~/.local/share/applications/
 
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
+sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
 
 # Save the script (use the first artifact "X11 to Wayland Clipboard Bridge")

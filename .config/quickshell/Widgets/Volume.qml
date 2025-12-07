@@ -134,18 +134,22 @@ Item {
 
             implicitHeight: popupText.implicitHeight + 30
             implicitWidth: popupText.implicitWidth + 30
-
-            color: failed ? root.colRed : root.colBg
+            color: "transparent"
 
             visible: true  // Required for PopupWindow to show (defaults to false)
 
-            Text {
-                id: popupText
-                text: volumeWidget.failed ? "Reload failed." : "Volume :\n" +volumeWidget.volumeTooltip
-                color: root.colCyan
-                font.pixelSize: root.fontSize
-                font.family: root.fontFamily
-                anchors.centerIn: parent
+            Rectangle {
+                anchors.fill: parent
+                radius: 7
+                color: failed ? root.colRed : root.colBg
+                Text {
+                    id: popupText
+                    text: volumeWidget.failed ? "Reload failed." : "Volume :\n" +volumeWidget.volumeTooltip
+                    color: root.colCyan
+                    font.pixelSize: root.fontSize
+                    font.family: root.fontFamily
+                    anchors.centerIn: parent
+                }
             }
         }
     }

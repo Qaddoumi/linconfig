@@ -104,16 +104,16 @@ RowLayout {
         repeat: true
         onTriggered: {
             clockDateWidget.process.running = true
+            cpuProc.running = true
         }
     }
 
     // Slow timer for widgets like system stats
     Timer {
-        interval: 2000
+        interval: 3000
         running: true
         repeat: true
         onTriggered: {
-            cpuProc.running = true
             memProc.running = true
             diskProc.running = true
             volProc.running = true
@@ -122,6 +122,7 @@ RowLayout {
             brightnessWidget.process.running = true
             volumeWidget.process.running = true
             idleInhibitorWidget.process.running = true
+            batteryWidget.process.running = true
         }
     }
 
@@ -165,7 +166,9 @@ RowLayout {
 
     BarSeparator {}
 
-    Battery {}
+    Battery {
+        id: batteryWidget
+    }
 
     BarSeparator {}
 
