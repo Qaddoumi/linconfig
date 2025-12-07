@@ -17,6 +17,7 @@ RowLayout {
     Loader { //TODO: add workspace status (urgent)
         id: loader
         Layout.fillHeight: true
+        Layout.fillWidth: true
         
         property string sessionType: Quickshell.env("XDG_SESSION_TYPE")
         property string desktop: Quickshell.env("XDG_CURRENT_DESKTOP")
@@ -65,11 +66,6 @@ RowLayout {
                 console.error("Failed to load workspace widget:", source)
             }
         }
-    }
-
-    // Spacer to push SystemState to the right
-    Item {
-        Layout.fillWidth: true
     }
 
     Widgets.BarSeparator {}

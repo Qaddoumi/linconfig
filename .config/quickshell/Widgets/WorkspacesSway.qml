@@ -5,6 +5,7 @@ import QtQuick.Layouts
 
 
 Item {
+    anchors.fill: parent
 
     property string activeWindow: "Window"
     property string currentLayout: "Tile"
