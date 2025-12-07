@@ -41,10 +41,13 @@ Item {
                     onClicked: event => {
                         if (event.button == Qt.LeftButton) {
                             item.activate();
+                            // console.log("left clicked")
                         } else if (event.button == Qt.MiddleButton) {
                             item.secondaryActivate();
+                            // console.log("middle clicked")
                         } else if (event.button == Qt.RightButton) {
                             menuAnchor.open();
+                            // console.log("right clicked")
                         }
                     }
 
