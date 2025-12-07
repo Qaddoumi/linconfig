@@ -20,9 +20,27 @@ if [ -n "$AC" ]; then
     plugged=$(cat "/sys/class/power_supply/$AC/online" 2>/dev/null || echo "0")
 fi
 
-# Get power consumption (in microwatts, convert to watts)
+# Get battery power consumption (in microwatts, convert to watts)
 power_now=$(cat "$BAT_PATH/power_now" 2>/dev/null || echo "0")
 power=$(echo "scale=1; $power_now / 1000000" | bc 2>/dev/null || echo "0")
+
+# Get adapter/cable power (if available)
+adapter_power="0"
+if [ -n "$AC" ] && [ "$plugged" = "1" ]; then
+    # Some systems report adapter power in the AC supply
+    AC_PATH="/sys/class/power_supply/$AC"
+    adapter_power_now=$(cat "$AC_PATH/power_now" 2>/dev/null || echo "")
+    if [ -n "$adapter_power_now" ] && [ "$adapter_power_now" != "0" ]; then
+        adapter_power=$(echo "scale=1; $adapter_power_now / 1000000" | bc 2>/dev/null || echo "0")
+    else
+        # Fallback: Try to read from uevent or calculate from voltage/current
+        voltage=$(cat "$AC_PATH/voltage_now" 2>/dev/null || echo "0")
+        current=$(cat "$AC_PATH/current_now" 2>/dev/null || echo "0")
+        if [ "$voltage" != "0" ] && [ "$current" != "0" ]; then
+            adapter_power=$(echo "scale=1; ($voltage * $current) / 1000000000000" | bc 2>/dev/null || echo "0")
+        fi
+    fi
+fi
 
 # Get charge cycle count
 cycles=$(cat "$BAT_PATH/cycle_count" 2>/dev/null || echo "0")
@@ -70,4 +88,4 @@ else
     fi
 fi
 
-echo "{\"capacity\": $capacity, \"status\": \"$status\", \"plugged\": $plugged, \"power\": $power, \"cycles\": $cycles, \"health\": $health, \"timeRemaining\": \"$time_remaining\"}"
+echo "{\"capacity\": $capacity, \"status\": \"$status\", \"plugged\": $plugged, \"power\": $power, \"adapterPower\": $adapter_power, \"cycles\": $cycles, \"health\": $health, \"timeRemaining\": \"$time_remaining\"}"

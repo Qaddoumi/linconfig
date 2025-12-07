@@ -22,6 +22,7 @@ Item {
     property bool isPlugged: false
     property string timeRemaining: ""
     property real power: 0
+    property real adapterPower: 0
     property int cycles: 0
     property int health: 100
 
@@ -66,6 +67,7 @@ Item {
                     batteryWidget.isCharging = json.status === "Charging"
                     batteryWidget.isPlugged = json.plugged === 1
                     batteryWidget.power = json.power || 0
+                    batteryWidget.adapterPower = json.adapterPower || 0
                     batteryWidget.cycles = json.cycles || 0
                     batteryWidget.health = json.health || 100
                     batteryWidget.timeRemaining = json.timeRemaining || ""
@@ -96,7 +98,10 @@ Item {
                     if (batteryWidget.timeRemaining) {
                         tooltip += "\n" + batteryWidget.timeRemaining
                     }
-                    tooltip += "\nPower: " + batteryWidget.power + "W"
+                    tooltip += "\nBattery power: " + batteryWidget.power + "W"
+                    if (batteryWidget.isPlugged && batteryWidget.adapterPower > 0) {
+                        tooltip += "\nAdapter power: " + batteryWidget.adapterPower + "W"
+                    }
                     tooltip += "\nCharge cycles: " + batteryWidget.cycles
                     tooltip += "\nHealth: " + batteryWidget.health + "%"
                     batteryWidget.batteryTooltip = tooltip
