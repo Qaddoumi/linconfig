@@ -163,6 +163,7 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             var proc = Qt.createQmlObject('import Quickshell.Io; Process { }', parent)
                             proc.command = ["sh", "-c", "echo 'awful.screen.focused().tags[" + (index + 1) + "]:view_only()' | awesome-client"]

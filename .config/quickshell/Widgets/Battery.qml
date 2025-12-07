@@ -33,6 +33,8 @@ Item {
     property int stateWarning: 30
     property int stateCritical: 15
 
+    visible: batteryWidget.capacity > 0
+
     Text {
         id: batteryText
         text: batteryWidget.batteryDisplay

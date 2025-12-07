@@ -147,6 +147,7 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             var proc = Qt.createQmlObject('import Quickshell.Io; Process { }', parent)
                             proc.command = ["swaymsg", "workspace", String(index + 1)]
