@@ -1,110 +1,198 @@
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
 
-Text {
-    id: workspaces
-    color: root.colCyan
-    font.pixelSize: root.fontSize
-    font.family: root.fontFamily
-    textFormat: Text.RichText
-    Layout.rightMargin: root.margin
-    
-    property int activeWorkspace: 1
-    property var workspacesWithWindows: []
-    property int totalWorkspaces: 9
-    property bool isUpdating: false
-    
-    // Use xev to listen for property changes instead of polling
+
+Item {
+
+    property string activeWindow: "Window"
+    property string currentLayout: "Tile"
+    property int focusedWorkspace: 1
+    property var occupiedWorkspaces: []
+
+    // Active window title (awesome)
     Process {
-        id: xevListener
-        running: true
-        command: ["sh", "-c", "xprop -root -spy _NET_CURRENT_DESKTOP _NET_CLIENT_LIST"]
-        
+        id: windowProc
+        command: ["sh", "-c", "echo 'return client.focus and client.focus.name or \"\"' | awesome-client 2>/dev/null | tail -n1 | awk '{$1=\"\"; print $0}' | sed 's/^[[:space:]]*//' | tr -d '\"'"]
         stdout: SplitParser {
             onRead: data => {
-                if (isUpdating) return
-                
-                // Parse current desktop
-                let desktopMatch = data.match(/_NET_CURRENT_DESKTOP.*?=\s*(\d+)/)
-                if (desktopMatch) {
-                    let newWorkspace = parseInt(desktopMatch[1]) + 1
-                    if (newWorkspace !== activeWorkspace) {
-                        activeWorkspace = newWorkspace
-                        scheduleUpdate()
-                    }
-                }
-                
-                // If client list changed, update windows
-                if (data.includes("_NET_CLIENT_LIST")) {
-                    scheduleUpdate()
+                if (data && data.trim()) {
+                    activeWindow = data.trim()
                 }
             }
         }
+        Component.onCompleted: running = true
     }
-    
-    // Debounce updates to prevent flickering
+
+    // Current layout (awesome)
+    Process {
+        id: layoutProc
+        command: ["sh", "-c", "echo 'return awful.layout.getname(awful.layout.get(awful.screen.focused()))' | awesome-client 2>/dev/null | tail -n1 | awk '{$1=\"\"; print $0}' | sed 's/^[[:space:]]*//' | tr -d '\"'"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (data && data.trim()) {
+                    var layout = data.trim()
+                    // Convert awesome layout names to friendly names
+                    if (layout === "tile") {
+                        currentLayout = "Tiled"
+                    } else if (layout === "tileleft") {
+                        currentLayout = "Tile Left"
+                    } else if (layout === "tilebottom") {
+                        currentLayout = "Tile Bottom"
+                    } else if (layout === "tiletop") {
+                        currentLayout = "Tile Top"
+                    } else if (layout === "fairv") {
+                        currentLayout = "Fair Vertical"
+                    } else if (layout === "fairh") {
+                        currentLayout = "Fair Horizontal"
+                    } else if (layout === "spiral") {
+                        currentLayout = "Spiral"
+                    } else if (layout === "dwindle") {
+                        currentLayout = "Dwindle"
+                    } else if (layout === "max") {
+                        currentLayout = "Maximized"
+                    } else if (layout === "fullscreen") {
+                        currentLayout = "Fullscreen"
+                    } else if (layout === "magnifier") {
+                        currentLayout = "Magnifier"
+                    } else if (layout === "floating") {
+                        currentLayout = "Floating"
+                    } else {
+                        currentLayout = layout.charAt(0).toUpperCase() + layout.slice(1)
+                    }
+                }
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
+    // Focused workspace (awesome calls them tags)
+    Process {
+        id: workspaceProc
+        command: ["sh", "-c", "echo 'local t = awful.screen.focused().selected_tag; return t and t.index or 1' | awesome-client 2>/dev/null | tail -n1 | awk '{print $2}'"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (data && data.trim()) {
+                    var num = parseInt(data.trim())
+                    if (!isNaN(num)) {
+                        focusedWorkspace = num
+                    }
+                }
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
+    // Occupied workspaces (awesome)
+    Process {
+        id: occupiedProc
+        command: ["sh", "-c", "echo 'local result = {}; for i, t in ipairs(awful.screen.focused().tags) do if #t:clients() > 0 then table.insert(result, i) end end; return table.concat(result, \",\")' | awesome-client 2>/dev/null | tail -n1 | awk '{$1=\"\"; print $0}' | sed 's/^[[:space:]]*//' | tr -d '\"'"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (data && data.trim()) {
+                    try {
+                        var workspaces = data.trim().split(",").map(function(x) {
+                            return parseInt(x)
+                        }).filter(function(x) {
+                            return !isNaN(x)
+                        })
+                        occupiedWorkspaces = workspaces
+                    } catch (e) {
+                        console.error("Failed to parse occupied workspaces:", e)
+                    }
+                }
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
+    // Fast timer for window/layout/workspace
     Timer {
-        id: updateTimer
-        interval: 100
-        repeat: false
+        interval: 200
+        running: true
+        repeat: true
         onTriggered: {
-            getWorkspacesWithWindows()
+            windowProc.running = true
+            layoutProc.running = true
+            workspaceProc.running = true
+            occupiedProc.running = true
         }
     }
+
     
-    function scheduleUpdate() {
-        updateTimer.restart()
-    }
-    
-    // Get windows only when needed
-    Process {
-        id: windowListProcess
-        command: ["sh", "-c", "xprop -root _NET_CLIENT_LIST | grep -o '0x[0-9a-f]*' | while read wid; do xprop -id $wid _NET_WM_DESKTOP 2>/dev/null | grep -o '[0-9]*$'; done"]
-        
-        stdout: SplitParser {
-            onRead: data => {
-                let desktopNum = parseInt(data.trim())
-                if (!isNaN(desktopNum)) {
-                    let wsNum = desktopNum + 1
-                    if (wsNum >= 1 && wsNum <= totalWorkspaces && !workspacesWithWindows.includes(wsNum)) {
-                        workspacesWithWindows.push(wsNum)
+    Rectangle {
+        anchors.fill: parent
+        color: root.colBg
+
+        RowLayout {
+            anchors.fill: parent
+            spacing: 0
+
+            Repeater {
+                model: 9
+
+                Rectangle {
+                    Layout.preferredWidth: 20
+                    Layout.preferredHeight: parent.height
+                    color: "transparent"
+
+                    property bool isActive: focusedWorkspace === (index + 1)
+                    property bool hasWindows: occupiedWorkspaces.includes(index + 1)
+
+                    // Hide if not active and has no windows
+                    visible: isActive || hasWindows
+
+                    Text {
+                        text: index + 1
+                        color: parent.isActive ? root.colCyan : (parent.hasWindows ? root.colCyan : root.colMuted)
+                        font.pixelSize: root.fontSize
+                        font.family: root.fontFamily
+                        font.bold: true
+                        anchors.centerIn: parent
+                    }
+
+                    Rectangle {
+                        width: 20
+                        height: 3
+                        color: parent.isActive ? root.colPurple : root.colBg
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottom: parent.bottom
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            var proc = Qt.createQmlObject('import Quickshell.Io; Process { }', parent)
+                            proc.command = ["sh", "-c", "echo 'awful.screen.focused().tags[" + (index + 1) + "]:view_only()' | awesome-client"]
+                            proc.running = true
+                        }
                     }
                 }
             }
-        }
-        
-        onExited: {
-            isUpdating = false
-            updateWorkspaces()
-        }
-    }
-    
-    function getWorkspacesWithWindows() {
-        if (isUpdating) return
-        
-        isUpdating = true
-        workspacesWithWindows = []
-        windowListProcess.running = false
-        windowListProcess.running = true
-    }
-    
-    function updateWorkspaces() {
-        let workspaceText = ""
-        
-        for (let i = 1; i <= totalWorkspaces; i++) {
-            if (workspacesWithWindows.includes(i) || i === activeWorkspace) {
-                workspaceText += (i === activeWorkspace 
-                    ? "<span style='font-size: 13pt;'><b>" + i + "</b></span> " 
-                    : i + " ")
+
+            BarSeparator {}
+
+            Text {
+                text: currentLayout
+                color: root.colFg
+                font.pixelSize: root.fontSize - 2
+                font.family: root.fontFamily
+                font.bold: true
+            }
+
+            BarSeparator {}
+
+            Text {
+                text: activeWindow
+                color: root.colPurple
+                font.pixelSize: root.fontSize
+                font.family: root.fontFamily
+                font.bold: true
+                Layout.fillWidth: true
+                elide: Text.ElideRight
+                maximumLineCount: 1
             }
         }
-        
-        text = workspaceText.trim()
-    }
-    
-    Component.onCompleted: {
-        getWorkspacesWithWindows()
     }
 }
