@@ -12,13 +12,14 @@ Item {
     property string volumeDisplay: "Loading..."
     property bool failed: false
     property string errorString: ""
+    property color volumeColor: root.colCyan
 
     property alias process: volumeProcess // Expose for external triggering
 
     Text {
         id: volumeText
         text: volumeWidget.volumeDisplay
-        color: root.colCyan
+        color: volumeWidget.volumeColor
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true
@@ -35,6 +36,18 @@ Item {
                     var json = JSON.parse(data)
                     if (json.text) {
                         volumeWidget.volumeDisplay = json.text
+                    }
+                    if (json.class){
+                        var tmpClass = json.class
+                        if (tmpClass === "Stopped") {
+                            volumeWidget.volumeColor = root.colRed
+                        } else if (tmpClass === "Paused") {
+                            volumeWidget.volumeColor = root.colYellow
+                        } else if (tmpClass === "Playing") {
+                            volumeWidget.volumeColor = root.colGreen
+                        } else {
+                            volumeWidget.volumeColor = root.colCyan
+                        }
                     }
                     if (json.tooltip) {
                         // Replace \\n with actual newlines
