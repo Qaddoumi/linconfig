@@ -106,12 +106,12 @@ Item {
                                 radius: 7
                                 Text {
                                     id: popupText
-
                                     text: item.tooltipTitle || item.id
                                     color: root.colCyan
                                     font.pixelSize: root.fontSize
                                     font.family: root.fontFamily
                                     font.bold: true
+                                    anchors.centerIn: parent
                                 }
                             }
                         }
