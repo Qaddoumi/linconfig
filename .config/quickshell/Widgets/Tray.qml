@@ -1,5 +1,3 @@
-//@ pragma UseQApplication
-
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -13,7 +11,7 @@ Item {
 
     RowLayout {
         id: trayRow
-        spacing: 8
+        spacing: root.margin
 
         Repeater {
             model: SystemTray.items
