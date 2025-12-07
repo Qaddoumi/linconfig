@@ -123,6 +123,7 @@ RowLayout {
             volumeWidget.process.running = true
             idleInhibitorWidget.process.running = true
             batteryWidget.process.running = true
+            notificationWidget.triggerRefresh()
         }
     }
 
@@ -206,7 +207,9 @@ RowLayout {
 
     BarSeparator {}
 
-    Notification {}
+    Notification {
+        id: notificationWidget
+    }
 
     BarSeparator {}
 

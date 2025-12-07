@@ -14,6 +14,13 @@ Text {
     property string notificationDaemon: "none"
     property bool initialized: false
     
+    // Expose refresh function for external triggering from SystemState
+    function triggerRefresh() {
+        if (initialized && notificationDaemon !== "none") {
+            refresh()
+        }
+    }
+    
     text: "󰂚"
     
     // Detect which notification daemon is running
@@ -36,13 +43,7 @@ Text {
         }
     }
     
-    // Poll every 2 seconds
-    Timer {
-        interval: 2000
-        running: initialized && notificationDaemon !== "none"
-        repeat: true
-        onTriggered: refresh()
-    }
+    // Timer moved to SystemState.qml for centralized control
     
     // ========== SWAYNC PROCESSES ==========
     
