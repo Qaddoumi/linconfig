@@ -150,7 +150,6 @@ Item {
             implicitWidth: popupText.implicitWidth + 30
             color : "transparent"
 
-
             visible: true
 
             Rectangle {
