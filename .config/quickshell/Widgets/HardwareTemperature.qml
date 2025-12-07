@@ -11,8 +11,11 @@ Item {
     property string hardwareTemperatureDisplay: "Loading..."
     property bool failed: false
     property string errorString: ""
+    property bool showWidget: true
 
     property alias process: hardwareTemperatureProcess // Expose for external triggering
+
+    visible: showWidget
 
     Text {
         id: hardwareTemperatureText
@@ -38,6 +41,9 @@ Item {
                     if (json.tooltip) {
                         // Replace \\n with actual newlines
                         hardwareTemperatureWidget.hardwareTemperatureTooltip = json.tooltip.replace(/\\n/g, "\n")
+                    }
+                    if (json.text === "N/A") {
+                        hardwareTemperatureWidget.showWidget = false
                     }
                 } catch (e) {
                     console.error("Failed to parse hardware temperature:", e)

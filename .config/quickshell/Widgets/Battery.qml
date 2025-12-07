@@ -61,7 +61,7 @@ Item {
                     var json = JSON.parse(data.trim())
                     
                     if (json.error) {
-                        batteryWidget.batteryDisplay = " N/A"
+                        batteryWidget.batteryDisplay = "N/A"
                         batteryWidget.batteryTooltip = json.error
                         batteryWidget.showWidget = false
                         return
