@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Battery status script for Quickshell
 
 BAT=$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^BAT' | head -1)
