@@ -49,32 +49,26 @@ Item {
                 }
 
                 MouseArea {
+                    id: mouseArea
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
 
-                    onClicked: mouse => {
+                    onClicked: function(mouse) {
+                        // Get global position for the menu
+                        var globalPos = mapToGlobal(mouse.x, mouse.y)
+                        
                         if (mouse.button === Qt.LeftButton) {
-                            // Primary action (left click)
-                            if (trayItem.modelData.onlyMenu && trayItem.modelData.hasMenu) {
-                                // Display menu if item only offers menu
-                                trayItem.modelData.display(trayWidget, mouse.x, mouse.y)
-                            } else {
-                                trayItem.modelData.activate()
-                            }
+                            trayItem.modelData.activate(globalPos.x, globalPos.y)
                         } else if (mouse.button === Qt.RightButton) {
-                            // Show context menu (right click)
-                            if (trayItem.modelData.hasMenu) {
-                                trayItem.modelData.display(trayWidget, mouse.x, mouse.y)
-                            }
+                            trayItem.modelData.menu?.open(globalPos.x, globalPos.y)
                         } else if (mouse.button === Qt.MiddleButton) {
-                            // Secondary action (middle click)
-                            trayItem.modelData.secondaryActivate()
+                            trayItem.modelData.secondaryActivate(globalPos.x, globalPos.y)
                         }
                     }
 
-                    onWheel: wheel => {
+                    onWheel: function(wheel) {
                         // Scroll action (e.g., for volume mixer)
                         var delta = wheel.angleDelta.y !== 0 ? wheel.angleDelta.y / 120 : wheel.angleDelta.x / 120
                         trayItem.modelData.scroll(delta, wheel.angleDelta.x !== 0)
