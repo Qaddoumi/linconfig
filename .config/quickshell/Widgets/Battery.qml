@@ -21,6 +21,7 @@ Item {
     property string status: "Unknown"  // Charging, Discharging, Full, Not charging
     property bool isCharging: false
     property bool isPlugged: false
+    property bool showWidget: true
     property string timeRemaining: ""
     property real power: 0
     property real adapterPower: 0
@@ -33,7 +34,7 @@ Item {
     property int stateWarning: 30
     property int stateCritical: 15
 
-    visible: batteryWidget.capacity > 0
+    visible: showWidget
 
     Text {
         id: batteryText
@@ -62,6 +63,7 @@ Item {
                     if (json.error) {
                         batteryWidget.batteryDisplay = " N/A"
                         batteryWidget.batteryTooltip = json.error
+                        batteryWidget.showWidget = false
                         return
                     }
                     
