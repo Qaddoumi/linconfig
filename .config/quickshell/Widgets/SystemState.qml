@@ -8,7 +8,7 @@ RowLayout {
     spacing: 0
     // System info properties
     property int cpuUsage: 0
-    property int memUsage: 0
+    property string memUsage: ""
     property int diskUsage: 0
 
     // CPU tracking
@@ -49,22 +49,6 @@ RowLayout {
         Component.onCompleted: running = true
     }
 
-    // Memory usage
-    Process {
-        id: memProc
-        command: ["sh", "-c", "free | grep Mem"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (!data) return
-                var parts = data.trim().split(/\s+/)
-                var total = parseInt(parts[1]) || 1
-                var used = parseInt(parts[2]) || 0
-                memUsage = Math.round(100 * used / total)
-            }
-        }
-        Component.onCompleted: running = true
-    }
-
     // Disk usage
     Process {
         id: diskProc
@@ -97,7 +81,7 @@ RowLayout {
         running: true
         repeat: true
         onTriggered: {
-            memProc.running = true
+            memoryWidget.process.running = true
             diskProc.running = true
             prayerWidget.process.running = true
             hardwareTemperatureWidget.process.running = true
@@ -119,12 +103,8 @@ RowLayout {
 
     BarSeparator {}
 
-    Text {
-        text: "Mem: " + memUsage + "%"
-        color: root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    Memory {
+        id: memoryWidget
     }
 
     BarSeparator {}
@@ -139,6 +119,10 @@ RowLayout {
 
     BarSeparator {}
 
+    Network {}
+
+    BarSeparator {}
+
     Battery {
         id: batteryWidget
     }
@@ -148,10 +132,6 @@ RowLayout {
     Volume {
         id: volumeWidget
     }
-
-    BarSeparator {}
-
-    Network {}
 
     BarSeparator {}
 
