@@ -210,6 +210,8 @@ sudo pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gnome-keyring # Authentication agent for privileged operations
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm nwg-displays # Display configuration GUI for hyperland and sway
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm quickshell # a shell for both wayland and x11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm waybar # Status bar for wayland
@@ -279,8 +281,6 @@ sudo systemctl start udisks2.service || true
 sudo usermod -aG storage $USER || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm zenity # Dialogs from terminal,(used for thunar)
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm kanshi # Automatic Display manager for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm nano # Text editor
 echo -e "${blue}--------------------------------------------------\n${no_color}"

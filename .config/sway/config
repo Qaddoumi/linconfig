@@ -69,29 +69,6 @@ exec --no-startup-id /usr/lib/xdg-desktop-portal -r
 
 ### Colorscheme
 
-# Everforest colors
-#set $bg0  #2d353b
-#set $bg1  #343f44
-#set $fg   #d3c6aa
-#set $green #a7c080
-#set $blue  #7fbbb3
-#set $yellow #dbbc7f
-#set $gray  #868d80
-
-# Pastel TTY Colors
-#set $bg0    #282828
-#set $bg1    #323232
-#set $fg     #e0e0e0
-#set $green  #b5e8a9
-#set $blue   #a5d8ff
-#set $yellow #ffe6a7
-#set $gray   #a0a0a0
-#set $red    #ff9a9e
-#set $magenta #dda0dd
-#set $cyan   #a3e8e8
-#set $white  #ffffff
-#set $orange #ffbb8a
-
 set $bg0    #282828
 set $bg1    #3c3836
 set $fg     #ebdbb2
@@ -119,10 +96,10 @@ output * bg ~/.config/sway/dark-mode-image.png fill
 
 
 # Example configuration for vm:
-# This already been set by the `kanshi` display manager.
 #output Virtual-1 resolution 1920x1080@60Hz position 1920,0
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
+include ~/.config/sway/outputs
 
 ### Idle configuration
 #
@@ -169,9 +146,6 @@ exec dex -a
 
 # Start polkit authentication agent
 exec_always /usr/lib/hyprpolkitagent/hyprpolkitagent
-
-# Automatically manage display configurations
-exec_always bash -c 'sleep 1; pkill kanshi 2>/dev/null || true; kanshi'
 
 ## Emacs Daemon
 #exec /usr/bin/emacs --daemon
