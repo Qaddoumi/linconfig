@@ -6,48 +6,8 @@ import Quickshell.Io
 
 RowLayout {
     spacing: 0
-    // System info properties
-    property int cpuUsage: 0
-    property string memUsage: ""
+
     property int diskUsage: 0
-
-    // CPU tracking
-    property var lastCpuIdle: 0
-    property var lastCpuTotal: 0
-
-
-    // CPU usage
-    Process {
-        id: cpuProc
-        command: ["sh", "-c", "head -1 /proc/stat"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (!data) return
-                var parts = data.trim().split(/\s+/)
-                var user = parseInt(parts[1]) || 0
-                var nice = parseInt(parts[2]) || 0
-                var system = parseInt(parts[3]) || 0
-                var idle = parseInt(parts[4]) || 0
-                var iowait = parseInt(parts[5]) || 0
-                var irq = parseInt(parts[6]) || 0
-                var softirq = parseInt(parts[7]) || 0
-
-                var total = user + nice + system + idle + iowait + irq + softirq
-                var idleTime = idle + iowait
-
-                if (lastCpuTotal > 0) {
-                    var totalDiff = total - lastCpuTotal
-                    var idleDiff = idleTime - lastCpuIdle
-                    if (totalDiff > 0) {
-                        cpuUsage = Math.round(100 * (totalDiff - idleDiff) / totalDiff)
-                    }
-                }
-                lastCpuTotal = total
-                lastCpuIdle = idleTime
-            }
-        }
-        Component.onCompleted: running = true
-    }
 
     // Disk usage
     Process {
@@ -71,7 +31,7 @@ RowLayout {
         repeat: true
         onTriggered: {
             clockDateWidget.process.running = true
-            cpuProc.running = true
+            cpuWidget.process.running = true
         }
     }
 
@@ -93,12 +53,8 @@ RowLayout {
         }
     }
 
-    Text {
-        text: "CPU: " + cpuUsage + "%"
-        color: root.colYellow
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    Cpu {
+        id: cpuWidget
     }
 
     BarSeparator {}
