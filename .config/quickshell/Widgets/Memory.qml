@@ -13,7 +13,7 @@ Item {
 
     Text {
         id: memoryText
-        text: "Mem: " + memoryWidget.memUsage + " GB"
+        text: "Mem: " + memoryWidget.memUsage
         color: root.colCyan
         font.pixelSize: root.fontSize
         font.family: root.fontFamily

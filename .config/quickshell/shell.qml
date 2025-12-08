@@ -11,7 +11,7 @@ ShellRoot {
     property color colMuted: "#444b6a"
     property color colCyan: "#0db9d7"
     property color colPurple: "#ad8ee6"
-    property color colRed: "#f7768e"
+    property color colRed: '#eb143b'
     property color colYellow: "#e0af68"
     property color colBlue: "#7aa2f7"
     property color colGreen: '#208b5b'
