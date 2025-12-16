@@ -612,7 +612,7 @@ sudo pacman -S --needed --noconfirm guestfs-tools # Tools for managing guest fil
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm libosinfo # Library for managing OS information
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm tuned # system tuning service for linux allows us to optimise the hypervisor for speed.
+sudo pacman -S --needed --noconfirm tuned || true # system tuning service for linux allows us to optimise the hypervisor for speed.
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm spice-vdagent # SPICE agent for guest OS
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
