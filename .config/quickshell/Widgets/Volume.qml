@@ -54,7 +54,7 @@ Item {
                     if (json.class){
                         var tmpClass = json.class
                         if (tmpClass === "Stopped") {
-                            volumeWidget.volumeColor = root.colRed
+                            volumeWidget.volumeColor = root.colMuted
                         } else if (tmpClass === "Paused") {
                             volumeWidget.volumeColor = root.colYellow
                         } else if (tmpClass === "Playing") {
