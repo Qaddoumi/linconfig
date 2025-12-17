@@ -14,6 +14,8 @@ RowLayout {
         onTriggered: {
             clockDateWidget.process.running = true
             cpuWidget.process.running = true
+            networkWidget.process.running = true
+            languageKeyboardWidget.process.running = true
         }
     }
 
@@ -35,6 +37,10 @@ RowLayout {
         }
     }
 
+    Network {
+        id: networkWidget
+    }
+
     Cpu {
         id: cpuWidget
     }
@@ -46,8 +52,6 @@ RowLayout {
     DiskUsage {
         id: diskUsageWidget
     }
-
-    Network {}
 
     Battery {
         id: batteryWidget
@@ -63,6 +67,10 @@ RowLayout {
 
     HardwareTemperature {
         id: hardwareTemperatureWidget
+    }
+
+    LanguageKeyboardState {
+        id: languageKeyboardWidget
     }
 
     PrayerTimes {
