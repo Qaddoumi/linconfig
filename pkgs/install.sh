@@ -216,8 +216,8 @@ sudo pacman -S --needed --noconfirm quickshell # a shell for both wayland and x1
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm waybar # Status bar for wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm wofi # Application launcher for wayland
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+# sudo pacman -S --needed --noconfirm wofi # Application launcher for wayland
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm rofi # Application launcher for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm dex # Autostart manager (i dont't know why, but it make spice runs without issues in vm)

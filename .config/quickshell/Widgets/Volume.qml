@@ -1,12 +1,13 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
 
 
 Item {
     id: volumeWidget
-    implicitWidth: volumeText.implicitWidth
-    implicitHeight: volumeText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
     
     property string volumeTooltip: ""
     property string volumeDisplay: "Loading..."
@@ -16,13 +17,26 @@ Item {
 
     property alias process: volumeProcess // Expose for external triggering
 
-    Text {
-        id: volumeText
-        text: volumeWidget.volumeDisplay
-        color: volumeWidget.volumeColor
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        id: column
+        spacing: 2
+
+        Text {
+            id: volumeText
+            Layout.alignment: Qt.AlignHCenter
+            text: volumeWidget.volumeDisplay
+            color: volumeWidget.volumeColor
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            Layout.alignment: Qt.AlignHCenter
+            implicitWidth: volumeText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: volumeText.color
+        }
     }
 
     Process {

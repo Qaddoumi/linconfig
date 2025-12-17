@@ -6,8 +6,8 @@ import Quickshell.Io
 
 Item {
     id: prayerWidget
-    implicitWidth: prayerText.implicitWidth
-    implicitHeight: prayerText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
     
     property string prayerTooltip: ""
     property string prayerDisplay: "Loading..."
@@ -16,13 +16,26 @@ Item {
 
     property alias process: prayerProcess  // Expose for external triggering
 
-    Text {
-        id: prayerText
-        text: prayerWidget.prayerDisplay
-        color: root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        id: column
+        spacing: 2
+
+        Text {
+            id: prayerText
+            Layout.alignment: Qt.AlignHCenter
+            text: prayerWidget.prayerDisplay
+            color: root.colCyan
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            Layout.alignment: Qt.AlignHCenter
+            implicitWidth: prayerText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: prayerText.color
+        }
     }
     
     // Process to get prayer times (only runs on hover)

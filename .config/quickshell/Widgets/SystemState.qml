@@ -5,7 +5,7 @@ import Quickshell.Io
 
 
 RowLayout {
-    spacing: 0
+    spacing: root.margin
 
     // Fast timer for widgets like clock (every second)
     Timer {
@@ -113,5 +113,5 @@ RowLayout {
 
     PowerMenuWidget {}
 
-    Item { width: 8 }
+    Item { width: 0 }
 }

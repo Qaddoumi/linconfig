@@ -1,11 +1,13 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
+
 
 Item {
     id: hardwareTemperatureWidget
-    implicitWidth: hardwareTemperatureText.implicitWidth
-    implicitHeight: hardwareTemperatureText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
     
     property string hardwareTemperatureTooltip: ""
     property string hardwareTemperatureDisplay: "Loading..."
@@ -18,13 +20,26 @@ Item {
 
     visible: showWidget
 
-    Text {
-        id: hardwareTemperatureText
-        text: hardwareTemperatureWidget.hardwareTemperatureDisplay
-        color: hardwareTemperatureWidget.tmpColor
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        id: column
+        spacing: 2
+
+        Text {
+            id: hardwareTemperatureText
+            Layout.alignment: Qt.AlignHCenter
+            text: hardwareTemperatureWidget.hardwareTemperatureDisplay
+            color: hardwareTemperatureWidget.tmpColor
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            Layout.alignment: Qt.AlignHCenter
+            implicitWidth: hardwareTemperatureText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: hardwareTemperatureText.color
+        }
     }
 
     Process {

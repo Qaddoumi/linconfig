@@ -1,23 +1,37 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
 
 
 Item {
     id: memoryWidget
-    implicitWidth: memoryText.implicitWidth
-    implicitHeight: memoryText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
     property string memUsage: ""
 
     property alias process: memProc
 
-    Text {
-        id: memoryText
-        text: "Mem: " + memoryWidget.memUsage
-        color: root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        id: column
+        spacing: 2
+
+        Text {
+            id: memoryText
+            Layout.alignment: Qt.AlignHCenter
+            text: "Mem: " + memoryWidget.memUsage
+            color: root.colCyan
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            Layout.alignment: Qt.AlignHCenter
+            implicitWidth: memoryText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: memoryText.color
+        }
     }
 
     // Memory usage

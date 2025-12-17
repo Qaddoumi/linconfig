@@ -20,7 +20,7 @@ set $right l
 # Your preferred terminal emulator
 set $term kitty
 # Your preferred application launcher
-set $menu wofi --show drun
+set $menu rofi -show drun
 # Your preferred file manager
 set $fileManager thunar
 # Your preferred web browser
@@ -236,8 +236,8 @@ input type:keyboard {
     # Start your launcher
     bindsym $mod+d exec $menu
 
-    # Reload Waybar
-    bindsym $mod+shift+a exec pkill -SIGUSR2 waybar
+    # # Reload Waybar
+    # bindsym $mod+shift+a exec pkill -SIGUSR2 waybar
 
     # Call the browser variable and launch it with $mod+b
     bindsym $mod+b exec $browser

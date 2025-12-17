@@ -1,13 +1,14 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
 
 //TODO: use ==> import Quickshell.Services.UPower
 
 Item {
     id: batteryWidget
-    implicitWidth: batteryText.implicitWidth
-    implicitHeight: batteryText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
 
     property string batteryTooltip: ""
     property string batteryDisplay: "Loading..."
@@ -36,20 +37,32 @@ Item {
 
     visible: showWidget
 
-    Text {
-        id: batteryText
-        text: batteryWidget.batteryDisplay
-        color: {
-            if (batteryWidget.isCharging || batteryWidget.isPlugged) return root.colGreen
-            if (batteryWidget.capacity <= batteryWidget.stateCritical) return root.colRed
-            if (batteryWidget.capacity <= batteryWidget.stateWarning) return root.colYellow
-            return root.colCyan
-        }
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
-    }
+    ColumnLayout {
+        id: column
+        spacing: 2
 
+        Text {
+            id: batteryText
+            Layout.alignment: Qt.AlignHCenter
+            text: batteryWidget.batteryDisplay
+            color: {
+                if (batteryWidget.isCharging || batteryWidget.isPlugged) return root.colGreen
+                if (batteryWidget.capacity <= batteryWidget.stateCritical) return root.colRed
+                if (batteryWidget.capacity <= batteryWidget.stateWarning) return root.colYellow
+                return root.colCyan
+            }
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            implicitWidth: batteryText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            Layout.alignment: Qt.AlignCenter
+            color: batteryText.color
+        }
+    }
     Process {
         id: batteryProcess
         command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/battery.sh"]

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+
 Text {
     id: notification
     color: root.colCyan
