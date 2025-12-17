@@ -215,6 +215,7 @@ input type:touchpad {
 #     xkb_numlock enabled
 # }
 input "type:keyboard" {
+    # run 'ls -la  /usr/share/X11/xkb/symbols/' to get the layouts
     xkb_layout us,ara
     xkb_options grp:alt_shift_toggle
     xkb_numlock enabled
