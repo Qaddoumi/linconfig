@@ -82,10 +82,10 @@ Rectangle {
         stdout: SplitParser {
             splitMarker: ""
             onRead: data => {
-                console.log("LED mask sysfs:", data)
+                // console.log("LED mask sysfs:", data)
                 if (!data) return
                 var lines = data.trim().split('\n')
-                console.log("Lines:", lines)
+                // console.log("Lines:", lines)
                 languageWidget.capsLock = (lines[0] === "1")
                 languageWidget.numLock = (lines[1] === "1")
                 languageWidget.scrollLock = (lines[2] === "1")
