@@ -41,6 +41,10 @@ RowLayout {
         id: networkWidget
     }
 
+    Bluetooth {
+        id: bluetoothWidget
+    }
+
     Cpu {
         id: cpuWidget
     }
@@ -67,6 +71,14 @@ RowLayout {
 
     HardwareTemperature {
         id: hardwareTemperatureWidget
+    }
+
+    Weather {
+        id: weatherWidget
+    }
+
+    Privacy {
+        id: privacyWidget
     }
 
     LanguageKeyboardState {
