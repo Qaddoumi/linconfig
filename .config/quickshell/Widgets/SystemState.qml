@@ -14,6 +14,7 @@ RowLayout {
         onTriggered: {
             clockDateWidget.process.running = true
             cpuWidget.process.running = true
+            networkWidget.process.running = true
         }
     }
 
@@ -47,7 +48,9 @@ RowLayout {
         id: diskUsageWidget
     }
 
-    Network {}
+    Network {
+        id: networkWidget
+    }
 
     Battery {
         id: batteryWidget

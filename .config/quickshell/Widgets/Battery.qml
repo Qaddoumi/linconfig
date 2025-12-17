@@ -172,7 +172,7 @@ Rectangle {
             Rectangle {
                 anchors.fill: parent
                 color: batteryWidget.failed ? root.colRed : root.colBg
-                radius: 7
+                radius: root.radius
                 Text {
                     id: popupText
                     text: batteryWidget.failed ? "Reload failed." : batteryWidget.batteryTooltip

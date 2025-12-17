@@ -154,7 +154,7 @@ Rectangle {
             Rectangle {
                 anchors.fill: parent
                 color: failed ? root.colRed : root.colBg
-                radius: 7
+                radius: root.radius
                 Text {
                     id: popupText
                     text: brightnessWidget.failed ? "Reload failed." : "Brightness :\n" +brightnessWidget.brightnessTooltip

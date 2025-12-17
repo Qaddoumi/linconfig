@@ -127,7 +127,7 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                radius: 7
+                radius: root.radius
                 color: failed ? root.colRed : root.colBg
                 Text {
                     id: popupText

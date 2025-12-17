@@ -108,7 +108,7 @@ Rectangle {
                             Rectangle {
                                 anchors.fill: parent
                                 color: root.colBg
-                                radius: 7
+                                radius: root.radius
                                 Text {
                                     id: popupText
                                     text: item.tooltipTitle || item.id
