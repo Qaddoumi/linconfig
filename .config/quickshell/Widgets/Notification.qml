@@ -33,6 +33,9 @@ Rectangle {
     function triggerRefresh() {
         if (initialized && notificationDaemon !== "none") {
             refresh()
+        } else {
+            // console.log("Notification widget not initialized")
+            detectDaemon.running = true
         }
     }
 
