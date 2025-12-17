@@ -16,13 +16,21 @@ Item {
 
     property alias process: prayerProcess  // Expose for external triggering
 
-    Text {
-        id: prayerText
-        text: prayerWidget.prayerDisplay
-        color: root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        Text {
+            id: prayerText
+            text: prayerWidget.prayerDisplay
+            color: root.colCyan
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            implicitWidth: prayerText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: prayerText.color
+        }
     }
     
     // Process to get prayer times (only runs on hover)

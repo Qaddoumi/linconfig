@@ -25,8 +25,8 @@ Item {
         }
 
         Rectangle {
-            implicitWidth: cpuText.implicitWidth
-            implicitHeight: 3
+            implicitWidth: cpuText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
             color: cpuText.color
         }
     }

@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
 
 //TODO: use ==> import Quickshell.Services.UPower
 
@@ -36,20 +37,27 @@ Item {
 
     visible: showWidget
 
-    Text {
-        id: batteryText
-        text: batteryWidget.batteryDisplay
-        color: {
-            if (batteryWidget.isCharging || batteryWidget.isPlugged) return root.colGreen
-            if (batteryWidget.capacity <= batteryWidget.stateCritical) return root.colRed
-            if (batteryWidget.capacity <= batteryWidget.stateWarning) return root.colYellow
-            return root.colCyan
+    ColumnLayout {
+        Text {
+            id: batteryText
+            text: batteryWidget.batteryDisplay
+            color: {
+                if (batteryWidget.isCharging || batteryWidget.isPlugged) return root.colGreen
+                if (batteryWidget.capacity <= batteryWidget.stateCritical) return root.colRed
+                if (batteryWidget.capacity <= batteryWidget.stateWarning) return root.colYellow
+                return root.colCyan
+            }
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
         }
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
-    }
 
+        Rectangle {
+            implicitWidth: batteryText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: batteryText.color
+        }
+    }
     Process {
         id: batteryProcess
         command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/battery.sh"]

@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
 
 
 Item {
@@ -11,13 +12,21 @@ Item {
 
     property alias process: memProc
 
-    Text {
-        id: memoryText
-        text: "Mem: " + memoryWidget.memUsage
-        color: root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        Text {
+            id: memoryText
+            text: "Mem: " + memoryWidget.memUsage
+            color: root.colCyan
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            implicitWidth: memoryText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: memoryText.color
+        }
     }
 
     // Memory usage

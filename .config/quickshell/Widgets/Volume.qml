@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
 
 
 Item {
@@ -16,13 +17,21 @@ Item {
 
     property alias process: volumeProcess // Expose for external triggering
 
-    Text {
-        id: volumeText
-        text: volumeWidget.volumeDisplay
-        color: volumeWidget.volumeColor
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        Text {
+            id: volumeText
+            text: volumeWidget.volumeDisplay
+            color: volumeWidget.volumeColor
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            implicitWidth: volumeText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: volumeText.color
+        }
     }
 
     Process {

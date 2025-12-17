@@ -1,6 +1,8 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
+
 
 Item {
     id: hardwareTemperatureWidget
@@ -18,13 +20,21 @@ Item {
 
     visible: showWidget
 
-    Text {
-        id: hardwareTemperatureText
-        text: hardwareTemperatureWidget.hardwareTemperatureDisplay
-        color: hardwareTemperatureWidget.tmpColor
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        Text {
+            id: hardwareTemperatureText
+            text: hardwareTemperatureWidget.hardwareTemperatureDisplay
+            color: hardwareTemperatureWidget.tmpColor
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            implicitWidth: hardwareTemperatureText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: hardwareTemperatureText.color
+        }
     }
 
     Process {

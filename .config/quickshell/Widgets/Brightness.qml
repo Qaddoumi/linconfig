@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
 
 
 Item {
@@ -15,13 +16,21 @@ Item {
 
     property alias process: brightnessProcess // Expose for external triggering
 
-    Text {
-        id: brightnessText
-        text: brightnessWidget.brightnessDisplay
-        color: root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        Text {
+            id: brightnessText
+            text: brightnessWidget.brightnessDisplay
+            color: root.colCyan
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            implicitWidth: brightnessText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: brightnessText.color
+        }
     }
 
     Process {

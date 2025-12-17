@@ -17,14 +17,22 @@ Item {
 
     property alias process: clockDateProcess
 
-    Text {
-        id: dateText
-        // text: Qt.formatDateTime(new Date(), normalFormat)
-        text : clockDateWidget.dateTime
-        color: root.colYellow
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        // dateText.text = Qt.formatDateTime(new Date(), clockDateWidget.normalFormat)
+    ColumnLayout {
+        Text {
+            id: dateText
+            // text: Qt.formatDateTime(new Date(), normalFormat)
+            text : clockDateWidget.dateTime
+            color: root.colYellow
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            // dateText.text = Qt.formatDateTime(new Date(), clockDateWidget.normalFormat)
+        }
+
+        Rectangle {
+            implicitWidth: dateText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: dateText.color
+        }
     }
 
     Process {

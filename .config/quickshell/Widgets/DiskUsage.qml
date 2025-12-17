@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
 
 
 Item {
@@ -12,13 +13,21 @@ Item {
 
     property alias process: diskProc
 
-    Text {
-        id: diskText
-        text: "Disk: " + diskWidget.diskUsage
-        color: root.colBlue
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        Text {
+            id: diskText
+            text: "Disk: " + diskWidget.diskUsage
+            color: root.colBlue
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            implicitWidth: diskText.implicitWidth + 4
+            implicitHeight: root.underlineHeight
+            color: diskText.color
+        }
     }
 
     Process {
