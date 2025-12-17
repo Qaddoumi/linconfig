@@ -2,31 +2,25 @@ import QtQuick
 import QtQuick.Layouts
 
 
-Item {
+Rectangle {
     id: networkWidget
-    implicitWidth: column.implicitWidth
-    implicitHeight: column.implicitHeight
+    implicitWidth: networkText.implicitWidth + root.margin
+    implicitHeight: networkText.implicitHeight + (root.margin / 2)
+    color: "transparent"
+    border.color: networkText.color
+    border.width: 1
+    radius: root.radius / 2
     property string networkUsage: ""
 
-    ColumnLayout {
-        id: column
-        spacing: 2
-
-        Text {
-            id: networkText
-            Layout.alignment: Qt.AlignHCenter
-            text: "Network: " + networkWidget.networkUsage
-            color: root.colCyan
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
-            font.bold: true
-        }
-
-        Rectangle {
-            Layout.alignment: Qt.AlignHCenter
-            implicitWidth: networkText.implicitWidth + 4
-            implicitHeight: root.underlineHeight
-            color: networkText.color
-        }
+    Text {
+        id: networkText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        text: "Network: " + networkWidget.networkUsage
+        color: root.colCyan
+        font.pixelSize: root.fontSize
+        font.family: root.fontFamily
+        font.bold: true
     }
 }

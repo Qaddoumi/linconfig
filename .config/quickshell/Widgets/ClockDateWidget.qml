@@ -1,13 +1,16 @@
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 
 
-Item {
+Rectangle {
     id: clockDateWidget
-    implicitWidth: column.implicitWidth
-    implicitHeight: column.implicitHeight
+    implicitWidth: dateText.implicitWidth + root.margin
+    implicitHeight: dateText.implicitHeight + (root.margin / 2)
+    color: "transparent"
+    border.color: dateText.color
+    border.width: 1
+    radius: root.radius / 2
 
     property string hijriTooltip: ""
     // property string normalFormat: "ddd, MMM dd - hh:mm a"
@@ -17,27 +20,17 @@ Item {
 
     property alias process: clockDateProcess
 
-    ColumnLayout {
-        id: column
-        spacing: 2
-
-        Text {
-            id: dateText
-            Layout.alignment: Qt.AlignHCenter
-            // text: Qt.formatDateTime(new Date(), normalFormat)
-            text : clockDateWidget.dateTime
-            color: root.colYellow
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
-            // dateText.text = Qt.formatDateTime(new Date(), clockDateWidget.normalFormat)
-        }
-
-        Rectangle {
-            Layout.alignment: Qt.AlignHCenter
-            implicitWidth: dateText.implicitWidth + 4
-            implicitHeight: root.underlineHeight
-            color: dateText.color
-        }
+    Text {
+        id: dateText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        // text: Qt.formatDateTime(new Date(), normalFormat)
+        text : clockDateWidget.dateTime
+        color: root.colYellow
+        font.pixelSize: root.fontSize
+        font.family: root.fontFamily
+        // dateText.text = Qt.formatDateTime(new Date(), clockDateWidget.normalFormat)
     }
 
     Process {

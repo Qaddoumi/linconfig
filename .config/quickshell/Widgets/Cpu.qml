@@ -1,39 +1,32 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import QtQuick.Layouts
 
 
-Item {
+Rectangle {
     id: cpuWidget
-    implicitWidth: column.implicitWidth
-    implicitHeight: column.implicitHeight
+    implicitWidth: cpuText.implicitWidth + root.margin
+    implicitHeight: cpuText.implicitHeight + (root.margin / 2)
+    color: "transparent"
+    border.color: cpuText.color
+    border.width: 1
+    radius: root.radius / 2
     property int cpuUsage: 0
     property var lastCpuIdle: 0
     property var lastCpuTotal: 0
 
     property alias process: cpuProc
 
-    ColumnLayout {
-        id: column
-        spacing: 2
-
-        Text {
-            id: cpuText
-            Layout.alignment: Qt.AlignHCenter
-            text: "CPU: " + cpuWidget.cpuUsage + "%"
-            color: root.colYellow
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
-            font.bold: true
-        }
-
-        Rectangle {
-            Layout.alignment: Qt.AlignHCenter
-            implicitWidth: cpuText.implicitWidth + 4
-            implicitHeight: root.underlineHeight
-            color: cpuText.color
-        }
+    Text {
+        id: cpuText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        text: "CPU: " + cpuWidget.cpuUsage + "%"
+        color: root.colYellow
+        font.pixelSize: root.fontSize
+        font.family: root.fontFamily
+        font.bold: true
     }
 
     // CPU usage

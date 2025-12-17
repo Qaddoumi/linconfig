@@ -1,13 +1,16 @@
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 
 
-Item {
+Rectangle {
     id: prayerWidget
-    implicitWidth: column.implicitWidth
-    implicitHeight: column.implicitHeight
+    implicitWidth: prayerText.implicitWidth + root.margin
+    implicitHeight: prayerText.implicitHeight + (root.margin / 2)
+    color: "transparent"
+    border.color: prayerText.color
+    border.width: 1
+    radius: root.radius / 2
     
     property string prayerTooltip: ""
     property string prayerDisplay: "Loading..."
@@ -16,26 +19,16 @@ Item {
 
     property alias process: prayerProcess  // Expose for external triggering
 
-    ColumnLayout {
-        id: column
-        spacing: 2
-
-        Text {
-            id: prayerText
-            Layout.alignment: Qt.AlignHCenter
-            text: prayerWidget.prayerDisplay
-            color: root.colCyan
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
-            font.bold: true
-        }
-
-        Rectangle {
-            Layout.alignment: Qt.AlignHCenter
-            implicitWidth: prayerText.implicitWidth + 4
-            implicitHeight: root.underlineHeight
-            color: prayerText.color
-        }
+    Text {
+        id: prayerText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        text: prayerWidget.prayerDisplay
+        color: root.colCyan
+        font.pixelSize: root.fontSize
+        font.family: root.fontFamily
+        font.bold: true
     }
     
     // Process to get prayer times (only runs on hover)

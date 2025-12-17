@@ -1,15 +1,18 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import QtQuick.Layouts
+
 
 //TODO: use ==> import Quickshell.Services.UPower
 
-Item {
+Rectangle {
     id: batteryWidget
-    implicitWidth: column.implicitWidth
-    implicitHeight: column.implicitHeight
-
+    implicitWidth: batteryText.implicitWidth + root.margin
+    implicitHeight: batteryText.implicitHeight + (root.margin / 2)
+    color: "transparent"
+    border.color: batteryText.color
+    border.width: 1
+    radius: root.radius / 2
     property string batteryTooltip: ""
     property string batteryDisplay: "Loading..."
     property bool failed: false
@@ -37,32 +40,23 @@ Item {
 
     visible: showWidget
 
-    ColumnLayout {
-        id: column
-        spacing: 2
-
-        Text {
-            id: batteryText
-            Layout.alignment: Qt.AlignHCenter
-            text: batteryWidget.batteryDisplay
-            color: {
-                if (batteryWidget.isCharging || batteryWidget.isPlugged) return root.colGreen
-                if (batteryWidget.capacity <= batteryWidget.stateCritical) return root.colRed
-                if (batteryWidget.capacity <= batteryWidget.stateWarning) return root.colYellow
-                return root.colCyan
-            }
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
-            font.bold: true
+    Text {
+        id: batteryText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        text: batteryWidget.batteryDisplay
+        color: {
+            if (batteryWidget.isCharging || batteryWidget.isPlugged) return root.colGreen
+            if (batteryWidget.capacity <= batteryWidget.stateCritical) return root.colRed
+            if (batteryWidget.capacity <= batteryWidget.stateWarning) return root.colYellow
+            return root.colCyan
         }
-
-        Rectangle {
-            implicitWidth: batteryText.implicitWidth + 4
-            implicitHeight: root.underlineHeight
-            Layout.alignment: Qt.AlignCenter
-            color: batteryText.color
-        }
+        font.pixelSize: root.fontSize
+        font.family: root.fontFamily
+        font.bold: true
     }
+
     Process {
         id: batteryProcess
         command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/battery.sh"]

@@ -1,13 +1,16 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import QtQuick.Layouts
 
 
-Item {
+Rectangle {
     id: brightnessWidget
-    implicitWidth: column.implicitWidth
-    implicitHeight: column.implicitHeight
+    implicitWidth: brightnessText.implicitWidth + root.margin
+    implicitHeight: brightnessText.implicitHeight + (root.margin / 2)
+    color: "transparent"
+    border.color: brightnessText.color
+    border.width: 1
+    radius: root.radius / 2
     
     property string brightnessTooltip: ""
     property string brightnessDisplay: "Loading..."
@@ -16,26 +19,16 @@ Item {
 
     property alias process: brightnessProcess // Expose for external triggering
 
-    ColumnLayout {
-        id: column
-        spacing: 2
-
-        Text {
-            id: brightnessText
-            Layout.alignment: Qt.AlignHCenter
-            text: brightnessWidget.brightnessDisplay
-            color: root.colCyan
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
-            font.bold: true
-        }
-
-        Rectangle {
-            Layout.alignment: Qt.AlignHCenter
-            implicitWidth: brightnessText.implicitWidth + 4
-            implicitHeight: root.underlineHeight
-            color: brightnessText.color
-        }
+    Text {
+        id: brightnessText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        text: brightnessWidget.brightnessDisplay
+        color: root.colCyan
+        font.pixelSize: root.fontSize
+        font.family: root.fontFamily
+        font.bold: true
     }
 
     Process {

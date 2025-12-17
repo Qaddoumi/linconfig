@@ -3,10 +3,14 @@ import Quickshell
 import Quickshell.Io
 
 
-Item {
+Rectangle {
     id: idleInhibitorWidget
-    implicitWidth: idleText.implicitWidth
-    implicitHeight: idleText.implicitHeight
+    implicitWidth: idleText.implicitWidth + root.margin
+    implicitHeight: idleText.implicitHeight + (root.margin / 2)
+    color: "transparent"
+    border.color: idleText.color
+    border.width: 1
+    radius: root.radius / 2
 
     property string idleTooltip: ""
     property string idleDisplay: "Loading..."
@@ -19,6 +23,9 @@ Item {
 
     Text {
         id: idleText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
         text: idleInhibitorWidget.idleDisplay
         color: root.colCyan
         font.pixelSize: root.fontSize

@@ -5,17 +5,22 @@ import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 
 
-Item {
+Rectangle {
     id: trayWidget
-    implicitWidth: trayRow.implicitWidth
-    implicitHeight: trayRow.implicitHeight
+    implicitWidth: trayRow.implicitWidth + root.margin
+    implicitHeight: trayRow.implicitHeight + root.margin
+    color: "transparent"
+    border.color: root.colPurple
+    border.width: 1
+    radius: root.radius / 2
 
     RowLayout {
         id: trayRow
+        anchors.centerIn: parent
         spacing: root.margin / 2
 
         Repeater {
-            model: [...SystemTray.items.values]
+            model: SystemTray.items.values
 
             Item {
                 id: delegate
@@ -29,7 +34,7 @@ Item {
                     id: icon
                     anchors.centerIn: parent
                     source: item.icon
-                    implicitSize: root.margin + ( root.margin / 2 ) + ( root.margin / 4 )
+                    implicitSize: root.fontSize
                 }
 
                 MouseArea {
