@@ -23,7 +23,7 @@ ShellRoot {
     property int underlineHeight: 1
 
     // Margins
-    property int margin: 8
+    property int margin: 6
 
     // Detect session type
     property bool isWayland: Quickshell.env("XDG_SESSION_TYPE") === "wayland"
