@@ -1,18 +1,19 @@
 import QtQuick
 import Quickshell
-
+//TODO: implement privacy
 
 Rectangle {
-    id: weatherWidget
-    implicitWidth: weatherText.implicitWidth + root.margin
-    implicitHeight: weatherText.implicitHeight + (root.margin / 2)
+    id: privacyWidget
+    implicitWidth: privacyText.implicitWidth + root.margin
+    implicitHeight: privacyText.implicitHeight + (root.margin / 2)
     color: "transparent"
-    border.color: weatherText.color
+    border.color: privacyText.color
     border.width: 1
     radius: root.radius / 2
+
     Text {
-        text: "Weather"
-        id: weatherText
+        text: "Privacy"
+        id: privacyText
         anchors.fill: parent
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter

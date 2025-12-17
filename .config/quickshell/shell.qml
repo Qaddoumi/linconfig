@@ -18,7 +18,7 @@ ShellRoot {
 
     // Font
     property string fontFamily: "JetBrainsMono Nerd Font Propo"
-    property int fontSize: 11
+    property int fontSize: 10
 
     // Margins
     property int margin: 6
