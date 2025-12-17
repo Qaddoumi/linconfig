@@ -15,6 +15,7 @@ RowLayout {
             clockDateWidget.process.running = true
             cpuWidget.process.running = true
             networkWidget.process.running = true
+            languageKeyboardWidget.process.running = true
         }
     }
 
@@ -36,6 +37,10 @@ RowLayout {
         }
     }
 
+    Network {
+        id: networkWidget
+    }
+
     Cpu {
         id: cpuWidget
     }
@@ -46,10 +51,6 @@ RowLayout {
 
     DiskUsage {
         id: diskUsageWidget
-    }
-
-    Network {
-        id: networkWidget
     }
 
     Battery {
@@ -69,7 +70,7 @@ RowLayout {
     }
 
     LanguageKeyboardState {
-        id: languageWidget
+        id: languageKeyboardWidget
     }
 
     PrayerTimes {
