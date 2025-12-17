@@ -358,7 +358,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm google-chrome || echo -e "${red}Failed to install google-chrome${no_color}" # Web browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-yay -S --needed --noconfirm antigravity-bin || echo -e "${red}Failed to install antigravity-bin${no_color}" # AI IDE
+yay -S --needed --noconfirm antigravity || echo -e "${red}Failed to install antigravity-bin${no_color}" # AI IDE
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm brave-bin || echo -e "${red}Failed to install brave-bin${no_color}" # Brave browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -612,8 +612,9 @@ sudo pacman -S --needed --noconfirm guestfs-tools # Tools for managing guest fil
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm libosinfo # Library for managing OS information
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm tuned # system tuning service for linux allows us to optimise the hypervisor for speed.
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+#TODO: Optimise Host with TuneD , for now tlp is conflic with tuned, so we only can use one of them.
+# sudo pacman -S --needed --noconfirm tuned || true # system tuning service for linux allows us to optimise the hypervisor for speed.
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm spice-vdagent # SPICE agent for guest OS
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm bridge-utils # Utilities for managing network bridges
