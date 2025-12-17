@@ -6,7 +6,7 @@
 
     "modules-left": ["sway/workspaces", "sway/mode", "sway/scratchpad", "sway/window", "hyprland/workspaces", "hyprland/window"],
     "modules-center": [],
-    "modules-right": ["idle_inhibitor", "tray", "memory", "cpu", "disk", "battery", "custom/player", "network", "backlight", "custom/cpu_temp", "custom/prayer", "custom/hijri", "clock", "custom/notification", "custom/power"],
+    "modules-right": ["idle_inhibitor", "tray", "memory", "cpu", "disk", "battery", "custom/player", "network", "backlight", "custom/cpu_temp", "sway/language", "custom/prayer", "custom/hijri", "clock", "custom/notification", "custom/power"],
     "modules-right-alt": ["custom/uptime", "custom/updates", "custom/weather", "pulseaudio", "temperature"],
 
     "sway/workspaces": {
@@ -17,6 +17,12 @@
 
     "sway/mode": {
         "format": "<span style=\"italic\">{}</span>"
+    },
+
+    "sway/language": {
+        "format": "{short} {variant}",
+        "tooltip": true,
+        "tooltip-format": "{shortDescription}"
     },
 
     "custom/player": {
