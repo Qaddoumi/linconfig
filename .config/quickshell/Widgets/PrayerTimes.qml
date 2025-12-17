@@ -6,8 +6,8 @@ import Quickshell.Io
 
 Item {
     id: prayerWidget
-    implicitWidth: prayerText.implicitWidth
-    implicitHeight: prayerText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
     
     property string prayerTooltip: ""
     property string prayerDisplay: "Loading..."
@@ -17,8 +17,12 @@ Item {
     property alias process: prayerProcess  // Expose for external triggering
 
     ColumnLayout {
+        id: column
+        spacing: 2
+
         Text {
             id: prayerText
+            Layout.alignment: Qt.AlignHCenter
             text: prayerWidget.prayerDisplay
             color: root.colCyan
             font.pixelSize: root.fontSize
@@ -27,6 +31,7 @@ Item {
         }
 
         Rectangle {
+            Layout.alignment: Qt.AlignHCenter
             implicitWidth: prayerText.implicitWidth + 4
             implicitHeight: root.underlineHeight
             color: prayerText.color

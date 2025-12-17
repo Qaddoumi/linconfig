@@ -6,8 +6,8 @@ import QtQuick.Layouts
 
 Item {
     id: hardwareTemperatureWidget
-    implicitWidth: hardwareTemperatureText.implicitWidth
-    implicitHeight: hardwareTemperatureText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
     
     property string hardwareTemperatureTooltip: ""
     property string hardwareTemperatureDisplay: "Loading..."
@@ -21,8 +21,12 @@ Item {
     visible: showWidget
 
     ColumnLayout {
+        id: column
+        spacing: 2
+
         Text {
             id: hardwareTemperatureText
+            Layout.alignment: Qt.AlignHCenter
             text: hardwareTemperatureWidget.hardwareTemperatureDisplay
             color: hardwareTemperatureWidget.tmpColor
             font.pixelSize: root.fontSize
@@ -31,6 +35,7 @@ Item {
         }
 
         Rectangle {
+            Layout.alignment: Qt.AlignHCenter
             implicitWidth: hardwareTemperatureText.implicitWidth + 4
             implicitHeight: root.underlineHeight
             color: hardwareTemperatureText.color

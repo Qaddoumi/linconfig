@@ -6,8 +6,8 @@ import QtQuick.Layouts
 
 Item {
     id: brightnessWidget
-    implicitWidth: brightnessText.implicitWidth
-    implicitHeight: brightnessText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
     
     property string brightnessTooltip: ""
     property string brightnessDisplay: "Loading..."
@@ -17,8 +17,12 @@ Item {
     property alias process: brightnessProcess // Expose for external triggering
 
     ColumnLayout {
+        id: column
+        spacing: 2
+
         Text {
             id: brightnessText
+            Layout.alignment: Qt.AlignHCenter
             text: brightnessWidget.brightnessDisplay
             color: root.colCyan
             font.pixelSize: root.fontSize
@@ -27,6 +31,7 @@ Item {
         }
 
         Rectangle {
+            Layout.alignment: Qt.AlignHCenter
             implicitWidth: brightnessText.implicitWidth + 4
             implicitHeight: root.underlineHeight
             color: brightnessText.color

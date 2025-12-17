@@ -4,13 +4,17 @@ import QtQuick.Layouts
 
 Item {
     id: networkWidget
-    implicitWidth: networkText.implicitWidth
-    implicitHeight: networkText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
     property string networkUsage: ""
 
     ColumnLayout {
+        id: column
+        spacing: 2
+
         Text {
             id: networkText
+            Layout.alignment: Qt.AlignHCenter
             text: "Network: " + networkWidget.networkUsage
             color: root.colCyan
             font.pixelSize: root.fontSize
@@ -19,6 +23,7 @@ Item {
         }
 
         Rectangle {
+            Layout.alignment: Qt.AlignHCenter
             implicitWidth: networkText.implicitWidth + 4
             implicitHeight: root.underlineHeight
             color: networkText.color

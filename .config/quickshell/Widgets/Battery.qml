@@ -7,8 +7,8 @@ import QtQuick.Layouts
 
 Item {
     id: batteryWidget
-    implicitWidth: batteryText.implicitWidth
-    implicitHeight: batteryText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
 
     property string batteryTooltip: ""
     property string batteryDisplay: "Loading..."
@@ -38,8 +38,12 @@ Item {
     visible: showWidget
 
     ColumnLayout {
+        id: column
+        spacing: 2
+
         Text {
             id: batteryText
+            Layout.alignment: Qt.AlignHCenter
             text: batteryWidget.batteryDisplay
             color: {
                 if (batteryWidget.isCharging || batteryWidget.isPlugged) return root.colGreen
@@ -55,6 +59,7 @@ Item {
         Rectangle {
             implicitWidth: batteryText.implicitWidth + 4
             implicitHeight: root.underlineHeight
+            Layout.alignment: Qt.AlignCenter
             color: batteryText.color
         }
     }

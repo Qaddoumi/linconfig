@@ -6,16 +6,20 @@ import QtQuick.Layouts
 
 Item {
     id: diskWidget
-    implicitWidth: diskText.implicitWidth
-    implicitHeight: diskText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
 
     property string diskUsage: ""
 
     property alias process: diskProc
 
     ColumnLayout {
+        id: column
+        spacing: 2
+
         Text {
             id: diskText
+            Layout.alignment: Qt.AlignHCenter
             text: "Disk: " + diskWidget.diskUsage
             color: root.colBlue
             font.pixelSize: root.fontSize
@@ -24,6 +28,7 @@ Item {
         }
 
         Rectangle {
+            Layout.alignment: Qt.AlignHCenter
             implicitWidth: diskText.implicitWidth + 4
             implicitHeight: root.underlineHeight
             color: diskText.color

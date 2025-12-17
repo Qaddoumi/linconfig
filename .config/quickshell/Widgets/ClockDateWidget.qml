@@ -6,8 +6,8 @@ import Quickshell.Io
 
 Item {
     id: clockDateWidget
-    implicitWidth: dateText.implicitWidth
-    implicitHeight: dateText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
 
     property string hijriTooltip: ""
     // property string normalFormat: "ddd, MMM dd - hh:mm a"
@@ -18,8 +18,12 @@ Item {
     property alias process: clockDateProcess
 
     ColumnLayout {
+        id: column
+        spacing: 2
+
         Text {
             id: dateText
+            Layout.alignment: Qt.AlignHCenter
             // text: Qt.formatDateTime(new Date(), normalFormat)
             text : clockDateWidget.dateTime
             color: root.colYellow
@@ -29,6 +33,7 @@ Item {
         }
 
         Rectangle {
+            Layout.alignment: Qt.AlignHCenter
             implicitWidth: dateText.implicitWidth + 4
             implicitHeight: root.underlineHeight
             color: dateText.color

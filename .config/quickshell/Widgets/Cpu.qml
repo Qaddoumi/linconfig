@@ -6,8 +6,8 @@ import QtQuick.Layouts
 
 Item {
     id: cpuWidget
-    implicitWidth: cpuText.implicitWidth
-    implicitHeight: cpuText.implicitHeight
+    implicitWidth: column.implicitWidth
+    implicitHeight: column.implicitHeight
     property int cpuUsage: 0
     property var lastCpuIdle: 0
     property var lastCpuTotal: 0
@@ -15,8 +15,12 @@ Item {
     property alias process: cpuProc
 
     ColumnLayout {
+        id: column
+        spacing: 2
+
         Text {
             id: cpuText
+            Layout.alignment: Qt.AlignHCenter
             text: "CPU: " + cpuWidget.cpuUsage + "%"
             color: root.colYellow
             font.pixelSize: root.fontSize
@@ -25,6 +29,7 @@ Item {
         }
 
         Rectangle {
+            Layout.alignment: Qt.AlignHCenter
             implicitWidth: cpuText.implicitWidth + 4
             implicitHeight: root.underlineHeight
             color: cpuText.color
