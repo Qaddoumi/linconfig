@@ -8,7 +8,7 @@ import Quickshell.Services.SystemTray
 Rectangle {
     id: trayWidget
     implicitWidth: trayRow.implicitWidth + root.margin
-    implicitHeight: trayRow.implicitHeight + root.margin
+    implicitHeight: root.fontSize + root.margin
     color: "transparent"
     border.color: root.colPurple
     border.width: 1
@@ -34,7 +34,7 @@ Rectangle {
                     id: icon
                     anchors.centerIn: parent
                     source: item.icon
-                    implicitSize: root.fontSize
+                    implicitSize: root.fontSize + (root.margin / 2)
                 }
 
                 MouseArea {
