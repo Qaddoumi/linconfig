@@ -6,9 +6,9 @@ import "./Widgets" as Widgets
 
 RowLayout {
     anchors.fill: parent
-    spacing: 0
+    spacing: root.margin
 
-    Item { width: 8 }
+    Item { width: 0 }
 
     Widgets.LauncherMenu {}
 

@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtQuick.Layouts
 
 
 Item {
@@ -13,13 +14,21 @@ Item {
 
     property alias process: cpuProc
 
-    Text {
-        id: cpuText
-        text: "CPU: " + cpuWidget.cpuUsage + "%"
-        color: root.colYellow
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    ColumnLayout {
+        Text {
+            id: cpuText
+            text: "CPU: " + cpuWidget.cpuUsage + "%"
+            color: root.colYellow
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            font.bold: true
+        }
+
+        Rectangle {
+            implicitWidth: cpuText.implicitWidth
+            implicitHeight: 3
+            color: cpuText.color
+        }
     }
 
     // CPU usage

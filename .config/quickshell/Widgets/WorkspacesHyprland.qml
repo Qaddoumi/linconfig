@@ -65,7 +65,7 @@ Item {
 
         RowLayout {
             anchors.fill: parent
-            spacing: 0
+            spacing: root.margin
 
             Repeater {
                 model: 9
