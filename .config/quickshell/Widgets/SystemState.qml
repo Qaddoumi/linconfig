@@ -68,6 +68,10 @@ RowLayout {
         id: hardwareTemperatureWidget
     }
 
+    LanguageKeyboardState {
+        id: languageWidget
+    }
+
     PrayerTimes {
         id: prayerWidget
     }
