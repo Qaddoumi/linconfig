@@ -7,23 +7,6 @@ import Quickshell.Io
 RowLayout {
     spacing: 0
 
-    property int diskUsage: 0
-
-    // Disk usage
-    Process {
-        id: diskProc
-        command: ["sh", "-c", "df / | tail -1"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (!data) return
-                var parts = data.trim().split(/\s+/)
-                var percentStr = parts[4] || "0%"
-                diskUsage = parseInt(percentStr.replace('%', '')) || 0
-            }
-        }
-        Component.onCompleted: running = true
-    }
-
     // Fast timer for widgets like clock (every second)
     Timer {
         interval: 1000
@@ -42,7 +25,7 @@ RowLayout {
         repeat: true
         onTriggered: {
             memoryWidget.process.running = true
-            diskProc.running = true
+            diskUsageWidget.process.running = true
             prayerWidget.process.running = true
             hardwareTemperatureWidget.process.running = true
             brightnessWidget.process.running = true
@@ -65,12 +48,8 @@ RowLayout {
 
     BarSeparator {}
 
-    Text {
-        text: "Disk: " + diskUsage + "%"
-        color: root.colBlue
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
-        font.bold: true
+    DiskUsage {
+        id: diskUsageWidget
     }
 
     BarSeparator {}

@@ -614,6 +614,8 @@ sudo pacman -S --needed --noconfirm libosinfo # Library for managing OS informat
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 #TODO: Optimise Host with TuneD , for now tlp is conflic with tuned, so we only can use one of them.
 # sudo pacman -S --needed --noconfirm tuned || true # system tuning service for linux allows us to optimise the hypervisor for speed.
+# sudo systemctl enable --now tuned
+# sudo tuned-adm profile virtual-host # or throughput-performance
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm spice-vdagent # SPICE agent for guest OS
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
