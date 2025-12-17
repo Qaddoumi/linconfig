@@ -1,13 +1,16 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import QtQuick.Layouts
 
 
-Item {
+Rectangle {
     id: volumeWidget
-    implicitWidth: column.implicitWidth
-    implicitHeight: column.implicitHeight
+    implicitWidth: volumeText.implicitWidth + root.margin
+    implicitHeight: volumeText.implicitHeight + (root.margin / 2)
+    color: "transparent"
+    border.color: volumeText.color
+    border.width: 1
+    radius: root.radius / 2
     
     property string volumeTooltip: ""
     property string volumeDisplay: "Loading..."
@@ -17,26 +20,16 @@ Item {
 
     property alias process: volumeProcess // Expose for external triggering
 
-    ColumnLayout {
-        id: column
-        spacing: 2
-
-        Text {
-            id: volumeText
-            Layout.alignment: Qt.AlignHCenter
-            text: volumeWidget.volumeDisplay
-            color: volumeWidget.volumeColor
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
-            font.bold: true
-        }
-
-        Rectangle {
-            Layout.alignment: Qt.AlignHCenter
-            implicitWidth: volumeText.implicitWidth + 4
-            implicitHeight: root.underlineHeight
-            color: volumeText.color
-        }
+    Text {
+        id: volumeText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        text: volumeWidget.volumeDisplay
+        color: volumeWidget.volumeColor
+        font.pixelSize: root.fontSize
+        font.family: root.fontFamily
+        font.bold: true
     }
 
     Process {

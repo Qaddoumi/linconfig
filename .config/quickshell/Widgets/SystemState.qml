@@ -1,11 +1,10 @@
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
+import QtQuick.Layouts
 
 
 RowLayout {
-    spacing: root.margin
+    spacing: root.margin / 2
 
     // Fast timer for widgets like clock (every second)
     Timer {
@@ -40,76 +39,49 @@ RowLayout {
         id: cpuWidget
     }
 
-    BarSeparator {}
-
     Memory {
         id: memoryWidget
     }
-
-    BarSeparator {}
 
     DiskUsage {
         id: diskUsageWidget
     }
 
-    BarSeparator {}
-
     Network {}
-
-    BarSeparator {}
 
     Battery {
         id: batteryWidget
     }
 
-    BarSeparator {}
-
     Volume {
         id: volumeWidget
     }
-
-    BarSeparator {}
 
     Brightness {
         id: brightnessWidget
     }
 
-    BarSeparator {}
-
     HardwareTemperature {
         id: hardwareTemperatureWidget
     }
-
-    BarSeparator {}
 
     PrayerTimes {
         id: prayerWidget
     }
 
-    BarSeparator {}
-
     ClockDateWidget {
         id: clockDateWidget
     }
-
-    BarSeparator {}
 
     Notification {
         id: notificationWidget
     }
 
-    BarSeparator {}
-
-
     Tray {}
-
-    BarSeparator {}
 
     IdleInhibitor {
         id: idleInhibitorWidget
     }
-
-    BarSeparator {}
 
     PowerMenuWidget {}
 

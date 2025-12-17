@@ -3,17 +3,31 @@ import Quickshell
 import Quickshell.Io
 
 
-Text {
+Rectangle {
     id: notification
-    color: root.colCyan
-    font.pixelSize: root.fontSize
-    font.family: root.fontFamily
-    font.bold: true
-    
+    implicitWidth: notificationText.implicitWidth + root.margin
+    implicitHeight: notificationText.implicitHeight + (root.margin / 2)
+    color: "transparent"
+    border.color: notificationText.color
+    border.width: 1
+    radius: root.radius / 2
+
     property int notificationCount: 0
     property bool dndEnabled: false
     property string notificationDaemon: "none"
     property bool initialized: false
+
+    Text {
+        id: notificationText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        color: root.colCyan
+        font.pixelSize: root.fontSize
+        font.family: root.fontFamily
+        font.bold: true
+        text: "󰂚"
+    }
     
     // Expose refresh function for external triggering from SystemState
     function triggerRefresh() {
@@ -21,9 +35,7 @@ Text {
             refresh()
         }
     }
-    
-    text: "󰂚"
-    
+
     // Detect which notification daemon is running
     Process {
         id: detectDaemon
@@ -38,7 +50,7 @@ Text {
                 if (notificationDaemon !== "none") {
                     refresh()
                 } else {
-                    text = "󰂚 ✗"  // No daemon detected
+                    notificationText.text = "󰂚 ✗"  // No daemon detected
                 }
             }
         }
@@ -187,9 +199,9 @@ Text {
         let icon = dndEnabled ? "󰂛" : "󰂚"
         
         if (notificationCount > 0) {
-            text = icon + " " + notificationCount
+            notificationText.text = icon + " " + notificationCount
         } else {
-            text = icon
+            notificationText.text = icon
         }
     }
     

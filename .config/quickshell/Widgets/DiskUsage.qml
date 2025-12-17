@@ -1,38 +1,31 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import QtQuick.Layouts
 
 
-Item {
+Rectangle {
     id: diskWidget
-    implicitWidth: column.implicitWidth
-    implicitHeight: column.implicitHeight
+    implicitWidth: diskText.implicitWidth + root.margin
+    implicitHeight: diskText.implicitHeight + (root.margin / 2)
+    color: "transparent"
+    border.color: diskText.color
+    border.width: 1
+    radius: root.radius / 2
 
     property string diskUsage: ""
 
     property alias process: diskProc
 
-    ColumnLayout {
-        id: column
-        spacing: 2
-
-        Text {
-            id: diskText
-            Layout.alignment: Qt.AlignHCenter
-            text: "Disk: " + diskWidget.diskUsage
-            color: root.colBlue
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
-            font.bold: true
-        }
-
-        Rectangle {
-            Layout.alignment: Qt.AlignHCenter
-            implicitWidth: diskText.implicitWidth + 4
-            implicitHeight: root.underlineHeight
-            color: diskText.color
-        }
+    Text {
+        id: diskText
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        text: "Disk: " + diskWidget.diskUsage
+        color: root.colBlue
+        font.pixelSize: root.fontSize
+        font.family: root.fontFamily
+        font.bold: true
     }
 
     Process {
