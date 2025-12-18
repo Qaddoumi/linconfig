@@ -16,7 +16,7 @@ Rectangle {
         anchors.fill: parent
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        color: root.colCyan
+        color: root.colBlue
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true

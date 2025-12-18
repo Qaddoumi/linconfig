@@ -37,7 +37,7 @@ Rectangle {
 
     Process {
         id: brightnessProcess
-        command: ["sh", "-c", "echo $(( $(brightnessctl g) * 100 / $(brightnessctl m) ))"]
+        command: ["sh", "-c", "m=$(brightnessctl m 2>/dev/null || echo 0); if [ $m -gt 1 ]; then echo $(( $(brightnessctl g) * 100 / m )); fi"]
 
         stdout: SplitParser {
             onRead: data => {
