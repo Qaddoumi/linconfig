@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell
-//TODO: implement privacy
+//TODO: implement privacy like waybar
 
 Rectangle {
     id: privacyWidget

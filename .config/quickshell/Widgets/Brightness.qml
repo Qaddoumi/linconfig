@@ -17,6 +17,10 @@ Rectangle {
     property bool failed: false
     property string errorString: ""
 
+    property bool showWidget: true
+
+    visible: brightnessWidget.showWidget
+
     property alias process: brightnessProcess // Expose for external triggering
 
     Text {
@@ -37,7 +41,10 @@ Rectangle {
 
         stdout: SplitParser {
             onRead: data => {
-                if (!data) return
+                if (!data) {
+                    brightnessWidget.showWidget = false
+                    return
+                }
                 var percentage = parseInt(data.trim())
                 if (!isNaN(percentage)) {
                     // Icon selection based on percentage
