@@ -34,6 +34,7 @@ RowLayout {
             idleInhibitorWidget.process.running = true
             batteryWidget.process.running = true
             notificationWidget.triggerRefresh()
+            weatherWidget.process.running = true
         }
     }
 
