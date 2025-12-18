@@ -25,7 +25,7 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: weatherWidget.weatherDisplay
-        color: root.colBlue
+        color: root.colPurple
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true
