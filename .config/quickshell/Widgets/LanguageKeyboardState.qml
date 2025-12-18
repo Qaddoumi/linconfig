@@ -40,7 +40,7 @@ Rectangle {
         command: {
             if (Quickshell.env("XDG_CURRENT_DESKTOP") === "Hyprland") {
                 return ["bash", "-c", "hyprctl devices -j | jq -r '.keyboards[0].active_keymap // empty'"]
-            } else if (Quickshell.env("XDG_CURRENT_DESKTOP").includes("sway")) {
+            } else if (Quickshell.env("XDG_CURRENT_DESKTOP") && Quickshell.env("XDG_CURRENT_DESKTOP").includes("sway")) {
                 return ["bash", "-c", "swaymsg -t get_inputs 2>/dev/null | jq -r '.[0].xkb_active_layout_name // empty'"]
             } else {
                 // X11 / AwesomeWM

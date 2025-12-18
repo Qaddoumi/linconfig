@@ -5,3 +5,4 @@ Comment=Dynamic window manager
 Exec=dwm
 Icon=dwm
 Type=XSession
+DesktopNames=dwm
