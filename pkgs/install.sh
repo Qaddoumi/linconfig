@@ -312,6 +312,8 @@ sudo pacman -S --needed --noconfirm imv # image viewer
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xarchiver # Lightweight archive manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm unzip # Unzip utility
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm trash-cli # Command line trash management
 sudo mkdir -p ~/.local/share/Trash/{files,info}
 sudo chmod 700 ~/.local/share/Trash
