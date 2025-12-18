@@ -3,7 +3,7 @@
 # Idle Inhibitor Toggle Script
 # Works with both Hyprland and Sway
 
-#TODO: add awesome wm
+#TODO: add X11 (awesome wm)
 
 STATE_FILE="${XDG_RUNTIME_DIR:-/tmp}/idle-inhibit.state"
 INHIBITOR_PID_FILE="${XDG_RUNTIME_DIR:-/tmp}/idle-inhibit.pid"
