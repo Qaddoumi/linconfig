@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
-dbus-run-session -- sh -c "killall -q quickshell; quickshell; exec dwm"
+screensetup &
+killall -q quickshell &
+quickshell &
+
+dbus-run-session -- sh -c "exec dwm"
