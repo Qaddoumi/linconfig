@@ -648,11 +648,11 @@ awful.spawn.with_shell("/usr/bin/dex -a")
     --     end
     -- })
     
-awful.spawn.with_shell("killall -q flameshot; flameshot &")
-awful.spawn.with_shell("killall -q copyq; copyq &")
-awful.spawn.with_shell("killall -q nm-applet; nm-applet --indicator &")
-awful.spawn.with_shell("killall -q dunst; dunst &")
-awful.spawn.with_shell("killall -q picom; picom -b &")
+awful.spawn.with_shell("killall -q flameshot; sleep 1; flameshot &")
+awful.spawn.with_shell("killall -q copyq; sleep 1; copyq &")
+awful.spawn.with_shell("killall -q nm-applet; sleep 1; nm-applet --indicator &")
+awful.spawn.with_shell("killall -q dunst; sleep 1; dunst &")
+awful.spawn.with_shell("killall -q picom; sleep 1; picom -b &")
 awful.spawn.with_shell("/usr/lib/mate-polkit/polkit-mate-authentication-agent-1")
 awful.spawn.with_shell("/usr/lib/xdg-desktop-portal -r")
 
