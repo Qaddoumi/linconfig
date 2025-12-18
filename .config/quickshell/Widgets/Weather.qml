@@ -46,7 +46,7 @@ Rectangle {
                     }
                     if (json.tooltip) {
                         // Replace \\n with actual newlines
-                        weatherWidget.weatherTooltip = json.tooltip.replace(/\\n/g, "\n")
+                        weatherWidget.weatherTooltip = json.tooltip.replace(/\\n/g, "\n").replace(/\\t/g, "\t")
                     }
                 } catch (e) {
                     console.error("Failed to parse weather data:", e)

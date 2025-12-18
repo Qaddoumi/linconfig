@@ -63,14 +63,14 @@ get_location() {
     
     # Use ip-api.com for geolocation (free, no key needed)
     local location
-    location=$(curl -s "http://ip-api.com/json/?fields=lat,lon,city" 2>/dev/null)
+    location=$(curl -s "http://ip-api.com/json/" | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g')
     
     if [[ -n "$location" ]] && echo "$location" | jq -e '.lat' >/dev/null 2>&1; then
         echo "$location" > "$LOCATION_CACHE"
         echo "$location"
     else
         # Fallback to a default (Amman, Jordan)
-        echo '{"lat":31.95,"lon":35.93,"city":"Amman"}'
+        echo '{"lat":31.9555,"lon":35.9435,"city":"Amman", "country":"Jordan"}'
     fi
 }
 
@@ -117,6 +117,11 @@ format_output() {
     # Build tooltip
     local tooltip=""
     
+    # City name
+    local city=$(get_location | jq -r '.city // "N/A"')
+    local country=$(get_location | jq -r '.country // "N/A"')
+    tooltip+="==>  $city/$country  <==\\n"
+
     # Header: Today's summary
     local today_emoji=$(get_weather_emoji "$today_code")
     tooltip+="$today_emoji Today: ${today_max}° / ${today_min}°C\\n"
