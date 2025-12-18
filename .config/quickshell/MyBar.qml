@@ -14,7 +14,7 @@ RowLayout {
 
     Widgets.BarSeparator {}
 
-    Loader { //TODO: add workspace status (urgent)
+    Loader {
         id: loader
         Layout.fillHeight: true
         Layout.fillWidth: true

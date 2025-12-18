@@ -11,6 +11,7 @@ Item {
     property string currentLayout: "Tile"
     property int focusedWorkspace: 1
     property var occupiedWorkspaces: []
+    property var urgentWorkspaces: []
 
     // Active window title (sway)
     Process {
@@ -72,19 +73,22 @@ Item {
         Component.onCompleted: running = true
     }
 
-    // Occupied workspaces (sway)
+    // Occupied and Urgent workspaces (sway)
     Process {
         id: occupiedProc
-        command: ["sh", "-c", "swaymsg -t get_workspaces | jq -c '[.[].num]'"]
+        // Fetch both occupied and urgent workspaces in one go
+        command: ["sh", "-c", "swaymsg -t get_workspaces | jq -c '{occupied: [.[].num], urgent: [.[] | select(.urgent) | .num]}'"]
         stdout: SplitParser {
             onRead: data => {
-                // console.log("occupiedProc (Occupied Workspaces): " + data)
+                // console.log("occupiedProc (Occupied/Urgent): " + data)
                 if (data && data.trim()) {
                     try {
-                        occupiedWorkspaces = JSON.parse(data.trim())
-                        // console.log("occupiedWorkspaces: " + occupiedWorkspaces)
+                        var parsed = JSON.parse(data.trim())
+                        occupiedWorkspaces = parsed.occupied || []
+                        urgentWorkspaces = parsed.urgent || []
+                        // console.log("Occupied:", occupiedWorkspaces, "Urgent:", urgentWorkspaces)
                     } catch (e) {
-                        console.error("Failed to parse occupied workspaces:", e)
+                        console.error("Failed to parse workspaces data:", e)
                     }
                 }
             }
@@ -124,13 +128,14 @@ Item {
 
                     property bool isActive: focusedWorkspace === (index + 1)
                     property bool hasWindows: occupiedWorkspaces.includes(index + 1)
+                    property bool isUrgent: urgentWorkspaces.includes(index + 1)
 
-                    // Hide if not active and has no windows
-                    visible: isActive || hasWindows
+                    // Hide if not active and has no windows and not urgent
+                    visible: isActive || hasWindows || isUrgent
 
                     Text {
                         text: index + 1
-                        color: parent.isActive ? root.colCyan : (parent.hasWindows ? root.colCyan : root.colMuted)
+                        color: parent.isUrgent ? root.colRed : (parent.isActive ? root.colCyan : (parent.hasWindows ? root.colCyan : root.colMuted))
                         font.pixelSize: root.fontSize
                         font.family: root.fontFamily
                         font.bold: true
@@ -140,7 +145,7 @@ Item {
                     Rectangle {
                         width: 20
                         height: 3
-                        color: parent.isActive ? root.colPurple : root.colBg
+                        color: parent.isUrgent ? root.colRed : (parent.isActive ? root.colPurple : root.colBg)
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottom: parent.bottom
                     }
