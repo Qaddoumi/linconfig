@@ -40,34 +40,72 @@ Item {
         Component.onCompleted: running = true
     }
 
-    // Urgent workspaces (Hyprland)
+    // Track urgent workspaces manually since hyprctl JSON doesn't reliably expose it
+    property var pendingUrgentAddresses: []
+
+    // Fetch clients to resolve address -> workspace
     Process {
-        id: urgentProc
-        command: ["sh", "-c", "hyprctl clients -j | jq -c '[.[] | select(.urgent) | .workspace.id] | unique'"] 
+        id: clientFinderProc
+        command: ["sh", "-c", "hyprctl clients -j"]
         stdout: SplitParser {
             onRead: data => {
-                // console.log("urgentProc: " + data)
                 if (data && data.trim()) {
                     try {
-                        urgentWorkspaces = JSON.parse(data.trim())
+                        var clients = JSON.parse(data.trim())
+                        var newUrgent = []
+                        
+                        // Process pending addresses
+                        for (var i = 0; i < pendingUrgentAddresses.length; i++) {
+                            var addr = pendingUrgentAddresses[i]
+                            var client = clients.find(c => c.address === addr || c.address === "0x" + addr)
+                            if (client) {
+                                newUrgent.push(client.workspace.id)
+                            }
+                        }
+                        
+                        // Add new urgent workspaces to the list (avoiding duplicates)
+                        var current = urgentWorkspaces
+                        for (var j = 0; j < newUrgent.length; j++) {
+                            if (!current.includes(newUrgent[j])) {
+                                current.push(newUrgent[j])
+                            }
+                        }
+                        urgentWorkspaces = current
+                        pendingUrgentAddresses = []
+                        
                     } catch (e) {
-                        console.error("Failed to parse urgent workspaces:", e)
+                        console.error("Failed to parse clients:", e)
                     }
-                } else {
-                     urgentWorkspaces = []
                 }
             }
         }
-        Component.onCompleted: running = true
     }
 
-    // Event-based updates for window/layout (instant)
+    // Event connections
     Connections {
         target: Hyprland
         function onRawEvent(event) {
+            // instant updates
             windowProc.running = true
             layoutProc.running = true
-            urgentProc.running = true
+            
+            // Handle urgency event: urgent>>address
+            if (event.startsWith("urgent>>")) {
+                var addr = event.substring(8)
+                pendingUrgentAddresses.push(addr)
+                clientFinderProc.running = true
+            }
+        }
+        
+        function onFocusedWorkspaceChanged() {
+            // Clear urgency when switching to the workspace
+            if (Hyprland.focusedWorkspace) {
+                var id = Hyprland.focusedWorkspace.id
+                var list = urgentWorkspaces
+                if (list.includes(id)) {
+                    urgentWorkspaces = list.filter(w => w !== id)
+                }
+            }
         }
     }
 
@@ -79,7 +117,6 @@ Item {
         onTriggered: {
             windowProc.running = true
             layoutProc.running = true
-            urgentProc.running = true
         }
     }
 
