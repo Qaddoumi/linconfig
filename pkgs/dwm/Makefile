@@ -29,11 +29,11 @@ install: all
 	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/dwm.1
 	mkdir -p /usr/share/xsessions/
-	test -f /usr/share/xsessions/dwm.desktop || install -Dm644 dwm.desktop /usr/share/xsessions/
+	install -Dm644 dwm.desktop /usr/share/xsessions/dwm.desktop
 	mkdir -p release
 	cp -f dwm release/
 	tar -czf release/dwm-${VERSION}.tar.gz -C release dwm
-	test -f /home/${SUDO_USER}/.xinitrc || install -Dm644 .xinitrc /home/${SUDO_USER}/.xinitrc
+# 	test -f /home/${SUDO_USER}/.xinitrc || install -Dm644 .xinitrc /home/${SUDO_USER}/.xinitrc
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/dwm \
