@@ -31,11 +31,12 @@ Rectangle {
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true
+        textFormat: Text.RichText
     }
 
     Process {
         id: privacyProcess
-        command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/privacy.sh"]
+        command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/privacy_dots.sh"]
 
         stdout: SplitParser {
             onRead: data => {
