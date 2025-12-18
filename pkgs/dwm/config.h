@@ -14,7 +14,7 @@ static const int showsystray                  = 0;   /* 0 means no systray - dis
 static const int showbar                      = 1;   /* 1 means show bar - needed for quickshell space calculation */
 static const int topbar                       = 1;   /* 0 means bottom bar */
 static const int usealtbar                     = 1;   /* 1 means use non-dwm status bar */
-static const char *altbarclass                 = "quickshell"; /* Alternate bar class name */
+static const char *altbarclass                 = "Quickshell"; /* Alternate bar class name */
 static const char *alttrayname                 = "tray";    /* quickshell tray instance name */
 static const char *altbarcmd                   = "sh -c ~/.config/quickshell/launch.sh";
 #define ICONSIZE                              17     /* icon size */
@@ -60,6 +60,7 @@ static const Rule rules[] = {
     /* class                instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
     { "St",                 NULL,     NULL,           0,         0,          1,          0,         0 },
     { "quickshell",         NULL,     NULL,           0,         1,          0,          0,         0 },
+    { "Quickshell",         NULL,     NULL,           0,         1,          0,          0,         0 },
     { "kitty",              NULL,     NULL,           0,         0,          1,          0,         0 },
     { "alacritty",          NULL,     NULL,           0,         0,          1,          0,         0 },
     { "ghostty",            NULL,     NULL,           0,         0,          1,          0,         0 },
