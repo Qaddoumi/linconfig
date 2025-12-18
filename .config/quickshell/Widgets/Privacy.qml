@@ -30,7 +30,6 @@ Rectangle {
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true
-        textFormat: Text.RichText
     }
 
     Process {
@@ -43,8 +42,12 @@ Rectangle {
                 try {
                     var json = JSON.parse(data.trim())
 
-                    privacyWidget.privacyVisible = json.visible || false
                     privacyWidget.privacyText_ = json.text || ""
+                    if (json.text === "") {
+                        privacyWidget.privacyVisible = false
+                    } else {
+                        privacyWidget.privacyVisible = true
+                    }
 
                     // Parse tooltip (replace \n with actual newlines)
                     if (json.tooltip) {

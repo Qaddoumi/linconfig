@@ -132,26 +132,21 @@ if [[ "$scr" -eq 1 ]]; then
     )"
 fi
 
-# output
-green="#30D158"
-orange="#FF9F0A"
-blue="#0A84FF"
-purple="#9B32FA"
 
-dot() {
-  local on="$1" color="$2"
+icon_dot() {
+  local on="$1" icon="$2"
   if [[ "$on" -eq 1 ]]; then
-    printf '<span foreground="%s">●</span>' "$color"
+    printf '%s' "$icon"
   else
     printf ''
   fi
 }
 
 dots=()
-mic_dot="$(dot "$mic" "$green")"; [[ -n "$mic_dot" ]] && dots+=("$mic_dot")
-cam_dot="$(dot "$cam" "$orange")"; [[ -n "$cam_dot" ]] && dots+=("$cam_dot")
-loc_dot="$(dot "$loc" "$blue")"; [[ -n "$loc_dot" ]] && dots+=("$loc_dot")
-scr_dot="$(dot "$scr" "$purple")"; [[ -n "$scr_dot" ]] && dots+=("$scr_dot")
+mic_dot="$(icon_dot "$mic" "󰍬")"; [[ -n "$mic_dot" ]] && dots+=("$mic_dot")
+cam_dot="$(icon_dot "$cam" "󰄀")"; [[ -n "$cam_dot" ]] && dots+=("$cam_dot")
+loc_dot="$(icon_dot "$loc" "󰍍")"; [[ -n "$loc_dot" ]] && dots+=("$loc_dot")
+scr_dot="$(icon_dot "$scr" "󰹑")"; [[ -n "$scr_dot" ]] && dots+=("$scr_dot")
 
 text="${dots[*]}"
 
@@ -179,7 +174,7 @@ else
   scr_status="Screen sharing: off"
 fi
 
-tooltip="$mic_status  |  $cam_status  |  $loc_status  |  $scr_status"
+tooltip="$mic_status\\n$cam_status\\n$loc_status\\n$scr_status"
 
 classes="privacydot"
 [[ $mic -eq 1 ]] && classes="$classes mic-on" || classes="$classes mic-off"
