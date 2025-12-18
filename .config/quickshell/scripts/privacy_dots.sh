@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dependencies: pipewire (pw-dump), v4l2loopback-dkms, jq, dbus-send (dbus)
+#TODO: check ==> dependencies: pipewire (pw-dump), v4l2loopback-dkms, jq, dbus-send (dbus)
 set -euo pipefail
 
 JQ_BIN="${JQ:-jq}"
