@@ -630,16 +630,34 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- }}}
 
 -- Autostart applications
+-- Autostart applications
+local function run_once(cmd_arr)
+    for _, cmd in ipairs(cmd_arr) do
+        local findme = cmd
+        local firstspace = cmd:find(" ")
+        if firstspace then
+            findme = cmd:sub(0, firstspace-1)
+        end
+        local lastslash = findme:match(".*/([^/]+)$")
+        if lastslash then findme = lastslash end
+        awful.spawn.with_shell(string.format("pgrep -u $USER -x %s > /dev/null || (%s)", findme, cmd))
+    end
+end
+
 awful.spawn.with_shell("dbus-update-activation-environment --systemd --all")
 awful.spawn.with_shell("disable-powersaving")
-awful.spawn.with_shell("/usr/lib/mate-polkit/polkit-mate-authentication-agent-1")
-awful.spawn.with_shell("flameshot")
-awful.spawn.with_shell("copyq")
-awful.spawn.with_shell("/usr/lib/xdg-desktop-portal -r")
-awful.spawn.with_shell("nm-applet --indicator")
 awful.spawn.with_shell("screensetup") -- this will set the screen resolution and refresh rate (Using xrandr)
-awful.spawn.with_shell("dunst")
-awful.spawn.with_shell("picom -b")
+
+run_once({
+    "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1",
+    "flameshot",
+    "copyq",
+    "/usr/lib/xdg-desktop-portal -r",
+    "nm-applet --indicator",
+    "dunst",
+    "picom -b"
+})
+
 -- awful.spawn.with_shell("feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'")
 awful.spawn.with_shell("/usr/bin/dex -a")
 awful.spawn.with_shell("killall -q quickshell; quickshell")
