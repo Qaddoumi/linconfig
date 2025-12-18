@@ -8,7 +8,7 @@ import Quickshell.Services.SystemTray
 Rectangle {
     id: trayWidget
     implicitWidth: trayRow.implicitWidth + root.margin
-    implicitHeight: root.fontSize + root.margin
+    implicitHeight: hiddenText.implicitHeight + (root.margin / 2)
     color: "transparent"
     border.color: root.colPurple
     border.width: 1
@@ -124,6 +124,14 @@ Rectangle {
                 }
             }
 
+        }
+
+        Text {
+            id: hiddenText
+            text: " "
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+            visible: false
         }
     }
 }
