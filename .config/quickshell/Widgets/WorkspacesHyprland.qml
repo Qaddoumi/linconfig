@@ -57,20 +57,28 @@ Item {
                         // Process pending addresses
                         for (var i = 0; i < pendingUrgentAddresses.length; i++) {
                             var addr = pendingUrgentAddresses[i]
-                            var client = clients.find(c => c.address === addr || c.address === "0x" + addr)
+                            // Normalize address format - remove 0x prefix if present
+                            var normalizedAddr = addr.startsWith("0x") ? addr : "0x" + addr
+                            var client = clients.find(c => c.address === normalizedAddr)
                             if (client) {
+                                console.log("Found urgent window on workspace:", client.workspace.id)
                                 newUrgent.push(client.workspace.id)
+                            } else {
+                                console.log("No client found for address:", normalizedAddr)
                             }
                         }
                         
                         // Add new urgent workspaces to the list (avoiding duplicates)
-                        var current = urgentWorkspaces.slice()  // Create a copy here
-                        for (var j = 0; j < newUrgent.length; j++) {
-                            if (!current.includes(newUrgent[j])) {
-                                current.push(newUrgent[j])
+                        if (newUrgent.length > 0) {
+                            var current = urgentWorkspaces.slice()  // Create a copy here
+                            for (var j = 0; j < newUrgent.length; j++) {
+                                if (!current.includes(newUrgent[j])) {
+                                    current.push(newUrgent[j])
+                                }
                             }
+                            urgentWorkspaces = current  // Assign the new array reference
+                            console.log("Updated urgent workspaces:", urgentWorkspaces)
                         }
-                        urgentWorkspaces = current  // Assign the new array reference
                         pendingUrgentAddresses = []
                         
                     } catch (e) {
