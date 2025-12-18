@@ -64,13 +64,13 @@ Item {
                         }
                         
                         // Add new urgent workspaces to the list (avoiding duplicates)
-                        var current = urgentWorkspaces
+                        var current = urgentWorkspaces.slice()  // Create a copy here
                         for (var j = 0; j < newUrgent.length; j++) {
                             if (!current.includes(newUrgent[j])) {
                                 current.push(newUrgent[j])
                             }
                         }
-                        urgentWorkspaces = current
+                        urgentWorkspaces = current  // Assign the new array reference
                         pendingUrgentAddresses = []
                         
                     } catch (e) {
