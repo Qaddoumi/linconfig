@@ -98,8 +98,8 @@ Item {
             layoutProc.running = true
             
             // Handle urgency event: urgent>>address
-            if (event.includes("urgent>>")) {
-                var addr = event.substring(8)
+            if (event.name === "urgent") {
+                var addr = event.data
                 pendingUrgentAddresses.push(addr)
                 clientFinderProc.running = true
             }
