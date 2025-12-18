@@ -46,7 +46,7 @@ Item {
     // Fetch clients to resolve address -> workspace
     Process {
         id: clientFinderProc
-        command: ["sh", "-c", "hyprctl clients -j"]
+        command: ["sh", "-c", "hyprctl clients -j | jq -c ."]
         stdout: SplitParser {
             onRead: data => {
                 if (data && data.trim()) {
