@@ -43,9 +43,7 @@ Item {
     // Urgent workspaces (Hyprland)
     Process {
         id: urgentProc
-        command: ["sh", "-c", "hyprctl workspaces -j | jq -c '[.[] | select(.hasfullscreen == false and .urgent) | .id]'"] 
-        // Note: filtered by hasfullscreen==false just in case, but standard check is .urgent
-        // Simpler command: hyprctl workspaces -j | jq -c '[.[] | select(.urgent) | .id]'
+        command: ["sh", "-c", "hyprctl clients -j | jq -c '[.[] | select(.urgent) | .workspace.id] | unique'"] 
         stdout: SplitParser {
             onRead: data => {
                 // console.log("urgentProc: " + data)
@@ -55,6 +53,8 @@ Item {
                     } catch (e) {
                         console.error("Failed to parse urgent workspaces:", e)
                     }
+                } else {
+                     urgentWorkspaces = []
                 }
             }
         }
