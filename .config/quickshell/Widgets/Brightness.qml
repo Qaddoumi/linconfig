@@ -17,7 +17,7 @@ Rectangle {
     property bool failed: false
     property string errorString: ""
 
-    property bool showWidget: true
+    property bool showWidget: false
 
     visible: brightnessWidget.showWidget
 

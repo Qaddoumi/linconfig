@@ -636,7 +636,6 @@ awful.spawn.with_shell("/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 awful.spawn.with_shell("flameshot")
 awful.spawn.with_shell("copyq")
 awful.spawn.with_shell("/usr/lib/xdg-desktop-portal -r")
--- awful.spawn.with_shell("xembedsniproxy")
 awful.spawn.with_shell("nm-applet --indicator")
 awful.spawn.with_shell("screensetup") -- this will set the screen resolution and refresh rate (Using xrandr)
 awful.spawn.with_shell("dunst")
