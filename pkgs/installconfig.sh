@@ -17,19 +17,19 @@ sudo mkdir -p ~/.config > /dev/null || true
 sudo mkdir -p ~/.local/bin > /dev/null || true
 sudo mkdir -p ~/.local/share/applications > /dev/null || true
 
-if [ -d ~/configtemp ]; then
+if [ -d ~/linconfig ]; then
     echo -e "${green}Removing the old directory...${no_color}"
-    sudo rm -rf ~/configtemp > /dev/null || true
+    sudo rm -rf ~/linconfig > /dev/null || true
 fi
 echo -e "${green}Cloning the repository...${no_color}"
-if ! git clone --depth 1 -b quickshell https://github.com/Qaddoumi/linconfig.git ~/configtemp; then
+if ! git clone --depth 1 -b quickshell https://github.com/Qaddoumi/linconfig.git ~/linconfig; then
     echo "Failed to clone repository" >&2
     exit 1
 fi
 
 echo -e "${green}Copying config files...${no_color}"
-sudo cp -rf ~/configtemp/.config/* ~/.config/
-sudo cp -f ~/configtemp/.config/mimeapps.list ~/.local/share/applications/
+sudo cp -rf ~/linconfig/.config/* ~/.config/
+sudo cp -f ~/linconfig/.config/mimeapps.list ~/.local/share/applications/
 
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
@@ -38,7 +38,7 @@ sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
 
 # Save the script (use the first artifact "X11 to Wayland Clipboard Bridge")
 echo -e "${green}Setting up clipboard-bridge.sh...${no_color}"
-sudo cp -f ~/configtemp/pkgs/clipboard-bridge.sh ~/.local/bin/clipboard-bridge.sh > /dev/null || true
+sudo cp -f ~/linconfig/pkgs/clipboard-bridge.sh ~/.local/bin/clipboard-bridge.sh > /dev/null || true
 sudo chmod +x ~/.local/bin/clipboard-bridge.sh
 
 echo -e "${green}Setting up ownership for configuration files...${no_color}"
@@ -57,17 +57,20 @@ echo -e "${green}Copying script files...${no_color}"
 
 mkdir -p ~/.local/bin
 # Copy both regular files and hidden files (like .xinitrc)
-cp -rf ~/configtemp/pkgs/scripts/. ~/.local/bin/ 2>/dev/null || true
+cp -rf ~/linconfig/pkgs/scripts/. ~/.local/bin/ 2>/dev/null || true
 find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
 
-cd ~
-
-cp -f ~/configtemp/pkgs/installconfig.sh ~/installconfig.sh
+cp -f ~/linconfig/pkgs/installconfig.sh ~/installconfig.sh
 chmod +x ~/installconfig.sh
 
-echo -e "${green}Removing temporary files...${no_color}"
-sudo rm -rf ~/configtemp
+# echo -e "${green}Removing temporary files...${no_color}"
+# sudo rm -rf ~/linconfig
 
+echo -e "${green}Installing dwm...${no_color}"
+cd ~/linconfig/pkgs/dwm
+sudo make clean install > /dev/null || true
+
+cd ~
 
 if [  "$XDG_SESSION_DESKTOP" = "Hyprland" ]; then
     echo -e "${green}Reloading Hyprland...${no_color}"
