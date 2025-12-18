@@ -11,6 +11,7 @@ Item {
     property string currentLayout: "Tile"
     property int focusedWorkspace: 1
     property var occupiedWorkspaces: []
+    property var urgentWorkspaces: []
 
     // Active window title (awesome)
     Process {
@@ -108,6 +109,32 @@ Item {
         Component.onCompleted: running = true
     }
 
+    // Urgent workspaces (awesome)
+    Process {
+        id: urgentProc
+        command: ["sh", "-c", "echo 'local r={}; for s in screen do for _,t in ipairs(s.tags) do for _,c in ipairs(t:clients()) do if c.urgent then table.insert(r, t.index); break end end end end; return table.concat(r, \",\")' | awesome-client 2>/dev/null | tail -n1 | awk '{$1=\"\"; print $0}' | sed 's/^[[:space:]]*//' | tr -d '\"'"]
+        stdout: SplitParser {
+            onRead: data => {
+                // console.log("urgentProc (Awesome): " + data)
+                if (data && data.trim()) {
+                     try {
+                        var workspaces = data.trim().split(",").map(function(x) {
+                            return parseInt(x)
+                        }).filter(function(x) {
+                            return !isNaN(x)
+                        })
+                        urgentWorkspaces = workspaces
+                    } catch (e) {
+                        console.error("Failed to parse urgent workspaces:", e)
+                    }
+                } else {
+                    urgentWorkspaces = []
+                }
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
     // Fast timer for window/layout/workspace
     Timer {
         interval: 200
@@ -118,6 +145,7 @@ Item {
             layoutProc.running = true
             workspaceProc.running = true
             occupiedProc.running = true
+            urgentProc.running = true
         }
     }
 
@@ -140,13 +168,14 @@ Item {
 
                     property bool isActive: focusedWorkspace === (index + 1)
                     property bool hasWindows: occupiedWorkspaces.includes(index + 1)
+                    property bool isUrgent: urgentWorkspaces.includes(index + 1)
 
-                    // Hide if not active and has no windows
-                    visible: isActive || hasWindows
+                    // Hide if not active and has no windows and not urgent
+                    visible: isActive || hasWindows || isUrgent
 
                     Text {
                         text: index + 1
-                        color: parent.isActive ? root.colCyan : (parent.hasWindows ? root.colCyan : root.colMuted)
+                        color: parent.isUrgent ? root.colRed : (parent.isActive ? root.colCyan : (parent.hasWindows ? root.colCyan : root.colMuted))
                         font.pixelSize: root.fontSize
                         font.family: root.fontFamily
                         font.bold: true
@@ -156,7 +185,7 @@ Item {
                     Rectangle {
                         width: 20
                         height: 3
-                        color: parent.isActive ? root.colPurple : root.colBg
+                        color: parent.isUrgent ? root.colRed : (parent.isActive ? root.colPurple : root.colBg)
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottom: parent.bottom
                     }

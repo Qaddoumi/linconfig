@@ -10,6 +10,7 @@ Item {
 
     property string activeWindow: "Window"
     property string currentLayout: "Tile"
+    property var urgentWorkspaces: []
 
     // Active window title
     Process {
@@ -39,12 +40,34 @@ Item {
         Component.onCompleted: running = true
     }
 
+    // Urgent workspaces (Hyprland)
+    Process {
+        id: urgentProc
+        command: ["sh", "-c", "hyprctl workspaces -j | jq -c '[.[] | select(.hasfullscreen == false and .urgent) | .id]'"] 
+        // Note: filtered by hasfullscreen==false just in case, but standard check is .urgent
+        // Simpler command: hyprctl workspaces -j | jq -c '[.[] | select(.urgent) | .id]'
+        stdout: SplitParser {
+            onRead: data => {
+                // console.log("urgentProc: " + data)
+                if (data && data.trim()) {
+                    try {
+                        urgentWorkspaces = JSON.parse(data.trim())
+                    } catch (e) {
+                        console.error("Failed to parse urgent workspaces:", e)
+                    }
+                }
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
     // Event-based updates for window/layout (instant)
     Connections {
         target: Hyprland
         function onRawEvent(event) {
             windowProc.running = true
             layoutProc.running = true
+            urgentProc.running = true
         }
     }
 
@@ -56,6 +79,7 @@ Item {
         onTriggered: {
             windowProc.running = true
             layoutProc.running = true
+            urgentProc.running = true
         }
     }
 
@@ -78,13 +102,14 @@ Item {
                     property var workspace: Hyprland.workspaces.values.find(ws => ws.id === index + 1) ?? null
                     property bool isActive: Hyprland.focusedWorkspace?.id === (index + 1)
                     property bool hasWindows: workspace !== null
+                    property bool isUrgent: urgentWorkspaces.includes(index + 1)
 
-                    // Hide if not active and has no windows
-                    visible: isActive || hasWindows
+                    // Hide if not active and has no windows and not urgent
+                    visible: isActive || hasWindows || isUrgent
 
                     Text {
                         text: index + 1
-                        color: parent.isActive ? root.colCyan : (parent.hasWindows ? root.colCyan : root.colMuted)
+                        color: parent.isUrgent ? root.colRed : (parent.isActive ? root.colCyan : (parent.hasWindows ? root.colCyan : root.colMuted))
                         font.pixelSize: root.fontSize
                         font.family: root.fontFamily
                         font.bold: true
@@ -94,7 +119,7 @@ Item {
                     Rectangle {
                         width: 20
                         height: 3
-                        color: parent.isActive ? root.colPurple : root.colBg
+                        color: parent.isUrgent ? root.colRed : (parent.isActive ? root.colPurple : root.colBg)
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottom: parent.bottom
                     }
