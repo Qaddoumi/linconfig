@@ -45,6 +45,7 @@ Rectangle {
                     brightnessWidget.showWidget = false
                     return
                 }
+                brightnessWidget.showWidget = true
                 var percentage = parseInt(data.trim())
                 if (!isNaN(percentage)) {
                     // Icon selection based on percentage
