@@ -17,7 +17,6 @@ Rectangle {
     property bool privacyVisible: false
     property string privacyText_: ""
     property string privacyTooltip: ""
-    property var privacyItems: []
 
     property alias process: privacyProcess
 
@@ -46,7 +45,6 @@ Rectangle {
 
                     privacyWidget.privacyVisible = json.visible || false
                     privacyWidget.privacyText_ = json.text || ""
-                    privacyWidget.privacyItems = json.items || []
 
                     // Parse tooltip (replace \n with actual newlines)
                     if (json.tooltip) {
