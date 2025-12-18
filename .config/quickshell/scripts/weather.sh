@@ -63,7 +63,7 @@ get_location() {
     
     # Use ip-api.com for geolocation (free, no key needed)
     local location
-    location=$(curl -s "http://ip-api.com/" 2>/dev/null)
+    location=$(curl -s "http://ip-api.com/json/" | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g')
     
     if [[ -n "$location" ]] && echo "$location" | jq -e '.lat' >/dev/null 2>&1; then
         echo "$location" > "$LOCATION_CACHE"
