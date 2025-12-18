@@ -655,3 +655,5 @@ awful.spawn.with_shell("killall -q dunst; dunst &")
 awful.spawn.with_shell("killall -q picom; picom -b &")
 awful.spawn.with_shell("/usr/lib/mate-polkit/polkit-mate-authentication-agent-1")
 awful.spawn.with_shell("/usr/lib/xdg-desktop-portal -r")
+
+awful.spawn.with_shell("setxkbmap -layout us,ar -option grp:alt_shift_toggle") -- this will toggle between keyboard layouts us and ar
