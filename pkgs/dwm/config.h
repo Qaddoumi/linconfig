@@ -40,6 +40,7 @@ static const char *const autostart[] = {
     "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1", NULL,
     "flameshot", NULL,
     "copyq", NULL,
+    "quickshell", NULL,
     "screensetup", NULL, /*set the screen to 1920x1080@144hz*/
     "dunst", NULL,
     "picom", "-b", NULL,
@@ -58,6 +59,7 @@ static const int lcaselbl = 0;          /* 1 means make tag label lowercase */
 static const Rule rules[] = {
     /* class                instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
     { "St",                 NULL,     NULL,           0,         0,          1,          0,         0 },
+    { "quickshell",         NULL,     NULL,           0,         1,          0,          0,         0 },
     { "kitty",              NULL,     NULL,           0,         0,          1,          0,         0 },
     { "alacritty",          NULL,     NULL,           0,         0,          1,          0,         0 },
     { "ghostty",            NULL,     NULL,           0,         0,          1,          0,         0 },
