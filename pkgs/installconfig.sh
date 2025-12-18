@@ -22,7 +22,7 @@ if [ -d ~/linconfig ]; then
     sudo rm -rf ~/linconfig > /dev/null || true
 fi
 echo -e "${green}Cloning the repository...${no_color}"
-if ! git clone --depth 1 -b quickshell https://github.com/Qaddoumi/linconfig.git ~/linconfig; then
+if ! git clone --depth 1 -b main https://github.com/Qaddoumi/linconfig.git ~/linconfig; then
     echo "Failed to clone repository" >&2
     exit 1
 fi
