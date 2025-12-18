@@ -42,15 +42,9 @@ RowLayout {
                 return "./Widgets/WorkspacesHyprland.qml"
             }
             
-            // Check for Awesome - only if desktop explicitly contains "awesome" or if X11 with no desktop sets
+            // Check for Awesome - only if desktop explicitly contains "awesome"
             if (desktop && desktop.indexOf("awesome") !== -1) {
                 // console.log("Awesome detected")
-                return "./Widgets/WorkspacesAwesome.qml"
-            }
-            
-            // X11 fallback only if desktop is empty/null (minimal X11 setup)
-            if (sessionType === "x11" && (!desktop || desktop === "")) {
-                console.log("X11 detected (trying to launch Awesome for fallback)")
                 return "./Widgets/WorkspacesAwesome.qml"
             }
             
