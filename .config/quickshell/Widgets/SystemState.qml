@@ -35,6 +35,7 @@ RowLayout {
             batteryWidget.process.running = true
             notificationWidget.triggerRefresh()
             weatherWidget.process.running = true
+            privacyWidget.process.running = true
         }
     }
 
@@ -58,10 +59,6 @@ RowLayout {
         id: diskUsageWidget
     }
 
-    Battery {
-        id: batteryWidget
-    }
-
     Volume {
         id: volumeWidget
     }
@@ -76,6 +73,10 @@ RowLayout {
 
     Weather {
         id: weatherWidget
+    }
+
+    Battery {
+        id: batteryWidget
     }
 
     Privacy {

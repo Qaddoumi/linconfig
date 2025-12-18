@@ -2,8 +2,9 @@
 
 sudo mkdir -p ~/.config
 
-sudo cp -r ~/shared/github/MyGithubs/linconfig/.config/* ~/.config/
-sudo mkdir -p ~/.local/share/applications/ && sudo cp -f ~/shared/github/MyGithubs/linconfig/.config/mimeapps.list ~/.local/share/applications/
+sudo cp -afr ~/shared/github/MyGithubs/linconfig/.config/* ~/.config/
+sudo mkdir -p ~/.local/share/applications/
+sudo cp -f ~/shared/github/MyGithubs/linconfig/.config/mimeapps.list ~/.local/share/applications/
 
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
