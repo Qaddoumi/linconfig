@@ -61,7 +61,7 @@ Item {
                             var normalizedAddr = addr.startsWith("0x") ? addr : "0x" + addr
                             var client = clients.find(c => c.address === normalizedAddr)
                             if (client) {
-                                console.log("Found urgent window on workspace:", client.workspace.id)
+                                // console.log("Found urgent window on workspace:", client.workspace.id)
                                 newUrgent.push(client.workspace.id)
                             } else {
                                 console.log("No client found for address:", normalizedAddr)
@@ -77,7 +77,7 @@ Item {
                                 }
                             }
                             urgentWorkspaces = current  // Assign the new array reference
-                            console.log("Updated urgent workspaces:", urgentWorkspaces)
+                            // console.log("Updated urgent workspaces:", urgentWorkspaces)
                         }
                         pendingUrgentAddresses = []
                         
