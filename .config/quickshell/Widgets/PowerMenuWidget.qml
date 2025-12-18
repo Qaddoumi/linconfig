@@ -18,7 +18,7 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: "⏻"
-        color: root.colRed
+        color: root.colYellow
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
         font.bold: true

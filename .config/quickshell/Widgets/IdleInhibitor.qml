@@ -19,8 +19,6 @@ Rectangle {
 
     property alias process: idleProcess // Expose for external triggering
 
-    property bool inhibited: false
-
     Text {
         id: idleText
         anchors.fill: parent
@@ -46,8 +44,12 @@ Rectangle {
                         idleInhibitorWidget.idleDisplay = json.text
                     }
                     if (json.tooltip) {
-                        // Replace \\n with actual newlines
-                        idleInhibitorWidget.idleTooltip = json.tooltip.replace(/\\n/g, "\n")
+                        idleInhibitorWidget.idleTooltip = json.tooltip
+                    }
+                    if (json.class && json.class == "activated") {
+                        idleText.color = root.colRed
+                    } else {
+                        idleText.color = root.colMuted
                     }
                 } catch (e) {
                     console.error("Failed to parse idle:", e)
