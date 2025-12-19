@@ -3501,9 +3501,18 @@ updatesizehints(Client *c)
 void
 updatestatus(void)
 {
+	if (!drw || !drw->fonts)
+		return;
+
+	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
+		strcpy(stext, "6.6");
+
 	statusw = TEXTW(stext) - lrpad + 2;
-	drawbar(selmon);
-	updatesystray();
+
+	if (selmon) {
+		drawbar(selmon);
+		updatesystray();
+	}
 }
 
 void
