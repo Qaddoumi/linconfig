@@ -65,7 +65,7 @@ Item {
     Timer {
         id: updateTimer
         interval: 200
-        running: false
+        running: true
         repeat: true
         onTriggered: {
             windowProc.running = true;
