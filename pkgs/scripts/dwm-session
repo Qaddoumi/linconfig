@@ -10,11 +10,7 @@ disable-powersaving
 screensetup
 
 # 3. Start background services
-dunst &
 flameshot &
-copyq &
-
-picom -b &
 
 # 5. Start dwm with DBus
 exec dbus-run-session -- dwm
