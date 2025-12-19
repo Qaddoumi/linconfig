@@ -1,0 +1,7 @@
+#!/bin/sh
+screensetup &
+disable-powersaving
+dunst &
+picom -b &
+quickshell &
+exec dwm
