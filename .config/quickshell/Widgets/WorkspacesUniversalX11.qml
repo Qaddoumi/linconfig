@@ -14,29 +14,25 @@ Item {
     property var urgentWorkspaces: []
     property bool toolsAvailable: false
 
-    Component.onCompleted: {
-        // Check if xprop is available
-        var checkXprop = Qt.createQmlObject('import Quickshell.Io; Process { }', rootItem)
-        checkXprop.command = ["which", "xprop"]
-        checkXprop.onFinished: (exitCode) => {
-            toolsAvailable = (exitCode === 0)
-            if (toolsAvailable) {
-                updateTimer.running = true
-            } else {
-                console.error("WorkspacesUniversalX11: xprop not found. Tool will not function.")
-            }
-        }
-        checkXprop.running = true
+    property bool toolsAvailable: false
 
-        // Check if xdotool is available for workspace switching
-        var checkXdotool = Qt.createQmlObject('import Quickshell.Io; Process { }', rootItem)
-        checkXdotool.command = ["which", "xdotool"]
-        checkXdotool.onFinished: (exitCode) => {
-            if (exitCode !== 0) {
-                console.warn("WorkspacesUniversalX11: xdotool not found. Workspace switching will not work.")
+    // Tool availability check
+    Process {
+        id: toolCheckProc
+        command: ["sh", "-c", "command -v xprop && command -v xdotool"]
+        onFinished: function(exitCode) {
+            toolsAvailable = (exitCode === 0);
+            if (toolsAvailable) {
+                updateTimer.running = true;
+                // Run once immediately
+                windowProc.running = true;
+                workspaceProc.running = true;
+                statusProc.running = true;
+            } else {
+                console.error("WorkspacesUniversalX11: xprop or xdotool not found.");
             }
         }
-        checkXdotool.running = true
+        Component.onCompleted: running = true
     }
 
     // Active window title
@@ -44,8 +40,8 @@ Item {
         id: windowProc
         command: [Quickshell.path(".config/quickshell/scripts/x11_workspaces.sh"), "window"]
         stdout: SplitParser {
-            onRead: data => {
-                activeWindow = data.trim() || "Desktop"
+            onRead: function(data) {
+                activeWindow = data.trim() || "Desktop";
             }
         }
     }
@@ -55,11 +51,11 @@ Item {
         id: workspaceProc
         command: [Quickshell.path(".config/quickshell/scripts/x11_workspaces.sh"), "workspace"]
         stdout: SplitParser {
-            onRead: data => {
+            onRead: function(data) {
                 if (data && data.trim()) {
-                    var num = parseInt(data.trim())
+                    var num = parseInt(data.trim());
                     if (!isNaN(num)) {
-                        focusedWorkspace = num
+                        focusedWorkspace = num;
                     }
                 }
             }
@@ -71,14 +67,14 @@ Item {
         id: statusProc
         command: [Quickshell.path(".config/quickshell/scripts/x11_workspaces.sh"), "status"]
         stdout: SplitParser {
-            onRead: data => {
+            onRead: function(data) {
                 if (data && data.trim()) {
                     try {
-                        var status = JSON.parse(data.trim())
-                        if (status.occupied) occupiedWorkspaces = status.occupied
-                        if (status.urgent) urgentWorkspaces = status.urgent
+                        var status = JSON.parse(data.trim());
+                        if (status.occupied) occupiedWorkspaces = status.occupied;
+                        if (status.urgent) urgentWorkspaces = status.urgent;
                     } catch (e) {
-                        console.error("Failed to parse workspace status JSON:", e)
+                        console.error("Failed to parse workspace status JSON:", e);
                     }
                 }
             }
@@ -91,9 +87,11 @@ Item {
         running: false
         repeat: true
         onTriggered: {
-            windowProc.running = true
-            workspaceProc.running = true
-            statusProc.running = true
+            if (toolsAvailable) {
+                windowProc.running = true;
+                workspaceProc.running = true;
+                statusProc.running = true;
+            }
         }
     }
 
@@ -106,7 +104,7 @@ Item {
             spacing: root.margin / 2
 
             Repeater {
-                model: 9 // Standard 9 workspaces
+                model: 9 
 
                 Rectangle {
                     Layout.preferredWidth: 20
@@ -114,10 +112,9 @@ Item {
                     color: "transparent"
 
                     property bool isActive: focusedWorkspace === (index + 1)
-                    property bool hasWindows: occupiedWorkspaces.includes(index + 1)
-                    property bool isUrgent: urgentWorkspaces.includes(index + 1)
+                    property bool hasWindows: occupiedWorkspaces.indexOf(index + 1) !== -1
+                    property bool isUrgent: urgentWorkspaces.indexOf(index + 1) !== -1
 
-                    // Hide if not active and has no windows and not urgent
                     visible: isActive || hasWindows || isUrgent
 
                     Text {
@@ -141,10 +138,9 @@ Item {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            var proc = Qt.createQmlObject('import Quickshell.Io; Process { }', parent)
-                            // Switching workspace varies by WM, but xdotool is common
-                            proc.command = ["sh", "-c", "xdotool set_desktop " + (index)]
-                            proc.running = true
+                            var switchProc = Qt.createQmlObject('import Quickshell.Io; Process { }', rootItem);
+                            switchProc.command = ["xdotool", "set_desktop", index.toString()];
+                            switchProc.running = true;
                         }
                     }
                 }

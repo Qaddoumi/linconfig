@@ -28,14 +28,15 @@ get_workspace_status() {
     
     if [ -n "$clients" ]; then
         # Occupied: desktops that have at least one window
-        occupied=$(echo "$clients" | xargs -I{} xprop -id {} _NET_WM_DESKTOP 2>/dev/null | awk '{print $3 + 1}' | sort -un | tr '\n' ',' | sed 's/,$//')
+        # Filter out 4294967296 (0xFFFFFFFF + 1) which is sticky
+        occupied=$(echo "$clients" | xargs -I{} xprop -id {} _NET_WM_DESKTOP 2>/dev/null | awk '{print $3 + 1}' | sort -un | awk '$1 <= 20' | tr '\n' ',' | sed 's/,$//')
         
         # Urgent: desktops that have at least one urgent window
         urgent=$(echo "$clients" | while read -r id; do
             if xprop -id "$id" WM_HINTS 2>/dev/null | grep -q "flags:.*URGENCY"; then
                 xprop -id "$id" _NET_WM_DESKTOP 2>/dev/null | awk '{print $3 + 1}'
             fi
-        done | sort -un | tr '\n' ',' | sed 's/,$//')
+        done | sort -un | awk '$1 <= 20' | tr '\n' ',' | sed 's/,$//')
     fi
     
     echo "{\"occupied\": [$occupied], \"urgent\": [$urgent]}"
