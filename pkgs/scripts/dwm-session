@@ -6,4 +6,4 @@ dunst &
 picom -b &
 quickshell &
 
-exec dbus-run-session -- dwm
+exec dwm
