@@ -36,14 +36,12 @@ static const char *colors[][3] = {
 
 static const char *const autostart[] = {
     // "dbus-update-activation-environment", "--systemd", "--all", NULL,
-    // "disable-powersaving", NULL,
-    // "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1", NULL,
-    // "flameshot", NULL,
+    "disable-powersaving", NULL,
+    "flameshot", NULL,
     "copyq", NULL,
     // "quickshell", NULL,
     // "screensetup", NULL, /*set the screen to 1920x1080@144hz*/
     "dunst", NULL,
-    "picom", "-b", NULL,
     // "sh", "-c", "feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'", NULL,
     "sh", "-c", "/usr/bin/dex -a", NULL, /* autostart manager==> will auto start apps in /etc/xdg/autostart/ or ~/.config/autostart/ */
     // "xautolock", "-time", "5", "-locker", "dwm-lock", "-detectsleep", NULL, /* Lock after 5 minutes */

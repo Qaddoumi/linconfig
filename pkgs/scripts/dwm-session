@@ -1,16 +1,9 @@
 #!/bin/sh
 
-# 1. Setup the environment
 if command -v dbus-update-activation-environment >/dev/null 2>&1; then
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XAUTHORITY
 fi
 
-# 2. Run one-shot setup
-disable-powersaving
 screensetup
 
-# 3. Start background services
-flameshot &
-
-# 5. Start dwm with DBus
 exec dbus-run-session -- dwm
