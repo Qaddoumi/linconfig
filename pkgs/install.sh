@@ -328,8 +328,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm flameshot # Screenshot utility with annotation tools
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm grim # Screenshot tool
-sudo mkdir -p ~/Screenshots || true
-sudo chown -R $USER:$USER ~/Screenshots || true
+sudo mkdir -p ~/Pictures || true
+sudo chown -R $USER:$USER ~/Pictures || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm slurp # Selection tool for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
