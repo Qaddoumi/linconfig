@@ -13,9 +13,6 @@ screensetup
 dunst &
 picom -b
 
-# 4. Start the panel (give dwm a moment to start first in some setups, 
-# but usually & is fine)
-quickshell &
 
 # 5. Start dwm with DBus
 exec dbus-run-session -- dwm
