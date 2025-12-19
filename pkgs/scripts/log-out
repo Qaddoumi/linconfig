@@ -28,3 +28,4 @@ case "$DESKTOP_SESSION" in
     *)
         echo "Unsupported desktop session: $DESKTOP_SESSION"
     ;;
+esac
