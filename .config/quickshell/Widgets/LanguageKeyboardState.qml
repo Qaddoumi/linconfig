@@ -121,6 +121,7 @@ Rectangle {
 
         onClicked: {
             // Refresh on click
+            //TODO: switch the language on click
             layoutProcess.running = true
             ledProcess.running = true
             popupLoader.active = false
