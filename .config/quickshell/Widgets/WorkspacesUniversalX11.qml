@@ -13,22 +13,28 @@ Item {
     property var occupiedWorkspaces: []
     property var urgentWorkspaces: []
     property bool toolsAvailable: false
+    property string wmType: "unknown"
 
-    // Tool availability check
+    // Tool availability and WM detection
     Process {
         id: toolCheckProc
-        command: ["sh", "-c", "command -v xprop >/dev/null && command -v xdotool >/dev/null && echo 'ok' || echo 'fail'"]
+        command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/x11_workspaces.sh", "detect"]
         stdout: SplitParser {
             onRead: function(data) {
-                if (data.trim() === "ok") {
-                    toolsAvailable = true;
-                    updateTimer.running = true;
-                    // Run once immediately
-                    windowProc.running = true;
-                    workspaceProc.running = true;
-                    statusProc.running = true;
-                } else {
-                    console.error("WorkspacesUniversalX11: xprop or xdotool not found.");
+                if (data && data.trim()) {
+                    var result = data.trim();
+                    if (result.startsWith("ok:")) {
+                        toolsAvailable = true;
+                        wmType = result.substring(3);
+                        console.log("Detected WM type:", wmType);
+                        updateTimer.running = true;
+                        // Run once immediately
+                        windowProc.running = true;
+                        workspaceProc.running = true;
+                        statusProc.running = true;
+                    } else {
+                        console.error("WorkspacesUniversalX11: xprop or xdotool not found.");
+                    }
                 }
             }
         }
@@ -71,10 +77,12 @@ Item {
                 if (data && data.trim()) {
                     try {
                         var status = JSON.parse(data.trim());
-                        if (status.occupied) occupiedWorkspaces = status.occupied;
-                        if (status.urgent) urgentWorkspaces = status.urgent;
+                        occupiedWorkspaces = status.occupied || [];
+                        urgentWorkspaces = status.urgent || [];
                     } catch (e) {
                         console.error("Failed to parse workspace status JSON:", e);
+                        occupiedWorkspaces = [];
+                        urgentWorkspaces = [];
                     }
                 }
             }
@@ -111,14 +119,15 @@ Item {
                     Layout.preferredHeight: parent.height
                     color: "transparent"
 
-                    property bool isActive: focusedWorkspace === (index + 1)
-                    property bool hasWindows: occupiedWorkspaces.indexOf(index + 1) !== -1
-                    property bool isUrgent: urgentWorkspaces.indexOf(index + 1) !== -1
+                    property int workspaceNum: index + 1
+                    property bool isActive: focusedWorkspace === workspaceNum
+                    property bool hasWindows: occupiedWorkspaces.includes(workspaceNum)
+                    property bool isUrgent: urgentWorkspaces.includes(workspaceNum)
 
                     visible: isActive || hasWindows || isUrgent
 
                     Text {
-                        text: index + 1
+                        text: parent.workspaceNum
                         color: parent.isUrgent ? root.colRed : (parent.isActive ? root.colCyan : (parent.hasWindows ? root.colCyan : root.colMuted))
                         font.pixelSize: root.fontSize
                         font.family: root.fontFamily
@@ -139,7 +148,20 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             var switchProc = Qt.createQmlObject('import Quickshell.Io; Process { }', rootItem);
-                            switchProc.command = ["xdotool", "set_desktop", index.toString()];
+                            
+                            // Use different commands based on WM type
+                            if (wmType === "dwm" || wmType === "unknown") {
+                                // dwm uses keybindings
+                                switchProc.command = ["xdotool", "key", "super+" + parent.workspaceNum];
+                            } else if (wmType === "i3") {
+                                switchProc.command = ["i3-msg", "workspace", "number", parent.workspaceNum.toString()];
+                            } else if (wmType === "bspwm") {
+                                switchProc.command = ["bspc", "desktop", "-f", parent.workspaceNum.toString()];
+                            } else {
+                                // EWMH-compliant (most modern WMs)
+                                switchProc.command = ["xdotool", "set_desktop", (parent.workspaceNum - 1).toString()];
+                            }
+                            
                             switchProc.running = true;
                         }
                     }
