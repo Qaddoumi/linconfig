@@ -11,7 +11,6 @@ Variants {
         screen: modelData
 
         exclusionMode: ExclusionMode.Auto
-        WFlags.windowType: WFlags.Dock
 
         anchors {
             top: true
