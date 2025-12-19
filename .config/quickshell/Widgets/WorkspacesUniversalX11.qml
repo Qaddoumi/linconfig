@@ -17,17 +17,19 @@ Item {
     // Tool availability check
     Process {
         id: toolCheckProc
-        command: ["sh", "-c", "command -v xprop && command -v xdotool"]
-        onFinished: function(exitCode) {
-            toolsAvailable = (exitCode === 0);
-            if (toolsAvailable) {
-                updateTimer.running = true;
-                // Run once immediately
-                windowProc.running = true;
-                workspaceProc.running = true;
-                statusProc.running = true;
-            } else {
-                console.error("WorkspacesUniversalX11: xprop or xdotool not found.");
+        command: ["sh", "-c", "command -v xprop >/dev/null && command -v xdotool >/dev/null && echo 'ok' || echo 'fail'"]
+        stdout: SplitParser {
+            onRead: function(data) {
+                if (data.trim() === "ok") {
+                    toolsAvailable = true;
+                    updateTimer.running = true;
+                    // Run once immediately
+                    windowProc.running = true;
+                    workspaceProc.running = true;
+                    statusProc.running = true;
+                } else {
+                    console.error("WorkspacesUniversalX11: xprop or xdotool not found.");
+                }
             }
         }
         Component.onCompleted: running = true
