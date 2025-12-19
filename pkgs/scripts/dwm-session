@@ -4,6 +4,6 @@ if command -v dbus-update-activation-environment >/dev/null 2>&1; then
     dbus-update-activation-environment --systemd --all
 fi
 
-screensetup
+screensetup # set the screen to 1920x1080@144hz
 
 exec dbus-run-session -- dwm
