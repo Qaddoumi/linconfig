@@ -323,6 +323,8 @@ static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 static void autostart_exec(void);
+static int isaltbar(Window w);
+
 
 /* variables */
 static Systray *systray = NULL;
@@ -1631,16 +1633,57 @@ managealtbar(Window win, XWindowAttributes *wa)
 		return;
 
 	m->barwin = win;
-	m->by = wa->y;
+	m->by = 0; /* Force to top */
 	bh = m->bh = wa->height;
 	updatebarpos(m);
 	arrange(m);
 	XSelectInput(dpy, win, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
-	XMoveResizeWindow(dpy, win, wa->x, wa->y, wa->width, wa->height);
+	XMoveResizeWindow(dpy, win, 0, 0, m->ww, bh); /* Force full width at top */
 	XMapWindow(dpy, win);
 	XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
 		(unsigned char *) &win, 1);
 }
+
+int
+isaltbar(Window w)
+{
+	XClassHint ch = { NULL, NULL };
+	char name[256];
+	int res = 0;
+
+	/* 1. Check Class Hint */
+	if (XGetClassHint(dpy, w, &ch)) {
+		if ((ch.res_class && strstr(ch.res_class, altbarclass)) ||
+		    (ch.res_name && strstr(ch.res_name, altbarclass)))
+			res = 1;
+		if (ch.res_class) XFree(ch.res_class);
+		if (ch.res_name) XFree(ch.res_name);
+	}
+
+	/* 2. Check Window Title/Name */
+	if (!res && gettextprop(w, XA_WM_NAME, name, sizeof(name))) {
+		if (strstr(name, "quickshell") || strstr(name, "Quickshell"))
+			res = 1;
+	}
+
+	/* 3. Check Window Type Atom (DOCK) */
+	if (!res) {
+		Atom da, *types = NULL;
+		int di;
+		unsigned long dl, nitems;
+		if (XGetWindowProperty(dpy, w, netatom[NetWMWindowType], 0L, sizeof(Atom), False, XA_ATOM,
+		    &da, &di, &nitems, &dl, (unsigned char **)&types) == Success && types) {
+			for (unsigned long i = 0; i < nitems; i++) {
+				if (types[i] == XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DOCK", False))
+					res = 1;
+			}
+			XFree(types);
+		}
+	}
+
+	return res;
+}
+
 
 void
 managetray(Window win, XWindowAttributes *wa)
@@ -1685,7 +1728,7 @@ maprequest(XEvent *e)
 
 	if (!XGetWindowAttributes(dpy, ev->window, &wa))
 		return;
-	if (usealtbar && wmclasscontains(ev->window, altbarclass, "")) {
+	if (usealtbar && isaltbar(ev->window)) {
 		managealtbar(ev->window, &wa);
 		return;
 	}
@@ -2281,7 +2324,7 @@ scan(void)
 		for (i = 0; i < num; i++) {
 			if (!XGetWindowAttributes(dpy, wins[i], &wa))
 				continue;
-			if (usealtbar && wmclasscontains(wins[i], altbarclass, ""))
+			if (usealtbar && isaltbar(wins[i]))
 				managealtbar(wins[i], &wa);
 			else {
 				if (wa.override_redirect || XGetTransientForHint(dpy, wins[i], &d1))

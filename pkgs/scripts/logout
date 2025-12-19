@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+case "$DESKTOP_SESSION" in
+    openbox)
+        openbox --exit
+    ;;
+    bspwm)
+        bspc quit
+    ;;
+    dwm)
+        pkill dwm
+    ;;
+    i3)
+        i3-msg exit
+    ;;
+    plasma)
+        qdbus org.kde.ksmserver /KSMServer logout 0 0 0
+    ;;
+    sway)
+        swaymsg exit
+    ;;
+    hyprland)
+        hyprctl dispatch exit
+    ;;
+    awesome)
+        echo 'awesome.quit()' | awesome-client
+    ;;
+    *)
+        echo "Unsupported desktop session: $DESKTOP_SESSION"
+    ;;
