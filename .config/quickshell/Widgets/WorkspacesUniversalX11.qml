@@ -38,7 +38,7 @@ Item {
     // Active window title
     Process {
         id: windowProc
-        command: [Quickshell.path(".config/quickshell/scripts/x11_workspaces.sh"), "window"]
+        command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/x11_workspaces.sh", "window"]
         stdout: SplitParser {
             onRead: function(data) {
                 activeWindow = data.trim() || "Desktop";
@@ -49,7 +49,7 @@ Item {
     // Focused workspace
     Process {
         id: workspaceProc
-        command: [Quickshell.path(".config/quickshell/scripts/x11_workspaces.sh"), "workspace"]
+        command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/x11_workspaces.sh", "workspace"]
         stdout: SplitParser {
             onRead: function(data) {
                 if (data && data.trim()) {
@@ -65,7 +65,7 @@ Item {
     // Occupied and Urgent workspaces
     Process {
         id: statusProc
-        command: [Quickshell.path(".config/quickshell/scripts/x11_workspaces.sh"), "status"]
+        command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/x11_workspaces.sh", "status"]
         stdout: SplitParser {
             onRead: function(data) {
                 if (data && data.trim()) {
