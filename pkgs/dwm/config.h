@@ -42,8 +42,8 @@ static const char *const autostart[] = {
     "copyq", NULL,
     // "quickshell", NULL,
     // "screensetup", NULL, /*set the screen to 1920x1080@144hz*/
-    // "dunst", NULL,
-    // "picom", "-b", NULL,
+    "dunst", NULL,
+    "picom", "-b", NULL,
     // "sh", "-c", "feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'", NULL,
     "sh", "-c", "/usr/bin/dex -a", NULL, /* autostart manager==> will auto start apps in /etc/xdg/autostart/ or ~/.config/autostart/ */
     // "xautolock", "-time", "5", "-locker", "dwm-lock", "-detectsleep", NULL, /* Lock after 5 minutes */

@@ -2,8 +2,6 @@
 disable-powersaving
 screensetup
 
-dunst &
-picom -b &
 quickshell &
 
 exec dwm
