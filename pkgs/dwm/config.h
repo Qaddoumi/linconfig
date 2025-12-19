@@ -40,7 +40,7 @@ static const char *const autostart[] = {
     "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1", NULL,
     "flameshot", NULL,
     "copyq", NULL,
-    "quickshell", NULL,
+    // "quickshell", NULL,
     "screensetup", NULL, /*set the screen to 1920x1080@144hz*/
     "dunst", NULL,
     "picom", "-b", NULL,
