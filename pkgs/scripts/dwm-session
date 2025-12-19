@@ -1,7 +1,9 @@
 #!/bin/sh
 disable-powersaving
-dunst
-picom -b
 screensetup
-quickshell
-exec dwm
+
+dunst &
+picom -b &
+quickshell &
+
+exec dbus-run-session -- dwm
