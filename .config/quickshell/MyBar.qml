@@ -48,6 +48,11 @@ RowLayout {
                 return "./Widgets/WorkspacesAwesome.qml"
             }
             
+            // Check for X11
+            if (sessionType && sessionType.indexOf("11") !== -1){
+                return "./Widgets/WorkspacesUniversalX11.qml"
+            }
+            
             // Fallback
             console.warn("Unknown WM, using static workspaces")
             return "./Widgets/WorkspacesFallback.qml"

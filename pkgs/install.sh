@@ -200,6 +200,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm picom # Compositor for X11 (used for animation, transparency and blur)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xscreensaver # Screen saver for X11
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm xorg-xprop xdotool # Dependencies for x11_workspaces.sh in quickshell
 
 echo -e "\n\n"
 
