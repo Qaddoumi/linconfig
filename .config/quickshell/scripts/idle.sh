@@ -14,7 +14,7 @@ if [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
 elif [[ -n "$SWAYSOCK" ]]; then
     COMPOSITOR="sway"
 else
-    echo "Error (idle.sh): Neither Hyprland nor Sway detected"
+    echo "{\"text\": \"E\", \"tooltip\": \"Error (idle.sh): Neither Hyprland nor Sway detected\", \"class\": \"activated\"}" > "$STATE_FILE"
     exit 1
 fi
 
