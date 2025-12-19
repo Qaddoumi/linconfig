@@ -37,6 +37,7 @@ static const char *colors[][3] = {
 static const char *const autostart[] = {
     "disable-powersaving", NULL,
     "flameshot", NULL,
+    "nm-applet", "--indicator", NULL,
     "copyq", NULL,
     // "quickshell", NULL,
     // "screensetup", NULL, /*set the screen to 1920x1080@144hz*/
