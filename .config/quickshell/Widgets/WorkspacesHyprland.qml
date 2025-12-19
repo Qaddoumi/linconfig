@@ -60,11 +60,9 @@ Item {
                             // Normalize address format - remove 0x prefix if present
                             var normalizedAddr = addr.startsWith("0x") ? addr : "0x" + addr
                             var client = clients.find(c => c.address === normalizedAddr)
-                            if (client) {
+                            if (client && client.focusHistoryID !== 0) {
                                 // console.log("Found urgent window on workspace:", client.workspace.id)
                                 newUrgent.push(client.workspace.id)
-                            } else {
-                                console.log("No client found for address:", normalizedAddr)
                             }
                         }
                         
