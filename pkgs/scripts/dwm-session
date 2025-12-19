@@ -1,7 +1,6 @@
 #!/bin/sh
-screensetup &
 disable-powersaving
-dunst &
-picom -b &
+dunst
+picom -b
 
-dbus-run-session -- sh -c 'quickshell & exec dwm'
+dbus-run-session -- sh -c 'screensetup & quickshell & exec dwm'
