@@ -330,7 +330,7 @@ static const char autostartblocksh[] = "autostart_blocking.sh";
 static const char autostartsh[] = "autostart.sh";
 static Systray *systray = NULL;
 static const char broken[] = "broken";
-static const char dwmdir[] = "github/dwm-titus/scripts";
+static const char dwmdir[] = "linconfig/pkgs/scripts";
 static const char localshare[] = "";
 static char stext[256];
 static int statusw;
@@ -738,8 +738,8 @@ cleanup(void)
 	}
 	for (i = 0; i < CurLast; i++)
 		drw_cur_free(drw, cursor[i]);
-	for (i = 0; i < LENGTH(colors); i++)
-		drw_scm_free(drw, scheme[i], 3);
+	for (i = 0; i < LENGTH(colors) + 1; i++)
+		free(scheme[i]);
 	free(scheme);
 	XDestroyWindow(dpy, wmcheckwin);
 	drw_free(drw);
@@ -1688,11 +1688,15 @@ maprequest(XEvent *e)
 		updatesystray();
 	}
 
-	if (!XGetWindowAttributes(dpy, ev->window, &wa) || wa.override_redirect)
+	if (!XGetWindowAttributes(dpy, ev->window, &wa))
 		return;
-	if (usealtbar && wmclasscontains(ev->window, altbarclass, ""))
+	if (usealtbar && wmclasscontains(ev->window, altbarclass, "")) {
 		managealtbar(ev->window, &wa);
-	else if (!wintoclient(ev->window))
+		return;
+	}
+	if (wa.override_redirect)
+		return;
+	if (!wintoclient(ev->window))
 		manage(ev->window, &wa);
 }
 
@@ -2357,13 +2361,16 @@ scan(void)
 
 	if (XQueryTree(dpy, root, &d1, &d2, &wins, &num)) {
 		for (i = 0; i < num; i++) {
-			if (!XGetWindowAttributes(dpy, wins[i], &wa)
-			|| wa.override_redirect || XGetTransientForHint(dpy, wins[i], &d1))
+			if (!XGetWindowAttributes(dpy, wins[i], &wa))
 				continue;
 			if (usealtbar && wmclasscontains(wins[i], altbarclass, ""))
 				managealtbar(wins[i], &wa);
-			else if (wa.map_state == IsViewable || getstate(wins[i]) == IconicState)
-				manage(wins[i], &wa);
+			else {
+				if (wa.override_redirect || XGetTransientForHint(dpy, wins[i], &d1))
+					continue;
+				if (wa.map_state == IsViewable || getstate(wins[i]) == IconicState)
+					manage(wins[i], &wa);
+			}
 		}
 		for (i = 0; i < num; i++) { /* now the transients */
 			if (!XGetWindowAttributes(dpy, wins[i], &wa))
@@ -3584,7 +3591,7 @@ void
 updatestatus(void)
 {
 	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext))) {
-		strcpy(stext, "dwm-titus:"VERSION);
+		strcpy(stext, "dwm:"VERSION);
 		statusw = TEXTW(stext) - lrpad + 2;
 	} else {
 		char *text, *s, ch;
