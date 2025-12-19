@@ -19,7 +19,6 @@ Variants {
         }
 
         implicitHeight: 26
-        height: 26
         color: root.colBg
 
         margins {
