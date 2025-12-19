@@ -11,6 +11,7 @@ Variants {
         screen: modelData
 
         exclusionMode: ExclusionMode.Auto
+        WFlags.windowType: WFlags.Dock
 
         anchors {
             top: true
@@ -19,6 +20,7 @@ Variants {
         }
 
         implicitHeight: 26
+        height: 26
         color: root.colBg
 
         margins {
