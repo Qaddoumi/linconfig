@@ -41,7 +41,7 @@ static const char *const autostart[] = {
     "flameshot", NULL,
     "copyq", NULL,
     // "quickshell", NULL,
-    // "screensetup", NULL, /*set the screen to 1920x1080@144hz*/
+    "screensetup", NULL, /*set the screen to 1920x1080@144hz*/
     "dunst", NULL,
     "picom", "-b", NULL,
     // "sh", "-c", "feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'", NULL,
