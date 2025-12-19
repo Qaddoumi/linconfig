@@ -14,8 +14,6 @@ Item {
     property var urgentWorkspaces: []
     property bool toolsAvailable: false
 
-    property bool toolsAvailable: false
-
     // Tool availability check
     Process {
         id: toolCheckProc
