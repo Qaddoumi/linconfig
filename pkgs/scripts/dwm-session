@@ -1,7 +1,21 @@
 #!/bin/sh
-disable-powersaving
+
+# 1. Setup the environment
+if command -v dbus-update-activation-environment >/dev/null 2>&1; then
+    dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XAUTHORITY
+fi
+
+# 2. Run one-shot setup
+disable-powersaving &
 screensetup
 
+# 3. Start background services
+dunst &
+picom -b
+
+# 4. Start the panel (give dwm a moment to start first in some setups, 
+# but usually & is fine)
 quickshell &
 
-exec dwm
+# 5. Start dwm with DBus
+exec dbus-run-session -- dwm
