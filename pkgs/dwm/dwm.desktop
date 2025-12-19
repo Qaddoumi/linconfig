@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Name=dwm
 Comment=Dynamic window manager
-Exec=sh -c "quickshell & dwm"
+Exec=sh -c "quickshell & exec dwm"
 Icon=dwm
 Type=XSession
 DesktopNames=dwm
