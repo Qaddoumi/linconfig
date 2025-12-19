@@ -2,5 +2,6 @@
 disable-powersaving
 dunst
 picom -b
+screensetup
 
-sh -c 'screensetup & quickshell & exec dwm'
+quickshell & exec dwm
