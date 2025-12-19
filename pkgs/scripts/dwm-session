@@ -6,13 +6,15 @@ if command -v dbus-update-activation-environment >/dev/null 2>&1; then
 fi
 
 # 2. Run one-shot setup
-disable-powersaving &
+disable-powersaving
 screensetup
 
 # 3. Start background services
 dunst &
-picom -b
+flameshot &
+copyq &
 
+picom -b &
 
 # 5. Start dwm with DBus
 exec dbus-run-session -- dwm
