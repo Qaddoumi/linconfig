@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Name=dwm
 Comment=Dynamic window manager
-Exec=sh -c "screensetup & quickshell & dwm"
+Exec=sh -c "screensetup && true || quickshell & dwm"
 Icon=dwm
 Type=XSession
 DesktopNames=dwm
