@@ -3,5 +3,5 @@ screensetup &
 disable-powersaving
 dunst &
 picom -b &
-quickshell &
-exec dwm
+
+dbus-run-session -- sh -c 'quickshell & exec dwm'
