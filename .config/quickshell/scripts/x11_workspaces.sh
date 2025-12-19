@@ -5,34 +5,10 @@ if ! command -v xprop >/dev/null 2>&1; then
     echo '{"error": "xprop missing"}'
     exit 1
 fi
-
-detect_wm() {
-    # Check if tools are available
-    if ! command -v xprop >/dev/null 2>&1 || ! command -v xdotool >/dev/null 2>&1; then
-        echo "fail"
-        return
-    fi
-    
-    # Try to detect window manager
-    local wm_check=$(xprop -root _NET_SUPPORTING_WM_CHECK 2>/dev/null | awk '{print $5}')
-    if [ -n "$wm_check" ]; then
-        local wm_name=$(xprop -id "$wm_check" _NET_WM_NAME 2>/dev/null | sed 's/.*= "//;s/"$//' | tr '[:upper:]' '[:lower:]')
-        
-        if [[ "$wm_name" == *"i3"* ]]; then
-            echo "ok:i3"
-        elif [[ "$wm_name" == *"bspwm"* ]]; then
-            echo "ok:bspwm"
-        elif [[ "$wm_name" == *"dwm"* ]]; then
-            echo "ok:dwm"
-        else
-            # EWMH-compliant but unknown
-            echo "ok:ewmh"
-        fi
-    else
-        # No EWMH support, likely dwm or similar
-        echo "ok:dwm"
-    fi
-}
+if ! command -v xdotool >/dev/null 2>&1; then
+    echo '{"error": "xdotool missing"}'
+    exit 1
+fi
 
 get_active_window() {
     local id=$(xprop -root _NET_ACTIVE_WINDOW 2>/dev/null | awk '{print $5}')
@@ -113,12 +89,11 @@ get_workspace_status() {
 }
 
 case "$1" in
-    detect) detect_wm ;;
     window) get_active_window ;;
     workspace) get_focused_workspace ;;
     status) get_workspace_status ;;
     *)
-        echo "Usage: $0 {detect|window|workspace|status}"
+        echo "Usage: $0 {window|workspace|status}"
         exit 1
         ;;
 esac

@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import QtQuick.Layouts
 
+
 Item {
     id: rootItem
     anchors.fill: parent
@@ -12,34 +13,6 @@ Item {
     property int focusedWorkspace: 1
     property var occupiedWorkspaces: []
     property var urgentWorkspaces: []
-    property bool toolsAvailable: false
-    property string wmType: "unknown"
-
-    // Tool availability and WM detection
-    Process {
-        id: toolCheckProc
-        command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/x11_workspaces.sh", "detect"]
-        stdout: SplitParser {
-            onRead: function(data) {
-                if (data && data.trim()) {
-                    var result = data.trim();
-                    if (result.startsWith("ok:")) {
-                        toolsAvailable = true;
-                        wmType = result.substring(3);
-                        console.log("Detected WM type:", wmType);
-                        updateTimer.running = true;
-                        // Run once immediately
-                        windowProc.running = true;
-                        workspaceProc.running = true;
-                        statusProc.running = true;
-                    } else {
-                        console.error("WorkspacesUniversalX11: xprop or xdotool not found.");
-                    }
-                }
-            }
-        }
-        Component.onCompleted: running = true
-    }
 
     // Active window title
     Process {
@@ -95,11 +68,9 @@ Item {
         running: false
         repeat: true
         onTriggered: {
-            if (toolsAvailable) {
-                windowProc.running = true;
-                workspaceProc.running = true;
-                statusProc.running = true;
-            }
+            windowProc.running = true;
+            workspaceProc.running = true;
+            statusProc.running = true;
         }
     }
 
@@ -148,20 +119,7 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             var switchProc = Qt.createQmlObject('import Quickshell.Io; Process { }', rootItem);
-                            
-                            // Use different commands based on WM type
-                            if (wmType === "dwm" || wmType === "unknown") {
-                                // dwm uses keybindings
-                                switchProc.command = ["xdotool", "key", "super+" + parent.workspaceNum];
-                            } else if (wmType === "i3") {
-                                switchProc.command = ["i3-msg", "workspace", "number", parent.workspaceNum.toString()];
-                            } else if (wmType === "bspwm") {
-                                switchProc.command = ["bspc", "desktop", "-f", parent.workspaceNum.toString()];
-                            } else {
-                                // EWMH-compliant (most modern WMs)
-                                switchProc.command = ["xdotool", "set_desktop", (parent.workspaceNum - 1).toString()];
-                            }
-                            
+                            switchProc.command = ["xdotool", "key", "super+" + parent.workspaceNum];
                             switchProc.running = true;
                         }
                     }
