@@ -60,7 +60,7 @@ Item {
                             // Normalize address format - remove 0x prefix if present
                             var normalizedAddr = addr.startsWith("0x") ? addr : "0x" + addr
                             var client = clients.find(c => c.address === normalizedAddr)
-                            if (client && client.focusHistoryID !== 0) {
+                            if (client && Hyprland.focusedWorkspace?.id !== client.workspace.id) {
                                 // console.log("Found urgent window on workspace:", client.workspace.id)
                                 newUrgent.push(client.workspace.id)
                             }
