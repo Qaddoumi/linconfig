@@ -66,12 +66,13 @@ chmod +x ~/installconfig.sh
 # echo -e "${green}Removing temporary files...${no_color}"
 # sudo rm -rf ~/linconfig
 
-echo -e "${green}Installing dwm...${no_color}"
+echo -e "${green}\n\nInstalling dwm...${no_color}"
 cd ~/linconfig/pkgs/dwm
 sudo make clean install || true
 
 cd ~
 
+echo -e "${green}\n\nReloading session...${no_color}"
 if [  "$XDG_SESSION_DESKTOP" = "Hyprland" ]; then
     echo -e "${green}Reloading Hyprland...${no_color}"
     hyprctl reload > /dev/null || true
@@ -83,4 +84,4 @@ elif [  "$XDG_SESSION_DESKTOP" = "awesome" ]; then
     echo 'awesome.restart()' | awesome-client > /dev/null || true
 fi
 
-echo -e "${green}\n\nSetup completed!${no_color}\n"
+echo -e "${green}\nSetup completed!${no_color}\n"
