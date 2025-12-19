@@ -68,7 +68,7 @@ chmod +x ~/installconfig.sh
 
 echo -e "${green}Installing dwm...${no_color}"
 cd ~/linconfig/pkgs/dwm
-sudo make clean install > /dev/null || true
+sudo make clean install || true
 
 cd ~
 
