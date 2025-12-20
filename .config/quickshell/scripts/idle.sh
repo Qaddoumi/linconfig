@@ -3,9 +3,6 @@
 # Idle Inhibitor Toggle Script
 # Works with Hyprland, Sway, and X11 (xscreensaver)
 
-STATE_FILE="${XDG_RUNTIME_DIR:-/tmp}/idle-inhibit.state"
-INHIBITOR_PID_FILE="${XDG_RUNTIME_DIR:-/tmp}/swayidle.pid"
-
 # Detect which compositor/display server is running
 if [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
     COMPOSITOR="hyprland"
@@ -14,31 +11,33 @@ elif [[ -n "$SWAYSOCK" ]]; then
 elif [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
     COMPOSITOR="x11"
 else
-    echo "{\"text\": \"E\", \"tooltip\": \"Error (idle.sh): No supported display server detected\", \"class\": \"activated\"}" > "$STATE_FILE"
+    echo "{\"text\": \"E\", \"tooltip\": \"Error (idle.sh): No supported display server detected\", \"class\": \"activated\"}"
     exit 1
 fi
 
 # Function to check if inhibitor is active
 is_inhibited() {
-    [[ -f "$STATE_FILE" ]] && [[ "$(cat "$STATE_FILE")" == "inhibited" ]]
+    if [[ "$COMPOSITOR" == "x11" ]]; then
+        ! pgrep -x xscreensaver > /dev/null
+    else
+        ! pgrep -x swayidle > /dev/null
+    fi
 }
 
 # Function to start inhibitor
 start_inhibitor() {
-    local PID=$(pgrep -x swayidle | head -n1)
-    
-    if [[ -n "$PID" ]]; then
-        # Save the PID for later restart
-        echo "$PID" > "$INHIBITOR_PID_FILE"
-        # Kill swayidle
-        kill "$PID" 2>/dev/null
-    elif [[ "$COMPOSITOR" == "x11" ]]; then
-        # X11: Disable screensaver and DPMS
+    if [[ "$COMPOSITOR" == "x11" ]]; then
+        # X11: Kill xscreensaver daemon
         if pgrep -x xscreensaver > /dev/null; then
             xscreensaver-command -exit 2>/dev/null
         fi
+    else
+        # Wayland: Kill swayidle
+        local PID=$(pgrep -x swayidle | head -n1)
+        if [[ -n "$PID" ]]; then
+            kill "$PID" 2>/dev/null
+        fi
     fi
-    echo "inhibited" > "$STATE_FILE"
 }
 
 # Function to stop inhibitor
@@ -96,12 +95,8 @@ stop_inhibitor() {
             resume 'swaymsg output "*" power on' \
             before-sleep 'swaylock -f -c 000000' &
     elif [[ "$COMPOSITOR" == "x11" ]]; then
-        # X11: Re-enable screensaver
-        if pgrep -x xscreensaver > /dev/null; then
-            xscreensaver -no-splash -quiet & 2>/dev/null
-        fi
+        xscreensaver -no-splash -quiet & 2>/dev/null
     fi
-    rm -f "$STATE_FILE" "$INHIBITOR_PID_FILE"
 }
 
 # Function to get status for output
