@@ -104,7 +104,7 @@ Rectangle {
             } else if (Quickshell.env("XDG_CURRENT_DESKTOP") && (Quickshell.env("XDG_CURRENT_DESKTOP").includes("sway") || Quickshell.env("XDG_CURRENT_DESKTOP").includes("Sway"))) {
                 return ["bash", "-c", "swaymsg input 'type:keyboard' xkb_switch_layout next"]
             } else {
-                // X11 - Toggles between us and arش
+                // X11 - Toggles between us and ara
                 return ["bash", "-c", "L=$(setxkbmap -query | awk '/layout:/ {print $2}'); if [ \"$L\" = \"us\" ]; then setxkbmap ara; else setxkbmap us; fi"]
             }
         }
