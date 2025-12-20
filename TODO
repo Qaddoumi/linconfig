@@ -10,6 +10,16 @@
 - [ ] dkms-3.2.1-1  i2c-tools-4.4-2
 
 
+## To-Do IMPORTANT
+
+- Plymouth Screen
+- Xscreensaver Gibson auto setup
+- Defaults for programs with xdg-utils
+- Hide Grub on install
+- starship should be non-interactive
+- Theming (nwg-look, mouse, dark-prefer, etc.)
+
+
 ## For Sway:
 
 - [ ]  pacman -Ss conky
