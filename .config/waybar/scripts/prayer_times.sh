@@ -9,8 +9,8 @@ for arg in "$@"; do
 done
 
 # Configuration - Update these with your location
-LATITUDE="32.072" # Zarqa, Jordan latitude
-LONGITUDE="36.088" # Zarqa, Jordan longitude
+LATITUDE="31.9555" # Amman, Jordan latitude
+LONGITUDE="35.9435" # Amman, Jordan longitude
 TIMEZONE="Asia/Amman"
 METHOD="2" # 1=University of Islamic Sciences, Karachi, 2=Islamic Society of North America (ISNA), 3=Muslim World League, etc.
 
@@ -74,7 +74,7 @@ get_prayer_times_api() {
     fi
     
     # API 2: Prayer Times API
-    prayer_data=$(curl -s --connect-timeout 5 "https://api.pray.zone/v2/times/today.json?city=zarqa&country=jordan" 2>/dev/null)
+    prayer_data=$(curl -s --connect-timeout 5 "https://api.pray.zone/v2/times/today.json?city=amman&country=jordan" 2>/dev/null)
     
     if [[ -n "$prayer_data" && "$prayer_data" != *"error"* ]]; then
         local fajr=$(echo "$prayer_data" | jq -r '.results.datetime[0].times.Fajr')

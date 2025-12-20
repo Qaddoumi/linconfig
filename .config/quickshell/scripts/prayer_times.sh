@@ -74,7 +74,7 @@ get_prayer_times_api() {
     fi
     
     # API 2: Prayer Times API
-    prayer_data=$(curl -s --connect-timeout 5 "https://api.pray.zone/v2/times/today.json?city=zarqa&country=jordan" 2>/dev/null)
+    prayer_data=$(curl -s --connect-timeout 5 "https://api.pray.zone/v2/times/today.json?city=amman&country=jordan" 2>/dev/null)
     
     if [[ -n "$prayer_data" && "$prayer_data" != *"error"* ]]; then
         local fajr=$(echo "$prayer_data" | jq -r '.results.datetime[0].times.Fajr')
