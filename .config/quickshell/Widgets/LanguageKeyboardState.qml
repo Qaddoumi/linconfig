@@ -94,6 +94,25 @@ Rectangle {
         Component.onCompleted: running = true
     }
 
+    // Process to switch keyboard layout
+    Process {
+        id: switchLayoutProcess
+        running: false
+        command: {
+            if (Quickshell.env("XDG_CURRENT_DESKTOP") === "Hyprland") {
+                return ["bash", "-c", "hyprctl switchxkblayout all next"]
+            } else if (Quickshell.env("XDG_CURRENT_DESKTOP") && (Quickshell.env("XDG_CURRENT_DESKTOP").includes("sway") || Quickshell.env("XDG_CURRENT_DESKTOP").includes("Sway"))) {
+                return ["bash", "-c", "swaymsg input 'type:keyboard' xkb_switch_layout next"]
+            } else {
+                // X11 - Toggles between us and arش
+                return ["bash", "-c", "L=$(setxkbmap -query | awk '/layout:/ {print $2}'); if [ \"$L\" = \"us\" ]; then setxkbmap ara; else setxkbmap us; fi"]
+            }
+        }
+        onExited: {
+            layoutProcess.running = true
+        }
+    }
+
     function updateTooltip() {
         var tooltip = "Layout: " + currentLayout
         tooltip += "\n\nKeyboard State:"
@@ -120,9 +139,10 @@ Rectangle {
         }
 
         onClicked: {
-            // Refresh on click
-            //TODO: switch the language on click
-            layoutProcess.running = true
+            // Trigger layout switch
+            switchLayoutProcess.running = true
+            
+            // Refresh LED state
             ledProcess.running = true
             popupLoader.active = false
         }
