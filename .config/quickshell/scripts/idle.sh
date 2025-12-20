@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 
 # Idle Inhibitor Toggle Script
-# Works with both Hyprland and Sway
-
-#TODO: add X11
+# Works with Hyprland, Sway, and X11 (xscreensaver)
 
 STATE_FILE="${XDG_RUNTIME_DIR:-/tmp}/idle-inhibit.state"
 INHIBITOR_PID_FILE="${XDG_RUNTIME_DIR:-/tmp}/idle-inhibit.pid"
 
-# Detect which compositor is running
+# Detect which compositor/display server is running
 if [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
     COMPOSITOR="hyprland"
 elif [[ -n "$SWAYSOCK" ]]; then
     COMPOSITOR="sway"
+elif [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
+    COMPOSITOR="x11"
 else
-    echo "{\"text\": \"E\", \"tooltip\": \"Error (idle.sh): Neither Hyprland nor Sway detected\", \"class\": \"activated\"}" > "$STATE_FILE"
+    echo "{\"text\": \"E\", \"tooltip\": \"Error (idle.sh): No supported display server detected\", \"class\": \"activated\"}" > "$STATE_FILE"
     exit 1
 fi
 
@@ -42,18 +42,30 @@ start_inhibitor() {
             systemd-inhibit --what=idle --who="Manual" --why="User requested" --mode=block sleep infinity &
             echo $! > "$INHIBITOR_PID_FILE"
         fi
+    elif [[ "$COMPOSITOR" == "x11" ]]; then
+        # X11: Disable screensaver and DPMS
+        if pgrep -x xscreensaver > /dev/null; then
+            xscreensaver-command -deactivate 2>/dev/null
+        fi
     fi
     echo "inhibited" > "$STATE_FILE"
 }
 
 # Function to stop inhibitor
 stop_inhibitor() {
-    if [[ -f "$INHIBITOR_PID_FILE" ]]; then
-        PID=$(cat "$INHIBITOR_PID_FILE")
-        if ps -p "$PID" > /dev/null 2>&1; then
-            kill "$PID" 2>/dev/null
+    if [[ "$COMPOSITOR" == "hyprland" ]] || [[ "$COMPOSITOR" == "sway" ]]; then
+        if [[ -f "$INHIBITOR_PID_FILE" ]]; then
+            PID=$(cat "$INHIBITOR_PID_FILE")
+            if ps -p "$PID" > /dev/null 2>&1; then
+                kill "$PID" 2>/dev/null
+            fi
+            rm -f "$INHIBITOR_PID_FILE"
         fi
-        rm -f "$INHIBITOR_PID_FILE"
+    elif [[ "$COMPOSITOR" == "x11" ]]; then
+        # X11: Re-enable screensaver
+        if pgrep -x xscreensaver > /dev/null; then
+            xscreensaver-command -activate 2>/dev/null
+        fi
     fi
     rm -f "$STATE_FILE"
 }
