@@ -42,6 +42,20 @@ Rectangle {
         }
         Component.onCompleted: running = true
     }
+
+    Process {
+        id: runOnClickProcess
+        command: ["bash", "-c", "kitty -e gdu"]
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+
+        onClicked: {
+            runOnClickProcess.running = true
+        }
+    }
     //TODO: add tooltip to show other disks, and the folders that has high usage
-    //TODO: open gdu on click
 }

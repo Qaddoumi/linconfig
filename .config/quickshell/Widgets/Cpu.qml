@@ -61,4 +61,19 @@ Rectangle {
         }
         Component.onCompleted: running = true
     }
+
+    Process {
+        id: runOnClickProcess
+        command: ["bash", "-c", "kitty -e htop"]
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+
+        onClicked: {
+            runOnClickProcess.running = true
+        }
+    }
 }

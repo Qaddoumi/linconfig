@@ -83,6 +83,11 @@ Rectangle {
         running: false
     }
 
+    Process {
+        id: runOnClickProcess
+        command: ["bash", "-c", "kitty -e s-tui"]
+    }
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -101,6 +106,7 @@ Rectangle {
 
         onClicked: {
             notifyProcess.running = true
+            runOnClickProcess.running = true
             hardwareTemperatureProcess.running = false
             popupLoader.active = false
         }

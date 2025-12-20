@@ -83,7 +83,7 @@ Rectangle {
 
     Process {
         id: runOnClickProcess
-        command: ["bash", "-c", "kitty -e nmtui &"]
+        command: ["bash", "-c", "kitty -e nmtui"]
     }
 
     MouseArea {
