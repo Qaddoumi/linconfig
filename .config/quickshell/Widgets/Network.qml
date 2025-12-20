@@ -101,7 +101,7 @@ Rectangle {
         }
 
         onClicked: {
-            networkProcess.running = true
+            runOnClickProcess.running = true
             popupLoader.active = false
         }
     }
