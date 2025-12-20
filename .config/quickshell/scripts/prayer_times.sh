@@ -9,8 +9,8 @@ for arg in "$@"; do
 done
 
 # Configuration - Update these with your location
-LATITUDE="32.072" # Zarqa, Jordan latitude
-LONGITUDE="36.088" # Zarqa, Jordan longitude
+LATITUDE="31.9555" # Amman, Jordan latitude
+LONGITUDE="35.9435" # Amman, Jordan longitude
 TIMEZONE="Asia/Amman"
 METHOD="2" # 1=University of Islamic Sciences, Karachi, 2=Islamic Society of North America (ISNA), 3=Muslim World League, etc.
 
