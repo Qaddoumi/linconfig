@@ -3,7 +3,7 @@
 ## 📝 Todo List
 - [ ] btrfs filesystem
 - [ ] handling secure boot
-- [ ] make sure hibernate works
+- [ ] make sure hibernate works in vm
 - [ ] luks encryption
 - [ ] apparmor support
 - [ ] zram, zswap
@@ -16,7 +16,6 @@
 - Xscreensaver Gibson auto setup
 - Defaults for programs with xdg-utils
 - Hide Grub on install
-- starship should be non-interactive
 - Theming (nwg-look, mouse, dark-prefer, etc.)
 
 

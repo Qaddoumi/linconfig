@@ -30,6 +30,7 @@ fi
 echo -e "${green}Copying config files...${no_color}"
 sudo cp -rf ~/linconfig/.config/* ~/.config/
 sudo cp -f ~/linconfig/.config/mimeapps.list ~/.local/share/applications/
+sudo cp -f ~/linconfig/.config/.gtkrc-2.0 ~
 
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
@@ -60,6 +61,8 @@ mkdir -p ~/.local/bin
 cp -rf ~/linconfig/pkgs/scripts/. ~/.local/bin/ 2>/dev/null || true
 find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
 
+
+echo -e "${green}Copy the installconfig.sh script${no_color}"
 cp -f ~/linconfig/pkgs/installconfig.sh ~/installconfig.sh
 chmod +x ~/installconfig.sh
 

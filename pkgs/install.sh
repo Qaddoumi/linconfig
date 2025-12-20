@@ -206,10 +206,6 @@ sudo pacman -S --needed --noconfirm xorg-xprop xdotool # Dependencies for x11_wo
 echo -e "\n\n"
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm nwg-look # GTK theme configuration GUI
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration GUI
-echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gnome-keyring # Authentication agent for privileged operations
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm nwg-displays # Display configuration GUI for hyperland and sway
@@ -357,6 +353,10 @@ sudo pacman -S --needed --noconfirm thermald # Intel thermal daemon
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm dmidecode # Desktop Management Interface table related utilities
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+
+sudo pacman -S --needed --noconfirm obs-studio # live streaming and recording
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+
 
 # yay -S --needed --noconfirm 12to11-git || echo -e "${red}Failed to install 12to11-git${no_color}" # run wayland apps on xorg
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -564,23 +564,34 @@ echo -e "${green}Test with:\n  fc-match 'Noto Sans Arabic'\n  fc-match 'JetBrain
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Setting Dark theme for GTK applications${no_color}"
+sudo pacman -S --needed --noconfirm nwg-look # GTK theme configuration GUI
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm materia-gtk-theme # Material Design GTK theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-#sudo pacman -S --needed --noconfirm papirus-icon-theme # Icon theme
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm capitaine-cursors # Cursor theme
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm papirus-icon-theme # Icon theme
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm capitaine-cursors # Cursor theme
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Showing available themes${no_color}"
 ls /usr/share/themes/
-# echo -e "${green}Available icon and cursor themes:${no_color}"
-# ls /usr/share/icons/
+echo -e "${green}Available icon and cursor themes:${no_color}"
+ls /usr/share/icons/
 
 
 # # Additional theming setup
-# gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact'
-# gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
-# gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors'
+gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact'
+gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors'
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+gsettings set org.gnome.desktop.interface enable-animations false
+
+
+echo -e "${green}Setting Dark theme for Qt applications${no_color}"
+sudo pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration GUI
+sudo pacman -S --needed --noconfirm kvantum-theme-materia # Material Design Qt theme
+
+
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
