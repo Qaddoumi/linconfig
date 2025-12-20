@@ -1,5 +1,3 @@
-## For arch :
-
 ## 📝 Todo List
 - [ ] btrfs filesystem
 - [ ] handling secure boot
@@ -10,16 +8,12 @@
 - [ ] dkms-3.2.1-1  i2c-tools-4.4-2
 
 
-## To-Do IMPORTANT
 
-- Plymouth Screen
-- Xscreensaver Gibson auto setup
-- Defaults for programs with xdg-utils
-- Hide Grub on install
-- Theming (nwg-look, mouse, dark-prefer, etc.)
+- [ ] Plymouth Screen
+- [ ] Xscreensaver Gibson auto setup
+- [ ] Defaults for programs with xdg-utils
+- [ ] Hide Grub on install
 
-
-## For Sway:
 
 - [ ]  pacman -Ss conky
 extra/conky 1.22.2-1
@@ -77,9 +71,7 @@ extra/acpid 2.0.34-2
 - [ ] nwg-look - Sway-friendly GTK theme switcher
 - [ ] wpaperd or swaybg - For wallpaper management
 - [ ] Waybar’s temperature module relies on:
-lm-sensors (for CPU/GPU temp)
-hddtemp (for disk temp, optional)
-nvtop (for NVIDIA GPU temp, optional)
+- [ ] nvtop (for NVIDIA GPU temp, optional)
 - [ ] https://jasoncarloscox.com/creations/vim-sway-nav/
 - [ ] (Learnaboutthem) radeontop, intel-gpu-tools, and nvidia-prime for better GPU management
 - [ ] uwsm: an advanced way to start desktop compositors as systemd units

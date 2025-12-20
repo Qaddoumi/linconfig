@@ -321,8 +321,8 @@ sudo pacman -S --needed --noconfirm libxml2 # XML parsing library
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm pv # progress bar in terminal
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm network-manager-applet # Network management applet
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+# sudo pacman -S --needed --noconfirm network-manager-applet # Network management applet
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm flameshot # Screenshot utility with annotation tools
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm grim # Screenshot tool

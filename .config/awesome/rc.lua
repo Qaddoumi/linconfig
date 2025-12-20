@@ -650,7 +650,6 @@ awful.spawn.with_shell("/usr/bin/dex -a")
     
 awful.spawn.with_shell("killall -q flameshot; sleep 3; flameshot &")
 awful.spawn.with_shell("killall -q copyq; sleep 3; copyq &")
-awful.spawn.with_shell("killall -q nm-applet; sleep 3; nm-applet --indicator &")
 awful.spawn.with_shell("killall -q dunst; sleep 3; dunst &")
 awful.spawn.with_shell("killall -q picom; sleep 3; picom -b &")
 awful.spawn.with_shell("/usr/lib/mate-polkit/polkit-mate-authentication-agent-1")

@@ -167,9 +167,6 @@ exec copyq --start-server
 ## SwayNC Notification & system tray
 exec_always killall -q swaync && swaync -c ~/.config/swaync/config.json
 
-# NetworkManager
-exec_always bash -c "killall -q nm-applet ; nm-applet --indicator"
-
 ## quickshell
 exec_always bash -c "killall -q quickshell ; quickshell"
 exec_always bash -c "killall -q waybar ; waybar"
