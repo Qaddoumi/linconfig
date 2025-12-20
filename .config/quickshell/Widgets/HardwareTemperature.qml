@@ -85,7 +85,7 @@ Rectangle {
 
     Process {
         id: runOnClickProcess
-        command: ["bash", "-c", "kitty -e s-tui"]
+        command: ["bash", "-c", "kitty -e watch -n 1 sensors"]
     }
 
     MouseArea {

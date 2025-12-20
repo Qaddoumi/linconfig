@@ -215,7 +215,7 @@
         "format": " {text}",
         "tooltip": true,
         "on-click": "notify-send \"CPU Temperature Details\" \"$(~/.config/waybar/scripts/cpu_temp.sh | jq -r '.tooltip')\"",
-        "on-click-right": "kitty -e s-tui"
+        "on-click-right": "kitty -e watch -n 1 sensors"
     },
 
     "custom/power": {
@@ -252,7 +252,7 @@
             "warning": 70,
             "critical": 80
         },
-        "on-click": "kitty -e s-tui"
+        "on-click": "kitty -e watch -n 1 sensors"
     },
 
     "backlight": {

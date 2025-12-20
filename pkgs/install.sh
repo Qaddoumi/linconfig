@@ -290,8 +290,8 @@ sudo pacman -S --needed --noconfirm hyprpolkitagent # PolicyKit authentication a
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm mate-polkit # Authentication agent for privileged operations
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm s-tui # Terminal UI for monitoring CPU
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+# sudo pacman -S --needed --noconfirm s-tui # Terminal UI for monitoring CPU
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gdu # Disk usage analyzer
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm bc # Arbitrary precision calculator language
