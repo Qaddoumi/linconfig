@@ -4,7 +4,7 @@
 # Works with Hyprland, Sway, and X11 (xscreensaver)
 
 STATE_FILE="${XDG_RUNTIME_DIR:-/tmp}/idle-inhibit.state"
-INHIBITOR_PID_FILE="${XDG_RUNTIME_DIR:-/tmp}/idle-inhibit.pid"
+INHIBITOR_PID_FILE="${XDG_RUNTIME_DIR:-/tmp}/swayidle.pid"
 
 # Detect which compositor/display server is running
 if [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
@@ -25,23 +25,13 @@ is_inhibited() {
 
 # Function to start inhibitor
 start_inhibitor() {
-    if [[ "$COMPOSITOR" == "hyprland" ]]; then
-        # Hyprland uses systemd-inhibit or hypridle
-        systemd-inhibit --what=idle --who="Manual" --why="User requested" --mode=block sleep infinity &
-        echo $! > "$INHIBITOR_PID_FILE"
-    elif [[ "$COMPOSITOR" == "sway" ]]; then
-        # Sway uses wayland-idle-inhibitor or swayidle
-        if command -v wayland-idle-inhibitor.py &> /dev/null; then
-            wayland-idle-inhibitor.py &
-            echo $! > "$INHIBITOR_PID_FILE"
-        elif command -v sway-idle-inhibit.py &> /dev/null; then
-            sway-idle-inhibit.py &
-            echo $! > "$INHIBITOR_PID_FILE"
-        else
-            # Fallback: use systemd-inhibit
-            systemd-inhibit --what=idle --who="Manual" --why="User requested" --mode=block sleep infinity &
-            echo $! > "$INHIBITOR_PID_FILE"
-        fi
+    local PID=$(pgrep -x swayidle | head -n1)
+    
+    if [[ -n "$PID" ]]; then
+        # Save the PID for later restart
+        echo "$PID" > "$INHIBITOR_PID_FILE"
+        # Kill swayidle
+        kill "$PID" 2>/dev/null
     elif [[ "$COMPOSITOR" == "x11" ]]; then
         # X11: Disable screensaver and DPMS
         if pgrep -x xscreensaver > /dev/null; then
@@ -53,21 +43,65 @@ start_inhibitor() {
 
 # Function to stop inhibitor
 stop_inhibitor() {
-    if [[ "$COMPOSITOR" == "hyprland" ]] || [[ "$COMPOSITOR" == "sway" ]]; then
-        if [[ -f "$INHIBITOR_PID_FILE" ]]; then
-            PID=$(cat "$INHIBITOR_PID_FILE")
-            if ps -p "$PID" > /dev/null 2>&1; then
-                kill "$PID" 2>/dev/null
-            fi
-            rm -f "$INHIBITOR_PID_FILE"
-        fi
+    if [[ "$COMPOSITOR" == "hyprland" ]]; then
+        # Start swayidle for Hyprland
+        swayidle -w \
+            timeout 300 'swaylock \
+                --color 2d353b \
+                --inside-color 3a454a \
+                --inside-clear-color 5c6a72 \
+                --inside-ver-color 5a524c \
+                --inside-wrong-color 543a3a \
+                --ring-color 7a8478 \
+                --ring-clear-color a7c080 \
+                --ring-ver-color dbbc7f \
+                --ring-wrong-color e67e80 \
+                --key-hl-color d699b6 \
+                --bs-hl-color e69875 \
+                --separator-color 2d353b \
+                --text-color d3c6aa \
+                --text-clear-color d3c6aa \
+                --text-ver-color d3c6aa \
+                --text-wrong-color d3c6aa \
+                --indicator-radius 100 \
+                --indicator-thickness 10 \
+                --font "JetBrainsMono Nerd Font Propo"'
+            timeout 1800 'hyprctl dispatch dpms off' \
+            resume 'hyprctl dispatch dpms on' \
+            before-sleep 'swaylock -f -c 000000' &
+    elif [[ "$COMPOSITOR" == "sway" ]]; then
+        # Start swayidle for Sway
+        swayidle -w \
+            timeout 300 'swaylock \
+                --color 2d353b \
+                --inside-color 3a454a \
+                --inside-clear-color 5c6a72 \
+                --inside-ver-color 5a524c \
+                --inside-wrong-color 543a3a \
+                --ring-color 7a8478 \
+                --ring-clear-color a7c080 \
+                --ring-ver-color dbbc7f \
+                --ring-wrong-color e67e80 \
+                --key-hl-color d699b6 \
+                --bs-hl-color e69875 \
+                --separator-color 2d353b \
+                --text-color d3c6aa \
+                --text-clear-color d3c6aa \
+                --text-ver-color d3c6aa \
+                --text-wrong-color d3c6aa \
+                --indicator-radius 100 \
+                --indicator-thickness 10 \
+                --font "JetBrainsMono Nerd Font Propo"' \
+            timeout 1800 'swaymsg output "*" power off' \
+            resume 'swaymsg output "*" power on' \
+            before-sleep 'swaylock -f -c 000000' &
     elif [[ "$COMPOSITOR" == "x11" ]]; then
         # X11: Re-enable screensaver
         if pgrep -x xscreensaver > /dev/null; then
             xscreensaver-command -activate 2>/dev/null
         fi
     fi
-    rm -f "$STATE_FILE"
+    rm -f "$STATE_FILE" "$INHIBITOR_PID_FILE"
 }
 
 # Function to get status for output
