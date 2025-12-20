@@ -31,6 +31,7 @@ echo -e "${green}Copying config files...${no_color}"
 sudo cp -rf ~/linconfig/.config/* ~/.config/
 sudo cp -f ~/linconfig/.config/mimeapps.list ~/.local/share/applications/
 sudo cp -f ~/linconfig/.config/.gtkrc-2.0 ~
+sudo cp -f ~/linconfig/.config/.xscreensaver ~
 
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
@@ -45,6 +46,8 @@ sudo chmod +x ~/.local/bin/clipboard-bridge.sh
 echo -e "${green}Setting up ownership for configuration files...${no_color}"
 sudo chown -R $USER:$USER ~/.config > /dev/null || true
 sudo chown -R $USER:$USER ~/.local > /dev/null || true
+sudo chown $USER:$USER ~/.gtkrc-2.0 > /dev/null || true
+sudo chown $USER:$USER ~/.xscreensaver > /dev/null || true
 
 echo -e "${green}Setting up oh-my-posh (bash prompt)...${no_color}"
 if ! sudo grep -q "source ~/.config/oh-my-posh/gmay.omp.json" ~/.bashrc; then

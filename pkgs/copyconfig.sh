@@ -5,6 +5,8 @@ sudo mkdir -p ~/.config
 sudo cp -afr ~/shared/github/MyGithubs/linconfig/.config/* ~/.config/
 sudo mkdir -p ~/.local/share/applications/
 sudo cp -f ~/shared/github/MyGithubs/linconfig/.config/mimeapps.list ~/.local/share/applications/
+cp -f ~/shared/github/MyGithubs/linconfig/.config/.gtkrc-2.0 ~
+cp -f ~/shared/github/MyGithubs/linconfig/.config/.xscreensaver ~
 
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
@@ -13,4 +15,14 @@ sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
 sudo chown -R $USER:$USER ~/.config > /dev/null || true
 sudo chown -R $USER:$USER ~/.local > /dev/null || true
 
-swaymsg reload
+echo -e "${green}\n\nReloading session...${no_color}"
+if [  "$XDG_SESSION_DESKTOP" = "Hyprland" ]; then
+    echo -e "${green}Reloading Hyprland...${no_color}"
+    hyprctl reload > /dev/null || true
+elif [  "$XDG_SESSION_DESKTOP" = "sway" ]; then
+    echo -e "${green}Reloading Sway...${no_color}"
+    swaymsg reload > /dev/null || true
+elif [  "$XDG_SESSION_DESKTOP" = "awesome" ]; then
+    echo -e "${green}Reloading Awesome...${no_color}"
+    echo 'awesome.restart()' | awesome-client > /dev/null || true
+fi
