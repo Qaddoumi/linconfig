@@ -88,7 +88,7 @@ enum { CurResizeBR, CurResizeBL, CurResizeTR, CurResizeTL, CurNormal, CurResize,
 enum { SchemeNorm, SchemeSel }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
-       NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMIcon,
+       NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMIcon, NetWMStateDemandsAttention,
        NetWMWindowTypeDialog, NetClientList, NetDesktopNames, NetDesktopViewport, NetNumberOfDesktops, NetCurrentDesktop, NetWMDesktop, NetLast }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
@@ -268,6 +268,7 @@ static void setclientdesktop(Client *c);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void fullscreen(const Arg *arg);
+static void setwmstate(Client *c, Atom state, int add);
 static void setlayout(const Arg *arg);
 static void setcfact(const Arg *arg);
 static void setmfact(const Arg *arg);
@@ -819,6 +820,11 @@ clientmessage(XEvent *e)
 				c->fakefullscreen = 3;
 			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
 				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
+		}
+		if (cme->data.l[1] == netatom[NetWMStateDemandsAttention]
+		|| cme->data.l[2] == netatom[NetWMStateDemandsAttention]) {
+			seturgent(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
+				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isurgent)));
 		}
 	} else if (cme->message_type == netatom[NetActiveWindow]) {
 		if (c != selmon->sel && !c->isurgent)
@@ -1620,6 +1626,9 @@ manage(Window w, XWindowAttributes *wa)
 	c->mon->sel = c;
 	arrange(c->mon);
 	XMapWindow(dpy, c->win);
+	if (!(c->tags & c->mon->tagset[c->mon->seltags])) { // If window is not on a visible tag
+		seturgent(c, 1);
+	}
 	if (term)
 		swallow(term, c);
 	focus(NULL);
@@ -2092,13 +2101,16 @@ propertynotify(XEvent *e)
 		case XA_WM_HINTS:
 			updatewmhints(c);
 			drawbars();
-			break;
+			break; 
 		}
+		if (ev->atom == netatom[NetWMState])
+			updatewindowtype(c);
 		if (ev->atom == XA_WM_NAME || ev->atom == netatom[NetWMName]) {
 			updatetitle(c);
 			if (c == c->mon->sel)
 				drawbar(c->mon);
 		}
+
 		#if SHOWWINICON
 		else if (ev->atom == netatom[NetWMIcon]) {
 			updateicon(c);
@@ -2527,16 +2539,10 @@ setfullscreen(Client *c, int fullscreen)
 	} else if (c->fakefullscreen == 3) // client exiting actual fullscreen
 		c->fakefullscreen = 1;
 
-	if (fullscreen != c->isfullscreen) { // only send property change if necessary
-		if (fullscreen)
-			XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
-				PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
-		else
-			XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
-				PropModeReplace, (unsigned char*)0, 0);
+	if (fullscreen != c->isfullscreen) {
+		setwmstate(c, netatom[NetWMFullscreen], fullscreen);
+		c->isfullscreen = fullscreen;
 	}
-
-	c->isfullscreen = fullscreen;
 
 	/* Some clients, e.g. firefox, will send a client message informing the window manager
 	 * that it is going into fullscreen after receiving the above signal. This has the side
@@ -2586,6 +2592,43 @@ fullscreen(const Arg *arg)
 		setlayout(&((Arg) { .v = last_layout }));
 	}
 	togglebar(arg);
+}
+
+void
+setwmstate(Client *c, Atom state, int add)
+{
+	Atom *atoms = NULL;
+	Atom actual;
+	int format;
+	unsigned long n, extra;
+	unsigned long i;
+	int found = 0;
+
+	if (XGetWindowProperty(dpy, c->win, netatom[NetWMState], 0L, 1024L, False, XA_ATOM,
+		&actual, &format, &n, &extra, (unsigned char **)&atoms) == Success && atoms) {
+		for (i = 0; i < n; i++) {
+			if (atoms[i] == state) {
+				found = 1;
+				if (!add) {
+					/* remove atom */
+					for (unsigned long j = i; j < n - 1; j++)
+						atoms[j] = atoms[j+1];
+					n--;
+				}
+				break;
+			}
+		}
+		if (add && !found) {
+			/* add atom */
+			if (!(atoms = realloc(atoms, (n + 1) * sizeof(Atom))))
+				die("realloc failed");
+			atoms[n++] = state;
+		}
+		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32, PropModeReplace, (unsigned char *)atoms, n);
+		XFree(atoms);
+	} else if (add) {
+		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32, PropModeReplace, (unsigned char *)&state, 1);
+	}
 }
 
 void
@@ -2691,6 +2734,7 @@ setup(void)
 	netatom[NetWMFullscreen] = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
 	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
 	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+	netatom[NetWMStateDemandsAttention] = XInternAtom(dpy, "_NET_WM_STATE_DEMANDS_ATTENTION", False);
 	netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
 	netatom[NetDesktopViewport] = XInternAtom(dpy, "_NET_DESKTOP_VIEWPORT", False);
 	netatom[NetNumberOfDesktops] = XInternAtom(dpy, "_NET_NUMBER_OF_DESKTOPS", False);
@@ -2757,6 +2801,7 @@ seturgent(Client *c, int urg)
 	XWMHints *wmh;
 
 	c->isurgent = urg;
+	setwmstate(c, netatom[NetWMStateDemandsAttention], urg);
 	if (!(wmh = XGetWMHints(dpy, c->win)))
 		return;
 	wmh->flags = urg ? (wmh->flags | XUrgencyHint) : (wmh->flags & ~XUrgencyHint);
@@ -3684,13 +3729,27 @@ updatetitle(Client *c)
 void
 updatewindowtype(Client *c)
 {
-	Atom state = getatomprop(c, netatom[NetWMState]);
-	Atom wtype = getatomprop(c, netatom[NetWMWindowType]);
+	Atom actual, wtype;
+	int format;
+	unsigned long n, extra;
+	Atom *atoms = NULL;
+	int isurgent = 0;
 
-	if (state == netatom[NetWMFullscreen])
-		setfullscreen(c, 1);
+	wtype = getatomprop(c, netatom[NetWMWindowType]);
 	if (wtype == netatom[NetWMWindowTypeDialog])
 		c->isfloating = 1;
+
+	if (XGetWindowProperty(dpy, c->win, netatom[NetWMState], 0L, 1024L, False, XA_ATOM,
+		&actual, &format, &n, &extra, (unsigned char **)&atoms) == Success && atoms) {
+		for (unsigned long i = 0; i < n; i++) {
+			if (atoms[i] == netatom[NetWMFullscreen])
+				setfullscreen(c, 1);
+			if (atoms[i] == netatom[NetWMStateDemandsAttention])
+				isurgent = 1;
+		}
+		XFree(atoms);
+	}
+	seturgent(c, isurgent);
 }
 
 void

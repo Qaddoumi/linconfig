@@ -58,6 +58,9 @@ get_workspace_status() {
             if xprop -id "$id" WM_HINTS 2>/dev/null | grep -qi "urgency"; then
                 is_urgent=1
             fi
+            if xprop -id "$id" WM_HINTS 2>/dev/null | grep -q "UrgencyHint"; then
+                is_urgent=1
+            fi
             
             # Method 2: Check _NET_WM_STATE for DEMANDS_ATTENTION
             if [ $is_urgent -eq 0 ]; then
