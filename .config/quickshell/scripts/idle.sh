@@ -35,7 +35,7 @@ start_inhibitor() {
     elif [[ "$COMPOSITOR" == "x11" ]]; then
         # X11: Disable screensaver and DPMS
         if pgrep -x xscreensaver > /dev/null; then
-            xscreensaver-command -deactivate 2>/dev/null
+            xscreensaver-command -exit 2>/dev/null
         fi
     fi
     echo "inhibited" > "$STATE_FILE"
@@ -98,7 +98,7 @@ stop_inhibitor() {
     elif [[ "$COMPOSITOR" == "x11" ]]; then
         # X11: Re-enable screensaver
         if pgrep -x xscreensaver > /dev/null; then
-            xscreensaver-command -activate 2>/dev/null
+            xscreensaver -no-splash -quiet & 2>/dev/null
         fi
     fi
     rm -f "$STATE_FILE" "$INHIBITOR_PID_FILE"

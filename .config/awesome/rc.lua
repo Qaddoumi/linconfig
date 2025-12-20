@@ -651,7 +651,7 @@ awful.spawn.with_shell("/usr/bin/dex -a")
 awful.spawn.with_shell("killall -q flameshot; sleep 3; flameshot &")
 awful.spawn.with_shell("killall -q copyq; sleep 3; copyq &")
 awful.spawn.with_shell("killall -q dunst; sleep 3; dunst &")
-awful.spawn.with_shell("xscreensaver-command -exit; sleep 3; xscreensaver -no-splash &")
+awful.spawn.with_shell("xscreensaver-command -exit; sleep 3; xscreensaver -no-splash -quiet &")
 awful.spawn.with_shell("/usr/lib/xdg-desktop-portal -r")
 
 awful.spawn.with_shell("setxkbmap -layout us,ar -option grp:alt_shift_toggle") -- this will toggle between keyboard layouts us and ar
