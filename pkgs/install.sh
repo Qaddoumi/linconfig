@@ -205,7 +205,6 @@ else
     echo "" | sudo tee -a "/etc/pam.d/xscreensaver" > /dev/null || true
     echo -e "auth       include      system-auth\naccount    include      system-auth\npassword   include      system-auth\nsession    include      system-auth" | sudo tee -a "/etc/pam.d/xscreensaver" > /dev/null || true
 fi
-
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-xprop xdotool # Dependencies for x11_workspaces.sh in quickshell
 echo -e "${blue}--------------------------------------------------\n${no_color}"
