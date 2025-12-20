@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 # urgency monitor - automatically sets urgency when windows request focus on inactive workspaces
+# and trigger urgency on new windows because many modern applications (like browsers) only send the
+# _NET_WM_STATE_DEMANDS_ATTENTION , WM_HINTS urgency and WM_STATE urgency
+# signals if they detect that the Window Manager supports it.
 
 
 # Check dependencies
