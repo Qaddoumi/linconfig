@@ -195,7 +195,7 @@ else
 fi
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xorg-xinit xorg-server # X11 display server and initialization
+sudo pacman -S --needed --noconfirm xorg-xinit xorg-server dbus # X11 display server, initialization and dbus
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm picom # Compositor for X11 (used for animation, transparency and blur)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -580,16 +580,33 @@ ls /usr/share/icons/
 
 
 # # Additional theming setup
-gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact'
-gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
-gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors'
-gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-gsettings set org.gnome.desktop.interface enable-animations false
+# Ensure a valid XDG_RUNTIME_DIR exists for dconf/gsettings to work in chroot
+if [ -z "$XDG_RUNTIME_DIR" ]; then
+    export XDG_RUNTIME_DIR=/tmp/runtime-root
+    mkdir -p "$XDG_RUNTIME_DIR"
+    chmod 700 "$XDG_RUNTIME_DIR"
+fi
+
+# Function to run gsettings safely in any environment (chroot or live)
+run_gsettings() {
+    if command -v dbus-run-session >/dev/null; then
+        dbus-run-session -- gsettings "$@"
+    else
+        gsettings "$@"
+    fi
+}
+
+echo -e "${green}Applying GTK settings...${no_color}"
+run_gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact'
+run_gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+run_gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors'
+run_gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+run_gsettings set org.gnome.desktop.interface enable-animations false
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 
 echo -e "${green}Setting Dark theme for Qt applications${no_color}"
-sudo pacman -S --needed --noconfirm kvantum # Qt theme configuration GUI
+sudo pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kvantum-theme-materia # Material Design Qt theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
