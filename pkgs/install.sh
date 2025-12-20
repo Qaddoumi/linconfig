@@ -578,30 +578,13 @@ ls /usr/share/themes/
 echo -e "${green}Available icon and cursor themes:${no_color}"
 ls /usr/share/icons/
 
-
 # # Additional theming setup
-# Ensure a valid XDG_RUNTIME_DIR exists for dconf/gsettings to work in chroot
-if [ -z "$XDG_RUNTIME_DIR" ]; then
-    export XDG_RUNTIME_DIR=/tmp/runtime-root
-    mkdir -p "$XDG_RUNTIME_DIR"
-    chmod 700 "$XDG_RUNTIME_DIR"
-fi
-
-# Function to run gsettings safely in any environment (chroot or live)
-run_gsettings() {
-    if command -v dbus-run-session >/dev/null; then
-        dbus-run-session -- gsettings "$@"
-    else
-        gsettings "$@"
-    fi
-}
-
-echo -e "${green}Applying GTK settings...${no_color}"
-run_gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact'
-run_gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
-run_gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors'
-run_gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-run_gsettings set org.gnome.desktop.interface enable-animations false
+gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact' || true
+gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark' || true
+gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors' || true
+# To get list of options run 'gsettings range org.gnome.desktop.interface color-scheme'
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' || true
+gsettings set org.gnome.desktop.interface enable-animations false || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 

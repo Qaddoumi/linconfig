@@ -81,6 +81,11 @@ Rectangle {
         Component.onCompleted: running = true
     }
 
+    Process {
+        id: runOnClickProcess
+        command: ["bash", "-c", "kitty -e nmtui &"]
+    }
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
