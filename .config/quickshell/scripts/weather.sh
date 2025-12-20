@@ -10,20 +10,20 @@ LOCATION_CACHE="/tmp/weather_location.json"
 get_weather_emoji() {
     local code=$1
     case $code in
-        0) echo "☀️" ;;           # Clear sky
-        1|2|3) echo "🌤" ;;       # Mainly clear, partly cloudy
-        45|48) echo "🌫" ;;       # Fog
-        51|53|55) echo "🌧" ;;    # Drizzle
-        56|57) echo "🌧" ;;       # Freezing drizzle
-        61|63|65) echo "🌧" ;;    # Rain
-        66|67) echo "🌧" ;;       # Freezing rain
-        71|73|75) echo "🌨" ;;    # Snow
-        77) echo "🌨" ;;          # Snow grains
-        80|81|82) echo "🌧" ;;    # Rain showers
-        85|86) echo "🌨" ;;       # Snow showers
-        95) echo "⛈" ;;           # Thunderstorm
-        96|99) echo "⛈" ;;        # Thunderstorm with hail
-        *) echo "🌡" ;;           # Default
+        0) echo "" ;;           # Clear sky
+        1|2|3) echo "" ;;       # Mainly clear, partly cloudy
+        45|48) echo "" ;;       # Fog
+        51|53|55) echo "" ;;    # Drizzle
+        56|57) echo "" ;;       # Freezing drizzle
+        61|63|65) echo "" ;;    # Rain
+        66|67) echo "" ;;       # Freezing rain
+        71|73|75) echo "" ;;    # Snow
+        77) echo "" ;;          # Snow grains
+        80|81|82) echo "" ;;    # Rain showers
+        85|86) echo "" ;;       # Snow showers
+        95) echo "" ;;           # Thunderstorm
+        96|99) echo "" ;;        # Thunderstorm with hail
+        *) echo "" ;;           # Default
     esac
 }
 
@@ -129,7 +129,7 @@ format_output() {
     
     # Hourly forecast (next 12 hours starting from current hour)
     local current_hour=$(date +%H)
-    tooltip+="\\n⏰ Next 12 Hours:\\n"
+    tooltip+="\\n󱎫 Next 12 Hours:\\n"
     
     local hourly_times=$(echo "$data" | jq -r '.hourly.time | @json')
     local hourly_temps=$(echo "$data" | jq -r '.hourly.temperature_2m | @json')
@@ -156,7 +156,7 @@ format_output() {
     done
     
     tooltip+="\\n━━━━━━━━━━━━━━━━━━━━━━\\n"
-    tooltip+="\\n📅 14-Day Forecast:\\n"
+    tooltip+="\\n󰃭 14-Day Forecast:\\n"
     
     # Daily forecast (14 days)
     for i in $(seq 0 13); do
