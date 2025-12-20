@@ -166,17 +166,14 @@ echo -e "${green}Installing Hyprland...${no_color}"
 echo ""
 sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm hypridle # Idle management for hyprland
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm hyprlock # Screen locker for hyprland
 
 echo -e "${green}Installing Sway...${no_color}"
 echo ""
 sudo pacman -S --needed --noconfirm sway # Sway window manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swayidle # Idle management for sway
+sudo pacman -S --needed --noconfirm swayidle # Idle management for sway/hyprland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway
+sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway/hyprland
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
 
