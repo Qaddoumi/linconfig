@@ -41,9 +41,9 @@ static const char *const autostart[] = {
     // "quickshell", NULL,
     // "screensetup", NULL, /*set the screen to 1920x1080@144hz*/
     "dunst", NULL,
+    "sh", "-c", "xscreensaver-command -exit; sleep 3; xscreensaver -no-splash &", NULL,
     // "sh", "-c", "feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'", NULL,
     "sh", "-c", "/usr/bin/dex -a", NULL, /* autostart manager==> will auto start apps in /etc/xdg/autostart/ or ~/.config/autostart/ */
-    // "xautolock", "-time", "5", "-locker", "dwm-lock", "-detectsleep", NULL, /* Lock after 5 minutes */
     NULL /* terminate */
 };
 
