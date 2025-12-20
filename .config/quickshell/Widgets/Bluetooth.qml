@@ -11,7 +11,7 @@ Rectangle {
     border.width: 1
     radius: root.radius / 2
     Text {
-        text: "Bluetooth"
+        text: "Blue"
         id: bluetoothText
         anchors.fill: parent
         horizontalAlignment: Text.AlignHCenter
