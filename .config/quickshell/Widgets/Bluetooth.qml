@@ -35,7 +35,7 @@ Rectangle {
             } else if (bluetoothWidget.deviceCount === 0) {
                 return bluetoothWidget.icon + " On"
             } else if (bluetoothWidget.deviceCount === 1) {
-                return bluetoothWidget.icon + " " + bluetoothWidget.devices[0].name
+                return bluetoothWidget.icon + " " + bluetoothWidget.devices[0].name + " 󰥈" + bluetoothWidget.devices[0].battery
             } else {
                 return bluetoothWidget.icon + " " + bluetoothWidget.deviceCount + " devices"
             }
@@ -62,11 +62,11 @@ Rectangle {
 
                     bluetoothWidget.powered = json.powered || false
                     bluetoothWidget.controller = json.controller || ""
-                    bluetoothWidget.deviceCount = json.deviceCount || 0
                     bluetoothWidget.devices = json.devices || []
                     bluetoothWidget.icon = json.icon || "󰂲"
                     bluetoothWidget.status = json.status || "disabled"
                     bluetoothWidget.discoverable = json.discoverable || false
+                    bluetoothWidget.deviceCount = json.deviceCount || 0
 
                     // Build tooltip
                     var tooltip = "Controller: " + bluetoothWidget.controller
