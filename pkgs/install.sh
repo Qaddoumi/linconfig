@@ -17,6 +17,9 @@ no_color='\033[0m' # reset the color to default
 # or to get a list of all installed packages with their installation time and dependencies:
 # grep "installed" /var/log/pacman.log
 
+# Find what installed a package (dependencies)
+# pacman -Qi <package_name> | grep "Required By"
+
 # # Check if running as root
 # if [[ $EUID -eq 0 ]]; then
 #    echo -e "${red}This script should not be run as root. Please run as a regular user with sudo privileges.${no_color}"
@@ -226,6 +229,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm rofi # Application launcher for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm playerctl # Media control used in quickshell
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm dex # Autostart manager (i dont't know why, but it make spice runs without issues in vm)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for wayland
@@ -323,6 +328,26 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm imv # image viewer
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xarchiver # Lightweight archive manager
+# Optional dependencies for xarchiver
+#     arj: ARJ support
+#     binutils: deb support [installed]
+#     bzip2: bzip2 support [installed]
+#     cpio: RPM support
+#     gzip: gzip support [installed]
+#     lha: LHA support
+#     lrzip: lrzip support
+#     lz4: LZ4 support [installed]
+#     lzip: lzip support
+#     lzop: LZOP support
+#     p7zip: 7z support
+#     tar: tar support [installed]
+#     unarj: ARJ support
+#     unrar: RAR support
+#     unzip: ZIP support
+#     xdg-utils: recognize more file types to open [installed]
+#     xz: xz support [installed]
+#     zip: ZIP support
+#     zstd: zstd support [installed]
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm unzip # Unzip utility
 echo -e "${blue}--------------------------------------------------\n${no_color}"
