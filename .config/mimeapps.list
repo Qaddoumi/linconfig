@@ -209,8 +209,8 @@ x-scheme-handler/rtsp=io.github.celluloid_player.Celluloid.desktop
 # URL handlers
 x-scheme-handler/antigravity=antigravity-url-handler.desktop
 x-scheme-handler/geo=google-maps-geo-handler.desktop
-x-scheme-handler/ipfs=brave-browser.desktop
-x-scheme-handler/ipns=brave-browser.desktop
+x-scheme-handler/ipfs=google-chrome.desktop
+x-scheme-handler/ipns=google-chrome.desktop
 x-scheme-handler/vscode=code-url-handler.desktop
 
 # Archives
