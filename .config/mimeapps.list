@@ -33,6 +33,14 @@ image/avif=imv.desktop
 image/jxl=imv.desktop
 image/qoi=imv.desktop
 image/x-farbfeld=imv.desktop
+image/heic=feh.desktop
+image/x-pcx=feh.desktop
+image/x-portable-anymap=feh.desktop
+image/x-portable-bitmap=feh.desktop
+image/x-portable-graymap=feh.desktop
+image/x-portable-pixmap=feh.desktop
+image/x-tga=feh.desktop
+image/x-xbitmap=feh.desktop
 
 # Terminal
 x-terminal-emulator=kitty.desktop
@@ -100,6 +108,19 @@ video/x-nsv=io.github.celluloid_player.Celluloid.desktop
 video/x-ogm+ogg=io.github.celluloid_player.Celluloid.desktop
 video/x-theora=io.github.celluloid_player.Celluloid.desktop
 video/x-theora+ogg=io.github.celluloid_player.Celluloid.desktop
+video/avi=io.github.celluloid_player.Celluloid.desktop
+video/mkv=io.github.celluloid_player.Celluloid.desktop
+video/vnd.avi=io.github.celluloid_player.Celluloid.desktop
+video/vnd.divx=io.github.celluloid_player.Celluloid.desktop
+video/x-flic=io.github.celluloid_player.Celluloid.desktop
+video/x-mpeg3=io.github.celluloid_player.Celluloid.desktop
+video/x-ms-afs=io.github.celluloid_player.Celluloid.desktop
+video/x-ms-wvxvideo=io.github.celluloid_player.Celluloid.desktop
+video/x-ogm=io.github.celluloid_player.Celluloid.desktop
+application/x-cue=io.github.celluloid_player.Celluloid.desktop
+application/x-ogm=io.github.celluloid_player.Celluloid.desktop
+application/x-ogm-audio=io.github.celluloid_player.Celluloid.desktop
+application/x-ogm-video=io.github.celluloid_player.Celluloid.desktop
 
 # Audio
 audio/3gpp=io.github.celluloid_player.Celluloid.desktop
@@ -166,6 +187,17 @@ audio/x-vorbis+ogg=io.github.celluloid_player.Celluloid.desktop
 audio/x-wav=io.github.celluloid_player.Celluloid.desktop
 audio/x-wavpack=io.github.celluloid_player.Celluloid.desktop
 audio/x-xm=io.github.celluloid_player.Celluloid.desktop
+audio/AMR=io.github.celluloid_player.Celluloid.desktop
+audio/aiff=io.github.celluloid_player.Celluloid.desktop
+audio/m3u=io.github.celluloid_player.Celluloid.desktop
+audio/mpeg2=io.github.celluloid_player.Celluloid.desktop
+audio/mpeg3=io.github.celluloid_player.Celluloid.desktop
+audio/musepack=io.github.celluloid_player.Celluloid.desktop
+audio/rn-mpeg=io.github.celluloid_player.Celluloid.desktop
+audio/vnd.wave=io.github.celluloid_player.Celluloid.desktop
+audio/vorbis=io.github.celluloid_player.Celluloid.desktop
+audio/x-adpcm=io.github.celluloid_player.Celluloid.desktop
+audio/x-pls=io.github.celluloid_player.Celluloid.desktop
 
 # Streaming
 x-scheme-handler/mms=io.github.celluloid_player.Celluloid.desktop
@@ -173,6 +205,13 @@ x-scheme-handler/mmsh=io.github.celluloid_player.Celluloid.desktop
 x-scheme-handler/rtmp=io.github.celluloid_player.Celluloid.desktop
 x-scheme-handler/rtp=io.github.celluloid_player.Celluloid.desktop
 x-scheme-handler/rtsp=io.github.celluloid_player.Celluloid.desktop
+
+# URL handlers
+x-scheme-handler/antigravity=antigravity-url-handler.desktop
+x-scheme-handler/geo=google-maps-geo-handler.desktop
+x-scheme-handler/ipfs=brave-browser.desktop
+x-scheme-handler/ipns=brave-browser.desktop
+x-scheme-handler/vscode=code-url-handler.desktop
 
 # Archives
 application/epub+zip=xarchiver.desktop
