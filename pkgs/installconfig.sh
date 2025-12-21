@@ -32,6 +32,10 @@ sudo cp -rf ~/linconfig/.config/* ~/.config/
 sudo cp -f ~/linconfig/.config/.gtkrc-2.0 ~
 sudo cp -f ~/linconfig/.config/.xscreensaver ~
 
+sudo rm -f ~/.config/mimeinfo.cache || true
+sudo rm -f ~/.local/share/applications/mimeinfo.cache || true
+sudo update-desktop-database ~/.local/share/applications || true
+
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true

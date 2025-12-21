@@ -6,6 +6,10 @@ sudo cp -afr ~/shared/github/MyGithubs/linconfig/.config/* ~/.config/
 cp -af ~/shared/github/MyGithubs/linconfig/.config/.gtkrc-2.0 ~
 cp -af ~/shared/github/MyGithubs/linconfig/.config/.xscreensaver ~
 
+sudo rm -f ~/.config/mimeinfo.cache || true
+sudo rm -f ~/.local/share/applications/mimeinfo.cache || true
+sudo update-desktop-database ~/.local/share/applications || true
+
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
