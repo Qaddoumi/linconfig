@@ -100,7 +100,7 @@ Rectangle {
 
     Process {
         id: runOnClickProcess
-        command: ["bash", "-c", "kitty -e bluetui"]
+        running: false
     }
 
     MouseArea {
@@ -108,6 +108,7 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
 
         onEntered: {
             popupLoader.loading = true
@@ -117,9 +118,23 @@ Rectangle {
             popupLoader.active = false
         }
 
-        onClicked: {
-            runOnClickProcess.running = true
-            popupLoader.active = false
+        onClicked: (mouse) => {
+            popupLoader.active = true
+            if (mouse.button === Qt.LeftButton) {
+                if (!bluetoothWidget.powered) {
+                    runOnClickProcess.command = ["bash", "-c", "bluetoothctl power on"]
+                    bluetoothWidget.icon = "󰂯"
+                    bluetoothWidget.powered = true
+                }else{
+                    runOnClickProcess.command = ["bash", "-c", "bluetoothctl power off"]
+                    bluetoothWidget.icon = "󰂲"
+                    bluetoothWidget.powered = false
+                }
+                runOnClickProcess.running = true
+            } else if (mouse.button === Qt.RightButton) {
+                runOnClickProcess.command = ["bash", "-c", "kitty -e bluetui"]
+                runOnClickProcess.running = true
+            }
         }
     }
 

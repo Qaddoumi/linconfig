@@ -36,6 +36,7 @@ RowLayout {
             notificationWidget.triggerRefresh()
             weatherWidget.process.running = true
             privacyWidget.process.running = true
+            bluetoothWidget.process.running = true
         }
     }
 
@@ -46,6 +47,8 @@ RowLayout {
     Bluetooth {
         id: bluetoothWidget
     }
+
+    //TODO: Add Airplane mode widget
 
     Cpu {
         id: cpuWidget
