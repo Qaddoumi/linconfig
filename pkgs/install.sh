@@ -165,6 +165,7 @@ echo -e "${blue}═════════════════════�
 echo -e "${green}Installing Hyprland...${no_color}"
 echo ""
 sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
+#TODO: uwsm
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Installing Sway...${no_color}"
@@ -253,6 +254,10 @@ sudo pacman -S --needed --noconfirm xdg-user-dirs xdg-desktop-portal-gtk # User 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfrim bluetui # Bluetooth TUI
+sudo systemctl enable bluetooth.service
+sudo systemctl start bluetooth.service
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm htop # System monitor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wget # Download utility
@@ -291,11 +296,13 @@ sudo pacman -S --needed --noconfirm nano # Text editor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm neovim # Neovim text editor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm gnome-calculator # Calculator
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm brightnessctl # Brightness control
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm hyprpolkitagent # PolicyKit authentication agent (give sudo access to GUI apps)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm mate-polkit # Authentication agent for privileged operations
+sudo pacman -S --needed --noconfirm mate-polkit # Authentication agent for privileged operations (used for x11)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 # sudo pacman -S --needed --noconfirm s-tui # Terminal UI for monitoring CPU
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
