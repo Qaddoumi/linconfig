@@ -29,7 +29,6 @@ fi
 
 echo -e "${green}Copying config files...${no_color}"
 sudo cp -rf ~/linconfig/.config/* ~/.config/
-sudo cp -f ~/linconfig/.config/mimeapps.list ~/.local/share/applications/
 sudo cp -f ~/linconfig/.config/.gtkrc-2.0 ~
 sudo cp -f ~/linconfig/.config/.xscreensaver ~
 
