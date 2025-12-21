@@ -33,8 +33,8 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/i
 ## Post-Installation
 After installation, you can:
 1. Log out and select Sway/Hyprland/Awesome/DWM from your display manager
-2. Use `Super + Enter` to open a terminal
-3. Use `Super + d` to open the application launcher
+2. Use `Super + Enter` to open a kitty terminal
+3. Use `Super + d` to open the application launcher (rofi)
 
 
 ---
