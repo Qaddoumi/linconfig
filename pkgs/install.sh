@@ -254,7 +254,7 @@ sudo pacman -S --needed --noconfirm xdg-user-dirs xdg-desktop-portal-gtk # User 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfrim bluetui bluez-utils # Bluetooth TUI
+sudo pacman -S --needed --noconfirm bluetui bluez-utils # Bluetooth TUI
 sudo systemctl enable bluetooth.service
 sudo systemctl start bluetooth.service
 echo -e "${blue}--------------------------------------------------\n${no_color}"
