@@ -1,4 +1,3 @@
-
 [Default Applications]
 # Browser
 text/html=google-chrome.desktop
