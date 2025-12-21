@@ -15,7 +15,7 @@ else
     exit 1
 fi
 
-# Function to check if inhibitor is active
+# Function to check if inhibitor is active (idle manager is killed)
 is_inhibited() {
     if [[ "$COMPOSITOR" == "x11" ]]; then
         ! pgrep -x xscreensaver > /dev/null
@@ -24,7 +24,7 @@ is_inhibited() {
     fi
 }
 
-# Function to start inhibitor
+# Function to activate inhibitor (kill idle manager)
 start_inhibitor() {
     if [[ "$COMPOSITOR" == "x11" ]]; then
         # X11: Kill xscreensaver daemon
@@ -33,19 +33,16 @@ start_inhibitor() {
         fi
     else
         # Wayland: Kill swayidle
-        local PID=$(pgrep -x swayidle | head -n1)
-        if [[ -n "$PID" ]]; then
-            kill "$PID" 2>/dev/null
-        fi
+        pkill -x swayidle 2>/dev/null
     fi
 }
 
-# Function to stop inhibitor
+# Function to deactivate inhibitor (start idle manager)
 stop_inhibitor() {
     if [[ "$COMPOSITOR" == "hyprland" ]]; then
         # Start swayidle for Hyprland
         swayidle -w \
-            timeout 300 'swaylock \
+            timeout 300 'swaylock -f \
                 --color 2d353b \
                 --inside-color 3a454a \
                 --inside-clear-color 5c6a72 \
@@ -64,14 +61,14 @@ stop_inhibitor() {
                 --text-wrong-color d3c6aa \
                 --indicator-radius 100 \
                 --indicator-thickness 10 \
-                --font "JetBrainsMono Nerd Font Propo"'
+                --font "JetBrainsMono Nerd Font Propo"' \
             timeout 1800 'hyprctl dispatch dpms off' \
             resume 'hyprctl dispatch dpms on' \
-            before-sleep 'swaylock -f -c 000000' &
+            before-sleep 'swaylock -f -c 000000' 2>/dev/null &
     elif [[ "$COMPOSITOR" == "sway" ]]; then
         # Start swayidle for Sway
         swayidle -w \
-            timeout 300 'swaylock \
+            timeout 300 'swaylock -f \
                 --color 2d353b \
                 --inside-color 3a454a \
                 --inside-clear-color 5c6a72 \
@@ -93,9 +90,9 @@ stop_inhibitor() {
                 --font "JetBrainsMono Nerd Font Propo"' \
             timeout 1800 'swaymsg output "*" power off' \
             resume 'swaymsg output "*" power on' \
-            before-sleep 'swaylock -f -c 000000' &
+            before-sleep 'swaylock -f -c 000000' 2>/dev/null &
     elif [[ "$COMPOSITOR" == "x11" ]]; then
-        xscreensaver -no-splash -quiet & 2>/dev/null
+        xscreensaver -no-splash -quiet 2>/dev/null &
     fi
 }
 
