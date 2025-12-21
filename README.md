@@ -2,23 +2,15 @@
 [![Bash](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)](https://www.gnu.org/software/bash/)
 [![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?logo=arch-linux&logoColor=fff)](https://archlinux.org)
 
-# LinConfig - Arch Linux Configuration Suite
+# 🌟 LinConfig - Arch Linux Configuration Suite
 
-An automated configuration suite for Arch Linux featuring Sway/Hyprland/Awesome setup, SDDM login manager, and VM GPU passthrough capabilities.
+An automated configuration suite for Arch Linux featuring Sway/Hyprland/Awesome/DWM setup, QuickShell and SDDM login manager, with VM GPU passthrough capabilities.
 
-## ⚠️ Important Notice
+## ⚠️⚠️ Important Notice and Disclaimer
 
-This project is currently in active development. While functional, it may not work as expected in all environments and could potentially cause system issues. **Please backup your data and use at your own risk, I take no responsibility for any damage that may occur.**
+This project is currently in active development. While functional, it may not work as expected in all environments and could potentially cause system issues, The authors are not responsible for any data loss or system and hardware damages. **Please backup your data and use at your own risk, I take no responsibility for any damage that may occur.**
 
-## 🌟 Features
-
-- **Automated Arch Linux Installation**: Complete system setup with advanced configuration options
-- **WM Configuration**: Pre-configured Sway/Hyprland/Awesome window manager with optimized settings
-- **Multiple Login Managers**: Support for both SDDM and Ly display managers
-- **VM GPU Passthrough**: Configuration for virtual machine GPU passthrough
-- **Modular Installation**: Install complete system or just configuration files
-
-## 🚀 Quick Start
+## 🚀 Installation
 
 ### Complete Arch Linux Installation
 Install Arch Linux with advanced configuration options:
@@ -26,7 +18,7 @@ Install Arch Linux with advanced configuration options:
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux/archinstall.sh)
 ```
 
-### Sway/Hyprland/Awesome + SDDM Setup
+### Sway/Hyprland/Awesome/DWM + QuickShell + SDDM Setup
 Install SwayWM with SDDM login manager:
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --is-vm false
@@ -44,9 +36,5 @@ After installation, you can:
 2. Use `Super + Enter` to open a terminal
 3. Use `Super + d` to open the application launcher
 
-
-## ⚠️ Disclaimer
-
-This script modifies system partitions and configurations. The authors are not responsible for any data loss or system and hardware damages. Always backup your data before using these scripts and test in a virtual machine first if possible.
 
 ---
