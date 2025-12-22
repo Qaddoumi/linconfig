@@ -31,3 +31,7 @@ Variants {
         MyBar {}
     }
 }
+// When Variants loops through your monitors:
+
+// It creates one instance of the window for each screen.
+// It provides the information for "the current screen in the loop" via a variable named modelData.
