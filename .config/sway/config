@@ -233,7 +233,7 @@ input "type:keyboard" {
     # Start your launcher
     bindsym $mod+d exec $menu
 
-    # # Reload Waybar
+    # # Reload Waybar TODO: change to quickshell
     # bindsym $mod+shift+a exec pkill -SIGUSR2 waybar
 
     # Call the browser variable and launch it with $mod+b
