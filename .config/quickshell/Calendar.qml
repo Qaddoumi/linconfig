@@ -42,7 +42,7 @@ Variants {
             id: calendarRoot
 
             anchors.fill: parent
-            isVisible: root.calendarVisible
+            property bool isVisible: root.calendarVisible
             
             onRequestClose: {
                 root.calendarVisible = false
