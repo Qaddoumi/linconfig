@@ -169,7 +169,6 @@ exec_always killall -q swaync && swaync -c ~/.config/swaync/config.json
 
 ## quickshell
 exec_always bash -c "killall -q quickshell ; quickshell"
-exec_always bash -c "killall -q waybar ; waybar"
 
 ## Autostart Applications
 exec bash -c 'sleep 4; swaymsg "workspace 1; exec kitty"'
