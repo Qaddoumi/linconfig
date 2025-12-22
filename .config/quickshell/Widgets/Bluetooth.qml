@@ -42,7 +42,7 @@ Rectangle {
         }
         color: {
             if (!bluetoothWidget.powered) return root.colRed
-            if (bluetoothWidget.deviceCount === 0) return root.colYellow
+            if (bluetoothWidget.deviceCount === 0) return root.colPurple
             return root.colBlue
         }
         font.pixelSize: root.fontSize
