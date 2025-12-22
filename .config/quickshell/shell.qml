@@ -25,6 +25,10 @@ ShellRoot {
     property int radius: 8
 
     property bool calendarVisible: false
+    Loader {
+        active: root.calendarVisible
+        source: "Calendar.qml"
+    }
 
     // Detect session type
     property bool isWayland: Quickshell.env("XDG_SESSION_TYPE") === "wayland"
@@ -50,5 +54,5 @@ ShellRoot {
         }
     }
 
-    
+
 }

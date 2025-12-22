@@ -99,9 +99,10 @@ Rectangle {
         }
 
         onClicked: {
-            notifyProcess.running = true
+            // notifyProcess.running = true
             hijriProcess.running = false
             popupLoader.active = false
+            root.calendarVisible = !root.calendarVisible
         }
     }
 
