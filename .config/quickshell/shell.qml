@@ -24,6 +24,8 @@ ShellRoot {
     property int margin: 6
     property int radius: 8
 
+    property bool calendarVisible: false
+
     // Detect session type
     property bool isWayland: Quickshell.env("XDG_SESSION_TYPE") === "wayland"
     
@@ -47,4 +49,6 @@ ShellRoot {
             }
         }
     }
+
+    
 }
