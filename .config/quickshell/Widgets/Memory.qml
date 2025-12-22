@@ -46,7 +46,7 @@ Rectangle {
 
     Process {
         id: runOnClickProcess
-        command: ["bash", "-c", "kitty -e htop"]
+        command: ["bash", "-c", "kitty -e btop"]
     }
 
     MouseArea {

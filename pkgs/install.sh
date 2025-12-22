@@ -266,7 +266,9 @@ sudo pacman -S --needed --noconfirm bluetui bluez-utils # Bluetooth TUI
 sudo systemctl enable bluetooth.service
 sudo systemctl start bluetooth.service
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm htop # System monitor
+sudo pacman -S --needed --noconfirm btop # System monitor TUI
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm gnome-system-monitor # System monitor GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wget # Download utility
 echo -e "${blue}--------------------------------------------------\n${no_color}"
