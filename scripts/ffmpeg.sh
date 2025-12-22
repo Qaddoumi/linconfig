@@ -6,9 +6,9 @@ ffmpeg -i input.mp4 -vf "eq=gamma=0.7" output.mp4
 
 ## To reverse a video with FFmpeg (This reverses both video and audio.)
 ffmpeg -i input.mp4 -vf reverse -af areverse output.mp4
-#If you only want to reverse the video (no audio):If you only want to reverse the video (no audio):
+#If you only want to reverse the video (no audio)
 ffmpeg -i input.mp4 -vf reverse output.mp4
-#If you only want to reverse the audio (no video):
+#If you only want to reverse the audio (no video)
 ffmpeg -i input.mp4 -af areverse output.mp4
 
 ## join/concatenate videos
