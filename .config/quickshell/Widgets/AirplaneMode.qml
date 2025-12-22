@@ -30,7 +30,7 @@ Rectangle {
 
     Process {
         id: checkStatusProcess
-        command: ["bash", "-c", "if nmcli radio all | grep -q 'disabled'; then echo 'on'; else echo 'off'; fi"]
+        command: ["bash", "-c", "rfkill list | grep -q 'Soft blocked: yes' && echo 'on' || echo 'off'"]
         stdout: SplitParser {
             onRead: data => {
                 if (!data) return
@@ -42,7 +42,7 @@ Rectangle {
 
     Process {
         id: toggleProcess
-        command: ["bash", "-c", airplaneWidget.isAirplaneMode ? "nmcli radio all on" : "nmcli radio all off"]
+        command: ["bash", "-c", airplaneWidget.isAirplaneMode ? "rfkill unblock all" : "rfkill block all"]
         onExited: {
             checkStatusProcess.running = true
         }
