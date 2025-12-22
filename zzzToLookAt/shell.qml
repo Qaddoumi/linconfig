@@ -44,6 +44,8 @@ ShellRoot {
             }
             
             Rectangle {
+                id: calendarRoot
+                
                 anchors.fill: parent
                 isVisible: shellRoot.calendarVisible
                 
@@ -51,7 +53,6 @@ ShellRoot {
                     shellRoot.calendarVisible = false
                 }
 
-                id: calendarRoot
                 
                 color: ThemeManager.bgBase
                 radius: 12
