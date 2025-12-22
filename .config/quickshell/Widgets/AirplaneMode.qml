@@ -51,10 +51,55 @@ Rectangle {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
+        hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+
+        onEntered: {
+            popupLoader.loading = true
+        }
+        
+        onExited: {
+            popupLoader.active = false
+        }
 
         onClicked: {
             toggleProcess.running = true
+        }
+    }
+
+    LazyLoader {
+        id: popupLoader
+
+        PopupWindow {
+            id: popup
+
+            anchor {
+                item: airplaneWidget
+                edges: Qt.BottomEdge
+                gravity: Qt.BottomEdge
+                margins.top: 3
+            }
+
+            implicitHeight: popupText.implicitHeight + 30
+            implicitWidth: popupText.implicitWidth + 30
+            color : "transparent"
+
+            visible: true
+
+            Rectangle {
+                anchors.fill: parent
+                color: root.colBg
+                radius: root.radius
+                Text {
+                    id: popupText
+                    text: "Airplane mode is : " + (airplaneWidget.isAirplaneMode ? "ON" : "OFF")
+                    color: root.colCyan
+                    font.pixelSize: root.fontSize
+                    font.family: root.fontFamily
+                    anchors.centerIn: parent
+                }
+            }
+
         }
     }
 }
