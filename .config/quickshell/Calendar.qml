@@ -33,6 +33,7 @@ Variants {
         exclusiveZone: 0
         
         WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
         
         Behavior on height {
             NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
@@ -43,11 +44,12 @@ Variants {
 
             anchors.fill: parent
             property bool isVisible: root.calendarVisible
+
+            focus: true
             
             onRequestClose: {
                 root.calendarVisible = false
             }
-
             
             color: ThemeManager.bgBase
             radius: 12
