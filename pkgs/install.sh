@@ -640,17 +640,19 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${green}Setting Dark theme for Qt applications${no_color}"
 sudo pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm qt5ct qt6ct # Qt theme configuration GUI
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kvantum-theme-materia # Material Design Qt theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Setting Qt to use Kvantum...${no_color}"
 if grep -q "QT_QPA_PLATFORMTHEME" "$ENV_FILE"; then
     echo -e "${yellow}QT_QPA_PLATFORMTHEME already exists in $ENV_FILE, updating...${no_color}"
-    sudo sed -i 's/^QT_QPA_PLATFORMTHEME=.*/QT_QPA_PLATFORMTHEME=kvantum/' "$ENV_FILE"
+    sudo sed -i 's/^QT_QPA_PLATFORMTHEME=.*/QT_QPA_PLATFORMTHEME=qt5ct/' "$ENV_FILE"
 else
     echo -e "${green}Adding QT_QPA_PLATFORMTHEME to $ENV_FILE...${no_color}"
     echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-    echo "QT_QPA_PLATFORMTHEME=kvantum" | sudo tee -a "$ENV_FILE" > /dev/null || true
+    echo "QT_QPA_PLATFORMTHEME=qt5ct" | sudo tee -a "$ENV_FILE" > /dev/null || true
 fi
 
 echo -e "${green}Qt theming configured. Please log out and log back in for changes to take effect.${no_color}"
