@@ -20,6 +20,9 @@ no_color='\033[0m' # reset the color to default
 # Find what installed a package (dependencies)
 # pacman -Qi <package_name> | grep "Required By"
 
+# To find what other packages <package_name> installed (its dependencies), use:
+# pacman -Qi <package_name> | grep "Depends On"
+
 # # Check if running as root
 # if [[ $EUID -eq 0 ]]; then
 #    echo -e "${red}This script should not be run as root. Please run as a regular user with sudo privileges.${no_color}"
