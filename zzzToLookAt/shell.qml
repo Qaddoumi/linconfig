@@ -9,7 +9,7 @@ ShellRoot {
 
     property bool calendarVisible: false
 
-    // Calendar popup - anchored below clock (center)
+    // Calendar popup - anchored in the middle under the bar (center)
     Variants {
         model: Quickshell.screens
         
@@ -45,7 +45,7 @@ ShellRoot {
             
             Rectangle {
                 id: calendarRoot
-                
+
                 anchors.fill: parent
                 isVisible: shellRoot.calendarVisible
                 
