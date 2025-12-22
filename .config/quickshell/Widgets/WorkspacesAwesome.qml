@@ -135,6 +135,11 @@ Item {
         Component.onCompleted: running = true
     }
 
+    Process {
+        id: globalCommandProc
+        running: false
+    }
+
     // Fast timer for window/layout/workspace
     Timer {
         interval: 200
@@ -194,9 +199,8 @@ Item {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            var proc = Qt.createQmlObject('import Quickshell.Io; Process { }', parent)
-                            proc.command = ["sh", "-c", "echo 'awful.screen.focused().tags[" + (index + 1) + "]:view_only()' | awesome-client"]
-                            proc.running = true
+                            globalCommandProc.command = ["sh", "-c", "echo 'awful.screen.focused().tags[" + (index + 1) + "]:view_only()' | awesome-client"]
+                            globalCommandProc.running = true
                         }
                     }
                 }

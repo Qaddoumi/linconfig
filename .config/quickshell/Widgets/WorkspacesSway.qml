@@ -96,6 +96,11 @@ Item {
         Component.onCompleted: running = true
     }
 
+    Process {
+        id: globalCommandProc
+        running: false
+    }
+
     // Fast timer for window/layout/workspace (sway doesn't have event hooks in quickshell)
     Timer {
         interval: 200
@@ -154,9 +159,8 @@ Item {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            var proc = Qt.createQmlObject('import Quickshell.Io; Process { }', parent)
-                            proc.command = ["swaymsg", "workspace", String(index + 1)]
-                            proc.running = true
+                            globalCommandProc.command = ["swaymsg", "workspace", String(index + 1)]
+                            globalCommandProc.running = true
                         }
                     }
                 }

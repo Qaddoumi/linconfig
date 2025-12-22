@@ -62,6 +62,11 @@ Item {
         }
     }
 
+    Process {
+        id: globalCommandProc
+        running: false
+    }
+
     Timer {
         id: updateTimer
         interval: 200
@@ -118,9 +123,8 @@ Item {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            var switchProc = Qt.createQmlObject('import Quickshell.Io; Process { }', rootItem);
-                            switchProc.command = ["xdotool", "key", "super+" + parent.workspaceNum];
-                            switchProc.running = true;
+                            globalCommandProc.command = ["xdotool", "key", "super+" + parent.workspaceNum];
+                            globalCommandProc.running = true;
                         }
                     }
                 }
