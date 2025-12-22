@@ -491,6 +491,8 @@ Variants {
                     }
                 }
             }
+
+            Component.onCompleted: calendarRoot.forceActiveFocus()
         }
     }
 }
