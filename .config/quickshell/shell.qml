@@ -32,10 +32,11 @@ ShellRoot {
 
     // Detect session type
     property bool isWayland: Quickshell.env("XDG_SESSION_TYPE") === "wayland"
+    property string desktop: Quickshell.env("XDG_CURRENT_DESKTOP")
     
     Component.onCompleted: {
         console.log("Session type:", isWayland ? "Wayland" : "X11")
-        console.log("Desktop:", Quickshell.env("XDG_CURRENT_DESKTOP"))
+        console.log("Desktop:", desktop)
     }
 
     // Load appropriate bar based on session type
@@ -53,6 +54,4 @@ ShellRoot {
             }
         }
     }
-
-
 }
