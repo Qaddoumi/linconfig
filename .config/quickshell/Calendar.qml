@@ -87,7 +87,7 @@ Variants {
                         
                         Text {
                             id: timeText
-                            font.family: "MapleMono NF"
+                            font.family: ThemeManager.fontFamily
                             font.pixelSize: 48
                             font.weight: Font.Medium
                             color: ThemeManager.fgPrimary
@@ -96,7 +96,7 @@ Variants {
                         
                         Text {
                             id: periodText
-                            font.family: "MapleMono NF"
+                            font.family: ThemeManager.fontFamily
                             font.pixelSize: 24
                             color: ThemeManager.fgSecondary
                             text: "AM"
@@ -236,7 +236,7 @@ Variants {
                                 Text {
                                     id: temperatureText
                                     text: "..."
-                                    font.family: "MapleMono NF"
+                                    font.family: ThemeManager.fontFamily
                                     font.pixelSize: 52
                                     font.weight: Font.Normal
                                     color: ThemeManager.fgPrimary
@@ -250,7 +250,7 @@ Variants {
                                 id: conditionText
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 text: "Sunny"
-                                font.family: "MapleMono NF"
+                                font.family: ThemeManager.fontFamily
                                 font.pixelSize: 18
                                 color: ThemeManager.fgSecondary
                             }
@@ -263,7 +263,7 @@ Variants {
                                 Text {
                                     id: humidityText
                                     text: "💧 47%"
-                                    font.family: "MapleMono NF"
+                                    font.family: ThemeManager.fontFamily
                                     font.pixelSize: 16
                                     color: ThemeManager.fgSecondary
                                 }
@@ -271,7 +271,7 @@ Variants {
                                 Text {
                                     id: windText
                                     text: "💨 4mph"
-                                    font.family: "MapleMono NF"
+                                    font.family: ThemeManager.fontFamily
                                     font.pixelSize: 16
                                     color: ThemeManager.fgSecondary
                                 }
@@ -281,7 +281,7 @@ Variants {
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 text: "Weather for 40°N, 89°W"
-                                font.family: "MapleMono NF"
+                                font.family: ThemeManager.fontFamily
                                 font.pixelSize: 10
                                 color: ThemeManager.border0
                             }
@@ -314,7 +314,7 @@ Variants {
                                                     "July", "August", "September", "October", "November", "December"]
                                     return monthNames[now.getMonth()] + " " + now.getFullYear()
                                 }
-                                font.family: "MapleMono NF"
+                                font.family: ThemeManager.fontFamily
                                 font.pixelSize: 16
                                 font.weight: Font.Medium
                                 color: ThemeManager.fgPrimary
@@ -334,7 +334,7 @@ Variants {
                                 
                                 Text {
                                     text: modelData
-                                    font.family: "MapleMono NF"
+                                    font.family: ThemeManager.fontFamily
                                     font.pixelSize: 10
                                     font.weight: Font.Medium
                                     color: ThemeManager.fgSecondary
@@ -376,7 +376,7 @@ Variants {
                                     Text {
                                         anchors.centerIn: parent
                                         text: parent.isValidDay ? parent.dayNumber : ""
-                                        font.family: "MapleMono NF"
+                                        font.family: ThemeManager.fontFamily
                                         font.pixelSize: 13
                                         color: {
                                             if (parent.isValidDay && parent.isCurrentDay) return ThemeManager.bgBase

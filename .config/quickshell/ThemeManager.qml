@@ -48,4 +48,6 @@ QtObject {
     property int fontSizeUpdates: 14
     property int fontSizeIcon: 16
     property int fontSizeLargeIcon: 24
+
+    property string fontFamily: "JetBrainsMono Nerd Font Propo"
 }
