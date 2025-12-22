@@ -55,8 +55,6 @@ Variants {
             border.color: ThemeManager.accentBlue
             antialiasing: true
             
-            property bool isVisible: false
-            
             signal requestClose()
             
             // ESC key to close
