@@ -76,7 +76,7 @@ Rectangle {
                             
                             anchors {
                                 top: true
-                                left: true
+                                right: true
                             }
                             
                             margins {
