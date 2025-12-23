@@ -90,6 +90,13 @@ Rectangle {
                             color: "transparent"
                             visible: true
 
+                            // Add focus tracking at the window level
+                            onActiveFocusChanged: {
+                                if (!activeFocus) {
+                                    menuLoader.active = false;
+                                }
+                            }
+
                             Rectangle {
                                 id: menuBackground
                                 implicitWidth: 170
@@ -99,18 +106,7 @@ Rectangle {
                                 border.width: 1
                                 radius: root.radius
                                 
-                                focus: true
-                                
-                                Connections {
-                                    target: Qt.application
-                                    function onActiveWindowChanged() {
-                                        if (menuLoader.active && Qt.application.activeWindow !== menuWindow) {
-                                            menuLoader.active = false;
-                                        }
-                                    }
-                                }
-                                
-                                Component.onCompleted: forceActiveFocus()
+                                Component.onCompleted: menuWindow.forceActiveFocus()
 
                                 QsMenuOpener {
                                     id: opener
