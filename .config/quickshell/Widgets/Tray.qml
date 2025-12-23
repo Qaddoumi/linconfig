@@ -73,7 +73,6 @@ Rectangle {
 
                             // Calculate position relative to the icon
                             property var pos: icon.mapToItem(null, 0, icon.height)
-                            property bool canClose: false
                             
                             anchors {
                                 top: true
@@ -91,31 +90,6 @@ Rectangle {
                             color: "transparent"
                             visible: true
 
-                            // Delay before allowing the menu to close
-                            Timer {
-                                interval: 300
-                                running: menuLoader.active
-                                repeat: false
-                                onTriggered: {
-                                    menuWindow.canClose = true;
-                                }
-                            }
-
-                            Timer {
-                                interval: 100
-                                running: menuLoader.active && menuWindow.canClose
-                                repeat: true
-                                onTriggered: {
-                                    if (!menuBackground.hovered) {
-                                        menuLoader.active = false;
-                                    }
-                                }
-                            }
-
-                            Component.onCompleted: {
-                                menuWindow.canClose = false;
-                            }
-
                             Rectangle {
                                 id: menuBackground
                                 implicitWidth: 170
@@ -125,21 +99,18 @@ Rectangle {
                                 border.width: 1
                                 radius: root.radius
                                 
-                                property bool hovered: false
-
-                                MouseArea {
-                                    id: menuHoverArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    propagateComposedEvents: true
-                                    
-                                    onEntered: menuBackground.hovered = true
-                                    onExited: menuBackground.hovered = false
-                                    
-                                    onPressed: mouse => { mouse.accepted = false; }
-                                    onReleased: mouse => { mouse.accepted = false; }
-                                    onClicked: mouse => { mouse.accepted = false; }
+                                focus: true
+                                
+                                Connections {
+                                    target: Qt.application
+                                    function onActiveWindowChanged() {
+                                        if (menuLoader.active && Qt.application.activeWindow !== menuWindow) {
+                                            menuLoader.active = false;
+                                        }
+                                    }
                                 }
+                                
+                                Component.onCompleted: forceActiveFocus()
 
                                 QsMenuOpener {
                                     id: opener
