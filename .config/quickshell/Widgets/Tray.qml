@@ -14,6 +14,31 @@ Rectangle {
     border.width: 1
     radius: root.radius / 2
 
+    // a styled menu component for the tray right menu
+    QsMenuStyle {
+        id: trayMenuStyle
+        
+        background: Rectangle {
+            color: root.colBg
+            border.color: root.colPurple
+            border.width: 1
+            radius: root.radius
+        }
+        
+        itemBackground: Rectangle {
+            color: parent.hovered ? root.colPurple : "transparent"
+            radius: root.radius / 2
+        }
+        
+        itemText: Text {
+            color: root.colCyan
+            font.pixelSize: root.fontSize
+            font.family: root.fontFamily
+        }
+        
+        separatorColor: root.colPurple
+    }
+
     RowLayout {
         id: trayRow
         anchors.centerIn: parent
@@ -66,6 +91,7 @@ Rectangle {
                     QsMenuAnchor {
                         id: menuAnchor
                         menu: item.menu
+                        style: trayMenuStyle
 
                         anchor.window: delegate.QsWindow.window
                         anchor.adjustment: PopupAdjustment.Flip
