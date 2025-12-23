@@ -64,31 +64,30 @@ Rectangle {
                         id: menuLoader
                         active: false
 
-                        PanelWindow {
-                            id: menuWindow
+                        PopupWindow { // 1. Use PopupWindow instead of PanelWindow
+                            id: menuPopup
                             
-                            screen: delegate.QsWindow.window.screen
-                            focusable: true
-                            exclusionMode: ExclusionMode.None
-
-                            // Calculate position relative to the icon
-                            property var pos: icon.mapToItem(null, 0, icon.height)
-                            
-                            anchors {
-                                top: true
-                                right: true
-                            }
-                            
-                            margins {
-                                top: (delegate.QsWindow.window ? delegate.QsWindow.window.y : 0) + pos.y + 5
-                                left: (delegate.QsWindow.window ? delegate.QsWindow.window.x : 0) + pos.x - 150 
+                            // 2. Anchor directly to the tray item (replaces your manual x/y math)
+                            anchor {
+                                window: delegate.QsWindow.window // The bar window
+                                item: delegate                   // The specific tray icon
+                                edges: Qt.BottomEdge | Qt.RightEdge // Anchor point
+                                gravity: Qt.BottomEdge           // Direction to open
                             }
 
-                            implicitWidth: menuBackground.implicitWidth
-                            implicitHeight: menuBackground.implicitHeight
+                            // 3. Handle "Click Outside" dismissal
+                            // When the system closes the popup, we must turn off the loader
+                            visible: true 
+                            onVisibleChanged: {
+                                if (!visible) {
+                                    menuLoader.active = false
+                                }
+                            }
 
+                            // 4. Content Container
+                            width: menuBackground.width
+                            height: menuBackground.height
                             color: "transparent"
-                            visible: true
 
                             Rectangle {
                                 id: menuBackground
@@ -99,18 +98,11 @@ Rectangle {
                                 border.width: 1
                                 radius: root.radius
                                 
-                                focus: true
-                                
-                                Connections {
-                                    target: Qt.application
-                                    function onActiveWindowChanged() {
-                                        if (menuLoader.active && Qt.application.activeWindow !== menuWindow) {
-                                            menuLoader.active = false;
-                                        }
-                                    }
+                                // Ensure clicks inside the menu don't close it immediately
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: mouse.accepted = true 
                                 }
-                                
-                                Component.onCompleted: forceActiveFocus()
 
                                 QsMenuOpener {
                                     id: opener
@@ -124,7 +116,7 @@ Rectangle {
                                     contentHeight: menuColumn.implicitHeight
                                     clip: true
 
-                                    Column {
+                                    ColumnLayout { // ColumnLayout is often safer than Column for resizing
                                         id: menuColumn
                                         width: parent.width
                                         spacing: 2
@@ -136,8 +128,9 @@ Rectangle {
                                                 id: menuItemRect
                                                 property var entry: modelData
                                                 
-                                                width: parent.width
+                                                Layout.fillWidth: true
                                                 implicitHeight: entry && entry.isSeparator ? 10 : 30
+                                                
                                                 color: !entry || entry.isSeparator || !entry.enabled ? "transparent" : (hoverHandler.hovered ? root.colPurple : "transparent")
                                                 radius: 4
 
@@ -175,16 +168,18 @@ Rectangle {
                                                     anchors.fill: parent
                                                     hoverEnabled: true
                                                     id: hoverHandler
-                                                    
+
                                                     onClicked: {
                                                         if (!entry || entry.isSeparator || !entry.enabled) return;
+                                                        
                                                         if (entry.menu) {
                                                             console.log("Submenu detected")
                                                         } else {
                                                             if (typeof entry.trigger === "function") entry.trigger();
                                                             else entry.triggered();
                                                         }
-                                                        menuLoader.active = false;
+                                                        // Close menu after valid click
+                                                        menuLoader.active = false; 
                                                     }
                                                 }
                                             }
