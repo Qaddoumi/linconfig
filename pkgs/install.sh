@@ -647,7 +647,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kvantum-theme-materia # Material Design Qt theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
-echo -e "${green}Setting Qt to use Kvantum...${no_color}"
+echo -e "${green}Setting Qt to use qt5ct which uses kvantum...${no_color}"
 if grep -q "QT_QPA_PLATFORMTHEME" "$ENV_FILE"; then
     echo -e "${yellow}QT_QPA_PLATFORMTHEME already exists in $ENV_FILE, updating...${no_color}"
     sudo sed -i 's/^QT_QPA_PLATFORMTHEME=.*/QT_QPA_PLATFORMTHEME=qt5ct/' "$ENV_FILE"
