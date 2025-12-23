@@ -83,8 +83,8 @@ Rectangle {
                             implicitWidth: menuBackground.implicitWidth
                             implicitHeight: menuBackground.implicitHeight
 
-                            onActiveFocusChanged: {
-                                if (!activeFocus) {
+                            onActiveChanged: {
+                                if (!active) {
                                     menuLoader.active = false;
                                 }
                             }
