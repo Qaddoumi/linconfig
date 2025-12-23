@@ -87,12 +87,6 @@ Rectangle {
                             implicitWidth: menuBackground.implicitWidth
                             implicitHeight: menuBackground.implicitHeight
 
-                            onActiveChanged: {
-                                if (!active) {
-                                    menuLoader.active = false;
-                                }
-                            }
-
                             color: "transparent"
                             visible: true
 
@@ -106,6 +100,16 @@ Rectangle {
                                 radius: root.radius
                                 
                                 focus: true
+                                
+                                Connections {
+                                    target: Qt.application
+                                    function onActiveWindowChanged() {
+                                        if (menuLoader.active && Qt.application.activeWindow !== menuWindow) {
+                                            menuLoader.active = false;
+                                        }
+                                    }
+                                }
+                                
                                 Component.onCompleted: forceActiveFocus()
 
                                 QsMenuOpener {
