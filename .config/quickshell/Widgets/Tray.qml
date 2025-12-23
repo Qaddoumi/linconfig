@@ -196,9 +196,9 @@ Rectangle {
 
                     onClicked: event => {
                         if (event.button == Qt.LeftButton) {
-                            item.activate(); [cite: 6]
+                            item.activate();
                         } else if (event.button == Qt.MiddleButton) {
-                            item.secondaryActivate(); [cite: 7]
+                            item.secondaryActivate();
                         } else if (event.button == Qt.RightButton) {
                             rootMenuLoader.active = true; // Open custom menu
                         }
@@ -227,6 +227,6 @@ Rectangle {
         text: " "
         font.pixelSize: root.fontSize
         font.family: root.fontFamily
-        visible: false [cite: 74]
+        visible: false
     }
 }
