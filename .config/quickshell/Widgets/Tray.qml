@@ -46,14 +46,10 @@ Rectangle {
                     onClicked: event => {
                         if (event.button == Qt.LeftButton) {
                             item.activate();
-                            // console.log("left clicked")
                         } else if (event.button == Qt.MiddleButton) {
                             item.secondaryActivate();
-                            // console.log("middle clicked")
                         } else if (event.button == Qt.RightButton) {
-                            // menuAnchor.open();
                             menuLoader.active = true;
-                            // console.log("right clicked")
                         }
                         popupLoader.active = false
                     }
@@ -71,109 +67,118 @@ Rectangle {
                         PopupWindow {
                             id: menuPopup
                             
-                            // 1. Position the popup relative to the tray item
+                            focusable: true
+                            
+                            if (root.isWayland) {
+                                WlrLayershell.layer: WlrLayer.Overlay
+                                WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+                            }
+
                             anchor {
                                 window: delegate.QsWindow.window
                                 item: delegate
-                                edges: Qt.BottomEdge | Qt.RightEdge // Adjust as needed
+                                edges: Qt.BottomEdge | Qt.RightEdge
                                 gravity: Qt.BottomEdge
+                                adjustment: PopupAdjustment.Flip | PopupAdjustment.Slide
                             }
 
-                            // 2. Visual container for the menu
+                            implicitWidth: menuBackground.implicitWidth
+                            implicitHeight: menuBackground.implicitHeight
+
+                            onActiveFocusChanged: {
+                                if (!activeFocus) {
+                                    menuLoader.active = false;
+                                }
+                            }
+
+                            Component.onCompleted: forceActiveFocus()
+
                             color: "transparent"
                             visible: true
 
                             Rectangle {
                                 id: menuBackground
-                                width: menuColumn.implicitWidth + 20
-                                height: menuColumn.implicitHeight + 10
-                                color: root.colBg // Use your custom background color
+                                implicitWidth: 170
+                                implicitHeight: Math.min(500, menuColumn.implicitHeight + 20)
+                                color: root.colBg
                                 border.color: root.colPurple
                                 border.width: 1
                                 radius: root.radius
 
-                                // 3. Connect to the SystemTrayItem's menu handle
                                 QsMenuOpener {
                                     id: opener
-                                    menu: item.menu // The handle from the tray item
+                                    menu: item.menu
                                 }
 
-                                ColumnLayout {
-                                    id: menuColumn
-                                    anchors.centerIn: parent
-                                    spacing: 2
+                                Flickable {
+                                    id: scroll
+                                    anchors.fill: parent
+                                    anchors.margins: 10
+                                    contentHeight: menuColumn.implicitHeight
+                                    clip: true
 
-                                    // 4. Iterate over the menu items
-                                    Repeater {
-                                        model: opener.children // ObjectModel containing QsMenuEntry items
+                                    Column {
+                                        id: menuColumn
+                                        implicitWidth: parent.width
+                                        spacing: 2
 
-                                        Rectangle {
-                                            id: menuItemRect
-                                            
-                                            // Access properties from the modelData (QsMenuEntry)
-                                            property var entry: modelData 
+                                        Repeater {
+                                            model: opener.children
 
-                                            implicitWidth: 150
-                                            implicitHeight: entry && entry.isSeparator ? 10 : 30
-                                            color: !entry.isSeparator && hoverHandler.hovered ? root.colPurple : "transparent"
-                                            radius: 4
-
-                                            // Separator line
                                             Rectangle {
-                                                visible: entry && entry.isSeparator
-                                                width: parent.width - 20
-                                                height: 1
-                                                color: root.colMuted
-                                                anchors.centerIn: parent
-                                            }
-
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.margins: 5
-                                                spacing: 10
-                                                visible: entry && !entry.isSeparator
-
-                                                // Optional: Icon
-                                                IconImage {
-                                                    source: entry.icon
-                                                    implicitSize: 16
-                                                    implicitHeight: 16
-                                                    visible: entry.icon !== ""
-                                                }
-
-                                                Text {
-                                                    text: entry.text
-                                                    color: root.colCyan
-                                                    font.pixelSize: root.fontSize
-                                                    font.family: root.fontFamily
-                                                    Layout.fillWidth: true
-                                                }
-                                            }
-
-                                            // 5. Handle clicks
-                                            MouseArea {
-                                                anchors.fill: parent
-                                                hoverEnabled: true
-                                                id: hoverHandler
+                                                id: menuItemRect
+                                                property var entry: modelData
                                                 
-                                                onClicked: {
-                                                    // console.log("Clicked menu item:", entry.text)
-                                                    if (!entry || entry.isSeparator || !entry.enabled) return;
+                                                implicitWidth: parent.width
+                                                implicitHeight: entry && entry.isSeparator ? 10 : 30
+                                                color: !entry || entry.isSeparator || !entry.enabled ? "transparent" : (hoverHandler.hovered ? root.colPurple : "transparent")
+                                                radius: 4
 
-                                                    if (entry.menu) {
-                                                        // If it has a submenu, we should ideally open it
-                                                        console.log("Submenu detected for:", entry.text)
-                                                    } else {
-                                                        // Trigger the menu action
-                                                        // In Quickshell, QsMenuEntry usually has a trigger() method 
-                                                        // or a triggered() signal that can be emitted.
-                                                        if (typeof entry.trigger === "function") {
-                                                            entry.trigger();
-                                                        } else {
-                                                            entry.triggered();
-                                                        }
+                                                Rectangle {
+                                                    visible: entry && entry.isSeparator
+                                                    implicitWidth: parent.width - 20
+                                                    height: 1
+                                                    color: root.colMuted
+                                                    anchors.centerIn: parent
+                                                }
+
+                                                RowLayout {
+                                                    anchors.fill: parent
+                                                    anchors.margins: 5
+                                                    spacing: 10
+                                                    visible: entry && !entry.isSeparator
+
+                                                    IconImage {
+                                                        source: entry ? entry.icon : ""
+                                                        implicitSize: 16
+                                                        implicitHeight: 16
+                                                        visible: entry && entry.icon !== ""
                                                     }
-                                                    menuLoader.active = false // Close menu on click
+
+                                                    Text {
+                                                        text: entry ? entry.text : ""
+                                                        color: entry && entry.enabled ? root.colCyan : root.colMuted
+                                                        font.pixelSize: root.fontSize
+                                                        font.family: root.fontFamily
+                                                        Layout.fillWidth: true
+                                                    }
+                                                }
+
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true
+                                                    id: hoverHandler
+                                                    
+                                                    onClicked: {
+                                                        if (!entry || entry.isSeparator || !entry.enabled) return;
+                                                        if (entry.menu) {
+                                                            console.log("Submenu detected")
+                                                        } else {
+                                                            if (typeof entry.trigger === "function") entry.trigger();
+                                                            else entry.triggered();
+                                                        }
+                                                        menuLoader.active = false;
+                                                    }
                                                 }
                                             }
                                         }
