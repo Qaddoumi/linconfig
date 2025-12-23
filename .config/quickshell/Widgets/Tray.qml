@@ -73,6 +73,7 @@ Rectangle {
 
                             // Calculate position relative to the icon
                             property var pos: icon.mapToItem(null, 0, icon.height)
+                            property bool mouseInside: false
                             
                             anchors {
                                 top: true
@@ -90,10 +91,14 @@ Rectangle {
                             color: "transparent"
                             visible: true
 
-                            // Add focus tracking at the window level
-                            onActiveFocusChanged: {
-                                if (!activeFocus) {
-                                    menuLoader.active = false;
+                            Timer {
+                                interval: 100
+                                running: menuLoader.active
+                                repeat: true
+                                onTriggered: {
+                                    if (!menuBackground.hovered) {
+                                        menuLoader.active = false;
+                                    }
                                 }
                             }
 
@@ -106,7 +111,21 @@ Rectangle {
                                 border.width: 1
                                 radius: root.radius
                                 
-                                Component.onCompleted: menuWindow.forceActiveFocus()
+                                property bool hovered: false
+
+                                MouseArea {
+                                    id: menuHoverArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    propagateComposedEvents: true
+                                    
+                                    onEntered: menuBackground.hovered = true
+                                    onExited: menuBackground.hovered = false
+                                    
+                                    onPressed: mouse => { mouse.accepted = false; }
+                                    onReleased: mouse => { mouse.accepted = false; }
+                                    onClicked: mouse => { mouse.accepted = false; }
+                                }
 
                                 QsMenuOpener {
                                     id: opener
