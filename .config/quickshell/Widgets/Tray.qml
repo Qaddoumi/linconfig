@@ -111,18 +111,27 @@ Rectangle {
                                             id: menuItemRect
                                             
                                             // Access properties from the modelData (QsMenuEntry)
-                                            // properties: text, icon, etc.
                                             property var entry: modelData 
 
                                             implicitWidth: 150
-                                            implicitHeight: 30
-                                            color: hoverHandler.hovered ? root.colPurple : "transparent" // Hover effect
+                                            implicitHeight: entry && entry.isSeparator ? 10 : 30
+                                            color: !entry.isSeparator && hoverHandler.hovered ? root.colPurple : "transparent"
                                             radius: 4
+
+                                            // Separator line
+                                            Rectangle {
+                                                visible: entry && entry.isSeparator
+                                                width: parent.width - 20
+                                                height: 1
+                                                color: root.colMuted
+                                                anchors.centerIn: parent
+                                            }
 
                                             RowLayout {
                                                 anchors.fill: parent
                                                 anchors.margins: 5
                                                 spacing: 10
+                                                visible: entry && !entry.isSeparator
 
                                                 // Optional: Icon
                                                 IconImage {
@@ -148,15 +157,21 @@ Rectangle {
                                                 id: hoverHandler
                                                 
                                                 onClicked: {
-                                                    // Trigger the menu action
-                                                    // Note: Check 'entry' type for exact activation method, usually:
-                                                    if (entry.display) {
-                                                        // If it has children/submenus, you might need recursion
-                                                        console.log("Submenus require recursive components")
+                                                    // console.log("Clicked menu item:", entry.text)
+                                                    if (!entry || entry.isSeparator || !entry.enabled) return;
+
+                                                    if (entry.menu) {
+                                                        // If it has a submenu, we should ideally open it
+                                                        console.log("Submenu detected for:", entry.text)
                                                     } else {
-                                                        // entry.activate() or similar depending on the exact signal binding
-                                                        // Commonly for simple items:
-                                                        entry.triggered()
+                                                        // Trigger the menu action
+                                                        // In Quickshell, QsMenuEntry usually has a trigger() method 
+                                                        // or a triggered() signal that can be emitted.
+                                                        if (typeof entry.trigger === "function") {
+                                                            entry.trigger();
+                                                        } else {
+                                                            entry.triggered();
+                                                        }
                                                     }
                                                     menuLoader.active = false // Close menu on click
                                                 }
