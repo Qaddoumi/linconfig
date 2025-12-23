@@ -69,8 +69,8 @@ Rectangle {
                             
                             focusable: true
                             
-                            WlrLayershell.layer: WlrLayer.Overlay
-                            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+                            // WlrLayershell.layer: WlrLayer.Overlay
+                            // WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 
                             anchor {
                                 window: delegate.QsWindow.window
