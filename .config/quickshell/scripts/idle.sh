@@ -99,9 +99,9 @@ stop_inhibitor() {
 # Function to get status for output
 get_status() {
     if is_inhibited; then
-        echo '{"text": "", "tooltip": "Idle inhibitor: Active", "class": "activated"}'
+        echo '{"text": "", "tooltip": "Idle inhibitor: \\nActive", "class": "activated"}'
     else
-        echo '{"text": "", "tooltip": "Idle inhibitor: Inactive", "class": "deactivated"}'
+        echo '{"text": "", "tooltip": "Idle inhibitor: \\nInactive", "class": "deactivated"}'
     fi
 }
 

@@ -44,7 +44,7 @@ Rectangle {
                         idleInhibitorWidget.idleDisplay = json.text
                     }
                     if (json.tooltip) {
-                        idleInhibitorWidget.idleTooltip = json.tooltip
+                        idleInhibitorWidget.idleTooltip = json.tooltip.replace("\\n", "\n")
                     }
                     if (json.class && json.class == "activated") {
                         idleText.color = root.colRed
