@@ -64,19 +64,34 @@ Rectangle {
                         id: menuLoader
                         active: false
 
-                            PopupWindow {
-                                id: menuPopup
+                        PanelWindow {
+                            id: menuWindow
+                            
+                            screen: delegate.QsWindow.window.screen
+                            focusable: true
+                            exclusionMode: ExclusionMode.None
 
-                                anchor {
-                                window: delegate.QsWindow.window
-                                item: delegate
-                                edges: Qt.BottomEdge | Qt.RightEdge
-                                gravity: Qt.BottomEdge
-                                adjustment: PopupAdjustment.Flip | PopupAdjustment.Slide
+                            // Calculate position relative to the icon
+                            property var pos: icon.mapToItem(null, 0, icon.height)
+                            
+                            anchors {
+                                top: true
+                                left: true
+                            }
+                            
+                            margins {
+                                top: (delegate.QsWindow.window ? delegate.QsWindow.window.y : 0) + pos.y + 5
+                                left: (delegate.QsWindow.window ? delegate.QsWindow.window.x : 0) + pos.x - 150 
                             }
 
                             implicitWidth: menuBackground.implicitWidth
                             implicitHeight: menuBackground.implicitHeight
+
+                            onActiveChanged: {
+                                if (!active) {
+                                    menuLoader.active = false;
+                                }
+                            }
 
                             color: "transparent"
                             visible: true
@@ -91,12 +106,6 @@ Rectangle {
                                 radius: root.radius
                                 
                                 focus: true
-                                onActiveFocusChanged: {
-                                    if (!activeFocus) {
-                                        menuLoader.active = false;
-                                    }
-                                }
-                                
                                 Component.onCompleted: forceActiveFocus()
 
                                 QsMenuOpener {
