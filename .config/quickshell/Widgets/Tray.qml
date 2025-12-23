@@ -73,7 +73,7 @@ Rectangle {
 
                             // Calculate position relative to the icon
                             property var pos: icon.mapToItem(null, 0, icon.height)
-                            property bool mouseInside: false
+                            property bool canClose: false
                             
                             anchors {
                                 top: true
@@ -91,15 +91,29 @@ Rectangle {
                             color: "transparent"
                             visible: true
 
+                            // Delay before allowing the menu to close
+                            Timer {
+                                interval: 300
+                                running: menuLoader.active
+                                repeat: false
+                                onTriggered: {
+                                    menuWindow.canClose = true;
+                                }
+                            }
+
                             Timer {
                                 interval: 100
-                                running: menuLoader.active
+                                running: menuLoader.active && menuWindow.canClose
                                 repeat: true
                                 onTriggered: {
                                     if (!menuBackground.hovered) {
                                         menuLoader.active = false;
                                     }
                                 }
+                            }
+
+                            Component.onCompleted: {
+                                menuWindow.canClose = false;
                             }
 
                             Rectangle {
