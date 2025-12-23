@@ -45,14 +45,15 @@ Rectangle {
 
                     onClicked: event => {
                         if (event.button == Qt.LeftButton) {
-                            item.activate();
-                            // console.log("left clicked")
+                            if (item.onlyMenu) {
+                                menuAnchor.secondaryActivate();
+                            } else {
+                                item.activate();
+                            }
                         } else if (event.button == Qt.MiddleButton) {
                             item.secondaryActivate();
-                            // console.log("middle clicked")
                         } else if (event.button == Qt.RightButton) {
                             menuAnchor.open();
-                            // console.log("right clicked")
                         }
                         popupLoader.active = false
                     }
@@ -111,7 +112,7 @@ Rectangle {
                                 radius: root.radius
                                 Text {
                                     id: popupText
-                                    text: item.tooltipTitle || item.id
+                                    text: item.tooltipTitle || item.tooltipDescription || item.id
                                     color: root.colCyan
                                     font.pixelSize: root.fontSize
                                     font.family: root.fontFamily
