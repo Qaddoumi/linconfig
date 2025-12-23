@@ -83,14 +83,6 @@ Rectangle {
                             implicitWidth: menuBackground.implicitWidth
                             implicitHeight: menuBackground.implicitHeight
 
-                            onActiveChanged: {
-                                if (!active) {
-                                    menuLoader.active = false;
-                                }
-                            }
-
-                            Component.onCompleted: forceActiveFocus()
-
                             color: "transparent"
                             visible: true
 
@@ -102,6 +94,15 @@ Rectangle {
                                 border.color: root.colPurple
                                 border.width: 1
                                 radius: root.radius
+                                
+                                focus: true
+                                onActiveFocusChanged: {
+                                    if (!activeFocus) {
+                                        menuLoader.active = false;
+                                    }
+                                }
+                                
+                                Component.onCompleted: forceActiveFocus()
 
                                 QsMenuOpener {
                                     id: opener
@@ -117,7 +118,7 @@ Rectangle {
 
                                     Column {
                                         id: menuColumn
-                                        implicitWidth: parent.width
+                                        width: parent.width
                                         spacing: 2
 
                                         Repeater {
@@ -127,7 +128,7 @@ Rectangle {
                                                 id: menuItemRect
                                                 property var entry: modelData
                                                 
-                                                implicitWidth: parent.width
+                                                width: parent.width
                                                 implicitHeight: entry && entry.isSeparator ? 10 : 30
                                                 color: !entry || entry.isSeparator || !entry.enabled ? "transparent" : (hoverHandler.hovered ? root.colPurple : "transparent")
                                                 radius: 4
