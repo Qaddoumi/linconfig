@@ -14,31 +14,6 @@ Rectangle {
     border.width: 1
     radius: root.radius / 2
 
-    // a styled menu component for the tray right menu
-    QsMenuStyle {
-        id: trayMenuStyle
-        
-        background: Rectangle {
-            color: root.colBg
-            border.color: root.colPurple
-            border.width: 1
-            radius: root.radius
-        }
-        
-        itemBackground: Rectangle {
-            color: parent.hovered ? root.colPurple : "transparent"
-            radius: root.radius / 2
-        }
-        
-        itemText: Text {
-            color: root.colCyan
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
-        }
-        
-        separatorColor: root.colPurple
-    }
-
     RowLayout {
         id: trayRow
         anchors.centerIn: parent
@@ -76,7 +51,8 @@ Rectangle {
                             item.secondaryActivate();
                             // console.log("middle clicked")
                         } else if (event.button == Qt.RightButton) {
-                            menuAnchor.open();
+                            // menuAnchor.open();
+                            menuLoader.active = true;
                             // console.log("right clicked")
                         }
                         popupLoader.active = false
@@ -88,19 +64,107 @@ Rectangle {
                         item.scroll(points, false);
                     }
 
-                    QsMenuAnchor {
-                        id: menuAnchor
-                        menu: item.menu
-                        style: trayMenuStyle
+                    LazyLoader {
+                        id: menuLoader
+                        active: false
 
-                        anchor.window: delegate.QsWindow.window
-                        anchor.adjustment: PopupAdjustment.Flip
+                        PopupWindow {
+                            id: menuPopup
+                            
+                            // 1. Position the popup relative to the tray item
+                            anchor {
+                                window: delegate.QsWindow.window
+                                item: delegate
+                                edges: Qt.BottomEdge | Qt.RightEdge // Adjust as needed
+                                gravity: Qt.BottomEdge
+                            }
 
-                        anchor.onAnchoring: {
-                            const window = delegate.QsWindow.window;
-                            const widgetRect = window.contentItem.mapFromItem(delegate, 0, delegate.height, delegate.width, delegate.height);
+                            // 2. Visual container for the menu
+                            color: "transparent"
+                            visible: true
 
-                            menuAnchor.anchor.rect = widgetRect;
+                            Rectangle {
+                                id: menuBackground
+                                width: menuColumn.implicitWidth + 20
+                                height: menuColumn.implicitHeight + 10
+                                color: root.colBg // Use your custom background color
+                                border.color: root.colPurple
+                                border.width: 1
+                                radius: root.radius
+
+                                // 3. Connect to the SystemTrayItem's menu handle
+                                QsMenuOpener {
+                                    id: opener
+                                    menu: item.menu // The handle from the tray item
+                                }
+
+                                ColumnLayout {
+                                    id: menuColumn
+                                    anchors.centerIn: parent
+                                    spacing: 2
+
+                                    // 4. Iterate over the menu items
+                                    Repeater {
+                                        model: opener.children // ObjectModel containing QsMenuEntry items
+
+                                        Rectangle {
+                                            id: menuItemRect
+                                            
+                                            // Access properties from the modelData (QsMenuEntry)
+                                            // properties: text, icon, etc.
+                                            property var entry: modelData 
+
+                                            implicitWidth: 150
+                                            implicitHeight: 30
+                                            color: hoverHandler.hovered ? root.colPurple : "transparent" // Hover effect
+                                            radius: 4
+
+                                            RowLayout {
+                                                anchors.fill: parent
+                                                anchors.margins: 5
+                                                spacing: 10
+
+                                                // Optional: Icon
+                                                IconImage {
+                                                    source: entry.icon
+                                                    implicitSize: 16
+                                                    implicitHeight: 16
+                                                    visible: entry.icon !== ""
+                                                }
+
+                                                Text {
+                                                    text: entry.text
+                                                    color: root.colCyan
+                                                    font.pixelSize: root.fontSize
+                                                    font.family: root.fontFamily
+                                                    Layout.fillWidth: true
+                                                }
+                                            }
+
+                                            // 5. Handle clicks
+                                            MouseArea {
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+                                                id: hoverHandler
+                                                
+                                                onClicked: {
+                                                    // Trigger the menu action
+                                                    // Note: Check 'entry' type for exact activation method, usually:
+                                                    if (entry.display) {
+                                                        // If it has children/submenus, you might need recursion
+                                                        console.log("Submenus require recursive components")
+                                                    } else {
+                                                        // entry.activate() or similar depending on the exact signal binding
+                                                        // Commonly for simple items:
+                                                        entry.triggered()
+                                                    }
+                                                    menuLoader.active = false // Close menu on click
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
