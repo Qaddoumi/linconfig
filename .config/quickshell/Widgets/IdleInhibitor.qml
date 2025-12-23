@@ -116,8 +116,6 @@ Rectangle {
                 edges: Qt.BottomEdge
                 gravity: Qt.BottomEdge
                 margins.top: 3  // Small gap below the widget; adjust as needed
-                margins.left: popupRightMargin * -1
-                adjustment: PopupAdjustment.None  // Prevent any automatic vertical flip/shift we don't want
             }
 
             implicitHeight: popupText.implicitHeight + 30
@@ -125,7 +123,7 @@ Rectangle {
             color: "transparent"
 
             visible: true  // Required for PopupWindow to show (defaults to false)
-
+            
             Rectangle {
                 anchors.fill: parent
                 radius: root.radius
@@ -138,28 +136,6 @@ Rectangle {
                     font.family: root.fontFamily
                     anchors.centerIn: parent
                 }
-            }
-
-            property int popupRightMargin: 0
-
-            Component.onCompleted: calculatePopupMargin()
-            onWidthChanged: calculatePopupMargin()
-
-            function calculatePopupMargin() {
-                const screen = Quickshell.screens[0]
-                if (!screen || popup.width === 0)
-                    return
-
-                const widgetCenterX = idleInhibitorWidget.mapToItem(null, 0, 0).x + ((idleInhibitorWidget.implicitWidth + 2) / 2)
-
-                const popupRight = widgetCenterX + ((popup.implicitWidth + 2) / 2)
-                console.log("popupRight", popupRight)
-
-                const screenRight = screen.x + screen.width
-                console.log("screenRight", screenRight)
-
-                popupRightMargin = (popupRight - screenRight) * 2
-                console.log("popupRightMargin", popupRightMargin)
             }
         }
     }
