@@ -64,15 +64,10 @@ Rectangle {
                         id: menuLoader
                         active: false
 
-                        PopupWindow {
-                            id: menuPopup
-                            
-                            focusable: true
-                            
-                            // WlrLayershell.layer: WlrLayer.Overlay
-                            // WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+                            PopupWindow {
+                                id: menuPopup
 
-                            anchor {
+                                anchor {
                                 window: delegate.QsWindow.window
                                 item: delegate
                                 edges: Qt.BottomEdge | Qt.RightEdge
@@ -135,7 +130,7 @@ Rectangle {
 
                                                 Rectangle {
                                                     visible: entry && entry.isSeparator
-                                                    implicitWidth: parent.width - 20
+                                                    width: parent.width - 20
                                                     height: 1
                                                     color: root.colMuted
                                                     anchors.centerIn: parent
