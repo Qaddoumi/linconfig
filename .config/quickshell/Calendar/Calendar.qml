@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import qs // For the ThemeManager
 
 
 // Calendar popup - anchored in the middle under the bar (center)
@@ -16,14 +17,15 @@ Variants {
         
         anchors {
             top: true
-            left: true
+            // left: true
             right: true
         }
         
         margins {
             top: root.barHeight + 3  // Position at bottom edge the bar
-            left: (screen.width - 750) / 2  // Center horizontally
-            right: (screen.width - 750) / 2  // Center horizontally
+            // left: (screen.width - 750) / 2  // Center horizontally
+            // right: (screen.width - 750) / 2  // Center horizontally
+            right: root.margin                 // Align to the right edge with standard margin
         }
         
         implicitWidth: 750

@@ -33,7 +33,7 @@ ShellRoot {
 
     Loader {
         active: root.calendarVisible
-        source: "Calendar.qml"
+        sourceComponent: calendar
     }
 
     // Detect session type
@@ -68,5 +68,10 @@ ShellRoot {
     Component {
         id: x11Bar
         X11Bar{}
+    }
+
+    Component {
+        id: calendar
+        Calendar{}
     }
 }
