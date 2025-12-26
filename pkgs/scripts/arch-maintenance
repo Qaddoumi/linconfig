@@ -1,0 +1,38 @@
+# Check systemd failed services
+systemctl --failed
+
+# Log files check
+sudo journalctl -p 3 -xb
+
+# Update
+sudo pacman -Syu
+
+# Yay Update
+yay -Syu
+
+#Delete Pacman Cache
+sudo pacman -Sc
+
+# Delete Yay Cache
+yay -Sc
+
+# Delete unwanted dependencies
+echo -e "• Use ${blue}yay -Ps to see yay statistics"
+echo -e "• Use ${blue}yay -Yc to clean unneeded dependencies"
+yay -Yc
+
+# Remove Orphan packages if exists
+if pacman -Qtdq > /dev/null 2>&1; then
+    sudo pacman -Rns $(pacman -Qtdq)
+fi
+
+# Clean the Cache
+rm -rf ~/.cache/*
+
+# Clean the journal (pacman logs and system logs)
+sudo journalctl --vacuum-size=100M  # Keep only 100MB
+sudo journalctl --vacuum-time=2weeks  # Keep only 2 weeks
+
+# refresh the mirror list (-a for age, 24 hours)
+# you can add -n 20 to limit the number of mirrors to 20
+sudo reflector -c Germany -a 24 --sort rate --save /etc/pacman.d/mirrorlist
