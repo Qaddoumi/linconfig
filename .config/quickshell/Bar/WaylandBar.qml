@@ -1,7 +1,7 @@
 import Quickshell
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
-
 
 Variants {
     model: Quickshell.screens
@@ -10,6 +10,10 @@ Variants {
         property var modelData
         screen: modelData
 
+        // Wayland-specific layershell configuration
+        WlrLayershell.layer: WlrLayer.Top
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+        WlrLayershell.focusable: false
         exclusionMode: ExclusionMode.Auto
 
         anchors {
@@ -28,7 +32,7 @@ Variants {
             right: 0
         }
 
-        MyBar {}
+        Bar {}
     }
 }
 // When Variants loops through your monitors:

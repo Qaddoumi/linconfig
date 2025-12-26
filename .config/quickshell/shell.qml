@@ -1,6 +1,9 @@
 //@ pragma UseQApplication
-import Quickshell
 import QtQuick
+import Quickshell
+import qs.Calendar
+import qs.Bar
+
 
 ShellRoot {
     id: root
@@ -41,8 +44,7 @@ ShellRoot {
 
     // Load appropriate bar based on session type
     Loader {
-        id: barLoader
-        source: root.isWayland ? "wayland-bar.qml" : "x11-bar.qml"
+        sourceComponent: root.isWayland ? waylandBar : x11Bar
 
         onLoaded: {
             console.log("Loaded:", root.isWayland ? "Wayland bar" : "X11 bar")
@@ -53,5 +55,15 @@ ShellRoot {
                 console.error("Failed to load bar:", source)
             }
         }
+    }
+
+    Component {
+        id: waylandBar
+        WaylandBar{}
+    }
+
+    Component {
+        id: x11Bar
+        X11Bar{}
     }
 }
