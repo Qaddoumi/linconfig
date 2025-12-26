@@ -21,7 +21,7 @@ Variants {
         }
         
         margins {
-            top: 42  // Position at bottom edge of 42px bar
+            top: root.barHeight + 3  // Position at bottom edge the bar
             left: (screen.width - 750) / 2  // Center horizontally
             right: (screen.width - 750) / 2  // Center horizontally
         }

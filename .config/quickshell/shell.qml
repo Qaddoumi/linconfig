@@ -27,7 +27,10 @@ ShellRoot {
     property int margin: 6
     property int radius: 8
 
+    property int barHeight: 26
+
     property bool calendarVisible: false
+
     Loader {
         active: root.calendarVisible
         source: "Calendar.qml"
