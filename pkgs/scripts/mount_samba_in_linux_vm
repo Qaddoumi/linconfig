@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Samba Share Mount Script for Linux Mint
+# Samba Share Mount Script for Linux
 # This script helps you connect to a Samba share
 
 echo "=== Samba Share Mount Script ==="

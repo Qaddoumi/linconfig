@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+file=$1
+folder=$2
+
+if [ ! -f "$file" ]; then
+    echo "File not found: $file"
+    exit 1
+fi
+
+if [ -z "$folder" ]; then
+    folder="$(basename "$file" .iso)"
+fi
+
+mkdir -p "$folder"
+bsdtar -xf "$file" -C "$folder"
