@@ -30,7 +30,7 @@ if ! dpkg -l | grep -q cifs-utils; then
     echo "Installing cifs-utils..."
     apt update > /dev/null 2>&1 || true
     apt install -y cifs-utils > /dev/null 2>&1 || true
-    pacman -Syu --noconfirm > /dev/null 2>&1 || true
+    pacman -Syy --noconfirm > /dev/null 2>&1 || true
     pacman -S --noconfirm cifs-utils > /dev/null 2>&1 || true
 else
     echo "cifs-utils already installed."
