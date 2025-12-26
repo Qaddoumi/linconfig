@@ -19,7 +19,7 @@ RowLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         sourceComponent: root.desktop.indexOf("sway") !== -1 ? swayWorkspaceWidget :
-                         root.desktop.indexOf("hyprland") !== -1 ? hyprlandWorkspaceWidget :
+                         root.desktop.indexOf("Hyprland") !== -1 ? hyprlandWorkspaceWidget :
                          root.desktop.indexOf("awesome") !== -1 ? awesomeWorkspaceWidget :
                          !root.isWayland ? universalX11WorkspaceWidget :
                          fallbackWorkspaceWidget
