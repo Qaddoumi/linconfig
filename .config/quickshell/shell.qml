@@ -8,7 +8,6 @@ import qs.Bar
 ShellRoot {
     id: root
 
-    // Theme colors
     property color colBg: "#1a1b26"
     property color colFg: "#a9b1d6"
     property color colMuted: "#444b6a"
@@ -19,11 +18,9 @@ ShellRoot {
     property color colBlue: "#7aa2f7"
     property color colGreen: '#208b5b'
 
-    // Font
     property string fontFamily: "JetBrainsMono Nerd Font Propo"
     property int fontSize: 10
 
-    // Margins
     property int margin: 6
     property int radius: 8
 
@@ -31,12 +28,6 @@ ShellRoot {
 
     property bool calendarVisible: false
 
-    Loader {
-        active: root.calendarVisible
-        sourceComponent: calendar
-    }
-
-    // Detect session type
     property bool isWayland: Quickshell.env("XDG_SESSION_TYPE") === "wayland"
     property string desktop: Quickshell.env("XDG_CURRENT_DESKTOP")
     
@@ -45,33 +36,18 @@ ShellRoot {
         console.log("Desktop:", desktop)
     }
 
-    // Load appropriate bar based on session type
     Loader {
-        sourceComponent: root.isWayland ? waylandBar : x11Bar
-
-        onLoaded: {
-            console.log("Loaded:", root.isWayland ? "Wayland bar" : "X11 bar")
-        }
-
-        onStatusChanged: {
-            if (status === Loader.Error) {
-                console.error("Failed to load bar:", source)
-            }
-        }
+        active: root.isWayland
+        sourceComponent: WaylandBar {}
     }
-
-    Component {
-        id: waylandBar
-        WaylandBar{}
+    
+    Loader {
+        active: !root.isWayland
+        sourceComponent: X11Bar {}
     }
-
-    Component {
-        id: x11Bar
-        X11Bar{}
-    }
-
-    Component {
-        id: calendar
-        Calendar{}
+    
+    Loader {
+        active: root.calendarVisible
+        sourceComponent: Calendar {}
     }
 }
