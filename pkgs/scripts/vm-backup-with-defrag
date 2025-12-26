@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# this script will backup all vms but first it will zero outs empty space in the qcow2 files
+# making the defragging process better , so we can save alot of space
+# Note: this script will take a long long long time to finish
+
 start_time=$(date +%s)
 
 # Directory paths
@@ -23,6 +27,23 @@ vm_name="003-win11-study.qcow2"
 sudo virt-sparsify -v --tmp $MOUNT_POINT/archBackup/temp/ "$QCOW2_DIR/$vm_name" "$DEST_DIR/$vm_name"
 
 
+# Process all XML files
+echo -e "\nProcessing XML files..."
+for xml_file in "$XML_DIR"/*.xml; do
+    if [ -f "$xml_file" ]; then
+        echo ""
+        vm_name="$(basename "$xml_file")"
+        echo "Found XML file: $vm_name"
+        
+        # Copy the XML file to destination
+        #cp -v "$xml_file" "$XML_DEST_DIR/"
+        
+        # Alternative: copy with timestamp
+        # timestamp=$(date +%Y%m%d_%H%M%S)
+        # cp -v "$xml_file" "${XML_DEST_DIR}/$(basename "$xml_file" .xml)_${timestamp}.xml"
+        sudo cp "$XML_DIR/$vm_name" "$DEST_DIR/$vm_name"
+    fi
+done
 
 
 echo "======================================================"
