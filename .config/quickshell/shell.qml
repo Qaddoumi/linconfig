@@ -1,7 +1,7 @@
 //@ pragma UseQApplication
 import QtQuick
 import Quickshell
-import Quickshell.Wayland
+
 import qs.Calendar
 import qs.Bar
 
@@ -35,35 +35,13 @@ ShellRoot {
     //Loading the top Bar
     Loader {
         active: true
-        sourceComponent: Bar {
-            Component.onCompleted: {
-                if (root.isWayland) {
-                    console.log("Wayland detected")
-                    // Wayland-specific layershell configuration
-                    WlrLayershell.layer = WlrLayer.Top
-                    WlrLayershell.keyboardFocus = WlrKeyboardFocus.None
-                    WlrLayershell.focusable = false
-                } else {
-                    console.log("X11 detected")
-                }
-            }
-        }
+        sourceComponent: Bar {}
     }
     
     // For loading the calendar on demand
     Loader {
         active: root.calendarVisible
-        sourceComponent: Calendar {
-            Component.onCompleted: {
-                if (root.isWayland) {
-                    console.log("Wayland detected")
-                    // Wayland-specific layershell configuration
-                    WlrLayershell.layer = WlrLayer.Overlay
-                    WlrLayershell.keyboardFocus = WlrKeyboardFocus.OnDemand
-                    WlrLayershell.focusable = true
-                }
-            }
-        }
+        sourceComponent: Calendar {}
     }
 
     Component.onCompleted: {

@@ -1,6 +1,8 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
+
 import qs // For the ThemeManager
 
 
@@ -491,6 +493,15 @@ Variants {
             }
 
             Component.onCompleted: calendarRoot.forceActiveFocus()
+        }
+        
+        Component.onCompleted: {
+            if (root.isWayland) {
+                // Wayland-specific layershell configuration
+                WlrLayershell.layer = WlrLayer.Overlay
+                WlrLayershell.keyboardFocus = WlrKeyboardFocus.OnDemand
+                WlrLayershell.focusable = true
+            }
         }
     }
 }
