@@ -21,7 +21,7 @@ RowLayout {
         sourceComponent: root.desktop.indexOf("sway") !== -1 ? swayWorkspaceWidget :
                          root.desktop.indexOf("hyprland") !== -1 ? hyprlandWorkspaceWidget :
                          root.desktop.indexOf("awesome") !== -1 ? awesomeWorkspaceWidget :
-                         root.sessionType.indexOf("11") !== -1 ? universalX11WorkspaceWidget :
+                         !root.isWayland ? universalX11WorkspaceWidget :
                          fallbackWorkspaceWidget
         
         onStatusChanged: {
