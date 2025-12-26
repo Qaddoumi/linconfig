@@ -32,16 +32,25 @@ ShellRoot {
     property bool isWayland: Quickshell.env("XDG_SESSION_TYPE") === "wayland"
     property string desktop: Quickshell.env("XDG_CURRENT_DESKTOP")
 
+    //Loading the top Bar
     Loader {
-        active: root.isWayland
-        sourceComponent: WaylandBar {}
+        active: true
+        sourceComponent: Bar {
+            Component.onCompleted: {
+                if (root.isWayland) {
+                    console.log("Wayland detected")
+                    // Wayland-specific layershell configuration
+                    WlrLayershell.layer = WlrLayer.Top
+                    WlrLayershell.keyboardFocus = WlrKeyboardFocus.None
+                    WlrLayershell.focusable = false
+                } else {
+                    console.log("X11 detected")
+                }
+            }
+        }
     }
     
-    Loader {
-        active: !root.isWayland
-        sourceComponent: X11Bar {}
-    }
-    
+    // For loading the calendar on demand
     Loader {
         active: root.calendarVisible
         sourceComponent: Calendar {}
