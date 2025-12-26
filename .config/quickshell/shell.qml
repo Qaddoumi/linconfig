@@ -30,11 +30,6 @@ ShellRoot {
 
     property bool isWayland: Quickshell.env("XDG_SESSION_TYPE") === "wayland"
     property string desktop: Quickshell.env("XDG_CURRENT_DESKTOP")
-    
-    Component.onCompleted: {
-        console.log("Session type:", isWayland ? "Wayland" : "X11")
-        console.log("Desktop:", desktop)
-    }
 
     Loader {
         active: root.isWayland
@@ -49,5 +44,9 @@ ShellRoot {
     Loader {
         active: root.calendarVisible
         sourceComponent: Calendar {}
+    }
+
+    Component.onCompleted: {
+        console.log("Desktop:", desktop)
     }
 }
