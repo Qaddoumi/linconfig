@@ -53,7 +53,17 @@ ShellRoot {
     // For loading the calendar on demand
     Loader {
         active: root.calendarVisible
-        sourceComponent: Calendar {}
+        sourceComponent: Calendar {
+            Component.onCompleted: {
+                if (root.isWayland) {
+                    console.log("Wayland detected")
+                    // Wayland-specific layershell configuration
+                    WlrLayershell.layer = WlrLayer.Overlay
+                    WlrLayershell.keyboardFocus = WlrKeyboardFocus.OnDemand
+                    WlrLayershell.focusable = true
+                }
+            }
+        }
     }
 
     Component.onCompleted: {

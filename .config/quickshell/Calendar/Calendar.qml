@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Quickshell.Wayland
 import qs // For the ThemeManager
 
 
@@ -33,9 +32,6 @@ Variants {
         
         color: "transparent"
         exclusiveZone: 0
-        
-        WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
         
         Behavior on height {
             NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
