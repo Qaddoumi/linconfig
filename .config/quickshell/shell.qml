@@ -1,6 +1,7 @@
 //@ pragma UseQApplication
 import QtQuick
 import Quickshell
+import Quickshell.Wayland
 import qs.Calendar
 import qs.Bar
 
