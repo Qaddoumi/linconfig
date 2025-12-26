@@ -160,7 +160,7 @@ exec_always /usr/lib/hyprpolkitagent/hyprpolkitagent
 
 ## X11 to Wayland Clipboard Bridge
 # This bridges clipboard from spice-vdagent (X11) to Wayland
-#exec_always bash -c "killall -q clipboard-bridge.sh; sleep 3; ~/.local/bin/clipboard-bridge.sh --bidirectional --interval 1.5 > /tmp/clipboard-bridge.log 2>&1"
+#exec_always bash -c "killall -q clipboard-bridge; sleep 3; clipboard-bridge --bidirectional --interval 1.5 > /tmp/clipboard-bridge.log 2>&1"
 
 exec copyq --start-server
 

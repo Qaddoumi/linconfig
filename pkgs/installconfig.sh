@@ -41,11 +41,6 @@ sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
 
-# Save the script (use the first artifact "X11 to Wayland Clipboard Bridge")
-echo -e "${green}Setting up clipboard-bridge.sh...${no_color}"
-sudo cp -f ~/linconfig/pkgs/clipboard-bridge.sh ~/.local/bin/clipboard-bridge.sh > /dev/null || true
-sudo chmod +x ~/.local/bin/clipboard-bridge.sh
-
 echo -e "${green}Setting up ownership for configuration files...${no_color}"
 sudo chown -R $USER:$USER ~/.config > /dev/null || true
 sudo chown -R $USER:$USER ~/.local > /dev/null || true
