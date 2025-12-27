@@ -3,7 +3,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 
-import qs // For the ThemeManager
+import qs.Theme
 
 
 // Calendar popup - anchored in the middle under the bar (center)
