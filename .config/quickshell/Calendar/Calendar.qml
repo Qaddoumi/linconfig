@@ -12,6 +12,7 @@ Variants {
     PanelWindow {
         property var modelData
         screen: modelData
+        focusable: true
         
         visible: root.calendarVisible
         
