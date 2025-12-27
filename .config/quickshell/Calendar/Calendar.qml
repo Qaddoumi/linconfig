@@ -6,7 +6,6 @@ import Quickshell.Wayland
 import qs.Theme
 
 
-// Calendar popup - anchored in the middle under the bar (center)
 Variants {
     model: Quickshell.screens
     
