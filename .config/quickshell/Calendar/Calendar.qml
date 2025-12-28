@@ -493,27 +493,46 @@ Variants {
                 }
             }
 
-        }
+            Process {
+                id: calendarFocusProcess
+                running: false
+            }
 
-        Process {
-            id: calendarWindowProcess
-            running: false
-        }
+            Timer {
+                id: calendarFocusTimer
+                interval: 200
+                running: false
+                repeat: false
+                onTriggered: calendarFocusProcess.running = true
+            }
 
-        Component.onCompleted: {
-            if (root.calendarVisible) {
+            function setFocus() {
                 if (!root.isWayland) {
-                    calendarWindowProcess.command = ["bash", "-c", "wmctrl -a quickshell"]
+                    calendarFocusProcess.command = ["bash", "-c", "wmctrl -a quickshell"]
                 } else if (root.desktop.includes("sway")) {
-                    calendarWindowProcess.command = ["bash", "-c", "swaymsg '[app_id=\"quickshell\"] focus'"]
+                    calendarFocusProcess.command = ["bash", "-c", "swaymsg '[app_id=\"quickshell\"] focus'"]
                 } else if (root.desktop.includes("Hyprland")) {
-                    calendarWindowProcess.command = ["bash", "-c", "hyprctl dispatch focuswindow title:quickshell"]
+                    calendarFocusProcess.command = ["bash", "-c", "hyprctl dispatch focuswindow title:quickshell"]
                 } else {
                     console.log("Unsupported desktop environment:", root.desktop)
-                    calendarWindowProcess.command = null
+                    calendarFocusProcess.command = ["bash", "-c", "sleep 0.1"]
                 }
-                calendarWindowProcess.running = true
+                calendarFocusTimer.restart()
+                console.log("=== Calendar focus set ===")
             }
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                // onClicked: calendarRoot.setFocus();
+                onEntered: calendarRoot.setFocus();
+            }
+
+        }
+
+
+        Component.onCompleted: {
+            calendarRoot.setFocus();
         }
     }
 }
