@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Wayland
 
 import qs.Bar.Widgets
 
@@ -12,6 +11,9 @@ Variants {
     PanelWindow {
         property var modelData
         screen: modelData
+
+        focusable: false
+        aboveWindows: true
 
         anchors {
             top: true
@@ -83,15 +85,6 @@ Variants {
             Component {
                 id: fallbackWorkspaceWidget
                 WorkspacesFallback{}
-            }
-        }
-
-        Component.onCompleted: {
-            if (root.isWayland) {
-                // Wayland-specific layershell configuration
-                WlrLayershell.layer = WlrLayer.Top
-                WlrLayershell.keyboardFocus = WlrKeyboardFocus.None
-                WlrLayershell.focusable = false
             }
         }
     }

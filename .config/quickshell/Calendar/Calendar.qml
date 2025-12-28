@@ -9,6 +9,7 @@ Variants {
     model: Quickshell.screens
     
     PanelWindow {
+        id: calendarWindow
         property var modelData
         screen: modelData
         focusable: true
@@ -38,6 +39,12 @@ Variants {
         Behavior on height {
             NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
         }
+        
+        // onVisibleChanged: {
+        //     if (visible) {
+        //         calendarWindow.forceActiveFocus()
+        //     }
+        // }
         
         Rectangle {
             id: calendarRoot
@@ -141,14 +148,14 @@ Variants {
                         let minutes = now.getMinutes().toString().padStart(2, '0')
                         let seconds = now.getSeconds().toString().padStart(2, '0')
                         
-                        console.log("updateTimeDisplay called - use24Hour:", timeSection.use24Hour, "showSeconds:", timeSection.showSeconds)
+                        // console.log("updateTimeDisplay called - use24Hour:", timeSection.use24Hour, "showSeconds:", timeSection.showSeconds)
                         
                         if (timeSection.use24Hour) {
                             timeText.text = timeSection.showSeconds 
                                 ? `${hours.toString().padStart(2, '0')}:${minutes}:${seconds}`
                                 : `${hours.toString().padStart(2, '0')}:${minutes}`
                             periodText.text = ""
-                            console.log("24-hour mode - periodText set to empty")
+                            // console.log("24-hour mode - periodText set to empty")
                         } else {
                             let period = hours >= 12 ? 'PM' : 'AM'
                             hours = hours % 12
@@ -157,7 +164,7 @@ Variants {
                                 ? `${hours.toString().padStart(2, '0')}:${minutes}:${seconds}`
                                 : `${hours.toString().padStart(2, '0')}:${minutes}`
                             periodText.text = period
-                            console.log("12-hour mode - periodText set to:", period)
+                            // console.log("12-hour mode - periodText set to:", period)
                         }
                     }
                     
@@ -183,7 +190,7 @@ Variants {
                                     if (settings.general) {
                                         timeSection.use24Hour = settings.general.clockFormat24hr === true
                                         timeSection.showSeconds = settings.general.showSeconds === true
-                                        console.log("Time settings loaded - 24hr:", timeSection.use24Hour, "showSeconds:", timeSection.showSeconds)
+                                        // console.log("Time settings loaded - 24hr:", timeSection.use24Hour, "showSeconds:", timeSection.showSeconds)
                                     }
                                     
                                     // Update display immediately with new settings
@@ -401,8 +408,8 @@ Variants {
                 triggeredOnStart: true
                 
                 onTriggered: {
-                    console.log("=== CalendarWidget Weather Timer Triggered ===")
-                    console.log("Widget visible:", calendarRoot.isVisible)
+                    // console.log("=== CalendarWidget Weather Timer Triggered ===")
+                    // console.log("Widget visible:", calendarRoot.isVisible)
                     settingsLoader.running = true
                 }
             }
@@ -424,10 +431,10 @@ Variants {
                 
                 onRunningChanged: {
                     if (!running && buffer !== "") {
-                        console.log("=== Settings Loader - Processing complete JSON ===")
+                        // console.log("=== Settings Loader - Processing complete JSON ===")
                         try {
                             const settings = JSON.parse(buffer)
-                            console.log("=== Settings parsed successfully ===")
+                            // console.log("=== Settings parsed successfully ===")
                             
                             let latitude = ""
                             let longitude = ""
@@ -438,19 +445,19 @@ Variants {
                                 longitude = settings.general.weatherLongitude || ""
                                 useFahrenheit = settings.general.useFahrenheit !== false
                                 
-                                console.log("weatherLatitude:", latitude)
-                                console.log("weatherLongitude:", longitude)
-                                console.log("useFahrenheit:", useFahrenheit)
+                                // console.log("weatherLatitude:", latitude)
+                                // console.log("weatherLongitude:", longitude)
+                                // console.log("useFahrenheit:", useFahrenheit)
                             }
                             
                             // Determine temperature unit parameter
                             const tempUnit = useFahrenheit ? "u" : "m"
-                            console.log("Using", useFahrenheit ? "Fahrenheit" : "Celsius")
+                            // console.log("Using", useFahrenheit ? "Fahrenheit" : "Celsius")
                             
                             // Build weather command with location if provided
                             let location = (latitude && longitude) ? `${latitude},${longitude}` : ""
                             let weatherCmd = `curl -s "wttr.in/${location}?${tempUnit}&format=%c|%t|%C|%h|%w"`
-                            console.log("Weather command:", weatherCmd)
+                            // console.log("Weather command:", weatherCmd)
                             
                             weatherProcess.command = ["sh", "-c", weatherCmd]
                             weatherProcess.running = true
@@ -475,7 +482,7 @@ Variants {
                 
                 stdout: SplitParser {
                     onRead: data => {
-                        console.log("Weather data received:", data)
+                        // console.log("Weather data received:", data)
                         const parts = data.trim().split('|')
                         if (parts.length >= 5) {
                             // Format: emoji|temp|condition|humidity|wind
@@ -486,13 +493,13 @@ Variants {
                             conditionText.text = (parts[2] || "Unknown").trim()
                             humidityText.text = "💧 " + (parts[3] || "--").trim()
                             windText.text = "💨 " + (parts[4] || "--").trim()
-                            console.log("Weather updated - Temp:", parts[1], "Condition:", parts[2], "Humidity:", parts[3], "Wind:", parts[4])
+                            // console.log("Weather updated - Temp:", parts[1], "Condition:", parts[2], "Humidity:", parts[3], "Wind:", parts[4])
                         }
                     }
                 }
             }
 
-            Component.onCompleted: calendarRoot.forceActiveFocus()
+            Component.onCompleted: calendarWindow.forceActiveFocus()
         }
     }
 }
