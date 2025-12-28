@@ -63,6 +63,7 @@ Variants {
             // ESC key to close
             Keys.onEscapePressed: {
                 calendarRoot.requestClose()
+                root.calendarVisible = false
             }
             
             // Main content - use Column since Grid doesn't support colspan
@@ -530,9 +531,10 @@ Variants {
 
         }
 
-
-        Component.onCompleted: {
-            calendarRoot.setFocus();
+        onVisibleChanged: {
+            if (root.calendarVisible) {
+                calendarRoot.setFocus();
+            }
         }
     }
 }
