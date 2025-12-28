@@ -167,7 +167,7 @@ Variants {
                     Process {
                         id: timeSettingsLoader
                         running: false
-                        command: ["cat", Quickshell.env("HOME") + "/.config/quickshell/settings.json"]
+                        command: ["cat", Quickshell.env("HOME") + "/.config/quickshell/Calendar/settings.json"]
                         
                         property string buffer: ""
                         
@@ -413,7 +413,7 @@ Variants {
             Process {
                 id: settingsLoader
                 running: false
-                command: ["cat", Quickshell.env("HOME") + "/.config/quickshell/settings.json"]
+                command: ["cat", Quickshell.env("HOME") + "/.config/quickshell/Calendar/settings.json"]
                 
                 property string buffer: ""
                 
