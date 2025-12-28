@@ -497,18 +497,20 @@ Variants {
 
         Process {
             id: calendarWindowProcess
-            repeat: false
             running: false
         }
 
         Component.onCompleted: {
-            if (root.calendarVisible){
-                if (!root.isWayland){
-                    calendarWindowProcess.command = ["sh", "-c", "wmctrl -a quickshell"]
-                }else if (root.desktop.includes("sway")){
-                    calendarWindowProcess.command = ["sh", "-c", "swaymsg '[con_id=\"quickshell\"] focus'"]
-                }else if (root.desktop.includes("Hyprland")){
-                    calendarWindowProcess.command = ["sh", "-c", "hyprctl activewindow -t focus"]
+            if (root.calendarVisible) {
+                if (!root.isWayland) {
+                    calendarWindowProcess.command = ["bash", "-c", "wmctrl -a quickshell"]
+                } else if (root.desktop.includes("sway")) {
+                    calendarWindowProcess.command = ["bash", "-c", "swaymsg '[app_id=\"quickshell\"] focus'"]
+                } else if (root.desktop.includes("Hyprland")) {
+                    calendarWindowProcess.command = ["bash", "-c", "hyprctl dispatch focuswindow title:quickshell"]
+                } else {
+                    console.log("Unsupported desktop environment:", root.desktop)
+                    calendarWindowProcess.command = null
                 }
                 calendarWindowProcess.running = true
             }
