@@ -1,8 +1,6 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Quickshell.Wayland
-import Quickshell.X11
 
 import qs.Theme
 
@@ -14,6 +12,7 @@ Variants {
         property var modelData
         screen: modelData
         focusable: true
+        aboveWindows: true
         
         visible: root.calendarVisible
         
@@ -494,22 +493,6 @@ Variants {
             }
 
             Component.onCompleted: calendarRoot.forceActiveFocus()
-        }
-        
-        Component.onCompleted: {
-            if (root.isWayland) {
-                // Wayland-specific layershell configuration
-                WlrLayershell.layer = WlrLayer.Overlay
-                WlrLayershell.keyboardFocus = WlrKeyboardFocus.OnDemand
-                WlrLayershell.focusable = true
-            } else {
-                // X11 configuration
-                // 2025 Quickshell implementations use the X11 attached property
-                X11.aboveWindows = true
-                X11.focusable = true
-                // Struts are often handled automatically by PanelWindow's 
-                // anchor properties in X11, but can be fine-tuned here.
-            }
         }
     }
 }
