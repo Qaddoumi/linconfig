@@ -494,5 +494,24 @@ Variants {
             }
 
         }
+
+        Process {
+            id: calendarWindowProcess
+            repeat: false
+            running: false
+        }
+
+        Component.onCompleted: {
+            if (root.calendarVisible){
+                if (!root.isWayland){
+                    calendarWindowProcess.command = ["sh", "-c", "wmctrl -a quickshell"]
+                }else if (root.desktop.includes("sway")){
+                    calendarWindowProcess.command = ["sh", "-c", "swaymsg '[con_id=\"quickshell\"] focus'"]
+                }else if (root.desktop.includes("Hyprland")){
+                    calendarWindowProcess.command = ["sh", "-c", "hyprctl activewindow -t focus"]
+                }
+                calendarWindowProcess.running = true
+            }
+        }
     }
 }
