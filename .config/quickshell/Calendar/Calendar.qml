@@ -40,12 +40,6 @@ Variants {
             NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
         }
         
-        // onVisibleChanged: {
-        //     if (visible) {
-        //         calendarWindow.forceActiveFocus()
-        //     }
-        // }
-        
         Rectangle {
             id: calendarRoot
 
@@ -499,7 +493,6 @@ Variants {
                 }
             }
 
-            Component.onCompleted: calendarWindow.forceActiveFocus()
         }
     }
 }
