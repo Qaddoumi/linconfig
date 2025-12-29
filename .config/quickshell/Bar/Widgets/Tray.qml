@@ -4,20 +4,22 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 
+import qs.Theme
+
 
 Rectangle {
     id: trayWidget
-    implicitWidth: trayRow.implicitWidth + root.margin
-    implicitHeight: hiddenText.implicitHeight + (root.margin / 2)
+    implicitWidth: trayRow.implicitWidth + ThemeManager.barMargin
+    implicitHeight: hiddenText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
-    border.color: root.colPurple
+    border.color: ThemeManager.accentPurple
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
 
     RowLayout {
         id: trayRow
         anchors.centerIn: parent
-        spacing: root.margin / 2
+        spacing: ThemeManager.barMargin / 2
 
         Repeater {
             model: SystemTray.items.values
@@ -34,7 +36,7 @@ Rectangle {
                     id: icon
                     anchors.centerIn: parent
                     source: item.icon
-                    implicitSize: root.fontSize + (root.margin / 2)
+                    implicitSize: ThemeManager.fontSizeBar + (ThemeManager.barMargin / 2)
                 }
 
                 MouseArea {
@@ -108,14 +110,14 @@ Rectangle {
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: root.colBg
-                                radius: root.radius
+                                color: ThemeManager.bgBase
+                                radius: ThemeManager.radius
                                 Text {
                                     id: popupText
                                     text: item.tooltipTitle || item.tooltipDescription || item.id
-                                    color: root.colCyan
-                                    font.pixelSize: root.fontSize
-                                    font.family: root.fontFamily
+                                    color: ThemeManager.accentCyan
+                                    font.pixelSize: ThemeManager.fontSizeBar
+                                    font.family: ThemeManager.fontFamily
                                     font.bold: true
                                     anchors.centerIn: parent
                                 }
@@ -130,8 +132,8 @@ Rectangle {
         Text {
             id: hiddenText
             text: " "
-            font.pixelSize: root.fontSize
-            font.family: root.fontFamily
+            font.pixelSize: ThemeManager.fontSizeBar
+            font.family: ThemeManager.fontFamily
             visible: false
         }
     }

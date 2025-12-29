@@ -3,6 +3,8 @@ import Quickshell
 import Quickshell.Io
 import QtQuick.Layouts
 
+import qs.Theme
+
 
 Item {
     anchors.fill: parent
@@ -157,11 +159,11 @@ Item {
     
     Rectangle {
         anchors.fill: parent
-        color: root.colBg
+        color: ThemeManager.bgBase
 
         RowLayout {
             anchors.fill: parent
-            spacing: root.margin / 2
+            spacing: ThemeManager.barMargin / 2
 
             Repeater {
                 model: 9
@@ -180,9 +182,9 @@ Item {
 
                     Text {
                         text: index + 1
-                        color: parent.isUrgent ? root.colRed : (parent.isActive ? root.colCyan : (parent.hasWindows ? root.colCyan : root.colMuted))
-                        font.pixelSize: root.fontSize
-                        font.family: root.fontFamily
+                        color: parent.isUrgent ? ThemeManager.accentRed : (parent.isActive ? ThemeManager.accentCyan : (parent.hasWindows ? ThemeManager.accentCyan : ThemeManager.surface1))
+                        font.pixelSize: ThemeManager.fontSizeBar
+                        font.family: ThemeManager.fontFamily
                         font.bold: true
                         anchors.centerIn: parent
                     }
@@ -190,7 +192,7 @@ Item {
                     Rectangle {
                         width: 20
                         height: 3
-                        color: parent.isUrgent ? root.colRed : (parent.isActive ? root.colPurple : root.colBg)
+                        color: parent.isUrgent ? ThemeManager.accentRed : (parent.isActive ? ThemeManager.accentPurple : ThemeManager.bgBase)
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottom: parent.bottom
                     }
@@ -210,9 +212,9 @@ Item {
 
             Text {
                 text: currentLayout
-                color: root.colFg
-                font.pixelSize: root.fontSize - 2
-                font.family: root.fontFamily
+                color: ThemeManager.fgPrimary
+                font.pixelSize: ThemeManager.fontSizeBar - 2
+                font.family: ThemeManager.fontFamily
                 font.bold: true
             }
 
@@ -220,9 +222,9 @@ Item {
 
             Text {
                 text: activeWindow
-                color: root.colPurple
-                font.pixelSize: root.fontSize
-                font.family: root.fontFamily
+                color: ThemeManager.accentPurple
+                font.pixelSize: ThemeManager.fontSizeBar
+                font.family: ThemeManager.fontFamily
                 font.bold: true
                 Layout.fillWidth: true
                 elide: Text.ElideRight

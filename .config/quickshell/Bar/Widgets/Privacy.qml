@@ -2,15 +2,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: privacyWidget
-    implicitWidth: visible ? privacyText.implicitWidth + root.margin : 0
-    implicitHeight: visible ? privacyText.implicitHeight + (root.margin / 2) : 0
+    implicitWidth: visible ? privacyText.implicitWidth + ThemeManager.barMargin : 0
+    implicitHeight: visible ? privacyText.implicitHeight + (ThemeManager.barMargin / 2) : 0
     color: "transparent"
     border.color: privacyText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
     visible: privacyVisible
 
     // Privacy properties
@@ -26,9 +28,9 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: privacyWidget.privacyText_
-        color: root.colRed  // Red to indicate privacy-sensitive activity
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        color: ThemeManager.accentRed  // Red to indicate privacy-sensitive activity
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 
@@ -106,14 +108,14 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                color: root.colBg
-                radius: root.radius
+                color: ThemeManager.bgBase
+                radius: ThemeManager.radius
                 Text {
                     id: popupText
                     text: privacyWidget.privacyTooltip || "No privacy info"
-                    color: root.colRed
-                    font.pixelSize: root.fontSize
-                    font.family: root.fontFamily
+                    color: ThemeManager.accentRed
+                    font.pixelSize: ThemeManager.fontSizeBar
+                    font.family: ThemeManager.fontFamily
                     anchors.centerIn: parent
                 }
             }

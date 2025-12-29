@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 
 import qs.Bar.Widgets
+import qs.Theme
 
 
 Variants {
@@ -21,8 +22,8 @@ Variants {
             right: true
         }
 
-        implicitHeight: root.barHeight
-        color: root.colBg
+        implicitHeight: ThemeManager.barHeight
+        color: ThemeManager.bgBase
 
         margins {
             top: 0
@@ -33,7 +34,7 @@ Variants {
 
         RowLayout {
             anchors.fill: parent
-            spacing: root.margin
+            spacing: ThemeManager.barMargin
 
             Item { width: 0 }
 

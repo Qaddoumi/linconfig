@@ -2,9 +2,11 @@ import QtQuick
 import Quickshell
 import QtQuick.Layouts
 
+import qs.Theme
+
 
 RowLayout {
-    spacing: root.margin / 2
+    spacing: ThemeManager.barMargin / 2
 
     // Fast timer for widgets like clock (every second)
     Timer {

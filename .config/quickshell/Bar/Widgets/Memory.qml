@@ -2,15 +2,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: memoryWidget
-    implicitWidth: memoryText.implicitWidth + root.margin
-    implicitHeight: memoryText.implicitHeight + (root.margin / 2)
+    implicitWidth: memoryText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: memoryText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: memoryText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
     property string memUsage: ""
 
     property alias process: memProc
@@ -21,9 +23,9 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: "Mem: " + memoryWidget.memUsage
-        color: root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        color: ThemeManager.accentCyan
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 

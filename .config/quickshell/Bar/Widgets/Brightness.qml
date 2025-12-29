@@ -2,15 +2,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: brightnessWidget
-    implicitWidth: brightnessText.implicitWidth + root.margin
-    implicitHeight: brightnessText.implicitHeight + (root.margin / 2)
+    implicitWidth: brightnessText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: brightnessText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: brightnessText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
     
     property string brightnessTooltip: ""
     property string brightnessDisplay: "Loading..."
@@ -29,9 +31,9 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: brightnessWidget.brightnessDisplay
-        color: root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        color: ThemeManager.accentCyan
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 
@@ -161,14 +163,14 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                color: failed ? root.colRed : root.colBg
-                radius: root.radius
+                color: failed ? ThemeManager.accentRed : ThemeManager.bgBase
+                radius: ThemeManager.radius
                 Text {
                     id: popupText
                     text: brightnessWidget.failed ? "Reload failed." : "Brightness :\n" +brightnessWidget.brightnessTooltip
-                    color: root.colCyan
-                    font.pixelSize: root.fontSize
-                    font.family: root.fontFamily
+                    color: ThemeManager.accentCyan
+                    font.pixelSize: ThemeManager.fontSizeBar
+                    font.family: ThemeManager.fontFamily
                     anchors.centerIn: parent
                 }
             }

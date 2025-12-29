@@ -2,15 +2,16 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
 
 Rectangle {
     id: prayerWidget
-    implicitWidth: prayerText.implicitWidth + root.margin
-    implicitHeight: prayerText.implicitHeight + (root.margin / 2)
+    implicitWidth: prayerText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: prayerText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: prayerText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
     
     property string prayerTooltip: ""
     property string prayerDisplay: "Loading..."
@@ -25,9 +26,9 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: prayerWidget.prayerDisplay
-        color: root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        color: ThemeManager.accentCyan
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
     
@@ -111,14 +112,14 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                radius: root.radius
-                color: failed ? root.colRed : root.colBg
+                radius: ThemeManager.radius
+                color: failed ? ThemeManager.accentRed : ThemeManager.bgBase
                 Text {
                     id: popupText
                     text: prayerWidget.failed ? "Reload failed." : prayerWidget.prayerTooltip
-                    color: root.colCyan
-                    font.pixelSize: root.fontSize
-                    font.family: root.fontFamily
+                    color: ThemeManager.accentCyan
+                    font.pixelSize: ThemeManager.fontSizeBar
+                    font.family: ThemeManager.fontFamily
                     anchors.centerIn: parent
                 }
             }

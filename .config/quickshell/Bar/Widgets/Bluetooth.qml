@@ -2,15 +2,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: bluetoothWidget
-    implicitWidth: bluetoothText.implicitWidth + root.margin
-    implicitHeight: bluetoothText.implicitHeight + (root.margin / 2)
+    implicitWidth: bluetoothText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: bluetoothText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: bluetoothText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
 
     // Bluetooth properties
     property bool powered: false
@@ -41,12 +43,12 @@ Rectangle {
             }
         }
         color: {
-            if (!bluetoothWidget.powered) return root.colRed
-            if (bluetoothWidget.deviceCount === 0) return root.colPurple
-            return root.colBlue
+            if (!bluetoothWidget.powered) return ThemeManager.accentRed
+            if (bluetoothWidget.deviceCount === 0) return ThemeManager.accentPurple
+            return ThemeManager.accentBlue
         }
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 
@@ -159,14 +161,14 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                color: root.colBg
-                radius: root.radius
+                color: ThemeManager.bgBase
+                radius: ThemeManager.radius
                 Text {
                     id: popupText
                     text: bluetoothWidget.bluetoothTooltip || "No bluetooth info"
-                    color: root.colBlue
-                    font.pixelSize: root.fontSize
-                    font.family: root.fontFamily
+                    color: ThemeManager.accentBlue
+                    font.pixelSize: ThemeManager.fontSizeBar
+                    font.family: ThemeManager.fontFamily
                     anchors.centerIn: parent
                 }
             }

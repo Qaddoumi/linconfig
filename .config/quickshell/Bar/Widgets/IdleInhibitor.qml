@@ -2,15 +2,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: idleInhibitorWidget
-    implicitWidth: idleText.implicitWidth + root.margin
-    implicitHeight: idleText.implicitHeight + (root.margin / 2)
+    implicitWidth: idleText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: idleText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: idleText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
 
     property string idleTooltip: ""
     property string idleDisplay: "Loading..."
@@ -25,9 +27,9 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: idleInhibitorWidget.idleDisplay
-        color: root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        color: ThemeManager.accentCyan
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 
@@ -47,9 +49,9 @@ Rectangle {
                         idleInhibitorWidget.idleTooltip = json.tooltip.replace("\\n", "\n")
                     }
                     if (json.class && json.class == "activated") {
-                        idleText.color = root.colRed
+                        idleText.color = ThemeManager.accentRed
                     } else {
-                        idleText.color = root.colMuted
+                        idleText.color = ThemeManager.surface1
                     }
                 } catch (e) {
                     console.error("Failed to parse idle:", e)
@@ -126,14 +128,14 @@ Rectangle {
             
             Rectangle {
                 anchors.fill: parent
-                radius: root.radius
-                color: failed ? root.colRed : root.colBg
+                radius: ThemeManager.radius
+                color: failed ? ThemeManager.accentRed : ThemeManager.bgBase
                 Text {
                     id: popupText
                     text: idleInhibitorWidget.failed ? "Reload failed." : idleInhibitorWidget.idleTooltip
-                    color: root.colCyan
-                    font.pixelSize: root.fontSize
-                    font.family: root.fontFamily
+                    color: ThemeManager.accentCyan
+                    font.pixelSize: ThemeManager.fontSizeBar
+                    font.family: ThemeManager.fontFamily
                     anchors.centerIn: parent
                 }
             }

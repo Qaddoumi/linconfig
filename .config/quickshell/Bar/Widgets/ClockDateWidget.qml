@@ -2,15 +2,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: clockDateWidget
-    implicitWidth: dateText.implicitWidth + root.margin
-    implicitHeight: dateText.implicitHeight + (root.margin / 2)
+    implicitWidth: dateText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: dateText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: dateText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
 
     property string hijriTooltip: ""
     // property string normalFormat: "ddd, MMM dd - hh:mm a"
@@ -27,9 +29,9 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
         // text: Qt.formatDateTime(new Date(), normalFormat)
         text : clockDateWidget.dateTime
-        color: root.colYellow
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        color: ThemeManager.accentYellow
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         // dateText.text = Qt.formatDateTime(new Date(), clockDateWidget.normalFormat)
     }
 
@@ -127,14 +129,14 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                radius: root.radius
-                color: failed ? root.colRed : root.colBg
+                radius: ThemeManager.radius
+                color: failed ? ThemeManager.accentRed : ThemeManager.bgBase
                 Text {
                     id: popupText
                     text: clockDateWidget.failed ? "Reload failed." : clockDateWidget.hijriTooltip
-                    color: root.colCyan
-                    font.pixelSize: root.fontSize
-                    font.family: root.fontFamily
+                    color: ThemeManager.accentCyan
+                    font.pixelSize: ThemeManager.fontSizeBar
+                    font.family: ThemeManager.fontFamily
                     anchors.centerIn: parent
                 }
             }

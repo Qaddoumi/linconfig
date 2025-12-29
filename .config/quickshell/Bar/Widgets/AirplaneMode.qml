@@ -2,15 +2,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: airplaneWidget
-    implicitWidth: airplaneText.implicitWidth + root.margin
-    implicitHeight: airplaneText.implicitHeight + (root.margin / 2)
+    implicitWidth: airplaneText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: airplaneText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: airplaneText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
     
     property bool isAirplaneMode: false
 
@@ -22,9 +24,9 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: airplaneWidget.isAirplaneMode ? "󰀝 ON" : "󰀞 OFF"
-        color: airplaneWidget.isAirplaneMode ? root.colRed : root.colCyan
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        color: airplaneWidget.isAirplaneMode ? ThemeManager.accentRed : ThemeManager.accentCyan
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 
@@ -88,14 +90,14 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                color: root.colBg
-                radius: root.radius
+                color: ThemeManager.bgBase
+                radius: ThemeManager.radius
                 Text {
                     id: popupText
                     text: "Airplane mode is : " + (airplaneWidget.isAirplaneMode ? "ON" : "OFF")
-                    color: root.colCyan
-                    font.pixelSize: root.fontSize
-                    font.family: root.fontFamily
+                    color: ThemeManager.accentCyan
+                    font.pixelSize: ThemeManager.fontSizeBar
+                    font.family: ThemeManager.fontFamily
                     anchors.centerIn: parent
                 }
             }

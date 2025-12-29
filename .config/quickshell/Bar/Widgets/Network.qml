@@ -2,15 +2,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: networkWidget
-    implicitWidth: networkText.implicitWidth + root.margin
-    implicitHeight: networkText.implicitHeight + (root.margin / 2)
+    implicitWidth: networkText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: networkText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: networkText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
 
     // Network properties
     property string networkState: "disconnected"
@@ -33,12 +35,12 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
         text: networkWidget.icon + " " + (networkWidget.essid || networkWidget.ifname || "N/A") + " ↓" + networkWidget.bandwidthDown + " ↑" + networkWidget.bandwidthUp
         color: {
-            if (networkWidget.networkState === "disconnected") return root.colRed
-            if (networkWidget.networkState === "linked") return root.colYellow
-            return root.colCyan
+            if (networkWidget.networkState === "disconnected") return ThemeManager.accentRed
+            if (networkWidget.networkState === "linked") return ThemeManager.accentYellow
+            return ThemeManager.accentCyan
         }
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 
@@ -127,14 +129,14 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                color: root.colBg
-                radius: root.radius
+                color: ThemeManager.bgBase
+                radius: ThemeManager.radius
                 Text {
                     id: popupText
                     text: networkWidget.networkTooltip || "No network info"
-                    color: root.colCyan
-                    font.pixelSize: root.fontSize
-                    font.family: root.fontFamily
+                    color: ThemeManager.accentCyan
+                    font.pixelSize: ThemeManager.fontSizeBar
+                    font.family: ThemeManager.fontFamily
                     anchors.centerIn: parent
                 }
             }

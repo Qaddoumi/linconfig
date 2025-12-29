@@ -2,15 +2,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: cpuWidget
-    implicitWidth: cpuText.implicitWidth + root.margin
-    implicitHeight: cpuText.implicitHeight + (root.margin / 2)
+    implicitWidth: cpuText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: cpuText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: cpuText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
     property int cpuUsage: 0
     property var lastCpuIdle: 0
     property var lastCpuTotal: 0
@@ -23,9 +25,9 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: "CPU: " + cpuWidget.cpuUsage + "%"
-        color: root.colYellow
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        color: ThemeManager.accentYellow
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 

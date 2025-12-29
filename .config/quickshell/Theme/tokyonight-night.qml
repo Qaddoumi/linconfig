@@ -36,6 +36,7 @@ QtObject {
     property color border1: "#737aa2"
     property color border2: "#828bb8"
     
+    property int barHeight: 26
     // Alpha version for bar background (85% opacity)
     property real barOpacity: 0.85
     property color bgBaseAlpha: Qt.rgba(
@@ -44,13 +45,16 @@ QtObject {
         parseInt(bgBase.toString().substr(5,2), 16) / 255,
         barOpacity
     )
+
+    property int radius: 8
+    property int barMargin: 6
     
-    // Font sizes
     property int fontSizeClock: 14
     property int fontSizeWorkspace: 14
     property int fontSizeUpdates: 14
     property int fontSizeIcon: 16
     property int fontSizeLargeIcon: 24
+    property int fontSizeBar: 10
 
     property string fontFamily: "JetBrainsMono Nerd Font Propo"
 }

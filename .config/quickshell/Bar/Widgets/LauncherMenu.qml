@@ -3,12 +3,14 @@ import Quickshell
 import Quickshell.Io
 import QtQuick.Layouts
 
+import qs.Theme
+
 
 Text {
     text: ""
-    color: root.colCyan
-    font.pixelSize: root.fontSize
-    font.family: root.fontFamily
+    color: ThemeManager.accentCyan
+    font.pixelSize: ThemeManager.fontSizeBar
+    font.family: ThemeManager.fontFamily
     font.bold: true
 
     property bool launcherOpen: false

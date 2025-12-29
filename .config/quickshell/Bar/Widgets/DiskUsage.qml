@@ -2,15 +2,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: diskWidget
-    implicitWidth: diskText.implicitWidth + root.margin
-    implicitHeight: diskText.implicitHeight + (root.margin / 2)
+    implicitWidth: diskText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: diskText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: diskText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
 
     property string diskUsage: ""
 
@@ -22,9 +24,9 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: "Disk: " + diskWidget.diskUsage
-        color: root.colBlue
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        color: ThemeManager.accentBlue
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 

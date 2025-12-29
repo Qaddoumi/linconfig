@@ -2,17 +2,19 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 //TODO: use ==> import Quickshell.Services.UPower
 
 Rectangle {
     id: batteryWidget
-    implicitWidth: batteryText.implicitWidth + root.margin
-    implicitHeight: batteryText.implicitHeight + (root.margin / 2)
+    implicitWidth: batteryText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: batteryText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: batteryText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
     property string batteryTooltip: ""
     property string batteryDisplay: "Loading..."
     property bool failed: false
@@ -47,13 +49,13 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
         text: batteryWidget.batteryDisplay
         color: {
-            if (batteryWidget.isCharging || batteryWidget.isPlugged) return root.colGreen
-            if (batteryWidget.capacity <= batteryWidget.stateCritical) return root.colRed
-            if (batteryWidget.capacity <= batteryWidget.stateWarning) return root.colYellow
-            return root.colCyan
+            if (batteryWidget.isCharging || batteryWidget.isPlugged) return ThemeManager.accentGreen
+            if (batteryWidget.capacity <= batteryWidget.stateCritical) return ThemeManager.accentRed
+            if (batteryWidget.capacity <= batteryWidget.stateWarning) return ThemeManager.accentYellow
+            return ThemeManager.accentCyan
         }
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 
@@ -171,14 +173,14 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                color: batteryWidget.failed ? root.colRed : root.colBg
-                radius: root.radius
+                color: batteryWidget.failed ? ThemeManager.accentRed : ThemeManager.bgBase
+                radius: ThemeManager.radius
                 Text {
                     id: popupText
                     text: batteryWidget.failed ? "Reload failed." : batteryWidget.batteryTooltip
-                    color: root.colCyan
-                    font.pixelSize: root.fontSize
-                    font.family: root.fontFamily
+                    color: ThemeManager.accentCyan
+                    font.pixelSize: ThemeManager.fontSizeBar
+                    font.family: ThemeManager.fontFamily
                     anchors.centerIn: parent
                 }
             }

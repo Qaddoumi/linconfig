@@ -2,22 +2,24 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Theme
+
 
 Rectangle {
     id: hardwareTemperatureWidget
-    implicitWidth: hardwareTemperatureText.implicitWidth + root.margin
-    implicitHeight: hardwareTemperatureText.implicitHeight + (root.margin / 2)
+    implicitWidth: hardwareTemperatureText.implicitWidth + ThemeManager.barMargin
+    implicitHeight: hardwareTemperatureText.implicitHeight + (ThemeManager.barMargin / 2)
     color: "transparent"
     border.color: hardwareTemperatureText.color
     border.width: 1
-    radius: root.radius / 2
+    radius: ThemeManager.radius / 2
     
     property string hardwareTemperatureTooltip: ""
     property string hardwareTemperatureDisplay: "Loading..."
     property bool failed: false
     property string errorString: ""
     property bool showWidget: true
-    property color tmpColor: root.colCyan
+    property color tmpColor: ThemeManager.accentCyan
 
     property alias process: hardwareTemperatureProcess // Expose for external triggering
 
@@ -30,8 +32,8 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
         text: hardwareTemperatureWidget.hardwareTemperatureDisplay
         color: hardwareTemperatureWidget.tmpColor
-        font.pixelSize: root.fontSize
-        font.family: root.fontFamily
+        font.pixelSize: ThemeManager.fontSizeBar
+        font.family: ThemeManager.fontFamily
         font.bold: true
     }
 
@@ -50,13 +52,13 @@ Rectangle {
                     if (json.class){
                         var tmpClass = json.class
                         if (tmpClass === "cool") {
-                            hardwareTemperatureWidget.tmpColor = root.colGreen
+                            hardwareTemperatureWidget.tmpColor = ThemeManager.accentGreen
                         } else if (tmpClass === "warm") {
-                            hardwareTemperatureWidget.tmpColor = root.colYellow
+                            hardwareTemperatureWidget.tmpColor = ThemeManager.accentYellow
                         } else if (tmpClass === "hot") {
-                            hardwareTemperatureWidget.tmpColor = root.colRed
+                            hardwareTemperatureWidget.tmpColor = ThemeManager.accentRed
                         } else if (tmpClass === "critical") {
-                            hardwareTemperatureWidget.tmpColor = root.colRed
+                            hardwareTemperatureWidget.tmpColor = ThemeManager.accentRed
                         }
                     }
                     if (json.tooltip) {
@@ -133,14 +135,14 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                radius: root.radius
-                color: failed ? root.colRed : root.colBg
+                radius: ThemeManager.radius
+                color: failed ? ThemeManager.accentRed : ThemeManager.bgBase
                 Text {
                     id: popupText
                     text: hardwareTemperatureWidget.failed ? "Reload failed." : hardwareTemperatureWidget.hardwareTemperatureTooltip
-                    color: root.colCyan
-                    font.pixelSize: root.fontSize
-                    font.family: root.fontFamily
+                    color: ThemeManager.accentCyan
+                    font.pixelSize: ThemeManager.fontSizeBar
+                    font.family: ThemeManager.fontFamily
                     anchors.centerIn: parent
                 }
             }
