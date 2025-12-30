@@ -187,6 +187,7 @@ for_window [class="kdialog"] floating enable, move position center, resize set 4
 for_window [class="kde5-config-dialog"] floating enable, move position center, resize set 500 400
 for_window [app_id="thunar" title="(File Operation Progress|Attention|Confirm|Progress|Rename.*)"] floating enable, move position center, resize set 500 400
 for_window [app_id="google-chrome" title="(Save As|Open Files)"] floating enable, move position center, resize set 600 400
+for_window [app_id="quickshell"] floating enable, border none
 
 for_window [app_id="gcr-prompter"] floating enable, move container to workspace current
 for_window [app_id="com.github.hluk.copyq"] floating enable, move container to workspace current
