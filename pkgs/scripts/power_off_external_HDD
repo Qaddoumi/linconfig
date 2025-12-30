@@ -18,8 +18,8 @@ if [ -z "$DEVICE_NAME" ]; then
     exit 1
 fi
 
-# Get the parent device (remove partition number)
-PARENT_DEVICE=$(echo $DEVICE | sed 's/[0-9]*$//')
+# Get the parent device (e.g., /dev/sdb1 -> /dev/sdb or /dev/nvme0n1p1 -> /dev/nvme0n1)
+PARENT_DEVICE="/dev/$(lsblk -no PKNAME "$DEVICE")"
 
 echo "Found drive: $DEVICE (parent: $PARENT_DEVICE)"
 
@@ -35,6 +35,9 @@ if [ -n "$MOUNT_POINT" ]; then
         echo "Successfully unmounted $DRIVE_NAME"
     else
         echo "Error: Failed to unmount $DRIVE_NAME"
+        echo "find what is using the drive"
+        lsof +D "$MOUNT_POINT"
+        # Alternative: fuser -v "$MOUNT_POINT"
         exit 1
     fi
 else
