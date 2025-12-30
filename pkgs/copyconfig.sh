@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 
+sourceDir=""
+if [[ "$(pwd)" != *"shared"* ]]; then
+    sourceDir=~/linconfig
+else
+    sourceDir=~/shared/github/MyGithubs/linconfig
+fi
+
 sudo mkdir -p ~/.config
 
-sudo cp -afr ~/shared/github/MyGithubs/linconfig/.config/* ~/.config/
-cp -af ~/shared/github/MyGithubs/linconfig/.config/.gtkrc-2.0 ~
-cp -af ~/shared/github/MyGithubs/linconfig/.config/.xscreensaver ~
+sudo cp -afr $sourceDir/.config/* ~/.config/
+cp -af $sourceDir/.config/.gtkrc-2.0 ~
+cp -af $sourceDir/.config/.xscreensaver ~
 
 sudo rm -f ~/.config/mimeinfo.cache || true
 sudo rm -f ~/.local/share/applications/mimeinfo.cache || true

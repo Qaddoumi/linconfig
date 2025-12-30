@@ -772,6 +772,18 @@ clientmessage(XEvent *e)
 	XClientMessageEvent *cme = &e->xclient;
 	Client *c = wintoclient(cme->window);
 
+	Monitor *m; /* Add this variable declaration */
+	if (!c && (m = wintomon(cme->window)) && (cme->window == m->barwin)) {
+        if (cme->message_type == netatom[NetActiveWindow]) {
+            unfocus(selmon->sel, 0);
+            selmon = m;
+            focus(NULL);
+            /* Give input focus to the bar (needed for launchers/text inputs) */
+            XSetInputFocus(dpy, m->barwin, RevertToPointerRoot, CurrentTime);
+            return;
+        }
+    }
+
 	if (showsystray && systray && cme->window == systray->win && cme->message_type == netatom[NetSystemTrayOP]) {
 		/* add systray icons */
 		if (cme->data.l[1] == SYSTEM_TRAY_REQUEST_DOCK) {
@@ -1657,7 +1669,7 @@ int
 isaltbar(Window w)
 {
 	XClassHint ch = { NULL, NULL };
-	char name[256];
+	// char name[256];
 	int res = 0;
 
 	/* 1. Check Class Hint */
@@ -1669,11 +1681,11 @@ isaltbar(Window w)
 		if (ch.res_name) XFree(ch.res_name);
 	}
 
-	/* 2. Check Window Title/Name */
-	if (!res && gettextprop(w, XA_WM_NAME, name, sizeof(name))) {
-		if (strstr(name, "quickshell") || strstr(name, "Quickshell"))
-			res = 1;
-	}
+	// /* 2. Check Window Title/Name */
+	// if (!res && gettextprop(w, XA_WM_NAME, name, sizeof(name))) {
+	// 	if (strstr(name, "quickshell"))
+	// 		res = 1;
+	// }
 
 	/* 3. Check Window Type Atom (DOCK) */
 	if (!res) {

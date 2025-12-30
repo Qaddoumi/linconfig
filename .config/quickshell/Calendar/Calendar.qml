@@ -8,33 +8,33 @@ import qs.Theme
 Variants {
     model: Quickshell.screens
     
-    PanelWindow {
+    FloatingWindow {
         id: calendarWindow
         property var modelData
         screen: modelData
-        focusable: true
-        aboveWindows: true
+        // focusable: true
+        // aboveWindows: true
         
         visible: root.calendarVisible
         
-        anchors {
-            top: true
-            // left: true
-            right: true
-        }
+        // anchors {
+        //     top: true
+        //     // left: true
+        //     right: true
+        // }
         
-        margins {
-            top: 3  // Position at bottom edge the bar
-            // left: (screen.width - 750) / 2  // Center horizontally
-            // right: (screen.width - 750) / 2  // Center horizontally
-            right: root.margin                 // Align to the right edge with standard margin
-        }
+        // margins {
+        //     top: 3  // Position at bottom edge the bar
+        //     // left: (screen.width - 750) / 2  // Center horizontally
+        //     // right: (screen.width - 750) / 2  // Center horizontally
+        //     right: root.margin                 // Align to the right edge with standard margin
+        // }
         
         implicitWidth: 750
         implicitHeight: root.calendarVisible ? 420 : 0
         
         color: "transparent"
-        exclusiveZone: 0
+        // exclusiveZone: 0
         
         Behavior on height {
             NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
