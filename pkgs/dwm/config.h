@@ -1,8 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int refresh_rate        = 144;  /* matches dwm's mouse event processing to your monitor's refresh rate for smoother window interactions */
-static const unsigned int enable_noborder     = 1;   /* toggles noborder feature (0=disabled, 1=enabled) */
+static const unsigned int refresh_rate        = 144; /* matches dwm's mouse event processing to your monitor's refresh rate for smoother window interactions */
+static const unsigned int enable_noborder     = 1;   /* toggles noborder feature {when one window is open} (0=disabled, 1=enabled) */
 static const unsigned int borderpx            = 3;   /* border pixel of windows */
 static const unsigned int snap                = 26;  /* snap pixel */
 static const int swallowfloating              = 1;   /* 1 means swallow floating windows by default */
@@ -13,10 +13,10 @@ static const int systraypinningfailfirst      = 1;   /* 1: if pinning fails, dis
 static const int showsystray                  = 0;   /* 0 means no systray - disable when using quickshell */
 static const int showbar                      = 1;   /* 1 means show bar - needed for quickshell space calculation */
 static const int topbar                       = 1;   /* 0 means bottom bar */
-static const int usealtbar                     = 1;   /* 1 means use non-dwm status bar */
-static const char *altbarclass                 = "quickshell"; /* Alternate bar class name */
-static const char *alttrayname                 = "tray";    /* quickshell tray instance name */
-static const char *altbarcmd                   = "quickshell &";
+static const int usealtbar                    = 1;   /* 1 means use non-dwm status bar */
+static const char *altbarclass                = "quickshell"; /* Alternate bar class name */
+static const char *alttrayname                = "tray";    /* quickshell tray instance name */
+static const char *altbarcmd                  = "quickshell &";
 #define ICONSIZE                              17     /* icon size */
 #define ICONSPACING                           5      /* space between icon and title */
 #define SHOWWINICON                           1      /* 0 means no winicon */
