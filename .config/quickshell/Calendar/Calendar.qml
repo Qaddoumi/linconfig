@@ -519,7 +519,7 @@ Variants {
                     calendarFocusProcess.command = ["bash", "-c", "sleep 0.1"]
                 }
                 calendarFocusTimer.restart()
-                console.log("=== Calendar focus set ===")
+                // console.log("=== Calendar focus set ===")
             }
 
             MouseArea {

@@ -3,7 +3,7 @@
 /* appearance */
 static const unsigned int refresh_rate        = 144;  /* matches dwm's mouse event processing to your monitor's refresh rate for smoother window interactions */
 static const unsigned int enable_noborder     = 1;   /* toggles noborder feature (0=disabled, 1=enabled) */
-static const unsigned int borderpx            = 1;   /* border pixel of windows */
+static const unsigned int borderpx            = 3;   /* border pixel of windows */
 static const unsigned int snap                = 26;  /* snap pixel */
 static const int swallowfloating              = 1;   /* 1 means swallow floating windows by default */
 static const unsigned int systraypinning      = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
@@ -54,19 +54,19 @@ static const char etagf[] = "[%s]";     /* format of an empty tag */
 static const int lcaselbl = 0;          /* 1 means make tag label lowercase */
 
 static const Rule rules[] = {
-    /* class                instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
-    { "St",                 NULL,     NULL,           0,         0,          1,          0,         0 },
-    { "kitty",              NULL,     NULL,           0,         0,          1,          0,         0 },
-    { "alacritty",          NULL,     NULL,           0,         0,          1,          0,         0 },
-    { "ghostty",            NULL,     NULL,           0,         0,          1,          0,         0 },
-    { "warp-terminal",      NULL,     NULL,           0,         0,          1,          0,         0 },
-    { "terminator",         NULL,     NULL,           0,         0,          1,          0,         0 },
-    { "lutris",             NULL,     NULL,           0,         1,          0,          0,         0 },
-    { "steam_app_default",  NULL,     NULL,           0,         1,          0,          0,         0 },
-    { "thunar",             NULL,     NULL,           0,         0,          0,          0,         0 },
-    { NULL,                 NULL,     "quickshell",   0,         1,          0,          0,        -1 },
-    { "quickshell",         NULL,     NULL,           0,         1,          0,          0,        -1 },
-    { NULL,                 NULL,     "Event Tester", 0,         0,          0,          1,        -1 }, /* xev */
+    /* class                instance  title           tags mask  isfloating  isterminal  noswallow  monitor  border width */
+    { "St",                 NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
+    { "kitty",              NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
+    { "alacritty",          NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
+    { "ghostty",            NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
+    { "warp-terminal",      NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
+    { "terminator",         NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
+    { "lutris",             NULL,     NULL,           0,         1,          0,          0,         0,       -1 },
+    { "steam_app_default",  NULL,     NULL,           0,         1,          0,          0,         0,       -1 },
+    { "thunar",             NULL,     NULL,           0,         0,          0,          0,         0,       -1 },
+    { NULL,                 NULL,     "quickshell",   0,         1,          0,          0,        -1,        0 },
+    { "quickshell",         NULL,     NULL,           0,         1,          0,          0,        -1,        0 },
+    { NULL,                 NULL,     "Event Tester", 0,         0,          0,          1,        -1,       -1 }, /* xev */
 };
 
 /* layout(s) */

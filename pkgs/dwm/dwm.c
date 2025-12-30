@@ -181,6 +181,7 @@ typedef struct {
 	int isterminal;
 	int noswallow;
 	int monitor;
+	int bw;
 } Rule;
 
 typedef struct Systray Systray;
@@ -328,6 +329,7 @@ static int isaltbar(Window w);
 
 
 /* variables */
+static Client *lastfocused = NULL;
 static Systray *systray = NULL;
 static const char broken[] = "broken";
 static char stext[256] = "6.6";
@@ -447,6 +449,7 @@ applyrules(Client *c)
 	/* rule matching */
 	c->isfloating = 0;
 	c->tags = 0;
+	c->bw = borderpx;
 	XGetClassHint(dpy, c->win, &ch);
 	class    = ch.res_class ? ch.res_class : broken;
 	instance = ch.res_name  ? ch.res_name  : broken;
@@ -464,6 +467,8 @@ applyrules(Client *c)
 			c->noswallow  = r->noswallow;
 			c->isfloating = r->isfloating;
 			c->tags |= r->tags;
+			if (r->bw != -1)
+				c->bw = r->bw;
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
 				c->mon = m;
@@ -1188,7 +1193,11 @@ focus(Client *c)
 		detachstack(c);
 		attachstack(c);
 		grabbuttons(c, 1);
+		/* set new focused border first to avoid flickering */
 		XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
+		/* lastfocused may be us if another window was unmanaged */
+		if (lastfocused && lastfocused != c)
+			XSetWindowBorder(dpy, lastfocused->win, scheme[SchemeNorm][ColBorder].pixel);
 		setfocus(c);
 	} else {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
@@ -1609,7 +1618,6 @@ manage(Window w, XWindowAttributes *wa)
 		c->y = c->mon->wy + c->mon->wh - HEIGHT(c);
 	c->x = MAX(c->x, c->mon->mx);
 	c->y = MAX(c->y, c->mon->wy);
-	c->bw = borderpx;
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -1669,7 +1677,6 @@ int
 isaltbar(Window w)
 {
 	XClassHint ch = { NULL, NULL };
-	// char name[256];
 	int res = 0;
 
 	/* 1. Check Class Hint */
@@ -1680,12 +1687,6 @@ isaltbar(Window w)
 		if (ch.res_class) XFree(ch.res_class);
 		if (ch.res_name) XFree(ch.res_name);
 	}
-
-	// /* 2. Check Window Title/Name */
-	// if (!res && gettextprop(w, XA_WM_NAME, name, sizeof(name))) {
-	// 	if (strstr(name, "quickshell"))
-	// 		res = 1;
-	// }
 
 	/* 3. Check Window Type Atom (DOCK) */
 	if (!res) {
@@ -3234,7 +3235,7 @@ unfocus(Client *c, int setfocus)
 	if (!c)
 		return;
 	grabbuttons(c, 0);
-	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
+	lastfocused = c;
 	if (setfocus) {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
 		XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
@@ -3283,6 +3284,8 @@ unmanage(Client *c, int destroyed)
 		XUngrabServer(dpy);
 	}
 
+	if (lastfocused == c)
+		lastfocused = NULL;
 	free(c);
 	if (!s) {
 		/* Find the topmost visible window */
