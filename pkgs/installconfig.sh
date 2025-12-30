@@ -76,7 +76,7 @@ sudo make clean install || true
 
 cd ~
 
-echo -e "${green}\n\nReloading session with $mod + Shift + c${no_color}"
+echo -e "${green}\n\nReloading session with \$mod + Shift + c${no_color}"
 # if [  "$XDG_SESSION_DESKTOP" = "Hyprland" ]; then
 #     echo -e "${green}Reloading Hyprland...${no_color}"
 #     hyprctl reload > /dev/null || true

@@ -23,14 +23,7 @@ sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
 
 sudo chown -R $USER:$USER ~/.config > /dev/null || true
 
-echo -e "${green}\n\nReloading session...${no_color}"
-if [  "$XDG_SESSION_DESKTOP" = "Hyprland" ]; then
-    echo -e "${green}Reloading Hyprland...${no_color}"
-    hyprctl reload > /dev/null || true
-elif [  "$XDG_SESSION_DESKTOP" = "sway" ]; then
-    echo -e "${green}Reloading Sway...${no_color}"
-    swaymsg reload > /dev/null || true
-elif [  "$XDG_SESSION_DESKTOP" = "awesome" ]; then
-    echo -e "${green}Reloading Awesome...${no_color}"
-    echo 'awesome.restart()' | awesome-client > /dev/null || true
-fi
+cd ~/linconfig/pkgs/dwm || true
+sudo make clean install || true
+
+echo -e "\nReloading session with \$mod + Shift + c"
