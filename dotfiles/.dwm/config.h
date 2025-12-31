@@ -158,8 +158,8 @@ static Key keys[] = {
     TAGKEYS(                        XK_8,                      7)
     TAGKEYS(                        XK_9,                      8)
     { MODKEY|ShiftMask,             XK_e,                      quit,           {0} }, /*kill dwm and back to login screen*/
-    { MODKEY|ShiftMask,             XK_t                       spawn,          SHCMD("pgrep -x xscreensaver > /dev/null || (xscreensaver -no-splash & sleep 1); xscreensaver-command -lock")},
-    { ControlMask|AltMask,          XK_Delete,                 spawn,          SHCMD("powermenu")},
+    { MODKEY|ShiftMask,             XK_t,                      spawn,          SHCMD("pgrep -x xscreensaver > /dev/null || (xscreensaver -no-splash & sleep 1); xscreensaver-command -lock")},
+    { ControlMask|Mod1Mask,         XK_Delete,                 spawn,          SHCMD("powermenu")},
     // { MODKEY|ControlMask|ShiftMask, XK_r,                      spawn,          SHCMD("systemctl reboot")},
     // { MODKEY|ControlMask|ShiftMask, XK_s,                      spawn,          SHCMD("systemctl suspend")},
 };
