@@ -12,13 +12,8 @@ bold="\e[1m"
 no_color='\033[0m' # reset the color to default
 
 
-echo -e "${green}Setting up directories...${no_color}"
-sudo mkdir -p ~/.config > /dev/null || true
-sudo mkdir -p ~/.local/bin > /dev/null || true
-sudo mkdir -p ~/.local/share/applications > /dev/null || true
-
 if [ -d ~/linconfig ]; then
-    echo -e "${green}Removing the old directory...${no_color}"
+    echo -e "${green}Removing the old repo directory...${no_color}"
     sudo rm -rf ~/linconfig > /dev/null || true
 fi
 echo -e "${green}Cloning the repository...${no_color}"
@@ -28,18 +23,17 @@ if ! git clone --depth 1 -b main https://github.com/Qaddoumi/linconfig.git ~/lin
 fi
 
 echo -e "${green}Copying config files...${no_color}"
-sudo cp -rf ~/linconfig/.config/* ~/.config/
-sudo cp -f ~/linconfig/.config/.gtkrc-2.0 ~
-sudo cp -f ~/linconfig/.config/.xscreensaver ~
+sudo cp -arf ~/linconfig/dotfiles/. ~
 
-sudo rm -f ~/.config/mimeinfo.cache || true
-sudo rm -f ~/.local/share/applications/mimeinfo.cache || true
+echo -e "${green}Removing mimeinfo cache...${no_color}"
+sudo rm -f ~/.config/mimeinfo.cache ~/.local/share/applications/mimeinfo.cache || true
 sudo update-desktop-database ~/.local/share/applications || true
 
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
+find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
 
 echo -e "${green}Setting up ownership for configuration files...${no_color}"
 sudo chown -R $USER:$USER ~/.config > /dev/null || true
@@ -55,37 +49,21 @@ fi
 source ~/.bashrc || true
 
 
-echo -e "${green}Copying script files...${no_color}"
-
-mkdir -p ~/.local/bin
-# Copy both regular files and hidden files (like .xinitrc)
-cp -rf ~/linconfig/pkgs/scripts/. ~/.local/bin/ 2>/dev/null || true
-find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
-
-
 echo -e "${green}Copy the installconfig.sh script${no_color}"
-cp -f ~/linconfig/pkgs/installconfig.sh ~/installconfig.sh
+cp -af ~/linconfig/pkgs/installconfig.sh ~/installconfig.sh
 chmod +x ~/installconfig.sh
 
 # echo -e "${green}Removing temporary files...${no_color}"
 # sudo rm -rf ~/linconfig
 
-echo -e "${green}\n\nInstalling dwm...${no_color}"
-cd ~/linconfig/pkgs/dwm
+echo -e "${green}\nInstalling dwm...${no_color}"
+cd ~/.dwm
 sudo make clean install || true
 
 cd ~
 
-echo -e "${green}\n\nReloading session with \$mod + Shift + c${no_color}"
-# if [  "$XDG_SESSION_DESKTOP" = "Hyprland" ]; then
-#     echo -e "${green}Reloading Hyprland...${no_color}"
-#     hyprctl reload > /dev/null || true
-# elif [  "$XDG_SESSION_DESKTOP" = "sway" ]; then
-#     echo -e "${green}Reloading Sway...${no_color}"
-#     swaymsg reload > /dev/null || true
-# elif [  "$XDG_SESSION_DESKTOP" = "awesome" ]; then
-#     echo -e "${green}Reloading Awesome...${no_color}"
-#     echo 'awesome.restart()' | awesome-client > /dev/null || true
-# fi
+echo -e "${green}\nReload session with \$mod + Shift + c${no_color}"
+
+# sudo rm -rf ~/linconfig > /dev/null || true
 
 echo -e "${green}\nSetup completed!${no_color}\n"
