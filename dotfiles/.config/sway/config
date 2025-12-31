@@ -266,7 +266,7 @@ input "type:keyboard" {
     bindsym $mod+shift+v exec sticky enable
 
     # Logout
-    #bindsym ctrl+alt+delete exec nwg-bar
+    bindsym ctrl+alt+delete exec ~/.config/quickshell/scripts/powermenu.sh
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.

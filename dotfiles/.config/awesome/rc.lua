@@ -341,7 +341,7 @@ globalkeys = gears.table.join(
     -- awful.key({ modkey }, "p", function() menubar.show() end,
     --           {description = "show the menubar", group = "launcher"}),
               
-    -- NEW KEYBINDS FROM SWAY CONFIG
+    -- NEW KEYBINDS
     -- Start web browser ($mod+b)
     awful.key({ modkey }, "b", function () awful.spawn("google-chrome-stable") end,
               {description = "start web browser", group = "launcher"}),
@@ -354,9 +354,14 @@ globalkeys = gears.table.join(
     awful.key({ modkey }, "v", function () awful.spawn("copyq toggle") end,
               {description = "toggle copyq", group = "utility"}),
 
-    -- Lock screen ($mod+Shift+t). TODO: Replace 'i3lock-fancy' with your preferred locker (e.g., 'betterlockscreen').
-    awful.key({ modkey, "Shift" }, "t", function () awful.spawn("i3lock-fancy") end,
+    awful.key({ modkey, "Shift" }, "t", function ()
+        awful.spawn.with_shell("pgrep -x xscreensaver > /dev/null || (xscreensaver -no-splash & sleep 1); xscreensaver-command -lock") 
+    end,
               {description = "lock screen", group = "utility"})
+
+    -- Logout (ctrl+alt+delete)
+    awful.key({ "Control", "Alt" }, "Delete", function () awful.spawn(os.getenv("HOME") .. "/.config/quickshell/scripts/powermenu.sh") end,
+              {description = "logout", group = "utility"})
 )
 
 clientkeys = gears.table.join(
@@ -366,13 +371,13 @@ clientkeys = gears.table.join(
             c:raise()
         end,
         {description = "toggle fullscreen", group = "client"}),
-    -- From Sway: Kill focused window ($mod+Shift+q)
+    -- Kill focused window ($mod+Shift+q)
     awful.key({ modkey, "Shift"   }, "q",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
               {description = "toggle floating", group = "client"}),
     awful.key({ modkey,           }, "t",      function (c) awful.client.floating.toggle(c)  end,
-              {description = "toggle floating", group = "client"}), -- From Sway ($mod+t)
+              {description = "toggle floating", group = "client"}),
 
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
               {description = "move to master", group = "client"}),
