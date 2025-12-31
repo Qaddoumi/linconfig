@@ -265,9 +265,6 @@ input "type:keyboard" {
     # Sticky Mode "making a window "stick" to all workspaces"
     bindsym $mod+shift+v exec sticky enable
 
-    # Wallpaper
-    #bindsym $mod+c exec ~/.config/sway/scripts/wallpaper.sh
-
     # Logout
     #bindsym ctrl+alt+delete exec nwg-bar
 
