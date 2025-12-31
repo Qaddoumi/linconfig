@@ -531,8 +531,8 @@ awful.rules.rules = {
         properties = { 
             floating = true,
             sticky = true,
-            ontop = false,
-            focusable = false,
+            ontop = true,
+            focusable = true,
             titlebars_enabled = false,
             border_width = 0,
         }
@@ -564,8 +564,8 @@ client.connect_signal("manage", function (c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
     -- if not awesome.startup then awful.client.setslave(c) end
-    if c.class == "quickshell" then
-        c.focusable = false
+    if c.class == "quickshell" and not c.floating then
+        c.focusable = true
         c.sticky = true
         c:geometry({ x = 0, y = 0, width = c.screen.geometry.width })
         -- Set struts to reserve top space (adjust height as needed)
