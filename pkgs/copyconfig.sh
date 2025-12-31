@@ -16,7 +16,6 @@ sudo update-desktop-database ~/.local/share/applications || true
 echo "Setting up permissions for configuration files"
 sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
-sudo chmod +x ~/.config/sway/scripts/*.sh > /dev/null || true
 find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
 
 echo "Setting up ownership for configuration files"
