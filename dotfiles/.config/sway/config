@@ -244,9 +244,6 @@ input "type:keyboard" {
     #bindsym $mod+s exec rofi -show emoji -modi emoji -matching regex -sorting-method levenshtein
 
     # Clipboard
-    #bindsym $mod+v exec cliphist list | wofi --dmenu --prompt "Search the clipboard..." | cliphist decode | wl-copy
-    #bindsym $mod+Shift+v exec cliphist list | wofi --dmenu --prompt "Delete from clipboard..." | cliphist delete
-    # bindsym $mod+v exec ~/.config/sway/scripts/clipboard-menu.sh
     bindsym $mod+v exec copyq toggle
 
 
@@ -256,9 +253,6 @@ input "type:keyboard" {
     # Tiling Modes uses autotiling
     #bindsym $mod+u exec ~/.config/sway/scripts/tiling.sh
 
-    # Screen Record
-    bindsym $mod+g exec ~/.config/sway/scripts/prompt-record.sh
-
     # File Manager
     bindsym $mod+y exec $fileManager
 
@@ -266,7 +260,7 @@ input "type:keyboard" {
     bindsym $mod+shift+v exec sticky enable
 
     # Logout
-    bindsym ctrl+alt+delete exec ~/.config/quickshell/scripts/powermenu.sh
+    bindsym ctrl+alt+delete exec powermenu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.

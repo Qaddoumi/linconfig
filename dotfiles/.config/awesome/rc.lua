@@ -360,7 +360,7 @@ globalkeys = gears.table.join(
               {description = "lock screen", group = "utility"})
 
     -- Logout (ctrl+alt+delete)
-    awful.key({ "Control", "Alt" }, "Delete", function () awful.spawn(os.getenv("HOME") .. "/.config/quickshell/scripts/powermenu.sh") end,
+    awful.key({ "Control", "Alt" }, "Delete", function () awful.spawn("powermenu") end,
               {description = "logout", group = "utility"})
 )
 
