@@ -527,7 +527,7 @@ awful.rules.rules = {
       }, properties = { titlebars_enabled = true }
     },
 
-    { rule = { class = "quickshell" },
+    { rule = { name = "quickshell" },
         properties = { 
             floating = true,
             sticky = true,

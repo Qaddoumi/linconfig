@@ -55,15 +55,13 @@ static const int lcaselbl = 0;          /* 1 means make tag label lowercase */
 
 static const Rule rules[] = {
     /* class                instance  title           tags mask  isfloating  isterminal  noswallow  monitor  border width */
-    { "St",                 NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
-    { "kitty",              NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
-    { "alacritty",          NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
-    { "ghostty",            NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
-    { "warp-terminal",      NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
-    { "terminator",         NULL,     NULL,           0,         0,          1,          0,         0,       -1 },
-    { "lutris",             NULL,     NULL,           0,         1,          0,          0,         0,       -1 },
-    { "steam_app_default",  NULL,     NULL,           0,         1,          0,          0,         0,       -1 },
-    { "thunar",             NULL,     NULL,           0,         0,          0,          0,         0,       -1 },
+    { "St",                 NULL,     NULL,           0,         0,          1,          0,        -1,       -1 },
+    { "kitty",              NULL,     NULL,           0,         0,          1,          0,        -1,       -1 },
+    { "alacritty",          NULL,     NULL,           0,         0,          1,          0,        -1,       -1 },
+    { "ghostty",            NULL,     NULL,           0,         0,          1,          0,        -1,       -1 },
+    { "warp-terminal",      NULL,     NULL,           0,         0,          1,          0,        -1,       -1 },
+    { "terminator",         NULL,     NULL,           0,         0,          1,          0,        -1,       -1 },
+    { "thunar",             NULL,     NULL,           0,         0,          0,          0,        -1,       -1 },
     { NULL,                 NULL,     "quickshell",   0,         1,          0,          0,        -1,        0 },
     { "quickshell",         NULL,     NULL,           0,         1,          0,          0,        -1,        0 },
     { NULL,                 NULL,     "Event Tester", 0,         0,          0,          1,        -1,       -1 }, /* xev */
@@ -100,7 +98,7 @@ static const char *termcmd[]     = { "kitty", NULL };
 // static const char *gmailcmd[]     = { "webapp-launch", "https://gmail.com", NULL };
 // static const char *youtubecmd[]   = { "webapp-launch", "https://youtube.com", NULL };
 static const char *chatgptcmd[]   = { "webapp-launch", "https://chatgpt.com", NULL };
-static const char *grokcmd[]      = { "webapp-launch", "https://grok.com", NULL };
+static const char *geminicmd[] = {"webapp-launch", "https://gemini.google.com/", NULL};
 // static const char *xpostcmd[]      = { "webapp-launch", "https://x.com/compose/post", NULL };
 
 static Key keys[] = {
@@ -109,7 +107,7 @@ static Key keys[] = {
     { MODKEY|ControlMask,           XK_r,                      spawn,          SHCMD ("protonrestart")},
     { MODKEY,                       XK_Return,                 spawn,          {.v = termcmd } },
     { MODKEY,                       XK_a,                      spawn,          {.v = chatgptcmd } },
-    { MODKEY|ShiftMask,             XK_a,                      spawn,          {.v = grokcmd } },
+    { MODKEY|ShiftMask,             XK_a,                      spawn,          {.v = geminicmd } },
     // { MODKEY|ShiftMask,             XK_x,                      spawn,          {.v = xpostcmd } },
     { MODKEY,                       XK_b,                      spawn,          SHCMD ("xdg-open https://")},
     { MODKEY,                       XK_p,                      spawn,          SHCMD ("flameshot full -p /media/drive/Pictures/")},
