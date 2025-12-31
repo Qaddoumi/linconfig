@@ -357,7 +357,7 @@ globalkeys = gears.table.join(
     awful.key({ modkey, "Shift" }, "t", function ()
         awful.spawn.with_shell("pgrep -x xscreensaver > /dev/null || (xscreensaver -no-splash & sleep 1); xscreensaver-command -lock") 
     end,
-              {description = "lock screen", group = "utility"})
+              {description = "lock screen", group = "utility"}),
 
     -- Logout (ctrl+alt+delete)
     awful.key({ "Control", "Alt" }, "Delete", function () awful.spawn("powermenu") end,
