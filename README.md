@@ -15,7 +15,7 @@ This project is currently in active development. While functional, it may not wo
 ### Complete Arch Linux Installation
 Install Arch Linux with advanced configuration options:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux/archinstall.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/archinstall.sh)
 ```
 
 ### Sway/Hyprland/Awesome/DWM + QuickShell + SDDM Setup
