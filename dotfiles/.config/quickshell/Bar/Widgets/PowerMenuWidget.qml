@@ -28,7 +28,7 @@ Rectangle {
 
     Process {
         id: powerMenuProcess
-        command: [Quickshell.env("HOME") + "/.config/quickshell/scripts/powermenu.sh"]
+        command: ["powermenu"]
     }
 
     MouseArea {
