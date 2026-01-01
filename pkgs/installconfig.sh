@@ -56,7 +56,7 @@ chmod +x ~/installconfig.sh
 # sudo rm -rf ~/linconfig
 
 echo -e "${green}\nInstalling dwm...${no_color}"
-cd ~/.dwm
+cd ~/.local/share/dwm
 sudo make clean install || true
 
 cd ~
