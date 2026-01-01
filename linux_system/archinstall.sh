@@ -209,8 +209,8 @@ else
         read -rp "Select NVIDIA driver [1-3]: " NVIDIA_CHOICE
         case ${NVIDIA_CHOICE:-1} in
             1) FINAL_GPU_PKGS+=("vulkan-nouveau" "xf86-video-nouveau" "vulkan-mesa-layers" "vulkan-tools") ;;
-            2) FINAL_GPU_PKGS+=("nvidia" "nvidia-utils" "nvidia-settings" "nvidia-prime") ;;
-            3) FINAL_GPU_PKGS+=("nvidia-open" "nvidia-utils" "nvidia-settings" "nvidia-prime") ;;
+            2) FINAL_GPU_PKGS+=("nvidia-dkms" "nvidia-utils" "nvidia-settings" "nvidia-prime") ;;
+            3) FINAL_GPU_PKGS+=("nvidia-open-dkms" "nvidia-utils" "nvidia-settings" "nvidia-prime") ;;
         esac
     fi
 
@@ -778,19 +778,23 @@ fi
 info "Checking package availability"
 # Create a new array for valid packages instead of corrupting the current one
 declare -a VALID_PKGS=()
-for pkg in "${INSTALL_PKGS_ARR[@]}"; do
-    [[ -z "$pkg" ]] && continue
+for item in "${INSTALL_PKGS_ARR[@]}"; do
+    [[ -z "$item" ]] && continue
     
-    # Trim potential whitespace
-    pkg=$(echo "$pkg" | xargs)
-    
-    if pacman -Sp "$pkg" &>/dev/null; then
-        VALID_PKGS+=("$pkg")
-    else
-        # If it fails, let's see EXACTLY what pacman says
-        error_msg=$(pacman -Sp "$pkg" 2>&1 >/dev/null)
-        warn "Skipping package ${red}$pkg${yellow}: $error_msg"
-    fi
+    # Split items if they contain spaces (like "lib32-vulkan-radeon radeontop")
+    for pkg in $item; do
+        # Trim potential whitespace
+        pkg=$(echo "$pkg" | xargs)
+        [[ -z "$pkg" ]] && continue
+        
+        if pacman -Sp "$pkg" &>/dev/null; then
+            VALID_PKGS+=("$pkg")
+        else
+            # If it fails, let's see why
+            error_msg=$(pacman -Sp "$pkg" 2>&1 >/dev/null)
+            warn "Skipping package ${red}$pkg${yellow}: ${error_msg:-"not found in repositories"}"
+        fi
+    done
 done
 # Convert back to space-separated string and remove extra spaces
 INSTALL_PKGS=$(echo "${VALID_PKGS[@]}" | tr -s ' ')
