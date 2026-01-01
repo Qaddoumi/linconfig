@@ -1288,7 +1288,8 @@ newTask "═══════════════════════�
 #  HIBERNATION TESTING COMMANDS (for post-install)
 #========================================
 info "Creating hibernation test script"
-cat > /mnt/home/$USERNAME/test_hibernation.sh <<EOF
+mkdir -p /mnt/home/$USERNAME/.local/bin
+cat > /mnt/home/$USERNAME/.local/bin/test_hibernation <<EOF
 #!/usr/bin/env bash
 
 echo "Testing hibernation setup..."
@@ -1321,9 +1322,9 @@ echo ""
 echo "Setup appears to be: \$(grep -q 'resume=' /proc/cmdline && echo 'COMPLETE' || echo 'INCOMPLETE')"
 EOF
 
-info "Hibernation test script created at /home/$USERNAME/test_hibernation.sh"
-chmod +x /mnt/home/$USERNAME/test_hibernation.sh
-chown 1000:1000 /mnt/home/$USERNAME/test_hibernation.sh
+info "Hibernation test script created at /home/$USERNAME/.local/bin/test_hibernation"
+chmod +x /mnt/home/$USERNAME/.local/bin/test_hibernation
+chown 1000:1000 /mnt/home/$USERNAME/.local/bin/test_hibernation
 
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
