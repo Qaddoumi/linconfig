@@ -775,26 +775,25 @@ else
     [[ -n "$VIRT_PKGS" ]] && INSTALL_PKGS_ARR+=($VIRT_PKGS)
 fi
 
-## Check if package exists in repositories
-check_package() {
-    local pkg="$1"
-    if pacman -Sp "$pkg" &>/dev/null; then
-        return 0  # Package exists
-    else
-        return 1  # Package not found
-    fi
-}
-
 info "Checking package availability"
+# Create a new array for valid packages instead of corrupting the current one
+declare -a VALID_PKGS=()
 for pkg in "${INSTALL_PKGS_ARR[@]}"; do
-    [ -z "$pkg" ] && continue  # Skip empty elements
-    if ! check_package "$pkg"; then
-        warn "Skipping package $pkg as it is not available in repositories"
-        INSTALL_PKGS_ARR=("${INSTALL_PKGS_ARR[@]/$pkg}")
+    [[ -z "$pkg" ]] && continue
+    
+    # Trim potential whitespace
+    pkg=$(echo "$pkg" | xargs)
+    
+    if pacman -Sp "$pkg" &>/dev/null; then
+        VALID_PKGS+=("$pkg")
+    else
+        # If it fails, let's see EXACTLY what pacman says
+        error_msg=$(pacman -Sp "$pkg" 2>&1 >/dev/null)
+        warn "Skipping package ${red}$pkg${yellow}: $error_msg"
     fi
 done
 # Convert back to space-separated string and remove extra spaces
-INSTALL_PKGS=$(echo "${INSTALL_PKGS_ARR[@]}" | tr -s ' ')
+INSTALL_PKGS=$(echo "${VALID_PKGS[@]}" | tr -s ' ')
 
 info "Installing: "
 echo "$INSTALL_PKGS"
