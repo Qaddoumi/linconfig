@@ -209,8 +209,8 @@ else
         read -rp "Select NVIDIA driver [1-3]: " NVIDIA_CHOICE
         case ${NVIDIA_CHOICE:-1} in
             1) FINAL_GPU_PKGS+=("mesa-utils" "vulkan-nouveau" "xf86-video-nouveau" "vulkan-mesa-layers" "vulkan-tools") ;;
-            2) FINAL_GPU_PKGS+=("nvidia" "nvidia-utils" "nvidia-settings" "lib32-nvidia-utils nvidia-prime") ;;
-            3) FINAL_GPU_PKGS+=("nvidia-open" "nvidia-utils" "nvidia-settings" "lib32-nvidia-utils nvidia-prime") ;;
+            2) FINAL_GPU_PKGS+=("nvidia" "nvidia-utils" "nvidia-settings" "nvidia-prime") ;;
+            3) FINAL_GPU_PKGS+=("nvidia-open" "nvidia-utils" "nvidia-settings" "nvidia-prime") ;;
         esac
     fi
 
