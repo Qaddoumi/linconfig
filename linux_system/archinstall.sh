@@ -158,8 +158,8 @@ else
     # Always include mesa as base
     FINAL_GPU_PKGS=(
         "mesa"                   # OpenGL/Vulkan
-        "vulkan-mesa-layers"     # Vulkan validation
         "mesa-utils"             # glxinfo, etc.
+        "vulkan-mesa-layers"     # Vulkan validation
         "libva"                  # Video Acceleration API
     )
     
@@ -208,7 +208,7 @@ else
         echo "3) NVIDIA Open Kernel Module (Turing+ GPUs)"
         read -rp "Select NVIDIA driver [1-3]: " NVIDIA_CHOICE
         case ${NVIDIA_CHOICE:-1} in
-            1) FINAL_GPU_PKGS+=("mesa-utils" "vulkan-nouveau" "xf86-video-nouveau" "vulkan-mesa-layers" "vulkan-tools") ;;
+            1) FINAL_GPU_PKGS+=("vulkan-nouveau" "xf86-video-nouveau" "vulkan-mesa-layers" "vulkan-tools") ;;
             2) FINAL_GPU_PKGS+=("nvidia" "nvidia-utils" "nvidia-settings" "nvidia-prime") ;;
             3) FINAL_GPU_PKGS+=("nvidia-open" "nvidia-utils" "nvidia-settings" "nvidia-prime") ;;
         esac
