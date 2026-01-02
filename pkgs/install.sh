@@ -1155,9 +1155,10 @@ echo -e "${blue}═════════════════════�
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [ "$is_vm" = true ]; then
-    echo -e "${green}System is detected to be running in a VM, proceeding with looking-glass host setup${no_color}"
-    yay -S --needed --noconfirm chaotic-aur/looking-glass-host-git || echo -e "${red}Failed to install looking-glass-host-git${no_color}"
-    
+    # TODO: Fix looking-glass host setup for linux vm
+    # echo -e "${green}System is detected to be running in a VM, proceeding with looking-glass host setup${no_color}"
+    # yay -S --needed --noconfirm chaotic-aur/looking-glass-host-git || echo -e "${red}Failed to install looking-glass-host-git${no_color}"
+    echo ""
 
     # echo -e "${green}Enable virtual display (vkms)${no_color}"
     # if [ ! -f /etc/modules-load.d/vkms.conf ]; then
