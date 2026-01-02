@@ -1158,6 +1158,7 @@ if [ "$is_vm" = true ]; then
     # TODO: Fix looking-glass host setup for linux vm
     # echo -e "${green}System is detected to be running in a VM, proceeding with looking-glass host setup${no_color}"
     # yay -S --needed --noconfirm chaotic-aur/looking-glass-host-git || echo -e "${red}Failed to install looking-glass-host-git${no_color}"
+    # yay -S --needed --noconfirm looking-glass-module-dkms || echo -e "${red}Failed to install looking-glass-module-dkms${no_color}"
     echo ""
 
     # echo -e "${green}Enable virtual display (vkms)${no_color}"
