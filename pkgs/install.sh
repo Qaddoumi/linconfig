@@ -226,7 +226,8 @@ sudo pacman -S --needed --noconfirm gnome-keyring # Authentication agent for pri
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm nwg-displays # Display configuration GUI for hyperland and sway
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm quickshell # a shell for both wayland and x11
+# sudo pacman -S --needed --noconfirm quickshell # a shell for both wayland and x11
+yay -S --needed --noconfirm quickshell-allflags-git || echo -e "${red}Failed to install quickshell${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 # sudo pacman -S --needed --noconfirm waybar # Status bar for wayland
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
