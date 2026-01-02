@@ -424,13 +424,6 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm powershell-bin || echo -e "${red}Failed to install powershell-bin${no_color}" # PowerShell
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm oh-my-posh || echo -e "${red}Failed to install oh-my-posh${no_color}" # Theme engine for terminal
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-if [ "$is_vm" = true ]; then
-    echo -e "${yellow}Running in a VM, skipping looking-glass installation${no_color}"
-else
-    yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
-fi
-
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
@@ -1161,8 +1154,8 @@ echo -e "${blue}═════════════════════�
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [ "$is_vm" = true ]; then
-    echo -e "${green}System is detected to be running in a VM, skipping looking-glass-client setup${no_color}"
-    yay -S --needed --noconfirm chaotic-aur/looking-glass-host-git  || echo -e "${red}Failed to install looking-glass-host-git${no_color}"
+    echo -e "${green}System is detected to be running in a VM, proceeding with looking-glass host setup${no_color}"
+    yay -S --needed --noconfirm chaotic-aur/looking-glass-host-git || echo -e "${red}Failed to install looking-glass-host-git${no_color}"
     
 
     echo -e "${green}Enable virtual display (vkms)${no_color}"
@@ -1174,9 +1167,11 @@ if [ "$is_vm" = true ]; then
     fi
     
 else
-    echo -e "${green}System is not detected to be running in a VM, proceeding with looking-glass setup${no_color}"
+    echo -e "${green}System is not detected to be running in a VM, proceeding with looking-glass client setup${no_color}"
 
     echo -e "${green}Setting up looking-glass for low latency video streaming${no_color}"
+    yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
+
     # Create the shared memory directory if it doesn't exist
     sudo mkdir -p /dev/shm || true
 
