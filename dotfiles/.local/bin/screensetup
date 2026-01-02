@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 
+# Define custom 144Hz mode for Virtual-1
+MODELINE=$(cvt 1920 1080 144 | sed -n 's/^Modeline //p')
+MODENAME="1920x1080_144.00"
+
+# Create the mode (if it doesn't exist)
+echo "$MODELINE" | xargs xrandr --newmode 2>/dev/null
+
+# Add mode to Virtual-1
+xrandr --addmode Virtual-1 "$MODENAME" 2>/dev/null
+
+# Apply settings
 xrandr --output eDP-1 --mode 1920x1080 --rate 144 --pos 0x0 --primary
 xrandr --output DP-1 --mode 1920x1080 --rate 144 --pos 1920x0
 xrandr --output HDMI-A-1 --mode 1920x1080 --rate 144 --pos 3840x0
-xrandr --output Virtual-1 --mode 1920x1080 --rate 144 --pos 1920x0 --primary
+xrandr --output Virtual-1 --mode "$MODENAME" --pos 1920x0 --primary
