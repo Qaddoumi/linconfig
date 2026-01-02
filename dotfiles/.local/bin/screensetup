@@ -14,6 +14,7 @@ echo "$MODELINE" | xargs xrandr --newmode 2>/dev/null
 xrandr --addmode Virtual-1 "$MODENAME" 2>/dev/null
 
 # Apply settings
+# xrandr will ignore the mode if it doesn't exist
 xrandr --output eDP-1 --mode 1920x1080 --rate 144 --pos 0x0 --primary
 xrandr --output DP-1 --mode 1920x1080 --rate 144 --pos 1920x0
 xrandr --output HDMI-A-1 --mode 1920x1080 --rate 144 --pos 3840x0
