@@ -75,19 +75,24 @@ if systemd-detect-virt --vm &>/dev/null; then
     IS_VM=true
     info "Virtual machine detected: $VIRT_TYPE"
 
+    info "Configuring VM graphics drivers..."
     case "$VIRT_TYPE" in
         "kvm"|"qemu"|"microsoft")
-            VIRT_PKGS="qemu-guest-agent spice-vdagent"
+            VIRT_PKGS="qemu-guest-agent spice-vdagent xf86-video-qxl vulkan-virtio virglrenderer"
+            info "Added VirtIO/QXL drivers with VirGL 3D acceleration"
             ;;
         "virtualbox")
-            VIRT_PKGS="virtualbox-guest-utils-nox"
+            VIRT_PKGS="virtualbox-guest-utils"
+            info "Added VirtualBox guest utilities"
             ;;
-        "vmware")
-            VIRT_PKGS="open-vm-tools"
+        "vmware"|"svga")
+            VIRT_PKGS="open-vm-tools xf86-video-vmware"
+            info "Added VMware SVGA driver"
             ;;
         *)
-            VIRT_PKGS=""
+            VIRT_PKGS="vulkan-swrast"
             warn "Unknown virtualization platform: $VIRT_TYPE"
+            info "Using Software Rasterizer (vulkan-swrast) for fallback"
             ;;
     esac
 else
@@ -116,29 +121,22 @@ if [[ ${#GPU_DEVICES[@]} -eq 0 ]]; then
     if [[ "$IS_VM" == true ]]; then
         GPU_PKGS="mesa"  # Mesa only for VMs without detected GPU
     else
-        GPU_PKGS="mesa xf86-video-vesa"  # Fallback for bare metal
+        GPU_PKGS="mesa xf86-video-vesa"  # Fallback
     fi
 else
     # Initialize arrays for different GPU types
     declare -a AMD_GPUS=()
     declare -a INTEL_GPUS=()
     declare -a NVIDIA_GPUS=()
-    declare -a VM_GPUS=()
     declare -a OTHER_GPUS=()
-    declare -a FINAL_GPU_PKGS=()
+    declare -a FINAL_GPU_PKGS=("mesa" "mesa-utils" "vulkan-tools" "vulkan-icd-loader")
     
     info "Found ${#GPU_DEVICES[@]} GPU device(s):"
     for ((i=0; i<${#GPU_DEVICES[@]}; i++)); do
         echo "Categorize GPU $((i+1)): ${GPU_DEVICES[$i]}"
         
         gpu_lower=$(echo "${GPU_DEVICES[$i]}" | tr '[:upper:]' '[:lower:]')
-        if echo "$gpu_lower" | grep -q "qxl"; then
-            VM_GPUS+=("qxl")
-        elif echo "$gpu_lower" | grep -q "virtio"; then
-            VM_GPUS+=("virtio")
-        elif echo "$gpu_lower" | grep -q "vmware\|svga"; then
-            VM_GPUS+=("vmware")
-        elif echo "$gpu_lower" | grep -q "\bnvidia\b\|geforce\|quadro\|tesla"; then
+        if echo "$gpu_lower" | grep -q "\bnvidia\b\|geforce\|quadro\|tesla"; then
             NVIDIA_GPUS+=("${GPU_DEVICES[$i]}")
             info "NVIDIA GPU detected: ${GPU_DEVICES[$i]}"
         elif echo "$gpu_lower" | grep -q "\bamd\b\|\bati\b\|radeon"; then
@@ -147,37 +145,14 @@ else
         elif echo "$gpu_lower" | grep -q "\bintel\b"; then
             INTEL_GPUS+=("${GPU_DEVICES[$i]}")
             info "Intel GPU detected: ${GPU_DEVICES[$i]}"
-        elif [[ "$IS_VM" == true ]]; then
-            VM_GPUS+=("generic")
+        elif echo "$gpu_lower" | grep -q "\bqxl\|virtio\|vmware\|svga\|virtualbox"; then
+            continue
         else
             OTHER_GPUS+=("${GPU_DEVICES[$i]}")
             warn "Unknown GPU detected: ${GPU_DEVICES[$i]}"
         fi
     done
     
-    # Always include mesa as base
-    FINAL_GPU_PKGS=(
-        "mesa"                   # OpenGL/Vulkan
-        "mesa-utils"             # glxinfo, etc.
-        "vulkan-mesa-layers"     # Vulkan validation
-        "libva"                  # Video Acceleration API
-    )
-    
-    # VM-specific drivers 
-    info "Configuring VM graphics drivers..."
-    if printf '%s\n' "${VM_GPUS[@]}" | grep -E "qxl|virtio"; then
-        FINAL_GPU_PKGS+=("xf86-video-qxl" "virglrenderer")
-        info "Added virtio and QXL driver for SPICE graphics"
-    elif printf '%s\n' "${VM_GPUS[@]}" | grep -q "vmware"; then
-        FINAL_GPU_PKGS+=("xf86-video-vmware")
-        info "Added VMware SVGA driver"
-    else
-        # Fallback: Software rendering
-        FINAL_GPU_PKGS+=("mesa-vulkan-swrast")
-        info "Using generic Mesa drivers (software rendering)"
-    fi
-
-    # Physical hardware OR GPU passthrough - handle multiple GPU types
     info "Configuring physical GPU drivers if exists..."
 
     # Handle AMD GPUs
@@ -188,15 +163,22 @@ else
         echo "2) Radeon (legacy, for older GPUs)"
         read -rp "Select AMD driver [1-2]: " AMD_CHOICE
         case ${AMD_CHOICE:-1} in
-            1) FINAL_GPU_PKGS+=("xf86-video-amdgpu" "vulkan-radeon" "lib32-vulkan-radeon radeontop") ;;
-            2) FINAL_GPU_PKGS+=("xf86-video-ati radeontop") ;;
+            1) 
+                # Modern AMD GPUs (GCN 3 or newer / 2015+)
+                FINAL_GPU_PKGS+=("xf86-video-amdgpu" "vulkan-radeon" "lib32-vulkan-radeon" "libva-mesa-driver" "radeontop")
+                ;;
+            2) 
+                # Legacy ATI/Radeon GPUs (Pre-2015)
+                # Note: These cards often lack modern Vulkan support.
+                FINAL_GPU_PKGS+=("xf86-video-ati" "libva-mesa-driver" "radeontop")
+                ;;
         esac
     fi
     
     # Handle Intel GPUs
     if [[ ${#INTEL_GPUS[@]} -gt 0 ]]; then
         info "Detected ${#INTEL_GPUS[@]} Intel GPU(s)"
-        FINAL_GPU_PKGS+=("xf86-video-intel" "vulkan-intel" "lib32-vulkan-intel intel-gpu-tools")
+        FINAL_GPU_PKGS+=("vulkan-intel" "lib32-vulkan-intel" "intel-media-driver" "intel-compute-runtime" "libva-utils" "intel-gpu-tools")
     fi
     
     # Handle NVIDIA GPUs
@@ -208,9 +190,19 @@ else
         echo "3) NVIDIA Open Kernel Module (Turing+ GPUs)"
         read -rp "Select NVIDIA driver [1-3]: " NVIDIA_CHOICE
         case ${NVIDIA_CHOICE:-1} in
-            1) FINAL_GPU_PKGS+=("vulkan-nouveau" "xf86-video-nouveau" "vulkan-mesa-layers" "vulkan-tools") ;;
-            2) FINAL_GPU_PKGS+=("nvidia-dkms" "nvidia-utils" "nvidia-settings" "nvidia-prime") ;;
-            3) FINAL_GPU_PKGS+=("nvidia-open-dkms" "nvidia-utils" "nvidia-settings" "nvidia-prime") ;;
+            1)
+                # Nouveau (Open source community drivers)
+                # Note: Nouveau now uses the "NVK" driver for Vulkan
+                FINAL_GPU_PKGS+=("xf86-video-nouveau" "vulkan-nouveau" "vulkan-mesa-layers")
+                ;;
+            2)
+                # Proprietary (Closed source)
+                FINAL_GPU_PKGS+=("nvidia-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
+                ;;
+            3)
+                # NVIDIA Open (Official Recommended for 4060)
+                FINAL_GPU_PKGS+=("nvidia-open-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
+                ;;
         esac
     fi
 
@@ -723,21 +715,16 @@ info "Preparing to install essential packages..."
 # Install essential packages
 CPU_VENDOR=$(grep -m 1 'vendor_id' /proc/cpuinfo | awk '{print $3}')
 info "Detected CPU vendor: $CPU_VENDOR"
-# Initialize array for inegrated gpu
-declare -a INEGRATED_GPU_PKGS=()
 # Fix microcode package naming
 case "$CPU_VENDOR" in
     "GenuineIntel")
-        UCODE_PKG="intel-ucode" 
-        INEGRATED_GPU_PKGS+=("vulkan-intel" "intel-media-driver" "intel-compute-runtime" "libva-utils" "libva-intel-driver" "intel-gpu-tools")
+        UCODE_PKG="intel-ucode"
     ;;
     "AuthenticAMD")
-        UCODE_PKG="amd-ucode" 
-        INEGRATED_GPU_PKGS+=("xf86-video-amdgpu" "vulkan-radeon" "radeontop")
+        UCODE_PKG="amd-ucode"
     ;;
     *) UCODE_PKG=""; warn "Unknown CPU vendor: $CPU_VENDOR" ;;
 esac
-
 
 info "Adding pipwire packages for audio management"
 PIPWIRE_PKGS="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber"
@@ -761,7 +748,6 @@ INSTALL_PKGS_ARR=(
     "${BASE_PKGS_ARR[@]}"
     "${OPTIONAL_PKGS_ARR[@]}"
     "${PIPWIRE_PKGS_ARR[@]}"
-    "${INEGRATED_GPU_PKGS[@]}"
 )
 
 # Add conditional packages

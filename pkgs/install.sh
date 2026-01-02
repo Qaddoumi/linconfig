@@ -1162,6 +1162,17 @@ echo -e "${blue}═════════════════════�
 
 if [ "$is_vm" = true ]; then
     echo -e "${green}System is detected to be running in a VM, skipping looking-glass-client setup${no_color}"
+    yay -S --needed --noconfirm chaotic-aur/looking-glass-host-git  || echo -e "${red}Failed to install looking-glass-host-git${no_color}"
+    
+
+    echo -e "${green}Enable virtual display (vkms)${no_color}"
+    if [ ! -f /etc/modules-load.d/vkms.conf ]; then
+        sudo touch /etc/modules-load.d/vkms.conf || true
+    fi
+    if ! grep -q "vkms" /etc/modules-load.d/vkms.conf; then
+        echo "vkms" | sudo tee -a /etc/modules-load.d/vkms.conf > /dev/null || true
+    fi
+    
 else
     echo -e "${green}System is not detected to be running in a VM, proceeding with looking-glass setup${no_color}"
 
