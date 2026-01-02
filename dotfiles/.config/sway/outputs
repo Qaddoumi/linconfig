@@ -11,7 +11,7 @@ output "eDP-1" {
 }
 
 output "Virtual-1" {
-    mode  1920x1080@60.002Hz
+    mode  1920x1080@75.0Hz
     pos 1920 0
     transform normal
     scale 1.0
