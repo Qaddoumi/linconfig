@@ -178,7 +178,22 @@ else
     # Handle Intel GPUs
     if [[ ${#INTEL_GPUS[@]} -gt 0 ]]; then
         info "Detected ${#INTEL_GPUS[@]} Intel GPU(s)"
-        FINAL_GPU_PKGS+=("vulkan-intel" "lib32-vulkan-intel" "intel-media-driver" "intel-compute-runtime" "libva-utils" "intel-gpu-tools")
+        FINAL_GPU_PKGS+=("vulkan-intel" "lib32-vulkan-intel" "intel-compute-runtime" "libva-utils" "intel-gpu-tools")
+        
+        # Detect CPU Generation to choose correct VAAPI driver
+        # Extract model name, look for numbers after "i[3579]-" or just the raw number
+        CPU_MODEL=$(grep -m1 "model name" /proc/cpuinfo)
+        
+        # Check for Gen 5+ (Broadwell and newer)
+        # Matches: iX-5xxx, iX-6xxx, ... iX-14xxx
+        if [[ "$CPU_MODEL" =~ i[3579]-([5-9]|[1-9][0-9]) ]] || [[ "$CPU_MODEL" =~ (N[0-9]{4}|J[0-9]{4}) ]]; then
+            info "Detected Modern Intel CPU (Gen 5+), using intel-media-driver"
+            FINAL_GPU_PKGS+=("intel-media-driver")
+        else
+            # Fallback for Haswell (4th gen) and older
+            info "Detected Older Intel CPU (Pre-Gen 5), using libva-intel-driver"
+            FINAL_GPU_PKGS+=("libva-intel-driver")
+        fi
     fi
     
     # Handle NVIDIA GPUs
