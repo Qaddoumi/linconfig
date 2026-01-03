@@ -43,7 +43,12 @@ static const char *const autostart[] = {
     "dunst", NULL,
     "sh", "-c", "xscreensaver-command -exit; sleep 3; xscreensaver -no-splash -quiet &", NULL,
     // "sh", "-c", "feh --randomize --bg-fill ~/Pictures/backgrounds/* 2>/dev/null || hsetroot -solid '#2E3440'", NULL,
-    "sh", "-c", "/usr/bin/dex -a", NULL, /* autostart manager==> will auto start apps in /etc/xdg/autostart/ or ~/.config/autostart/ */
+    // "sh", "-c", "/usr/bin/dex -a", NULL, /* autostart manager==> will auto start apps in /etc/xdg/autostart/ or ~/.config/autostart/ */
+    "sh", "-c", "/usr/bin/gnome-keyring-daemon --start --components=secrets,pkcs11,ssh", NULL,
+    "sh", "-c", "/usr/lib/at-spi-bus-launcher --launch-immediately", NULL,
+    "polkit-mate-authentication-agent-1", NULL,
+    "sh", "-c", "picom -b", NULL,
+    "/usr/bin/spice-vdagent", NULL,
     NULL /* terminate */
 };
 
