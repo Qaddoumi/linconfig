@@ -10,6 +10,9 @@ case "$DESKTOP_SESSION" in
 	dwm)
 		pkill dwm
 	;;
+	dwl)
+		pkill dwl
+	;;
 	i3)
 		i3-msg exit
 	;;

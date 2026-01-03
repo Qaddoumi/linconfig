@@ -13,6 +13,9 @@ case $selected in
 			dwm)
 				pkill dwm
 				;;
+			dwl)
+				pkill dwl
+				;;
 			sway)
 				swaymsg exit
 				;;
