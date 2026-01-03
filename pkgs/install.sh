@@ -241,11 +241,9 @@ sudo pacman -S --needed --noconfirm playerctl # Media control used in quickshell
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm dex # Autostart manager (i dont't know why, but it make spice runs without issues in vm)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swaync # Notification daemon and system tray for wayland
+sudo pacman -S --needed --noconfirm dunst # Notification daemon for X11 and wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm dunst # Notification daemon for X11
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libappindicator-gtk3 libayatana-appindicator # AppIndicator support for swaync tray
+sudo pacman -S --needed --noconfirm libappindicator-gtk3 libayatana-appindicator # AppIndicator support for tray
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm kitty # Terminal emulator
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -621,6 +619,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm materia-gtk-theme # Material Design GTK theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm papirus-icon-theme # Icon theme
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm breeze-icons # Icon theme (papirus does not have icons for some applications)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm capitaine-cursors # Cursor theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
