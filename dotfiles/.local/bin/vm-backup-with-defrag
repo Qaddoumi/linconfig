@@ -30,19 +30,19 @@ sudo virt-sparsify -v --tmp $MOUNT_POINT/archBackup/temp/ "$QCOW2_DIR/$vm_name" 
 # Process all XML files
 echo -e "\nProcessing XML files..."
 for xml_file in "$XML_DIR"/*.xml; do
-    if [ -f "$xml_file" ]; then
-        echo ""
-        vm_name="$(basename "$xml_file")"
-        echo "Found XML file: $vm_name"
-        
-        # Copy the XML file to destination
-        #cp -v "$xml_file" "$XML_DEST_DIR/"
-        
-        # Alternative: copy with timestamp
-        # timestamp=$(date +%Y%m%d_%H%M%S)
-        # cp -v "$xml_file" "${XML_DEST_DIR}/$(basename "$xml_file" .xml)_${timestamp}.xml"
-        sudo cp "$XML_DIR/$vm_name" "$DEST_DIR/$vm_name"
-    fi
+	if [ -f "$xml_file" ]; then
+		echo ""
+		vm_name="$(basename "$xml_file")"
+		echo "Found XML file: $vm_name"
+		
+		# Copy the XML file to destination
+		#cp -v "$xml_file" "$XML_DEST_DIR/"
+		
+		# Alternative: copy with timestamp
+		# timestamp=$(date +%Y%m%d_%H%M%S)
+		# cp -v "$xml_file" "${XML_DEST_DIR}/$(basename "$xml_file" .xml)_${timestamp}.xml"
+		sudo cp "$XML_DIR/$vm_name" "$DEST_DIR/$vm_name"
+	fi
 done
 
 
@@ -58,10 +58,10 @@ seconds=$((elapsed_time % 60))
 
 time_str=""
 if [[ $hours -gt 0 ]]; then
-    time_str+="${hours}h "
+	time_str+="${hours}h "
 fi
 if [[ $minutes -gt 0 || $hours -gt 0 ]]; then
-    time_str+="${minutes}m "
+	time_str+="${minutes}m "
 fi
 time_str+="${seconds}s"
 

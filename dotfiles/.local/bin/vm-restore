@@ -14,20 +14,20 @@ backup_DIR="${NEWEST_BACKUP%/}"
 echo "Restoring from backup directory: $backup_DIR"
 
 for file in "$backup_DIR"/*; do
-    if [ -f "$file" ]; then
-        filename="$(basename "$file")"
-        if [[ "$file" == *.qcow2 ]]; then
-            echo "Copying $filename to $QCOW2_DIR"
-            sudo cp "$file" "$QCOW2_DIR/"
-        fi
-    fi
+	if [ -f "$file" ]; then
+		filename="$(basename "$file")"
+		if [[ "$file" == *.qcow2 ]]; then
+			echo "Copying $filename to $QCOW2_DIR"
+			sudo cp "$file" "$QCOW2_DIR/"
+		fi
+	fi
 done
 
 for file in "$backup_DIR"/*; do
-    if [ -f "$file" ]; then
-        filename="$(basename "$file")"
-        if [[ "$file" == *.xml ]]; then
-            sudo virsh define "$file"
-        fi
-    fi
+	if [ -f "$file" ]; then
+		filename="$(basename "$file")"
+		if [[ "$file" == *.xml ]]; then
+			sudo virsh define "$file"
+		fi
+	fi
 done

@@ -10,13 +10,13 @@ blue='\033[0;34m'
 no_color='\033[0m' # reset the color to default
 
 backup_file() {
-    local file="$1"
-    if sudo test -f "$file"; then
-        sudo cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
-        echo -e "${green}Backed up $file${no_color}"
-    else
-        echo -e "${yellow}File $file does not exist, skipping backup${no_color}"
-    fi
+	local file="$1"
+	if sudo test -f "$file"; then
+		sudo cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
+		echo -e "${green}Backed up $file${no_color}"
+	else
+		echo -e "${yellow}File $file does not exist, skipping backup${no_color}"
+	fi
 }
 
 echo -e "${green}=== Optimized Performance Setup for Lenovo LOQ ===${no_color}"
@@ -122,8 +122,8 @@ sudo systemctl start tlp.service
 
 # Install TLP-RDW for additional NetworkManager integration
 if ! pacman -Q tlp-rdw &>/dev/null; then
-    echo -e "${green}Installing TLP-RDW for NetworkManager integration...${no_color}"
-    sudo pacman -S --noconfirm tlp-rdw
+	echo -e "${green}Installing TLP-RDW for NetworkManager integration...${no_color}"
+	sudo pacman -S --noconfirm tlp-rdw
 fi
 
 # Check current power source and apply settings
@@ -148,52 +148,52 @@ DETECTED_MODULES=""
 
 # Intel CPU thermal sensors
 if [[ "$CPU_VENDOR" == "GenuineIntel" ]]; then
-    echo "Detecting Intel CPU thermal sensors..."
-    if sudo modprobe coretemp 2>/dev/null; then
-        echo "✓ Intel coretemp module loaded"
-        DETECTED_MODULES="$DETECTED_MODULES coretemp"
-    fi
+	echo "Detecting Intel CPU thermal sensors..."
+	if sudo modprobe coretemp 2>/dev/null; then
+		echo "✓ Intel coretemp module loaded"
+		DETECTED_MODULES="$DETECTED_MODULES coretemp"
+	fi
 # AMD CPU thermal sensors
 elif [[ "$CPU_VENDOR" == "AuthenticAMD" ]]; then
-    echo "Detecting AMD CPU thermal sensors..."
-    if sudo modprobe k10temp 2>/dev/null; then
-        echo "✓ AMD k10temp module loaded"
-        DETECTED_MODULES="$DETECTED_MODULES k10temp"
-    fi
+	echo "Detecting AMD CPU thermal sensors..."
+	if sudo modprobe k10temp 2>/dev/null; then
+		echo "✓ AMD k10temp module loaded"
+		DETECTED_MODULES="$DETECTED_MODULES k10temp"
+	fi
 fi
 
 # Check for ACPI thermal zones
 if [ -d /sys/class/thermal ] && [ "$(ls -A /sys/class/thermal/thermal_zone* 2>/dev/null)" ]; then
-    echo "✓ ACPI thermal zones detected"
-    if sudo modprobe acpi-thermal 2>/dev/null; then
-        echo "✓ ACPI thermal module loaded"
-    fi
+	echo "✓ ACPI thermal zones detected"
+	if sudo modprobe acpi-thermal 2>/dev/null; then
+		echo "✓ ACPI thermal module loaded"
+	fi
 fi
 
 # Check for NVMe drive temperatures
 if lspci | grep -i nvme >/dev/null 2>&1; then
-    echo "✓ NVMe drives detected"
-    if sudo modprobe nvme 2>/dev/null; then
-        echo "✓ NVMe temperature monitoring available"
-    fi
+	echo "✓ NVMe drives detected"
+	if sudo modprobe nvme 2>/dev/null; then
+		echo "✓ NVMe temperature monitoring available"
+	fi
 fi
 
 # Common sensor chips for laptops
 CHIP_MODULES="it87 nct6775 w83627ehf"
 for module in $CHIP_MODULES; do
-    if sudo modprobe "$module" 2>/dev/null; then
-        echo "✓ Chip module $module loaded successfully"
-        DETECTED_MODULES="$DETECTED_MODULES $module"
-        sudo modprobe -r "$module" 2>/dev/null || true
-    fi
+	if sudo modprobe "$module" 2>/dev/null; then
+		echo "✓ Chip module $module loaded successfully"
+		DETECTED_MODULES="$DETECTED_MODULES $module"
+		sudo modprobe -r "$module" 2>/dev/null || true
+	fi
 done
 
 # I2C support
 if command -v i2cdetect &> /dev/null; then
-    if sudo modprobe i2c-i801 2>/dev/null; then
-        echo "✓ I2C support loaded"
-        DETECTED_MODULES="$DETECTED_MODULES i2c-i801"
-    fi
+	if sudo modprobe i2c-i801 2>/dev/null; then
+		echo "✓ I2C support loaded"
+		DETECTED_MODULES="$DETECTED_MODULES i2c-i801"
+	fi
 fi
 
 # Create lm_sensors configuration
@@ -209,12 +209,12 @@ EOF
 
 # Load detected modules
 if [ -n "$DETECTED_MODULES" ]; then
-    echo -e "${green}Loading detected sensor modules...${no_color}"
-    for module in $DETECTED_MODULES; do
-        if sudo modprobe "$module"; then
-            echo "✓ Module $module loaded successfully"
-        fi
-    done
+	echo -e "${green}Loading detected sensor modules...${no_color}"
+	for module in $DETECTED_MODULES; do
+		if sudo modprobe "$module"; then
+			echo "✓ Module $module loaded successfully"
+		fi
+	done
 fi
 
 # Enable and start lm_sensors
@@ -225,10 +225,10 @@ sudo systemctl start lm_sensors.service &>/dev/null || true
 # Initialize sensors
 echo -e "${green}Initializing sensors...${no_color}"
 if command -v sensors &> /dev/null; then
-    sudo sensors -s 2>/dev/null || true
-    echo -e "${green}✓ Sensors initialized${no_color}"
+	sudo sensors -s 2>/dev/null || true
+	echo -e "${green}✓ Sensors initialized${no_color}"
 else
-    echo -e "${yellow}⚠ sensors command not available${no_color}"
+	echo -e "${yellow}⚠ sensors command not available${no_color}"
 fi
 
 echo -e "${green}=== Setup Complete ===${no_color}"
@@ -237,25 +237,25 @@ sudo tlp-stat -s
 
 echo -e "${green}Current Power Source and Settings:${no_color}"
 if [ -f /sys/class/power_supply/AC*/online ]; then
-    if [ "$(cat /sys/class/power_supply/AC*/online)" = "1" ]; then
-        echo "Power Source: AC (Performance mode active)"
-    else
-        echo "Power Source: Battery (Power-saving mode active)"
-    fi
+	if [ "$(cat /sys/class/power_supply/AC*/online)" = "1" ]; then
+		echo "Power Source: AC (Performance mode active)"
+	else
+		echo "Power Source: Battery (Power-saving mode active)"
+	fi
 fi
 
 echo -e "${green}Current CPU Governor:${no_color}"
 if command -v cpupower &> /dev/null; then
-    cpupower frequency-info | grep -E "current policy" || echo "Install cpupower-tools to see detailed CPU info"
+	cpupower frequency-info | grep -E "current policy" || echo "Install cpupower-tools to see detailed CPU info"
 else
-    cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo "CPU governor info not available"
+	cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo "CPU governor info not available"
 fi
 
 echo -e "${green}Temperature Monitoring:${no_color}"
 if command -v sensors &> /dev/null; then
-    sensors 2>/dev/null | head -20 || echo "Run 'sensors' to see detailed temperature data"
+	sensors 2>/dev/null | head -20 || echo "Run 'sensors' to see detailed temperature data"
 else
-    echo "Install lm_sensors package for temperature monitoring"
+	echo "Install lm_sensors package for temperature monitoring"
 fi
 
 
@@ -271,10 +271,10 @@ echo -e "${green}Setting up thermal management...${no_color}"
 
 # Configure thermald for Intel systems
 if [[ "$CPU_VENDOR" == "GenuineIntel" ]]; then
-    echo -e "${green}Configuring Intel thermal daemon...${no_color}"
-    sudo systemctl enable thermald
-    sudo systemctl start thermald
-    echo -e "${green}✓ Thermald enabled for Intel CPU${no_color}"
+	echo -e "${green}Configuring Intel thermal daemon...${no_color}"
+	sudo systemctl enable thermald
+	sudo systemctl start thermald
+	echo -e "${green}✓ Thermald enabled for Intel CPU${no_color}"
 fi
 
 # Set up thermal monitoring with automatic frequency scaling
@@ -289,35 +289,35 @@ CPU_TEMP_THRESHOLD=85000  # 85°C
 CRITICAL_TEMP_THRESHOLD=95000  # 95°C
 
 check_cpu_temp() {
-    local max_temp=0
-    local temp_files="/sys/class/thermal/thermal_zone*/temp"
-    
-    for temp_file in $temp_files; do
-        if [[ -r "$temp_file" ]]; then
-            local temp=$(cat "$temp_file" 2>/dev/null)
-            if [[ "$temp" -gt "$max_temp" ]]; then
-                max_temp=$temp
-            fi
-        fi
-    done
-    echo $max_temp
+	local max_temp=0
+	local temp_files="/sys/class/thermal/thermal_zone*/temp"
+	
+	for temp_file in $temp_files; do
+		if [[ -r "$temp_file" ]]; then
+			local temp=$(cat "$temp_file" 2>/dev/null)
+			if [[ "$temp" -gt "$max_temp" ]]; then
+				max_temp=$temp
+			fi
+		fi
+	done
+	echo $max_temp
 }
 
 current_temp=$(check_cpu_temp)
 
 if [[ "$current_temp" -gt "$CRITICAL_TEMP_THRESHOLD" ]]; then
-    echo "CRITICAL: CPU temperature ${current_temp}°C - Emergency throttling!"
-    for gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
-        echo powersave > "$gov"
-    done
-    echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo 2>/dev/null || true
+	echo "CRITICAL: CPU temperature ${current_temp}°C - Emergency throttling!"
+	for gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+		echo powersave > "$gov"
+	done
+	echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo 2>/dev/null || true
 elif [[ "$current_temp" -gt "$CPU_TEMP_THRESHOLD" ]]; then
-    echo "WARNING: CPU temperature ${current_temp}°C - Reducing performance"
-    echo conservative > /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+	echo "WARNING: CPU temperature ${current_temp}°C - Reducing performance"
+	echo conservative > /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 else
-    # Temperature is safe, restore performance mode
-    echo performance > /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-    echo 0 > /sys/devices/system/cpu/intel_pstate/no_turbo 2>/dev/null || true
+	# Temperature is safe, restore performance mode
+	echo performance > /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+	echo 0 > /sys/devices/system/cpu/intel_pstate/no_turbo 2>/dev/null || true
 fi
 EOF
 
@@ -355,21 +355,21 @@ sudo systemctl start thermal-monitor.timer
 # Configure fan curves if possible
 echo -e "${green}Checking for fan control capabilities...${no_color}"
 if command -v pwmconfig &> /dev/null; then
-    echo -e "${yellow}Fan control available! Run 'sudo pwmconfig' manually to configure fan curves${no_color}"
-    echo -e "${yellow}After pwmconfig, use 'sudo systemctl enable fancontrol' to enable automatic fan control${no_color}"
+	echo -e "${yellow}Fan control available! Run 'sudo pwmconfig' manually to configure fan curves${no_color}"
+	echo -e "${yellow}After pwmconfig, use 'sudo systemctl enable fancontrol' to enable automatic fan control${no_color}"
 else
-    echo -e "${yellow}pwmconfig not found - check if lm_sensors is properly installed${no_color}"
+	echo -e "${yellow}pwmconfig not found - check if lm_sensors is properly installed${no_color}"
 fi
 
 echo -e "${blue}Current thermal status:${no_color}"
 echo "CPU Temperature:"
 for zone in /sys/class/thermal/thermal_zone*; do
-    if [[ -r "$zone/temp" ]] && [[ -r "$zone/type" ]]; then
-        local temp=$(cat "$zone/temp")
-        local type=$(cat "$zone/type")
-        local temp_c=$((temp / 1000))
-        echo "  $type: ${temp_c}°C"
-    fi
+	if [[ -r "$zone/temp" ]] && [[ -r "$zone/type" ]]; then
+		local temp=$(cat "$zone/temp")
+		local type=$(cat "$zone/type")
+		local temp_c=$((temp / 1000))
+		echo "  $type: ${temp_c}°C"
+	fi
 done
 
 echo -e "\nFan Status:"

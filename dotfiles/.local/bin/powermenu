@@ -8,65 +8,65 @@ entries="⏻ Shutdown\n↻ Reboot\n⏽ Hibernate\n⇠ Logout\n🔒 Lock"
 selected=$(echo -e "$entries" | rofi -dmenu -p "Uptime: $uptime" -width 250 -lines 5 -location 0 -theme ~/.config/rofi/powermenu.rasi)
 
 case $selected in
-    "⇠ Logout")
-        case "$DESKTOP_SESSION" in
-            dwm)
-                pkill dwm
-                ;;
-            sway)
-                swaymsg exit
-                ;;
-            hyprland)
-                hyprctl dispatch exit
-                ;;
-            awesome)
-                echo 'awesome.quit()' | awesome-client
-                ;;
-        esac
-        ;;
-    # "⏾ Suspend")
-    #     mpc -q pause
-    #     pactl set-sink-mute @DEFAULT_SINK@ 1
-    #     systemctl suspend;;
-    "⏽ Hibernate")
-        systemctl hibernate
-        ;;
-    "↻ Reboot")
-        systemctl reboot
-        ;;
-    "⏻ Shutdown")
-        systemctl poweroff
-        ;;
-    "🔒 Lock")
-        if [ "$XDG_CURRENT_DESKTOP" = "sway" || "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
-            swaylock \
-                --color 2d353b \
-                --inside-color 3a454a \
-                --inside-clear-color 5c6a72 \
-                --inside-ver-color 5a524c \
-                --inside-wrong-color 543a3a \
-                --ring-color 7a8478 \
-                --ring-clear-color a7c080 \
-                --ring-ver-color dbbc7f \
-                --ring-wrong-color e67e80 \
-                --key-hl-color d699b6 \
-                --bs-hl-color e69875 \
-                --separator-color 2d353b \
-                --text-color d3c6aa \
-                --text-clear-color d3c6aa \
-                --text-ver-color d3c6aa \
-                --text-wrong-color d3c6aa \
-                --indicator-radius 100 \
-                --indicator-thickness 10 \
-                --font "JetBrainsMono Nerd Font Propo"
-        elif [ "$XDG_SESSION_TYPE" = "x11" ]; then
-            if command -v xscreensaver &> /dev/null; then
-                if ! pgrep -x "xscreensaver" > /dev/null; then
-                    xscreensaver -no-splash & 
-                    sleep 0.5 # Give it a moment to start
-                fi
-                xscreensaver-command -lock
-            fi
-        fi
-        ;;
+	"⇠ Logout")
+		case "$DESKTOP_SESSION" in
+			dwm)
+				pkill dwm
+				;;
+			sway)
+				swaymsg exit
+				;;
+			hyprland)
+				hyprctl dispatch exit
+				;;
+			awesome)
+				echo 'awesome.quit()' | awesome-client
+				;;
+		esac
+		;;
+	# "⏾ Suspend")
+	#	 mpc -q pause
+	#	 pactl set-sink-mute @DEFAULT_SINK@ 1
+	#	 systemctl suspend;;
+	"⏽ Hibernate")
+		systemctl hibernate
+		;;
+	"↻ Reboot")
+		systemctl reboot
+		;;
+	"⏻ Shutdown")
+		systemctl poweroff
+		;;
+	"🔒 Lock")
+		if [ "$XDG_CURRENT_DESKTOP" = "sway" || "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
+			swaylock \
+				--color 2d353b \
+				--inside-color 3a454a \
+				--inside-clear-color 5c6a72 \
+				--inside-ver-color 5a524c \
+				--inside-wrong-color 543a3a \
+				--ring-color 7a8478 \
+				--ring-clear-color a7c080 \
+				--ring-ver-color dbbc7f \
+				--ring-wrong-color e67e80 \
+				--key-hl-color d699b6 \
+				--bs-hl-color e69875 \
+				--separator-color 2d353b \
+				--text-color d3c6aa \
+				--text-clear-color d3c6aa \
+				--text-ver-color d3c6aa \
+				--text-wrong-color d3c6aa \
+				--indicator-radius 100 \
+				--indicator-thickness 10 \
+				--font "JetBrainsMono Nerd Font Propo"
+		elif [ "$XDG_SESSION_TYPE" = "x11" ]; then
+			if command -v xscreensaver &> /dev/null; then
+				if ! pgrep -x "xscreensaver" > /dev/null; then
+					xscreensaver -no-splash & 
+					sleep 0.5 # Give it a moment to start
+				fi
+				xscreensaver-command -lock
+			fi
+		fi
+		;;
 esac

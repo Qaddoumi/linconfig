@@ -21,47 +21,47 @@ sudo mkdir -p "$DEST_DIR" || { echo "Failed to create destination directory: $DE
 # Process all qcow2 files
 echo "Processing qcow2 files..."
 for qcow_file in "$QCOW2_DIR"/*.qcow2; do
-    if [ -f "$qcow_file" ]; then
-        echo ""
-        vm_name="$(basename "$qcow_file")"
-        echo "Found qcow2 file: $vm_name"
-        
-        # Example commands to perform on each qcow2 file:
-        # 1. Get file size
-        size=$(du -sh "$qcow_file" | cut -f1)
-        echo "  Size: $size"
-        
-        # 2. Get owner
-        owner=$(stat -c "%U" "$qcow_file")
-        echo "  Owner: $owner"
-        
-        # 3. Perform qemu-img operations (example)
-        echo "  Checking disk..."
-        sudo qemu-img check "$QCOW2_DIR/$vm_name"
-        echo "  Converting and copying the disk..."
-        sudo qemu-img convert -p -O qcow2 -c "$QCOW2_DIR/$vm_name" "$DEST_DIR/$vm_name"
-        
-        # this will trully defragment the image to save the space, but it takes a long time
-        #sudo virt-sparsify -v --tmp $MOUNT_POINT/archBackup/temp/ "$QCOW2_DIR/$vm_name" "$DEST_DIR/$vm_name"
-    fi
+	if [ -f "$qcow_file" ]; then
+		echo ""
+		vm_name="$(basename "$qcow_file")"
+		echo "Found qcow2 file: $vm_name"
+		
+		# Example commands to perform on each qcow2 file:
+		# 1. Get file size
+		size=$(du -sh "$qcow_file" | cut -f1)
+		echo "  Size: $size"
+		
+		# 2. Get owner
+		owner=$(stat -c "%U" "$qcow_file")
+		echo "  Owner: $owner"
+		
+		# 3. Perform qemu-img operations (example)
+		echo "  Checking disk..."
+		sudo qemu-img check "$QCOW2_DIR/$vm_name"
+		echo "  Converting and copying the disk..."
+		sudo qemu-img convert -p -O qcow2 -c "$QCOW2_DIR/$vm_name" "$DEST_DIR/$vm_name"
+		
+		# this will trully defragment the image to save the space, but it takes a long time
+		#sudo virt-sparsify -v --tmp $MOUNT_POINT/archBackup/temp/ "$QCOW2_DIR/$vm_name" "$DEST_DIR/$vm_name"
+	fi
 done
 
 # Process all XML files
 echo -e "\nProcessing XML files..."
 for xml_file in "$XML_DIR"/*.xml; do
-    if [ -f "$xml_file" ]; then
-        echo ""
-        vm_name="$(basename "$xml_file")"
-        echo "Found XML file: $vm_name"
-        
-        # Copy the XML file to destination
-        #cp -v "$xml_file" "$XML_DEST_DIR/"
-        
-        # Alternative: copy with timestamp
-        # timestamp=$(date +%Y%m%d_%H%M%S)
-        # cp -v "$xml_file" "${XML_DEST_DIR}/$(basename "$xml_file" .xml)_${timestamp}.xml"
-        sudo cp "$XML_DIR/$vm_name" "$DEST_DIR/$vm_name"
-    fi
+	if [ -f "$xml_file" ]; then
+		echo ""
+		vm_name="$(basename "$xml_file")"
+		echo "Found XML file: $vm_name"
+		
+		# Copy the XML file to destination
+		#cp -v "$xml_file" "$XML_DEST_DIR/"
+		
+		# Alternative: copy with timestamp
+		# timestamp=$(date +%Y%m%d_%H%M%S)
+		# cp -v "$xml_file" "${XML_DEST_DIR}/$(basename "$xml_file" .xml)_${timestamp}.xml"
+		sudo cp "$XML_DIR/$vm_name" "$DEST_DIR/$vm_name"
+	fi
 done
 
 echo "======================================================"
@@ -76,10 +76,10 @@ seconds=$((elapsed_time % 60))
 
 time_str=""
 if [[ $hours -gt 0 ]]; then
-    time_str+="${hours}h "
+	time_str+="${hours}h "
 fi
 if [[ $minutes -gt 0 || $hours -gt 0 ]]; then
-    time_str+="${minutes}m "
+	time_str+="${minutes}m "
 fi
 time_str+="${seconds}s"
 

@@ -6,114 +6,114 @@ import qs.Theme
 
 
 RowLayout {
-    spacing: ThemeManager.barMargin / 2
+	spacing: ThemeManager.barMargin / 2
 
-    // Fast timer for widgets like clock (every second)
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: {
-            clockDateWidget.process.running = true
-            cpuWidget.process.running = true
-            networkWidget.process.running = true
-            languageKeyboardWidget.process.running = true
-        }
-    }
+	// Fast timer for widgets like clock (every second)
+	Timer {
+		interval: 1000
+		running: true
+		repeat: true
+		onTriggered: {
+			clockDateWidget.process.running = true
+			cpuWidget.process.running = true
+			networkWidget.process.running = true
+			languageKeyboardWidget.process.running = true
+		}
+	}
 
-    // Slow timer for widgets like system stats
-    Timer {
-        interval: 3000
-        running: true
-        repeat: true
-        onTriggered: {
-            memoryWidget.process.running = true
-            diskUsageWidget.process.running = true
-            prayerWidget.process.running = true
-            hardwareTemperatureWidget.process.running = true
-            brightnessWidget.process.running = true
-            volumeWidget.process.running = true
-            idleInhibitorWidget.process.running = true
-            batteryWidget.process.running = true
-            notificationWidget.triggerRefresh()
-            weatherWidget.process.running = true
-            privacyWidget.process.running = true
-            bluetoothWidget.process.running = true
-            airplaneModeWidget.process.running = true
-        }
-    }
+	// Slow timer for widgets like system stats
+	Timer {
+		interval: 3000
+		running: true
+		repeat: true
+		onTriggered: {
+			memoryWidget.process.running = true
+			diskUsageWidget.process.running = true
+			prayerWidget.process.running = true
+			hardwareTemperatureWidget.process.running = true
+			brightnessWidget.process.running = true
+			volumeWidget.process.running = true
+			idleInhibitorWidget.process.running = true
+			batteryWidget.process.running = true
+			notificationWidget.triggerRefresh()
+			weatherWidget.process.running = true
+			privacyWidget.process.running = true
+			bluetoothWidget.process.running = true
+			airplaneModeWidget.process.running = true
+		}
+	}
 
-    Network {
-        id: networkWidget
-    }
+	Network {
+		id: networkWidget
+	}
 
-    Bluetooth {
-        id: bluetoothWidget
-    }
+	Bluetooth {
+		id: bluetoothWidget
+	}
 
-    AirplaneMode {
-        id: airplaneModeWidget
-    }
+	AirplaneMode {
+		id: airplaneModeWidget
+	}
 
-    Cpu {
-        id: cpuWidget
-    }
+	Cpu {
+		id: cpuWidget
+	}
 
-    Memory {
-        id: memoryWidget
-    }
+	Memory {
+		id: memoryWidget
+	}
 
-    DiskUsage {
-        id: diskUsageWidget
-    }
+	DiskUsage {
+		id: diskUsageWidget
+	}
 
-    Volume {
-        id: volumeWidget
-    }
+	Volume {
+		id: volumeWidget
+	}
 
-    Brightness {
-        id: brightnessWidget
-    }
+	Brightness {
+		id: brightnessWidget
+	}
 
-    HardwareTemperature {
-        id: hardwareTemperatureWidget
-    }
+	HardwareTemperature {
+		id: hardwareTemperatureWidget
+	}
 
-    Weather {
-        id: weatherWidget
-    }
+	Weather {
+		id: weatherWidget
+	}
 
-    Battery {
-        id: batteryWidget
-    }
+	Battery {
+		id: batteryWidget
+	}
 
-    Privacy {
-        id: privacyWidget
-    }
+	Privacy {
+		id: privacyWidget
+	}
 
-    LanguageKeyboardState {
-        id: languageKeyboardWidget
-    }
+	LanguageKeyboardState {
+		id: languageKeyboardWidget
+	}
 
-    PrayerTimes {
-        id: prayerWidget
-    }
+	PrayerTimes {
+		id: prayerWidget
+	}
 
-    ClockDateWidget {
-        id: clockDateWidget
-    }
+	ClockDateWidget {
+		id: clockDateWidget
+	}
 
-    Notification {
-        id: notificationWidget
-    }
+	Notification {
+		id: notificationWidget
+	}
 
-    Tray {}
+	Tray {}
 
-    IdleInhibitor {
-        id: idleInhibitorWidget
-    }
+	IdleInhibitor {
+		id: idleInhibitorWidget
+	}
 
-    PowerMenuWidget {}
+	PowerMenuWidget {}
 
-    Item { width: 0 }
+	Item { width: 0 }
 }

@@ -8,197 +8,197 @@ import qs.Theme
 
 
 Item {
-    anchors.fill: parent
+	anchors.fill: parent
 
-    property string activeWindow: "Window"
-    property string currentLayout: "Tile"
-    property var urgentWorkspaces: []
+	property string activeWindow: "Window"
+	property string currentLayout: "Tile"
+	property var urgentWorkspaces: []
 
-    // Active window title
-    Process {
-        id: windowProc
-        command: ["sh", "-c", "hyprctl activewindow -j | jq -r '.title // empty'"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (data && data.trim()) {
-                    activeWindow = data.trim()
-                }
-            }
-        }
-        Component.onCompleted: running = true
-    }
+	// Active window title
+	Process {
+		id: windowProc
+		command: ["sh", "-c", "hyprctl activewindow -j | jq -r '.title // empty'"]
+		stdout: SplitParser {
+			onRead: data => {
+				if (data && data.trim()) {
+					activeWindow = data.trim()
+				}
+			}
+		}
+		Component.onCompleted: running = true
+	}
 
-    // Current layout (Hyprland: dwindle/master/floating)
-    Process {
-        id: layoutProc
-        command: ["sh", "-c", "hyprctl activewindow -j | jq -r 'if .floating then \"Floating\" elif .fullscreen == 1 then \"Fullscreen\" else \"Tiled\" end'"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (data && data.trim()) {
-                    currentLayout = data.trim()
-                }
-            }
-        }
-        Component.onCompleted: running = true
-    }
+	// Current layout (Hyprland: dwindle/master/floating)
+	Process {
+		id: layoutProc
+		command: ["sh", "-c", "hyprctl activewindow -j | jq -r 'if .floating then \"Floating\" elif .fullscreen == 1 then \"Fullscreen\" else \"Tiled\" end'"]
+		stdout: SplitParser {
+			onRead: data => {
+				if (data && data.trim()) {
+					currentLayout = data.trim()
+				}
+			}
+		}
+		Component.onCompleted: running = true
+	}
 
-    // Track urgent workspaces manually since hyprctl JSON doesn't reliably expose it
-    property var pendingUrgentAddresses: []
+	// Track urgent workspaces manually since hyprctl JSON doesn't reliably expose it
+	property var pendingUrgentAddresses: []
 
-    // Fetch clients to resolve address -> workspace
-    Process {
-        id: clientFinderProc
-        command: ["sh", "-c", "hyprctl clients -j | jq -c ."]
-        stdout: SplitParser {
-            onRead: data => {
-                if (data && data.trim()) {
-                    try {
-                        var clients = JSON.parse(data.trim())
-                        var newUrgent = []
-                        
-                        // Process pending addresses
-                        for (var i = 0; i < pendingUrgentAddresses.length; i++) {
-                            var addr = pendingUrgentAddresses[i]
-                            // Normalize address format - remove 0x prefix if present
-                            var normalizedAddr = addr.startsWith("0x") ? addr : "0x" + addr
-                            var client = clients.find(c => c.address === normalizedAddr)
-                            if (client && Hyprland.focusedWorkspace?.id !== client.workspace.id) {
-                                // console.log("Found urgent window on workspace:", client.workspace.id)
-                                newUrgent.push(client.workspace.id)
-                            }
-                        }
-                        
-                        // Add new urgent workspaces to the list (avoiding duplicates)
-                        if (newUrgent.length > 0) {
-                            var current = urgentWorkspaces.slice()  // Create a copy here
-                            for (var j = 0; j < newUrgent.length; j++) {
-                                if (!current.includes(newUrgent[j])) {
-                                    current.push(newUrgent[j])
-                                }
-                            }
-                            urgentWorkspaces = current  // Assign the new array reference
-                            // console.log("Updated urgent workspaces:", urgentWorkspaces)
-                        }
-                        pendingUrgentAddresses = []
-                        
-                    } catch (e) {
-                        console.error("Failed to parse clients:", e)
-                    }
-                }
-            }
-        }
-    }
+	// Fetch clients to resolve address -> workspace
+	Process {
+		id: clientFinderProc
+		command: ["sh", "-c", "hyprctl clients -j | jq -c ."]
+		stdout: SplitParser {
+			onRead: data => {
+				if (data && data.trim()) {
+					try {
+						var clients = JSON.parse(data.trim())
+						var newUrgent = []
+						
+						// Process pending addresses
+						for (var i = 0; i < pendingUrgentAddresses.length; i++) {
+							var addr = pendingUrgentAddresses[i]
+							// Normalize address format - remove 0x prefix if present
+							var normalizedAddr = addr.startsWith("0x") ? addr : "0x" + addr
+							var client = clients.find(c => c.address === normalizedAddr)
+							if (client && Hyprland.focusedWorkspace?.id !== client.workspace.id) {
+								// console.log("Found urgent window on workspace:", client.workspace.id)
+								newUrgent.push(client.workspace.id)
+							}
+						}
+						
+						// Add new urgent workspaces to the list (avoiding duplicates)
+						if (newUrgent.length > 0) {
+							var current = urgentWorkspaces.slice()  // Create a copy here
+							for (var j = 0; j < newUrgent.length; j++) {
+								if (!current.includes(newUrgent[j])) {
+									current.push(newUrgent[j])
+								}
+							}
+							urgentWorkspaces = current  // Assign the new array reference
+							// console.log("Updated urgent workspaces:", urgentWorkspaces)
+						}
+						pendingUrgentAddresses = []
+						
+					} catch (e) {
+						console.error("Failed to parse clients:", e)
+					}
+				}
+			}
+		}
+	}
 
-    // Event connections
-    Connections {
-        target: Hyprland
-        function onRawEvent(event) {
-            // instant updates
-            windowProc.running = true
-            layoutProc.running = true
-            
-            // Handle urgency event: urgent>>address
-            if (event.name === "urgent") {
-                var addr = event.data
-                pendingUrgentAddresses.push(addr)
-                clientFinderProc.running = true
-            }
-        }
-        
-        function onFocusedWorkspaceChanged() {
-            // Clear urgency when switching to the workspace
-            if (Hyprland.focusedWorkspace) {
-                var id = Hyprland.focusedWorkspace.id
-                var list = urgentWorkspaces
-                if (list.includes(id)) {
-                    urgentWorkspaces = list.filter(w => w !== id)
-                }
-            }
-        }
-    }
+	// Event connections
+	Connections {
+		target: Hyprland
+		function onRawEvent(event) {
+			// instant updates
+			windowProc.running = true
+			layoutProc.running = true
+			
+			// Handle urgency event: urgent>>address
+			if (event.name === "urgent") {
+				var addr = event.data
+				pendingUrgentAddresses.push(addr)
+				clientFinderProc.running = true
+			}
+		}
+		
+		function onFocusedWorkspaceChanged() {
+			// Clear urgency when switching to the workspace
+			if (Hyprland.focusedWorkspace) {
+				var id = Hyprland.focusedWorkspace.id
+				var list = urgentWorkspaces
+				if (list.includes(id)) {
+					urgentWorkspaces = list.filter(w => w !== id)
+				}
+			}
+		}
+	}
 
-    // Backup timer for window/layout (catches edge cases)
-    Timer {
-        interval: 200
-        running: true
-        repeat: true
-        onTriggered: {
-            windowProc.running = true
-            layoutProc.running = true
-        }
-    }
+	// Backup timer for window/layout (catches edge cases)
+	Timer {
+		interval: 200
+		running: true
+		repeat: true
+		onTriggered: {
+			windowProc.running = true
+			layoutProc.running = true
+		}
+	}
 
-    Rectangle {
-        anchors.fill: parent
-        color: ThemeManager.bgBase
+	Rectangle {
+		anchors.fill: parent
+		color: ThemeManager.bgBase
 
-        RowLayout {
-            anchors.fill: parent
-            spacing: ThemeManager.barMargin / 2
+		RowLayout {
+			anchors.fill: parent
+			spacing: ThemeManager.barMargin / 2
 
-            Repeater {
-                model: 9
+			Repeater {
+				model: 9
 
-                Rectangle {
-                    Layout.preferredWidth: 20
-                    Layout.preferredHeight: parent.height
-                    color: "transparent"
+				Rectangle {
+					Layout.preferredWidth: 20
+					Layout.preferredHeight: parent.height
+					color: "transparent"
 
-                    property var workspace: Hyprland.workspaces.values.find(ws => ws.id === index + 1) ?? null
-                    property bool isActive: Hyprland.focusedWorkspace?.id === (index + 1)
-                    property bool hasWindows: workspace !== null
-                    property bool isUrgent: urgentWorkspaces.includes(index + 1)
+					property var workspace: Hyprland.workspaces.values.find(ws => ws.id === index + 1) ?? null
+					property bool isActive: Hyprland.focusedWorkspace?.id === (index + 1)
+					property bool hasWindows: workspace !== null
+					property bool isUrgent: urgentWorkspaces.includes(index + 1)
 
-                    // Hide if not active and has no windows and not urgent
-                    visible: isActive || hasWindows || isUrgent
+					// Hide if not active and has no windows and not urgent
+					visible: isActive || hasWindows || isUrgent
 
-                    Text {
-                        text: index + 1
-                        color: parent.isUrgent ? ThemeManager.accentRed : (parent.isActive ? ThemeManager.accentCyan : (parent.hasWindows ? ThemeManager.accentCyan : ThemeManager.surface1))
-                        font.pixelSize: ThemeManager.fontSizeBar
-                        font.family: ThemeManager.fontFamily
-                        font.bold: true
-                        anchors.centerIn: parent
-                    }
+					Text {
+						text: index + 1
+						color: parent.isUrgent ? ThemeManager.accentRed : (parent.isActive ? ThemeManager.accentCyan : (parent.hasWindows ? ThemeManager.accentCyan : ThemeManager.surface1))
+						font.pixelSize: ThemeManager.fontSizeBar
+						font.family: ThemeManager.fontFamily
+						font.bold: true
+						anchors.centerIn: parent
+					}
 
-                    Rectangle {
-                        width: 20
-                        height: 3
-                        color: parent.isUrgent ? ThemeManager.accentRed : (parent.isActive ? ThemeManager.accentPurple : ThemeManager.bgBase)
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.bottom: parent.bottom
-                    }
+					Rectangle {
+						width: 20
+						height: 3
+						color: parent.isUrgent ? ThemeManager.accentRed : (parent.isActive ? ThemeManager.accentPurple : ThemeManager.bgBase)
+						anchors.horizontalCenter: parent.horizontalCenter
+						anchors.bottom: parent.bottom
+					}
 
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Hyprland.dispatch("workspace " + (index + 1))
-                    }
-                }
-            }
+					MouseArea {
+						anchors.fill: parent
+						cursorShape: Qt.PointingHandCursor
+						onClicked: Hyprland.dispatch("workspace " + (index + 1))
+					}
+				}
+			}
 
-            BarSeparator {}
+			BarSeparator {}
 
-            Text {
-                text: currentLayout
-                color: ThemeManager.fgPrimary
-                font.pixelSize: ThemeManager.fontSizeBar - 2
-                font.family: ThemeManager.fontFamily
-                font.bold: true
-            }
+			Text {
+				text: currentLayout
+				color: ThemeManager.fgPrimary
+				font.pixelSize: ThemeManager.fontSizeBar - 2
+				font.family: ThemeManager.fontFamily
+				font.bold: true
+			}
 
-            BarSeparator {}
+			BarSeparator {}
 
-            Text {
-                text: activeWindow
-                color: ThemeManager.accentPurple
-                font.pixelSize: ThemeManager.fontSizeBar
-                font.family: ThemeManager.fontFamily
-                font.bold: true
-                Layout.fillWidth: true
-                elide: Text.ElideRight
-                maximumLineCount: 1
-            }
-        }
-    }
+			Text {
+				text: activeWindow
+				color: ThemeManager.accentPurple
+				font.pixelSize: ThemeManager.fontSizeBar
+				font.family: ThemeManager.fontFamily
+				font.bold: true
+				Layout.fillWidth: true
+				elide: Text.ElideRight
+				maximumLineCount: 1
+			}
+		}
+	}
 }

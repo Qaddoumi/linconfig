@@ -23,7 +23,7 @@ yay -Yc
 
 # Remove Orphan packages if exists
 if pacman -Qtdq > /dev/null 2>&1; then
-    sudo pacman -Rns $(pacman -Qtdq)
+	sudo pacman -Rns $(pacman -Qtdq)
 fi
 
 # Clean the Cache

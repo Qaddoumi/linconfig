@@ -7,86 +7,86 @@ import qs.Theme
 
 
 Variants {
-    model: Quickshell.screens
+	model: Quickshell.screens
 
-    PanelWindow {
-        property var modelData
-        screen: modelData
+	PanelWindow {
+		property var modelData
+		screen: modelData
 
-        focusable: false
-        aboveWindows: true
+		focusable: false
+		aboveWindows: true
 
-        anchors {
-            top: true
-            left: true
-            right: true
-        }
+		anchors {
+			top: true
+			left: true
+			right: true
+		}
 
-        implicitHeight: ThemeManager.barHeight
-        color: ThemeManager.bgBase
+		implicitHeight: ThemeManager.barHeight
+		color: ThemeManager.bgBase
 
-        margins {
-            top: 0
-            bottom: 0
-            left: 0
-            right: 0
-        }
+		margins {
+			top: 0
+			bottom: 0
+			left: 0
+			right: 0
+		}
 
-        RowLayout {
-            anchors.fill: parent
-            spacing: ThemeManager.barMargin
+		RowLayout {
+			anchors.fill: parent
+			spacing: ThemeManager.barMargin
 
-            Item { width: 0 }
+			Item { width: 0 }
 
-            LauncherMenu {}
+			LauncherMenu {}
 
-            BarSeparator {}
+			BarSeparator {}
 
-            Loader {
-                id: loader
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                sourceComponent: root.desktop.indexOf("sway") !== -1 ? swayWorkspaceWidget :
-                                root.desktop.indexOf("Hyprland") !== -1 ? hyprlandWorkspaceWidget :
-                                root.desktop.indexOf("awesome") !== -1 ? awesomeWorkspaceWidget :
-                                !root.isWayland ? universalX11WorkspaceWidget :
-                                fallbackWorkspaceWidget
-                
-                onStatusChanged: {
-                    if (status === Loader.Error) {
-                        console.error("Failed to load workspace widget:", source)
-                    }
-                }
-            }
+			Loader {
+				id: loader
+				Layout.fillHeight: true
+				Layout.fillWidth: true
+				sourceComponent: root.desktop.indexOf("sway") !== -1 ? swayWorkspaceWidget :
+								root.desktop.indexOf("Hyprland") !== -1 ? hyprlandWorkspaceWidget :
+								root.desktop.indexOf("awesome") !== -1 ? awesomeWorkspaceWidget :
+								!root.isWayland ? universalX11WorkspaceWidget :
+								fallbackWorkspaceWidget
+				
+				onStatusChanged: {
+					if (status === Loader.Error) {
+						console.error("Failed to load workspace widget:", source)
+					}
+				}
+			}
 
-            BarSeparator {}
+			BarSeparator {}
 
-            SystemState {}
+			SystemState {}
 
-            Component {
-                id: swayWorkspaceWidget
-                WorkspacesSway{}
-            }
+			Component {
+				id: swayWorkspaceWidget
+				WorkspacesSway{}
+			}
 
-            Component {
-                id: hyprlandWorkspaceWidget
-                WorkspacesHyprland{}
-            }
+			Component {
+				id: hyprlandWorkspaceWidget
+				WorkspacesHyprland{}
+			}
 
-            Component {
-                id: awesomeWorkspaceWidget
-                WorkspacesAwesome{}
-            }
+			Component {
+				id: awesomeWorkspaceWidget
+				WorkspacesAwesome{}
+			}
 
-            Component {
-                id: universalX11WorkspaceWidget
-                WorkspacesUniversalX11{}
-            }
+			Component {
+				id: universalX11WorkspaceWidget
+				WorkspacesUniversalX11{}
+			}
 
-            Component {
-                id: fallbackWorkspaceWidget
-                WorkspacesFallback{}
-            }
-        }
-    }
+			Component {
+				id: fallbackWorkspaceWidget
+				WorkspacesFallback{}
+			}
+		}
+	}
 }

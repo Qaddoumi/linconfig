@@ -12,148 +12,148 @@ LAST_IMAGE_HASH=""
 
 # Check dependencies
 check_dependencies() {
-    local missing=0
-    for cmd in xclip wl-copy wl-paste; do
-        if ! command -v $cmd &> /dev/null; then
-            echo "Error: $cmd is not installed" >&2
-            missing=1
-        fi
-    done
-    
-    if [ $missing -eq 1 ]; then
-        echo "Please install: xclip wl-clipboard" >&2
-        exit 1
-    fi
+	local missing=0
+	for cmd in xclip wl-copy wl-paste; do
+		if ! command -v $cmd &> /dev/null; then
+			echo "Error: $cmd is not installed" >&2
+			missing=1
+		fi
+	done
+	
+	if [ $missing -eq 1 ]; then
+		echo "Please install: xclip wl-clipboard" >&2
+		exit 1
+	fi
 }
 
 # Setup
 setup() {
-    mkdir -p "$TMP_DIR"
-    trap cleanup EXIT INT TERM
-    echo "X11 to Wayland Clipboard Bridge started"
-    echo "Temp directory: $TMP_DIR"
-    echo "Monitoring spice-vdagent clipboard..."
+	mkdir -p "$TMP_DIR"
+	trap cleanup EXIT INT TERM
+	echo "X11 to Wayland Clipboard Bridge started"
+	echo "Temp directory: $TMP_DIR"
+	echo "Monitoring spice-vdagent clipboard..."
 }
 
 # Cleanup
 cleanup() {
-    rm -rf "$TMP_DIR"
-    echo "Bridge stopped"
+	rm -rf "$TMP_DIR"
+	echo "Bridge stopped"
 }
 
 # Sync text clipboard
 sync_text() {
-    local x11_text
-    x11_text=$(xclip -selection clipboard -o -t text/plain 2>/dev/null)
-    
-    if [ $? -eq 0 ] && [ -n "$x11_text" ]; then
-        local current_hash
-        current_hash=$(echo -n "$x11_text" | md5sum | cut -d' ' -f1)
-        
-        if [ "$current_hash" != "$LAST_TEXT_HASH" ]; then
-            echo -n "$x11_text" > "$TEXT_FILE"
-            wl-copy < "$TEXT_FILE"
-            
-            if [ $? -eq 0 ]; then
-                echo "[$(date '+%H:%M:%S')] Text synced (${#x11_text} chars)"
-                LAST_TEXT_HASH="$current_hash"
-                return 0
-            fi
-        fi
-    fi
-    return 1
+	local x11_text
+	x11_text=$(xclip -selection clipboard -o -t text/plain 2>/dev/null)
+	
+	if [ $? -eq 0 ] && [ -n "$x11_text" ]; then
+		local current_hash
+		current_hash=$(echo -n "$x11_text" | md5sum | cut -d' ' -f1)
+		
+		if [ "$current_hash" != "$LAST_TEXT_HASH" ]; then
+			echo -n "$x11_text" > "$TEXT_FILE"
+			wl-copy < "$TEXT_FILE"
+			
+			if [ $? -eq 0 ]; then
+				echo "[$(date '+%H:%M:%S')] Text synced (${#x11_text} chars)"
+				LAST_TEXT_HASH="$current_hash"
+				return 0
+			fi
+		fi
+	fi
+	return 1
 }
 
 # Sync image clipboard
 sync_image() {
-    # Check if X11 clipboard has image
-    xclip -selection clipboard -t TARGETS -o 2>/dev/null | grep -q "image/png"
-    
-    if [ $? -eq 0 ]; then
-        xclip -selection clipboard -t image/png -o > "$IMAGE_FILE" 2>/dev/null
-        
-        if [ $? -eq 0 ] && [ -s "$IMAGE_FILE" ]; then
-            local current_hash
-            current_hash=$(md5sum "$IMAGE_FILE" | cut -d' ' -f1)
-            
-            if [ "$current_hash" != "$LAST_IMAGE_HASH" ]; then
-                wl-copy < "$IMAGE_FILE"
-                
-                if [ $? -eq 0 ]; then
-                    local size=$(stat -f%z "$IMAGE_FILE" 2>/dev/null || stat -c%s "$IMAGE_FILE" 2>/dev/null)
-                    echo "[$(date '+%H:%M:%S')] Image synced ($size bytes)"
-                    LAST_IMAGE_HASH="$current_hash"
-                    return 0
-                fi
-            fi
-        fi
-    fi
-    return 1
+	# Check if X11 clipboard has image
+	xclip -selection clipboard -t TARGETS -o 2>/dev/null | grep -q "image/png"
+	
+	if [ $? -eq 0 ]; then
+		xclip -selection clipboard -t image/png -o > "$IMAGE_FILE" 2>/dev/null
+		
+		if [ $? -eq 0 ] && [ -s "$IMAGE_FILE" ]; then
+			local current_hash
+			current_hash=$(md5sum "$IMAGE_FILE" | cut -d' ' -f1)
+			
+			if [ "$current_hash" != "$LAST_IMAGE_HASH" ]; then
+				wl-copy < "$IMAGE_FILE"
+				
+				if [ $? -eq 0 ]; then
+					local size=$(stat -f%z "$IMAGE_FILE" 2>/dev/null || stat -c%s "$IMAGE_FILE" 2>/dev/null)
+					echo "[$(date '+%H:%M:%S')] Image synced ($size bytes)"
+					LAST_IMAGE_HASH="$current_hash"
+					return 0
+				fi
+			fi
+		fi
+	fi
+	return 1
 }
 
 # Bidirectional sync (optional - Wayland to X11)
 sync_wayland_to_x11() {
-    local wayland_text
-    wayland_text=$(wl-paste 2>/dev/null)
-    
-    if [ $? -eq 0 ] && [ -n "$wayland_text" ]; then
-        # Only copy if it's different from what's in X11
-        local x11_current
-        x11_current=$(xclip -selection clipboard -o 2>/dev/null)
-        
-        if [ "$wayland_text" != "$x11_current" ]; then
-            echo -n "$wayland_text" | xclip -selection clipboard -i
-            echo "[$(date '+%H:%M:%S')] Reverse sync: Wayland -> X11"
-        fi
-    fi
+	local wayland_text
+	wayland_text=$(wl-paste 2>/dev/null)
+	
+	if [ $? -eq 0 ] && [ -n "$wayland_text" ]; then
+		# Only copy if it's different from what's in X11
+		local x11_current
+		x11_current=$(xclip -selection clipboard -o 2>/dev/null)
+		
+		if [ "$wayland_text" != "$x11_current" ]; then
+			echo -n "$wayland_text" | xclip -selection clipboard -i
+			echo "[$(date '+%H:%M:%S')] Reverse sync: Wayland -> X11"
+		fi
+	fi
 }
 
 # Main function
 main() {
-    check_dependencies
-    setup
-    
-    # Parse arguments
-    BIDIRECTIONAL=0
-    INTERVAL=0.5
-    
-    while [[ $# -gt 0 ]]; do
-        case $1 in
-            --bidirectional|-b)
-                BIDIRECTIONAL=1
-                shift
-                ;;
-            --interval|-i)
-                INTERVAL="$2"
-                shift 2
-                ;;
-            --help|-h)
-                echo "Usage: $0 [OPTIONS]"
-                echo "Options:"
-                echo "  -b, --bidirectional    Enable Wayland to X11 sync as well"
-                echo "  -i, --interval SECS    Polling interval (default: 0.5)"
-                echo "  -h, --help            Show this help"
-                exit 0
-                ;;
-            *)
-                echo "Unknown option: $1" >&2
-                exit 1
-                ;;
-        esac
-    done
-    
-    # Main loop
-    while true; do
-        # Try to sync text first, then image
-        sync_text || sync_image
-        
-        # Bidirectional sync if enabled
-        if [ $BIDIRECTIONAL -eq 1 ]; then
-            sync_wayland_to_x11
-        fi
-        
-        sleep "$INTERVAL"
-    done
+	check_dependencies
+	setup
+	
+	# Parse arguments
+	BIDIRECTIONAL=0
+	INTERVAL=0.5
+	
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+			--bidirectional|-b)
+				BIDIRECTIONAL=1
+				shift
+				;;
+			--interval|-i)
+				INTERVAL="$2"
+				shift 2
+				;;
+			--help|-h)
+				echo "Usage: $0 [OPTIONS]"
+				echo "Options:"
+				echo "  -b, --bidirectional	Enable Wayland to X11 sync as well"
+				echo "  -i, --interval SECS	Polling interval (default: 0.5)"
+				echo "  -h, --help			Show this help"
+				exit 0
+				;;
+			*)
+				echo "Unknown option: $1" >&2
+				exit 1
+				;;
+		esac
+	done
+	
+	# Main loop
+	while true; do
+		# Try to sync text first, then image
+		sync_text || sync_image
+		
+		# Bidirectional sync if enabled
+		if [ $BIDIRECTIONAL -eq 1 ]; then
+			sync_wayland_to_x11
+		fi
+		
+		sleep "$INTERVAL"
+	done
 }
 
 main "$@"

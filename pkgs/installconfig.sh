@@ -13,13 +13,13 @@ no_color='\033[0m' # reset the color to default
 
 
 if [ -d ~/linconfig ]; then
-    echo -e "${green}Removing the old repo directory...${no_color}"
-    sudo rm -rf ~/linconfig > /dev/null || true
+	echo -e "${green}Removing the old repo directory...${no_color}"
+	sudo rm -rf ~/linconfig > /dev/null || true
 fi
 echo -e "${green}Cloning the repository...${no_color}"
 if ! git clone --depth 1 -b main https://github.com/Qaddoumi/linconfig.git ~/linconfig; then
-    echo "Failed to clone repository" >&2
-    exit 1
+	echo "Failed to clone repository" >&2
+	exit 1
 fi
 
 echo -e "${green}Copying config files...${no_color}"
@@ -42,7 +42,7 @@ sudo chown $USER:$USER ~/.xscreensaver > /dev/null || true
 
 echo -e "${green}Setting up oh-my-posh (bash prompt)...${no_color}"
 if ! sudo grep -q "source ~/.config/oh-my-posh/gmay.omp.json" ~/.bashrc; then
-    echo 'eval "$(oh-my-posh init bash --config ~/.config/oh-my-posh/gmay.omp.json)"' | sudo tee -a ~/.bashrc > /dev/null
+	echo 'eval "$(oh-my-posh init bash --config ~/.config/oh-my-posh/gmay.omp.json)"' | sudo tee -a ~/.bashrc > /dev/null
 fi
 
 source ~/.bashrc || true

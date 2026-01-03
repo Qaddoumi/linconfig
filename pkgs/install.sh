@@ -25,18 +25,18 @@ no_color='\033[0m' # reset the color to default
 
 # # Check if running as root
 # if [[ $EUID -eq 0 ]]; then
-#    echo -e "${red}This script should not be run as root. Please run as a regular user with sudo privileges.${no_color}"
-#    exit 1
+#	echo -e "${red}This script should not be run as root. Please run as a regular user with sudo privileges.${no_color}"
+#	exit 1
 # fi
 
 backup_file() {
-    local file="$1"
-    if sudo test -f "$file"; then
-        sudo cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
-        echo -e "${green}Backed up $file${no_color}"
-    else
-        echo -e "${yellow}File $file does not exist, skipping backup${no_color}"
-    fi
+	local file="$1"
+	if sudo test -f "$file"; then
+		sudo cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
+		echo -e "${green}Backed up $file${no_color}"
+	else
+		echo -e "${yellow}File $file does not exist, skipping backup${no_color}"
+	fi
 }
 
 cd ~ || echo -e "${red}Failed to change directory to home${no_color}"
@@ -47,33 +47,33 @@ echo -e "${green}\n\n ******************* Packages Installation Script *********
 # Parse named arguments
 is_vm=""
 while [[ $# -gt 0 ]]; do
-    case "$1" in
-        --is-vm)
-            is_vm="$2"
-            shift 2
-            ;;
-        *)
-            echo -e "${red}Unknown argument: $1${no_color}"
-            exit 1
-            ;;
-    esac
+	case "$1" in
+		--is-vm)
+			is_vm="$2"
+			shift 2
+			;;
+		*)
+			echo -e "${red}Unknown argument: $1${no_color}"
+			exit 1
+			;;
+	esac
 done
 
-echo -e "${green}Username to be used      : $USER${no_color}"
+echo -e "${green}Username to be used	  : $USER${no_color}"
 
 if [ -n "$is_vm" ]; then
-    echo -e "${green}is_vm manually set to: $is_vm${no_color}"
+	echo -e "${green}is_vm manually set to: $is_vm${no_color}"
 else
-    echo -e "${green}is_vm not set, detecting system type...${no_color}"
-    # the -v flag is used to get the type of virtualization ignoring containers/chroots.
-    systemType="$(systemd-detect-virt -v 2>/dev/null || echo "none")"
-    if [[ "$systemType" == "none" ]]; then
-        echo -e "${green}Not running in a VM${no_color}"
-        is_vm=false
-    else
-        echo -e "${green}Running in a VM: systemtype = $systemType${no_color}"
-        is_vm=true
-    fi
+	echo -e "${green}is_vm not set, detecting system type...${no_color}"
+	# the -v flag is used to get the type of virtualization ignoring containers/chroots.
+	systemType="$(systemd-detect-virt -v 2>/dev/null || echo "none")"
+	if [[ "$systemType" == "none" ]]; then
+		echo -e "${green}Not running in a VM${no_color}"
+		is_vm=false
+	else
+		echo -e "${green}Running in a VM: systemtype = $systemType${no_color}"
+		is_vm=true
+	fi
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
@@ -92,34 +92,34 @@ sudo pacman -S --needed --noconfirm jq || true # JSON processor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 install_yay() {
-    git clone --depth 1 https://aur.archlinux.org/yay.git ~/yay || true
-    cd yay || true
-    makepkg -si --noconfirm || true
-    cd .. && sudo rm -rf yay || true
-    yay --version || true
+	git clone --depth 1 https://aur.archlinux.org/yay.git ~/yay || true
+	cd yay || true
+	makepkg -si --noconfirm || true
+	cd .. && sudo rm -rf yay || true
+	yay --version || true
 }
 
 if command -v yay &> /dev/null ; then
-    echo "yay is already installed."
-    CURRENT_VERSION=$(yay --version | head -1 | awk '{print $2}')
-    echo "Current version: $CURRENT_VERSION"
-    
-    echo "Checking for latest version..."
-    LATEST_VERSION=$(curl -s "https://aur.archlinux.org/rpc/?v=5&type=info&arg[]=yay" | grep -o '"Version":"[^"]*"' | cut -d'"' -f4 | head -1)
-    echo "Latest version: $LATEST_VERSION"
+	echo "yay is already installed."
+	CURRENT_VERSION=$(yay --version | head -1 | awk '{print $2}')
+	echo "Current version: $CURRENT_VERSION"
+	
+	echo "Checking for latest version..."
+	LATEST_VERSION=$(curl -s "https://aur.archlinux.org/rpc/?v=5&type=info&arg[]=yay" | grep -o '"Version":"[^"]*"' | cut -d'"' -f4 | head -1)
+	echo "Latest version: $LATEST_VERSION"
 
-    if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
-        echo "yay is already up to date (version $CURRENT_VERSION)"
-    elif printf '%s\n%s\n' "$LATEST_VERSION" "$CURRENT_VERSION" | sort -V | tail -n1 | grep -q "^$LATEST_VERSION$"; then
-        echo "Update available: $CURRENT_VERSION -> $LATEST_VERSION"
-        echo "Proceeding with update..."
-        install_yay || true
-    else
-        echo "Current version is newer than or equal to latest available"
-    fi
+	if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
+		echo "yay is already up to date (version $CURRENT_VERSION)"
+	elif printf '%s\n%s\n' "$LATEST_VERSION" "$CURRENT_VERSION" | sort -V | tail -n1 | grep -q "^$LATEST_VERSION$"; then
+		echo "Update available: $CURRENT_VERSION -> $LATEST_VERSION"
+		echo "Proceeding with update..."
+		install_yay || true
+	else
+		echo "Current version is newer than or equal to latest available"
+	fi
 else
-    echo "yay is not installed. Proceeding with installation..."
-    install_yay || true
+	echo "yay is not installed. Proceeding with installation..."
+	install_yay || true
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
@@ -152,18 +152,18 @@ echo -e "${blue}═════════════════════�
 
 echo -e "${green}Installing Chaotic-AUR repository...${no_color}"
 if ! grep -q "\[chaotic-aur\]" /etc/pacman.conf; then
-    echo -e "${green}Chaotic-AUR repository not found. Proceeding with installation...${no_color}"
-    # install and enable Chaotic-AUR
-    sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || true
-    sudo pacman-key --lsign-key 3056513887B78AEB || true
-    sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' || true
-    sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' || true
-    echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf > /dev/null || true
-    sudo pacman -Syu --noconfirm || true
-    # Print message indicating Chaotic-AUR has been installed and enabled
-    echo -e "${green}Chaotic-AUR repository installed and enabled${no_color}"
+	echo -e "${green}Chaotic-AUR repository not found. Proceeding with installation...${no_color}"
+	# install and enable Chaotic-AUR
+	sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || true
+	sudo pacman-key --lsign-key 3056513887B78AEB || true
+	sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' || true
+	sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' || true
+	echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf > /dev/null || true
+	sudo pacman -Syu --noconfirm || true
+	# Print message indicating Chaotic-AUR has been installed and enabled
+	echo -e "${green}Chaotic-AUR repository installed and enabled${no_color}"
 else
-    echo -e "${green}Chaotic-AUR repository already exists. Skipping installation.${no_color}"
+	echo -e "${green}Chaotic-AUR repository already exists. Skipping installation.${no_color}"
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
@@ -191,11 +191,11 @@ echo ""
 sudo pacman -S --needed --noconfirm awesome # X11 window manager
 # the next lines is needed to setup variables like $XDG_CURRENT_DESKTOP and $XDG_SESSION_DESKTOP by sddm
 if grep -q "DesktopNames" "/usr/share/xsessions/awesome.desktop"; then
-    echo "Existing 'DesktopNames' found. Updating/Uncommenting to 'awesome'..."
-    sed -i "s/^#*\s*DesktopNames=.*/DesktopNames=awesome/" "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to update DesktopNames${no_color}"
+	echo "Existing 'DesktopNames' found. Updating/Uncommenting to 'awesome'..."
+	sed -i "s/^#*\s*DesktopNames=.*/DesktopNames=awesome/" "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to update DesktopNames${no_color}"
 else
-    echo "'DesktopNames' not found. Appending to /usr/share/xsessions/awesome.desktop."
-    echo "DesktopNames=awesome" | sudo tee -a "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to append DesktopNames${no_color}"
+	echo "'DesktopNames' not found. Appending to /usr/share/xsessions/awesome.desktop."
+	echo "DesktopNames=awesome" | sudo tee -a "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to append DesktopNames${no_color}"
 fi
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -206,11 +206,11 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xscreensaver # Screen saver for X11
 echo -e "${green}Setting Auth for xscreensaver...${no_color}"
 if grep -q "password include system-auth" "/etc/pam.d/xscreensaver"; then
-    echo -e "${green}Auth already set in /etc/pam.d/xscreensaver${no_color}"
+	echo -e "${green}Auth already set in /etc/pam.d/xscreensaver${no_color}"
 else
-    echo -e "${green}Adding Auth's to /etc/pam.d/xscreensaver${no_color}"
-    echo "" | sudo tee -a "/etc/pam.d/xscreensaver" > /dev/null || true
-    echo -e "auth       include      system-auth\naccount    include      system-auth\npassword   include      system-auth\nsession    include      system-auth" | sudo tee -a "/etc/pam.d/xscreensaver" > /dev/null || true
+	echo -e "${green}Adding Auth's to /etc/pam.d/xscreensaver${no_color}"
+	echo "" | sudo tee -a "/etc/pam.d/xscreensaver" > /dev/null || true
+	echo -e "auth	   include	  system-auth\naccount	include	  system-auth\npassword   include	  system-auth\nsession	include	  system-auth" | sudo tee -a "/etc/pam.d/xscreensaver" > /dev/null || true
 fi
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-xprop xdotool # Dependencies for x11_workspaces.sh in quickshell
@@ -250,12 +250,12 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm tmux # Terminal multiplexer
 echo -e "${green}TMUX explanation tree${no_color}"
 echo -e "${green}\nYour Terminal (Kitty/Ghostty/etc)${no_color}"
-echo -e "${green}    └── tmux session${no_color}"
-echo -e "${green}          ├── Window 1 (like a tab)${no_color}"
-echo -e "${green}          │     ├── Pane 1 (split screen)${no_color}"
-echo -e "${green}          │     └── Pane 2${no_color}"
-echo -e "${green}          ├── Window 2${no_color}"
-echo -e "${green}          └── Window 3\n${no_color}"
+echo -e "${green}	└── tmux session${no_color}"
+echo -e "${green}		  ├── Window 1 (like a tab)${no_color}"
+echo -e "${green}		  │	 ├── Pane 1 (split screen)${no_color}"
+echo -e "${green}		  │	 └── Pane 2${no_color}"
+echo -e "${green}		  ├── Window 2${no_color}"
+echo -e "${green}		  └── Window 3\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-server-xwayland # XWayland for compatibility with X11 applications
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -337,25 +337,25 @@ sudo pacman -S --needed --noconfirm imv # image viewer
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xarchiver # Lightweight archive manager
 # Optional dependencies for xarchiver
-#     arj: ARJ support
-#     binutils: deb support [installed]
-#     bzip2: bzip2 support [installed]
-#     cpio: RPM support
-#     gzip: gzip support [installed]
-#     lha: LHA support
-#     lrzip: lrzip support
-#     lz4: LZ4 support [installed]
-#     lzip: lzip support
-#     lzop: LZOP support
-#     p7zip: 7z support
-#     tar: tar support [installed]
-#     unarj: ARJ support
-#     unrar: RAR support
-#     unzip: ZIP support
-#     xdg-utils: recognize more file types to open [installed]
-#     xz: xz support [installed]
-#     zip: ZIP support
-#     zstd: zstd support [installed]
+#	 arj: ARJ support
+#	 binutils: deb support [installed]
+#	 bzip2: bzip2 support [installed]
+#	 cpio: RPM support
+#	 gzip: gzip support [installed]
+#	 lha: LHA support
+#	 lrzip: lrzip support
+#	 lz4: LZ4 support [installed]
+#	 lzip: lzip support
+#	 lzop: LZOP support
+#	 p7zip: 7z support
+#	 tar: tar support [installed]
+#	 unarj: ARJ support
+#	 unrar: RAR support
+#	 unzip: ZIP support
+#	 xdg-utils: recognize more file types to open [installed]
+#	 xz: xz support [installed]
+#	 zip: ZIP support
+#	 zstd: zstd support [installed]
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm unzip # Unzip utility
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -431,24 +431,24 @@ echo -e "${blue}═════════════════════�
 echo -e "${green}Setting up environment variable for Electron apps so they lunch in wayland mode${no_color}"
 ENV_FILE="/etc/environment"
 if [ ! -f "$ENV_FILE" ]; then
-    echo -e "${green}Creating $ENV_FILE${no_color}"
-    sudo touch "$ENV_FILE"
+	echo -e "${green}Creating $ENV_FILE${no_color}"
+	sudo touch "$ENV_FILE"
 fi
 
 if grep -q "export PATH" "$ENV_FILE"; then
-    echo -e "${green}PATHs already set in $ENV_FILE${no_color}"
+	echo -e "${green}PATHs already set in $ENV_FILE${no_color}"
 else
-    echo -e "${green}Adding PATHs to $ENV_FILE${no_color}"
-    echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-    echo "export PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo -e "${green}Adding PATHs to $ENV_FILE${no_color}"
+	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo "export PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin" | sudo tee -a "$ENV_FILE" > /dev/null || true
 fi
 
 if grep -q "ELECTRON_OZONE_PLATFORM_HINT" "$ENV_FILE"; then
-    echo "${green}ELECTRON_OZONE_PLATFORM_HINT already exists in $ENV_FILE${no_color}"
+	echo "${green}ELECTRON_OZONE_PLATFORM_HINT already exists in $ENV_FILE${no_color}"
 else
-    echo -e "${green}Adding ELECTRON_OZONE_PLATFORM_HINT to $ENV_FILE...${no_color}"
-    echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-    echo "ELECTRON_OZONE_PLATFORM_HINT=wayland" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo -e "${green}Adding ELECTRON_OZONE_PLATFORM_HINT to $ENV_FILE...${no_color}"
+	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo "ELECTRON_OZONE_PLATFORM_HINT=wayland" | sudo tee -a "$ENV_FILE" > /dev/null || true
 fi
 echo -e "${yellow}You'll need to restart your session for this to take effect system-wide${no_color}"
 
@@ -456,27 +456,27 @@ echo -e "${yellow}You'll need to restart your session for this to take effect sy
 #Gtk-CRITICAL **: 10:43:17.835: gtk_native_get_surface: assertion 'GTK_IS_NATIVE (self)' failed
 #Gdk-Message: 10:43:18.010: Error 22 (Invalid argument) dispatching to Wayland display.
 if grep -q "GSK_RENDERER" "$ENV_FILE"; then
-    echo -e "${green}GSK_RENDERER already exists in $ENV_FILE${no_color}"
+	echo -e "${green}GSK_RENDERER already exists in $ENV_FILE${no_color}"
 else
-    echo -e "${green}Adding GSK_RENDERER to $ENV_FILE...${no_color}"
-    echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-    echo "GSK_RENDERER=ngl" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo -e "${green}Adding GSK_RENDERER to $ENV_FILE...${no_color}"
+	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo "GSK_RENDERER=ngl" | sudo tee -a "$ENV_FILE" > /dev/null || true
 fi
 
 # Check if running in vm
 if [ "$is_vm" = true ]; then
-    echo -e "${green}Running in a VM:${no_color}"
-    echo -e "${green}Setting the cursor rendering${no_color}"
+	echo -e "${green}Running in a VM:${no_color}"
+	echo -e "${green}Setting the cursor rendering${no_color}"
 
-    if grep -q "WLR_NO_HARDWARE_CURSORS" "$ENV_FILE"; then 
-        echo -e "${green}Cursor is already set in $ENV_FILE${no_color}"
-    else
-        echo -e "${green}Adding cursor to "$ENV_FILE"...${no_color}"
-        echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-        echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a "$ENV_FILE" > /dev/null || true
-    fi
+	if grep -q "WLR_NO_HARDWARE_CURSORS" "$ENV_FILE"; then 
+		echo -e "${green}Cursor is already set in $ENV_FILE${no_color}"
+	else
+		echo -e "${green}Adding cursor to "$ENV_FILE"...${no_color}"
+		echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
+		echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	fi
 else
-    echo -e "${green}Not running in a VM, no need to set the cursor${no_color}"
+	echo -e "${green}Not running in a VM, no need to set the cursor${no_color}"
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
@@ -484,60 +484,60 @@ echo -e "${blue}═════════════════════�
 # Check if .bashrc exists
 BASHRC_FILE="$HOME/.bashrc"
 if [ ! -f "$BASHRC_FILE" ]; then
-    echo -e "${green}Creating .bashrc file${no_color}"
-    touch "$BASHRC_FILE"
+	echo -e "${green}Creating .bashrc file${no_color}"
+	touch "$BASHRC_FILE"
 fi
 
 echo -e "${green}Insuring XDG_RUNTIME_DIR is set so application like wl-clipboard works properly${no_color}"
 if grep -q "XDG_RUNTIME_DIR" "$BASHRC_FILE"; then
-    echo -e "${green}XDG_RUNTIME_DIR is already set in .bashrc${no_color}"
+	echo -e "${green}XDG_RUNTIME_DIR is already set in .bashrc${no_color}"
 else
-    echo -e "${green}Adding XDG_RUNTIME_DIR to .bashrc${no_color}"
-    echo "" >> "$BASHRC_FILE"
-    echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> "$BASHRC_FILE"
-    echo -e "${green}Successfully added to .bashrc${no_color}"
+	echo -e "${green}Adding XDG_RUNTIME_DIR to .bashrc${no_color}"
+	echo "" >> "$BASHRC_FILE"
+	echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> "$BASHRC_FILE"
+	echo -e "${green}Successfully added to .bashrc${no_color}"
 fi
 
 if ! grep -q '^gitpush()' "$BASHRC_FILE"; then
-    echo -e "${green}Adding gitpush and gitbranch functions to $BASHRC_FILE${no_color}"
-    cat >> "$BASHRC_FILE" <<'EOF'
+	echo -e "${green}Adding gitpush and gitbranch functions to $BASHRC_FILE${no_color}"
+	cat >> "$BASHRC_FILE" <<'EOF'
 
 gitpush() {
-    echo -e "\n\033[0;32mAdding changes\033[0m"
-    git add . || true
-    echo -e "\n\033[0;32mCommitting changes\033[0m"
-    #git commit --allow-empty-message -m "" || true
-    git commit -m "$1" || true
-    echo -e "\n\033[0;32mPushing changes\033[0m"
-    git push || true
+	echo -e "\n\033[0;32mAdding changes\033[0m"
+	git add . || true
+	echo -e "\n\033[0;32mCommitting changes\033[0m"
+	#git commit --allow-empty-message -m "" || true
+	git commit -m "$1" || true
+	echo -e "\n\033[0;32mPushing changes\033[0m"
+	git push || true
 }
 
 gitbranch () {
-    echo -e "\n\033[0;32mCreating and switching to branch \033[0;34m'$1'\033[0m"
-    git switch -c "$1" && \
-    echo -e "\033[0;32mSuccessfully switched to branch \033[0;34m'$1'\n\033[0m" || \
-    echo -e "\033[0;31mFailed to switch to branch \033[0;34m'$1'\n\033[0m"
-    echo -e "\n\033[0;32mPushing changes\033[0m"
-    git push -u origin "$1" || echo -e "\033[0;31mFailed to push changes\n\033[0m"
+	echo -e "\n\033[0;32mCreating and switching to branch \033[0;34m'$1'\033[0m"
+	git switch -c "$1" && \
+	echo -e "\033[0;32mSuccessfully switched to branch \033[0;34m'$1'\n\033[0m" || \
+	echo -e "\033[0;31mFailed to switch to branch \033[0;34m'$1'\n\033[0m"
+	echo -e "\n\033[0;32mPushing changes\033[0m"
+	git push -u origin "$1" || echo -e "\033[0;31mFailed to push changes\n\033[0m"
 }
 
 EOF
 else
-    echo -e "${yellow}gitpush and gitbranch functions already present in $BASHRC_FILE, skipping${no_color}"
+	echo -e "${yellow}gitpush and gitbranch functions already present in $BASHRC_FILE, skipping${no_color}"
 fi
 
 if grep -q "fastfetch" "$BASHRC_FILE"; then
-    echo -e "${green}fastfetch is already set in .bashrc${no_color}"
+	echo -e "${green}fastfetch is already set in .bashrc${no_color}"
 else
-    echo -e "${green}Adding fastfetch to .bashrc${no_color}"
-    cat >> "$BASHRC_FILE" <<'EOF'
+	echo -e "${green}Adding fastfetch to .bashrc${no_color}"
+	cat >> "$BASHRC_FILE" <<'EOF'
 
 if [ -n "$TMUX" ]; then
-    fastfetch
+	fastfetch
 fi
 
 EOF
-    echo -e "${green}Successfully added fastfetch in tmux to .bashrc${no_color}"
+	echo -e "${green}Successfully added fastfetch in tmux to .bashrc${no_color}"
 fi
 
 source ~/.bashrc || true
@@ -564,40 +564,40 @@ cat > "$FONTCONF" <<'EOF'
 <fontconfig>
   <!-- Defaults -->
   <alias>
-    <family>serif</family>
-    <prefer>
-      <family>Noto Serif</family>
-      <family>Noto Sans Arabic</family>
-    </prefer>
+	<family>serif</family>
+	<prefer>
+	  <family>Noto Serif</family>
+	  <family>Noto Sans Arabic</family>
+	</prefer>
   </alias>
   <alias>
-    <family>sans-serif</family>
-    <prefer>
-      <family>Noto Sans</family>
-      <family>Noto Sans Arabic</family>
-    </prefer>
+	<family>sans-serif</family>
+	<prefer>
+	  <family>Noto Sans</family>
+	  <family>Noto Sans Arabic</family>
+	</prefer>
   </alias>
   <alias>
-    <family>sans</family>
-    <prefer>
-      <family>Noto Sans</family>
-      <family>Noto Sans Arabic</family>
-    </prefer>
+	<family>sans</family>
+	<prefer>
+	  <family>Noto Sans</family>
+	  <family>Noto Sans Arabic</family>
+	</prefer>
   </alias>
   <alias>
-    <family>monospace</family>
-    <prefer>
-      <family>JetBrainsMono Nerd Font Mono</family>
-      <family>Noto Sans Mono</family>
-    </prefer>
+	<family>monospace</family>
+	<prefer>
+	  <family>JetBrainsMono Nerd Font Mono</family>
+	  <family>Noto Sans Mono</family>
+	</prefer>
   </alias>
   <!-- Arial -->
   <alias>
-    <family>Arial</family>
-    <prefer>
-      <family>Noto Sans</family>
-      <family>Noto Sans Arabic</family>
-    </prefer>
+	<family>Arial</family>
+	<prefer>
+	  <family>Noto Sans</family>
+	  <family>Noto Sans Arabic</family>
+	</prefer>
   </alias>
 </fontconfig>
 EOF
@@ -646,12 +646,12 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Setting Qt to use qt5ct which uses kvantum...${no_color}"
 if grep -q "QT_QPA_PLATFORMTHEME" "$ENV_FILE"; then
-    echo -e "${yellow}QT_QPA_PLATFORMTHEME already exists in $ENV_FILE, updating...${no_color}"
-    sudo sed -i 's/^QT_QPA_PLATFORMTHEME=.*/QT_QPA_PLATFORMTHEME=qt5ct/' "$ENV_FILE"
+	echo -e "${yellow}QT_QPA_PLATFORMTHEME already exists in $ENV_FILE, updating...${no_color}"
+	sudo sed -i 's/^QT_QPA_PLATFORMTHEME=.*/QT_QPA_PLATFORMTHEME=qt5ct/' "$ENV_FILE"
 else
-    echo -e "${green}Adding QT_QPA_PLATFORMTHEME to $ENV_FILE...${no_color}"
-    echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-    echo "QT_QPA_PLATFORMTHEME=qt5ct" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo -e "${green}Adding QT_QPA_PLATFORMTHEME to $ENV_FILE...${no_color}"
+	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo "QT_QPA_PLATFORMTHEME=qt5ct" | sudo tee -a "$ENV_FILE" > /dev/null || true
 fi
 
 echo -e "${green}Qt theming configured. Please log out and log back in for changes to take effect.${no_color}"
@@ -660,10 +660,10 @@ echo -e "${green}Qt theming configured. Please log out and log back in for chang
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [ "$is_vm" = true ]; then
-    echo -e "${green}Skipping Performance Mode Setup in VM environment${no_color}"
+	echo -e "${green}Skipping Performance Mode Setup in VM environment${no_color}"
 else
-    echo -e "${green}Setting up Performance Mode for physical machine${no_color}"
-    # bash <(curl -s https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/performance.sh)
+	echo -e "${green}Setting up Performance Mode for physical machine${no_color}"
+	# bash <(curl -s https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/performance.sh)
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
@@ -743,8 +743,8 @@ HOST_SUBNET=$(echo "$HOST_IP" | cut -d. -f1-3)
 LIBVIRT_SUBNET="192.168.122"
 
 if [ "$HOST_SUBNET" == "192.168.122" ]; then
-    LIBVIRT_SUBNET="192.168.150"
-    echo "Host is on 192.168.122.x, switching libvirt to $LIBVIRT_SUBNET.x"
+	LIBVIRT_SUBNET="192.168.150"
+	echo "Host is on 192.168.122.x, switching libvirt to $LIBVIRT_SUBNET.x"
 fi
 
 cat <<NETXML | virsh -c qemu:///system net-define /dev/stdin
@@ -753,9 +753,9 @@ cat <<NETXML | virsh -c qemu:///system net-define /dev/stdin
   <bridge name="virbr0"/>
   <forward/>
   <ip address="$LIBVIRT_SUBNET.1" netmask="255.255.255.0">
-    <dhcp>
-      <range start="$LIBVIRT_SUBNET.2" end="$LIBVIRT_SUBNET.254"/>
-    </dhcp>
+	<dhcp>
+	  <range start="$LIBVIRT_SUBNET.2" end="$LIBVIRT_SUBNET.254"/>
+	</dhcp>
   </ip>
 </network>
 NETXML
@@ -782,30 +782,30 @@ PAYLOAD="$HOME/.config/virt-manager-oneshot.sh"
 
 # Function to wait for libvirt socket
 wait_for_libvirt() {
-    local max_attempts=30
-    local attempt=1
-    while [ $attempt -le $max_attempts ]; do
-        if [ -S "/var/run/libvirt/libvirt-sock" ]; then
-            return 0
-        fi
-        sleep 1
-        ((attempt++))
-    done
-    return 1
+	local max_attempts=30
+	local attempt=1
+	while [ $attempt -le $max_attempts ]; do
+		if [ -S "/var/run/libvirt/libvirt-sock" ]; then
+			return 0
+		fi
+		sleep 1
+		((attempt++))
+	done
+	return 1
 }
 
 # Start a background subshell to handle the network setup
 (
-    # Wait for libvirt socket to be ready first
-    if wait_for_libvirt; then
-        # Give it a tiny bit more time to be fully responsive
-        sleep 2
-        
-        # Check if the payload still exists and run it
-        if [ -f "$PAYLOAD" ] && [ -x "$PAYLOAD" ]; then
-            "$PAYLOAD"
-        fi
-    fi
+	# Wait for libvirt socket to be ready first
+	if wait_for_libvirt; then
+		# Give it a tiny bit more time to be fully responsive
+		sleep 2
+		
+		# Check if the payload still exists and run it
+		if [ -f "$PAYLOAD" ] && [ -x "$PAYLOAD" ]; then
+			"$PAYLOAD"
+		fi
+	fi
 ) &
 
 # Disown the background job
@@ -835,10 +835,10 @@ echo -e "${blue}═════════════════════�
 # echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [ "$is_vm" = true ]; then
-    echo -e "${green}System is detected to be running in a VM, skipping GPU passthrough setup${no_color}"
+	echo -e "${green}System is detected to be running in a VM, skipping GPU passthrough setup${no_color}"
 else
-    echo -e "${green}System is not detected to be running in a VM, proceeding with GPU passthrough setup${no_color}"
-    bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/gpu-passthrough.sh)
+	echo -e "${green}System is not detected to be running in a VM, proceeding with GPU passthrough setup${no_color}"
+	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/gpu-passthrough.sh)
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
@@ -859,129 +859,129 @@ echo -e "${green}Detecting CPU type and enabling nested virtualization${no_color
 
 enable_nested_virtualization(){
 
-    echo -e "${green}Detecting CPU vendor...${no_color}"
-    local cpu_type=""
-    local cpu_vendor
-    cpu_vendor=$(grep -m1 "vendor_id" /proc/cpuinfo | cut -d: -f2 | tr -d ' ')
-    case "$cpu_vendor" in
-        "GenuineIntel")
-            cpu_type="intel"
-            ;;
-        "AuthenticAMD")
-            cpu_type="amd"
-            ;;
-        *)
-            echo -e "${red}Unknown CPU vendor: $cpu_vendor${no_color}"
-            echo -e "${red}Supported vendors: Intel, AMD${no_color}"
-            return 1
-            ;;
-    esac
-    echo -e "${green}Detected CPU: $(echo "$cpu_type" | tr '[:lower:]' '[:upper:]')${no_color}"
+	echo -e "${green}Detecting CPU vendor...${no_color}"
+	local cpu_type=""
+	local cpu_vendor
+	cpu_vendor=$(grep -m1 "vendor_id" /proc/cpuinfo | cut -d: -f2 | tr -d ' ')
+	case "$cpu_vendor" in
+		"GenuineIntel")
+			cpu_type="intel"
+			;;
+		"AuthenticAMD")
+			cpu_type="amd"
+			;;
+		*)
+			echo -e "${red}Unknown CPU vendor: $cpu_vendor${no_color}"
+			echo -e "${red}Supported vendors: Intel, AMD${no_color}"
+			return 1
+			;;
+	esac
+	echo -e "${green}Detected CPU: $(echo "$cpu_type" | tr '[:lower:]' '[:upper:]')${no_color}"
 
-    echo -e "${green}Checking KVM modules...${no_color}"
-    if ! lsmod | grep -q "^kvm "; then
-        echo -e "${red}KVM module is not loaded${no_color}"
-        echo -e "${red}Please install KVM first: sudo pacman -S qemu-full${no_color}"
-        return 1
-    fi
-    local kvm_module=""
-    case "$cpu_type" in
-        "intel")
-            kvm_module="kvm_intel"
-            ;;
-        "amd")
-            kvm_module="kvm_amd"
-            ;;
-    esac
-    if ! lsmod | grep -q "^$kvm_module "; then
-        echo -e "${red}$kvm_module module is not loaded${no_color}"
-        echo -e "${green}Loading $kvm_module module...${no_color}"
-        sudo modprobe "$kvm_module"
-    fi
-    echo -e "${green}KVM modules are loaded${no_color}"
+	echo -e "${green}Checking KVM modules...${no_color}"
+	if ! lsmod | grep -q "^kvm "; then
+		echo -e "${red}KVM module is not loaded${no_color}"
+		echo -e "${red}Please install KVM first: sudo pacman -S qemu-full${no_color}"
+		return 1
+	fi
+	local kvm_module=""
+	case "$cpu_type" in
+		"intel")
+			kvm_module="kvm_intel"
+			;;
+		"amd")
+			kvm_module="kvm_amd"
+			;;
+	esac
+	if ! lsmod | grep -q "^$kvm_module "; then
+		echo -e "${red}$kvm_module module is not loaded${no_color}"
+		echo -e "${green}Loading $kvm_module module...${no_color}"
+		sudo modprobe "$kvm_module"
+	fi
+	echo -e "${green}KVM modules are loaded${no_color}"
 
-    check_nested_status() {
-        local cpu_type=$1
-        echo -e "${green}Checking current nested virtualization status...${no_color}"
-        local nested_file=""
-        case "$cpu_type" in
-            "intel")
-                nested_file="/sys/module/kvm_intel/parameters/nested"
-                ;;
-            "amd")
-                nested_file="/sys/module/kvm_amd/parameters/nested"
-                ;;
-        esac
+	check_nested_status() {
+		local cpu_type=$1
+		echo -e "${green}Checking current nested virtualization status...${no_color}"
+		local nested_file=""
+		case "$cpu_type" in
+			"intel")
+				nested_file="/sys/module/kvm_intel/parameters/nested"
+				;;
+			"amd")
+				nested_file="/sys/module/kvm_amd/parameters/nested"
+				;;
+		esac
 
-        if [[ -f "$nested_file" ]]; then
-            local status
-            status=$(cat "$nested_file")
-            case "$status" in
-                "Y"|"1")
-                    echo -e "${green}Nested virtualization is already enabled, but continuing with requested action...${no_color}"
-                    ;;
-                "N"|"0")
-                    echo -e "${yellow}Nested virtualization is currently disabled${no_color}"
-                    ;;
-                *)
-                    echo -e "${yellow}Unknown nested virtualization status: $status${no_color}"
-                    ;;
-            esac
-        else
-            echo -e "${yellow}Cannot determine nested virtualization status${no_color}"
-        fi
-    }
-    check_nested_status "$cpu_type" || true
+		if [[ -f "$nested_file" ]]; then
+			local status
+			status=$(cat "$nested_file")
+			case "$status" in
+				"Y"|"1")
+					echo -e "${green}Nested virtualization is already enabled, but continuing with requested action...${no_color}"
+					;;
+				"N"|"0")
+					echo -e "${yellow}Nested virtualization is currently disabled${no_color}"
+					;;
+				*)
+					echo -e "${yellow}Unknown nested virtualization status: $status${no_color}"
+					;;
+			esac
+		else
+			echo -e "${yellow}Cannot determine nested virtualization status${no_color}"
+		fi
+	}
+	check_nested_status "$cpu_type" || true
 
-    echo -e "${green}Enabling nested virtualization for current session...${no_color}"
-    case "$cpu_type" in
-        "intel")
-            sudo modprobe -r kvm_intel
-            sudo modprobe kvm_intel nested=1
-            ;;
-        "amd")
-            sudo modprobe -r kvm_amd
-            sudo modprobe kvm_amd nested=1
-            ;;
-    esac
-    echo -e "${green}Nested virtualization enabled for current session${no_color}"
+	echo -e "${green}Enabling nested virtualization for current session...${no_color}"
+	case "$cpu_type" in
+		"intel")
+			sudo modprobe -r kvm_intel
+			sudo modprobe kvm_intel nested=1
+			;;
+		"amd")
+			sudo modprobe -r kvm_amd
+			sudo modprobe kvm_amd nested=1
+			;;
+	esac
+	echo -e "${green}Nested virtualization enabled for current session${no_color}"
 
-    echo -e "${green}Enabling persistent nested virtualization...${no_color}"
-    local conf_file=""
-    local module_name=""
-    case "$cpu_type" in
-        "intel")
-            conf_file="/etc/modprobe.d/kvm-intel.conf"
-            module_name="kvm_intel"
-            ;;
-        "amd")
-            conf_file="/etc/modprobe.d/kvm-amd.conf"
-            module_name="kvm_amd"
-            ;;
-    esac
-    echo -e "${green}Check if the configuration file exists${no_color}"
-    if [[ -f "$conf_file" ]] && grep -q "nested=1" "$conf_file"; then
-        echo -e "${green}Persistent nested virtualization is already configured${no_color}"
-    else
-        echo "options $module_name nested=1" | sudo tee "$conf_file"
-        echo -e "${green}Persistent nested virtualization configuration created: $conf_file${no_color}"
-    fi
+	echo -e "${green}Enabling persistent nested virtualization...${no_color}"
+	local conf_file=""
+	local module_name=""
+	case "$cpu_type" in
+		"intel")
+			conf_file="/etc/modprobe.d/kvm-intel.conf"
+			module_name="kvm_intel"
+			;;
+		"amd")
+			conf_file="/etc/modprobe.d/kvm-amd.conf"
+			module_name="kvm_amd"
+			;;
+	esac
+	echo -e "${green}Check if the configuration file exists${no_color}"
+	if [[ -f "$conf_file" ]] && grep -q "nested=1" "$conf_file"; then
+		echo -e "${green}Persistent nested virtualization is already configured${no_color}"
+	else
+		echo "options $module_name nested=1" | sudo tee "$conf_file"
+		echo -e "${green}Persistent nested virtualization configuration created: $conf_file${no_color}"
+	fi
 
-    echo -e "${green}Verifying nested virtualization...${no_color}"
-    check_nested_status "$cpu_type"
+	echo -e "${green}Verifying nested virtualization...${no_color}"
+	check_nested_status "$cpu_type"
 
-    echo -e "${green}Nested virtualization setup completed${no_color}"
-    echo -e "${green}Note: Persistent configuration will take effect after the next reboot${no_color}"
-    echo -e "${green}or when the KVM modules are reloaded.${no_color}"
+	echo -e "${green}Nested virtualization setup completed${no_color}"
+	echo -e "${green}Note: Persistent configuration will take effect after the next reboot${no_color}"
+	echo -e "${green}or when the KVM modules are reloaded.${no_color}"
 }
 
 echo -e "${green}Checking virtualization support...${no_color}"
 if ! grep -q -E "(vmx|svm)" /proc/cpuinfo; then
-    echo -e "${yellow}CPU does not support virtualization (VT-x/AMD-V)${no_color}"
-    echo -e "${yellow}Please enable virtualization in your BIOS/UEFI settings${no_color}"
+	echo -e "${yellow}CPU does not support virtualization (VT-x/AMD-V)${no_color}"
+	echo -e "${yellow}Please enable virtualization in your BIOS/UEFI settings${no_color}"
 else
-    echo -e "${green}CPU supports virtualization${no_color}"
-    enable_nested_virtualization || true
+	echo -e "${green}CPU supports virtualization${no_color}"
+	enable_nested_virtualization || true
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
@@ -994,144 +994,144 @@ backup_file="/tmp/kvm_acl_backup_$(date +%Y%m%d_%H%M%S).txt"
 
 kvm_acl_setup() {
 
-    echo -e "${green}Checking if ACL tools are installed...${no_color}"
-    if ! command -v getfacl &> /dev/null; then
-        echo -e "${red}getfacl command not found. ACL tools are not installed.${no_color}"
-        echo -e "${green}Install ACL tools:${no_color}"
-        echo -e "${green}  Ubuntu/Debian: sudo apt install acl${no_color}"
-        echo -e "${green}  CentOS/RHEL: sudo yum install acl${no_color}"
-        echo -e "${green}  Fedora: sudo dnf install acl${no_color}"
-        return
-    fi
-    if ! command -v setfacl &> /dev/null; then
-        echo -e "${red}setfacl command not found. ACL tools are not installed.${no_color}"
-        echo -e "${green}Install ACL tools first.${no_color}"
-        return
-    fi
-    echo -e "${green}ACL tools are installed${no_color}"
+	echo -e "${green}Checking if ACL tools are installed...${no_color}"
+	if ! command -v getfacl &> /dev/null; then
+		echo -e "${red}getfacl command not found. ACL tools are not installed.${no_color}"
+		echo -e "${green}Install ACL tools:${no_color}"
+		echo -e "${green}  Ubuntu/Debian: sudo apt install acl${no_color}"
+		echo -e "${green}  CentOS/RHEL: sudo yum install acl${no_color}"
+		echo -e "${green}  Fedora: sudo dnf install acl${no_color}"
+		return
+	fi
+	if ! command -v setfacl &> /dev/null; then
+		echo -e "${red}setfacl command not found. ACL tools are not installed.${no_color}"
+		echo -e "${green}Install ACL tools first.${no_color}"
+		return
+	fi
+	echo -e "${green}ACL tools are installed${no_color}"
 
-    echo -e "${green}Checking if directory exists: $KVM_IMAGES_DIR${no_color}"
-    if [[ ! -d "$KVM_IMAGES_DIR" ]]; then
-        echo -e "${red}Directory does not exist: $KVM_IMAGES_DIR${no_color}"
-        echo -e "${green}Please install libvirt first or create the directory manually.${no_color}"
-        return
-    fi
-    echo -e "${green}Directory exists: $KVM_IMAGES_DIR${no_color}"
+	echo -e "${green}Checking if directory exists: $KVM_IMAGES_DIR${no_color}"
+	if [[ ! -d "$KVM_IMAGES_DIR" ]]; then
+		echo -e "${red}Directory does not exist: $KVM_IMAGES_DIR${no_color}"
+		echo -e "${green}Please install libvirt first or create the directory manually.${no_color}"
+		return
+	fi
+	echo -e "${green}Directory exists: $KVM_IMAGES_DIR${no_color}"
 
-    echo -e "${green}Checking ACL support for filesystem...${no_color}"
-    # Try to read ACL - if it fails, ACL might not be supported
-    if ! sudo getfacl "$KVM_IMAGES_DIR" &>/dev/null; then
-        echo -e "${red}ACL is not supported on this filesystem${no_color}"
-        echo -e "${green}Make sure the filesystem is mounted with ACL support${no_color}"
-        echo -e "${green}For ext4: mount -o remount,acl /mount/point${no_color}"
-        return
-    fi
-    echo -e "${green}Filesystem supports ACL${no_color}"
+	echo -e "${green}Checking ACL support for filesystem...${no_color}"
+	# Try to read ACL - if it fails, ACL might not be supported
+	if ! sudo getfacl "$KVM_IMAGES_DIR" &>/dev/null; then
+		echo -e "${red}ACL is not supported on this filesystem${no_color}"
+		echo -e "${green}Make sure the filesystem is mounted with ACL support${no_color}"
+		echo -e "${green}For ext4: mount -o remount,acl /mount/point${no_color}"
+		return
+	fi
+	echo -e "${green}Filesystem supports ACL${no_color}"
 
-    echo -e "${green}Current ACL permissions for $KVM_IMAGES_DIR:${no_color}"
-    echo "----------------------------------------"
-    sudo getfacl "$KVM_IMAGES_DIR" 2>/dev/null || {
-        echo -e "${red}Failed to read ACL permissions${no_color}"
-        return
-    }
-    echo "----------------------------------------"
+	echo -e "${green}Current ACL permissions for $KVM_IMAGES_DIR:${no_color}"
+	echo "----------------------------------------"
+	sudo getfacl "$KVM_IMAGES_DIR" 2>/dev/null || {
+		echo -e "${red}Failed to read ACL permissions${no_color}"
+		return
+	}
+	echo "----------------------------------------"
 
-    echo -e "${green}Backing up current ACL permissions to: $backup_file${no_color}"
-    if sudo getfacl -R "$KVM_IMAGES_DIR" > "$backup_file" 2>/dev/null; then
-        echo -e "${green}ACL permissions backed up to: $backup_file${no_color}"
-        echo "$backup_file"
-    else
-        echo -e "${yellow}Failed to backup ACL permissions, continuing anyway...${no_color}"
-        echo ""
-    fi
+	echo -e "${green}Backing up current ACL permissions to: $backup_file${no_color}"
+	if sudo getfacl -R "$KVM_IMAGES_DIR" > "$backup_file" 2>/dev/null; then
+		echo -e "${green}ACL permissions backed up to: $backup_file${no_color}"
+		echo "$backup_file"
+	else
+		echo -e "${yellow}Failed to backup ACL permissions, continuing anyway...${no_color}"
+		echo ""
+	fi
 
-    echo -e "${green}Setting up ACL permissions for user: $target_user${no_color}"
-    
-    if ! id "$target_user" &>/dev/null; then
-        echo -e "${red}User does not exist: $target_user${no_color}"
-        return
-    fi
+	echo -e "${green}Setting up ACL permissions for user: $target_user${no_color}"
+	
+	if ! id "$target_user" &>/dev/null; then
+		echo -e "${red}User does not exist: $target_user${no_color}"
+		return
+	fi
 
-    echo -e "${green}Removing existing ACL permissions from $KVM_IMAGES_DIR...${no_color}"
-    if sudo setfacl -R -b "$KVM_IMAGES_DIR" 2>/dev/null; then
-        echo -e "${green}Existing ACL permissions removed${no_color}"
-    else
-        echo -e "${red}Failed to remove existing ACL permissions${no_color}"
-        return
-    fi
+	echo -e "${green}Removing existing ACL permissions from $KVM_IMAGES_DIR...${no_color}"
+	if sudo setfacl -R -b "$KVM_IMAGES_DIR" 2>/dev/null; then
+		echo -e "${green}Existing ACL permissions removed${no_color}"
+	else
+		echo -e "${red}Failed to remove existing ACL permissions${no_color}"
+		return
+	fi
 
-    echo -e "${green}Granting permissions to user: $target_user${no_color}"
-    if sudo setfacl -R -m "u:${target_user}:rwX" "$KVM_IMAGES_DIR" 2>/dev/null; then
-        echo -e "${green}Granted rwX permissions to user: $target_user${no_color}"
-    else
-        echo -e "${red}Failed to grant permissions to user: $target_user${no_color}"
-        return
-    fi
+	echo -e "${green}Granting permissions to user: $target_user${no_color}"
+	if sudo setfacl -R -m "u:${target_user}:rwX" "$KVM_IMAGES_DIR" 2>/dev/null; then
+		echo -e "${green}Granted rwX permissions to user: $target_user${no_color}"
+	else
+		echo -e "${red}Failed to grant permissions to user: $target_user${no_color}"
+		return
+	fi
 
-    echo -e "${green}Setting default ACL for new files/directories...${no_color}"
-    if sudo setfacl -m "d:u:${target_user}:rwx" "$KVM_IMAGES_DIR" 2>/dev/null; then
-        echo -e "${green}Default ACL set for user: $target_user${no_color}"
-    else
-        echo -e "${red}Failed to set default ACL for user: $target_user${no_color}"
-        return
-    fi
+	echo -e "${green}Setting default ACL for new files/directories...${no_color}"
+	if sudo setfacl -m "d:u:${target_user}:rwx" "$KVM_IMAGES_DIR" 2>/dev/null; then
+		echo -e "${green}Default ACL set for user: $target_user${no_color}"
+	else
+		echo -e "${red}Failed to set default ACL for user: $target_user${no_color}"
+		return
+	fi
 
-    echo -e "${green}Verifying ACL setup...${no_color}"
-    # Check if user has the expected permissions
-    local acl_output
-    acl_output=$(sudo getfacl "$KVM_IMAGES_DIR" 2>/dev/null)
-    if echo "$acl_output" | grep -q "user:$target_user:rwx"; then
-        echo -e "${green}User ACL permissions verified${no_color}"
-    else
-        echo -e "${red}User ACL permissions not found${no_color}"
-        echo -e "${red}ACL setup verification failed!${no_color}"
-        if [[ -n "$backup_file" ]]; then
-            echo -e "${green}You can restore from backup: $backup_file${no_color}"
-        fi
-        return
-    fi
-    if echo "$acl_output" | grep -q "default:user:$target_user:rwx"; then
-        echo -e "${green}Default ACL permissions verified${no_color}"
-    else
-        echo -e "${red}Default ACL permissions not found${no_color}"
-        echo -e "${red}ACL setup verification failed!${no_color}"
-        if [[ -n "$backup_file" ]]; then
-            echo -e "${green}You can restore from backup: $backup_file${no_color}"
-        fi
-        return
-    fi
-    echo -e "${green}ACL setup completed successfully!${no_color}"
+	echo -e "${green}Verifying ACL setup...${no_color}"
+	# Check if user has the expected permissions
+	local acl_output
+	acl_output=$(sudo getfacl "$KVM_IMAGES_DIR" 2>/dev/null)
+	if echo "$acl_output" | grep -q "user:$target_user:rwx"; then
+		echo -e "${green}User ACL permissions verified${no_color}"
+	else
+		echo -e "${red}User ACL permissions not found${no_color}"
+		echo -e "${red}ACL setup verification failed!${no_color}"
+		if [[ -n "$backup_file" ]]; then
+			echo -e "${green}You can restore from backup: $backup_file${no_color}"
+		fi
+		return
+	fi
+	if echo "$acl_output" | grep -q "default:user:$target_user:rwx"; then
+		echo -e "${green}Default ACL permissions verified${no_color}"
+	else
+		echo -e "${red}Default ACL permissions not found${no_color}"
+		echo -e "${red}ACL setup verification failed!${no_color}"
+		if [[ -n "$backup_file" ]]; then
+			echo -e "${green}You can restore from backup: $backup_file${no_color}"
+		fi
+		return
+	fi
+	echo -e "${green}ACL setup completed successfully!${no_color}"
 
-    echo -e "${green}Testing ACL permissions...${no_color}"
-    # Test file creation
-    local test_file="$KVM_IMAGES_DIR/acl_test_file"
-    local test_dir="$KVM_IMAGES_DIR/acl_test_dir"
-    # Create test file
-    if touch "$test_file" 2>/dev/null; then
-        echo -e "${green}Successfully created test file${no_color}"
-        rm -f "$test_file"
-    else
-        echo -e "${red}Failed to create test file${no_color}"
-        echo -e "${red}ACL permissions test failed!${no_color}"
-        return 1
-    fi
-    # Create test directory
-    if mkdir "$test_dir" 2>/dev/null; then
-        echo -e "${green}Successfully created test directory${no_color}"
-        rmdir "$test_dir"
-    else
-        echo -e "${red}Failed to create test directory${no_color}"
-        echo -e "${red}ACL permissions test failed!${no_color}"
-        return 1
-    fi
-    echo -e "${green}ACL permissions test passed!${no_color}"
+	echo -e "${green}Testing ACL permissions...${no_color}"
+	# Test file creation
+	local test_file="$KVM_IMAGES_DIR/acl_test_file"
+	local test_dir="$KVM_IMAGES_DIR/acl_test_dir"
+	# Create test file
+	if touch "$test_file" 2>/dev/null; then
+		echo -e "${green}Successfully created test file${no_color}"
+		rm -f "$test_file"
+	else
+		echo -e "${red}Failed to create test file${no_color}"
+		echo -e "${red}ACL permissions test failed!${no_color}"
+		return 1
+	fi
+	# Create test directory
+	if mkdir "$test_dir" 2>/dev/null; then
+		echo -e "${green}Successfully created test directory${no_color}"
+		rmdir "$test_dir"
+	else
+		echo -e "${red}Failed to create test directory${no_color}"
+		echo -e "${red}ACL permissions test failed!${no_color}"
+		return 1
+	fi
+	echo -e "${green}ACL permissions test passed!${no_color}"
 
-    echo -e "${green}Final ACL permissions for $KVM_IMAGES_DIR:${no_color}"
-    echo "========================================"
-    sudo getfacl "$KVM_IMAGES_DIR" 2>/dev/null || {
-        echo -e "${red}Failed to read final ACL permissions${no_color}"
-        return
-    }
+	echo -e "${green}Final ACL permissions for $KVM_IMAGES_DIR:${no_color}"
+	echo "========================================"
+	sudo getfacl "$KVM_IMAGES_DIR" 2>/dev/null || {
+		echo -e "${red}Failed to read final ACL permissions${no_color}"
+		return
+	}
 
 }
 
@@ -1143,7 +1143,7 @@ kvm_acl_setup || true
 echo -e "${green}KVM ACL setup completed${no_color}"
 echo -e "${green}New files and directories should inherit proper permissions.${no_color}"
 if [[ -n "$backup_file" ]]; then
-    echo -e "${green}Backup file: $backup_file${no_color}"
+	echo -e "${green}Backup file: $backup_file${no_color}"
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
@@ -1155,77 +1155,77 @@ echo -e "${blue}═════════════════════�
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 if [ "$is_vm" = true ]; then
-    # TODO: Fix looking-glass host setup for linux vm
-    # echo -e "${green}System is detected to be running in a VM, proceeding with looking-glass host setup${no_color}"
-    # yay -S --needed --noconfirm chaotic-aur/looking-glass-host-git || echo -e "${red}Failed to install looking-glass-host-git${no_color}"
-    # yay -S --needed --noconfirm looking-glass-module-dkms || echo -e "${red}Failed to install looking-glass-module-dkms${no_color}"
-    echo ""
+	# TODO: Fix looking-glass host setup for linux vm
+	# echo -e "${green}System is detected to be running in a VM, proceeding with looking-glass host setup${no_color}"
+	# yay -S --needed --noconfirm chaotic-aur/looking-glass-host-git || echo -e "${red}Failed to install looking-glass-host-git${no_color}"
+	# yay -S --needed --noconfirm looking-glass-module-dkms || echo -e "${red}Failed to install looking-glass-module-dkms${no_color}"
+	echo ""
 
-    # echo -e "${green}Enable virtual display (vkms)${no_color}"
-    # if [ ! -f /etc/modules-load.d/vkms.conf ]; then
-    #     sudo touch /etc/modules-load.d/vkms.conf || true
-    # fi
-    # if ! grep -q "vkms" /etc/modules-load.d/vkms.conf; then
-    #     echo "vkms" | sudo tee -a /etc/modules-load.d/vkms.conf > /dev/null || true
-    # fi
+	# echo -e "${green}Enable virtual display (vkms)${no_color}"
+	# if [ ! -f /etc/modules-load.d/vkms.conf ]; then
+	#	 sudo touch /etc/modules-load.d/vkms.conf || true
+	# fi
+	# if ! grep -q "vkms" /etc/modules-load.d/vkms.conf; then
+	#	 echo "vkms" | sudo tee -a /etc/modules-load.d/vkms.conf > /dev/null || true
+	# fi
 else
-    echo -e "${green}System is not detected to be running in a VM, proceeding with looking-glass client setup${no_color}"
+	echo -e "${green}System is not detected to be running in a VM, proceeding with looking-glass client setup${no_color}"
 
-    echo -e "${green}Setting up looking-glass for low latency video streaming${no_color}"
-    yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
+	echo -e "${green}Setting up looking-glass for low latency video streaming${no_color}"
+	yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
 
-    # Create the shared memory directory if it doesn't exist
-    sudo mkdir -p /dev/shm || true
+	# Create the shared memory directory if it doesn't exist
+	sudo mkdir -p /dev/shm || true
 
-    # Add your user to the kvm group (if not already)
-    sudo usermod -a -G kvm $USER || true
+	# Add your user to the kvm group (if not already)
+	sudo usermod -a -G kvm $USER || true
 
-    # Create a udev rule for the shared memory device
-    #echo "SUBSYSTEM==\"kvmfr\", OWNER=\"$USER\", GROUP=\"kvm\", MODE=\"0660\"" | sudo tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
-    echo "SUBSYSTEM==\"kvmfr\", GROUP=\"kvm\", MODE=\"0660\", TAG+=\"uaccess\"" | sudo tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
+	# Create a udev rule for the shared memory device
+	#echo "SUBSYSTEM==\"kvmfr\", OWNER=\"$USER\", GROUP=\"kvm\", MODE=\"0660\"" | sudo tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
+	echo "SUBSYSTEM==\"kvmfr\", GROUP=\"kvm\", MODE=\"0660\", TAG+=\"uaccess\"" | sudo tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
 
-    # Reload udev rules
-    sudo udevadm control --reload-rules || true
-    sudo udevadm trigger || true
+	# Reload udev rules
+	sudo udevadm control --reload-rules || true
+	sudo udevadm trigger || true
 
-    #Edit libvirt configuration:
-    LIBVIRT_CONF="/etc/libvirt/qemu.conf"
-    if grep -qE '^\s*#\s*user\s*=' "$LIBVIRT_CONF"; then
-        echo -e "${green}Uncommenting user line and setting to $USER in $LIBVIRT_CONF${no_color}"
-        sudo sed -i "s|^\s*#\s*user\s*=.*|user = \"$USER\"|" "$LIBVIRT_CONF" || true
-    elif grep -q 'user = ' "$LIBVIRT_CONF"; then
-        echo -e "${green}Changing user in $LIBVIRT_CONF to $USER${no_color}"
-        sudo sed -i "s|user = \".*\"|user = \"$USER\"|" "$LIBVIRT_CONF" || true
-    else
-        echo -e "${green}Adding user = \"$USER\" to $LIBVIRT_CONF${no_color}"
-        echo "user = \"$USER\"" | sudo tee -a "$LIBVIRT_CONF" > /dev/null
-    fi
+	#Edit libvirt configuration:
+	LIBVIRT_CONF="/etc/libvirt/qemu.conf"
+	if grep -qE '^\s*#\s*user\s*=' "$LIBVIRT_CONF"; then
+		echo -e "${green}Uncommenting user line and setting to $USER in $LIBVIRT_CONF${no_color}"
+		sudo sed -i "s|^\s*#\s*user\s*=.*|user = \"$USER\"|" "$LIBVIRT_CONF" || true
+	elif grep -q 'user = ' "$LIBVIRT_CONF"; then
+		echo -e "${green}Changing user in $LIBVIRT_CONF to $USER${no_color}"
+		sudo sed -i "s|user = \".*\"|user = \"$USER\"|" "$LIBVIRT_CONF" || true
+	else
+		echo -e "${green}Adding user = \"$USER\" to $LIBVIRT_CONF${no_color}"
+		echo "user = \"$USER\"" | sudo tee -a "$LIBVIRT_CONF" > /dev/null
+	fi
 
-    if grep -qE '^\s*#\s*group\s*=' "$LIBVIRT_CONF"; then
-        echo -e "${green}Uncommenting group line and setting to kvm in $LIBVIRT_CONF${no_color}"
-        sudo sed -i "s|^\s*#\s*group\s*=.*|group = \"kvm\"|" "$LIBVIRT_CONF" || true
-    elif grep -q 'group = ' "$LIBVIRT_CONF"; then
-        echo -e "${green}Changing group in $LIBVIRT_CONF to kvm${no_color}"
-        sudo sed -i "s|group = \".*\"|group = \"kvm\"|" "$LIBVIRT_CONF" || true
-    else
-        echo -e "${green}Adding group = \"kvm\" to $LIBVIRT_CONF${no_color}"
-        echo "group = \"kvm\"" | sudo tee -a "$LIBVIRT_CONF" > /dev/null
-    fi
+	if grep -qE '^\s*#\s*group\s*=' "$LIBVIRT_CONF"; then
+		echo -e "${green}Uncommenting group line and setting to kvm in $LIBVIRT_CONF${no_color}"
+		sudo sed -i "s|^\s*#\s*group\s*=.*|group = \"kvm\"|" "$LIBVIRT_CONF" || true
+	elif grep -q 'group = ' "$LIBVIRT_CONF"; then
+		echo -e "${green}Changing group in $LIBVIRT_CONF to kvm${no_color}"
+		sudo sed -i "s|group = \".*\"|group = \"kvm\"|" "$LIBVIRT_CONF" || true
+	else
+		echo -e "${green}Adding group = \"kvm\" to $LIBVIRT_CONF${no_color}"
+		echo "group = \"kvm\"" | sudo tee -a "$LIBVIRT_CONF" > /dev/null
+	fi
 
-    echo -e "${green}Restarting libvirtd service to apply changes...${no_color}"
-    sudo systemctl restart libvirtd || true
+	echo -e "${green}Restarting libvirtd service to apply changes...${no_color}"
+	sudo systemctl restart libvirtd || true
 
-    echo -e "${green}Make sure to add the following line to your VM XML configuration:
-    <shmem name='looking-glass'>
-    <model type='ivshmem-plain'/>
-    <size unit='M'>128</size>
-    </shmem>${no_color}"
-    echo -e "${green}You can also use the following command to check if the shared memory device is created:${no_color}"
-    echo -e "${green}ls -l /dev/shm/looking-glass*${no_color}"
+	echo -e "${green}Make sure to add the following line to your VM XML configuration:
+	<shmem name='looking-glass'>
+	<model type='ivshmem-plain'/>
+	<size unit='M'>128</size>
+	</shmem>${no_color}"
+	echo -e "${green}You can also use the following command to check if the shared memory device is created:${no_color}"
+	echo -e "${green}ls -l /dev/shm/looking-glass*${no_color}"
 
-    echo -e "${green}Creating desktop entries for Looking Glass Client to run in fullscreen${no_color}"
-    sudo mkdir -p ~/.local/share/applications/ || true
-    sudo tee ~/.local/share/applications/looking-glass-fullscreen.desktop > /dev/null << 'EOF'
+	echo -e "${green}Creating desktop entries for Looking Glass Client to run in fullscreen${no_color}"
+	sudo mkdir -p ~/.local/share/applications/ || true
+	sudo tee ~/.local/share/applications/looking-glass-fullscreen.desktop > /dev/null << 'EOF'
 [Desktop Entry]
 Name=Looking Glass Client (Fullscreen)
 Comment=View KVM guest desktop in fullscreen
@@ -1235,10 +1235,10 @@ Terminal=false
 Type=Application
 Categories=Utility;System;
 EOF
-    sudo chmod +x ~/.local/share/applications/looking-glass-fullscreen.desktop
-    sudo chown -R $USER:$USER ~/.local/share/applications/
+	sudo chmod +x ~/.local/share/applications/looking-glass-fullscreen.desktop
+	sudo chown -R $USER:$USER ~/.local/share/applications/
 
-    echo -e "${green}Setting up looking-glass completed${no_color}"
+	echo -e "${green}Setting up looking-glass completed${no_color}"
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"

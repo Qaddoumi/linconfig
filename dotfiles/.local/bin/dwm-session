@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if command -v dbus-update-activation-environment >/dev/null 2>&1; then
-    dbus-update-activation-environment --systemd --all
+	dbus-update-activation-environment --systemd --all
 fi
 
 screensetup & # set the screen to 1920x1080@144hz

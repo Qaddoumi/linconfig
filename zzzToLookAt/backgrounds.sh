@@ -23,15 +23,15 @@ mkdir ~/Pictures
 
 # Check if the backgrounds directory (BG_DIR) exists
 if [ ! -d "$BG_DIR" ]; then
-    # If the backgrounds directory doesn't exist, attempt to clone a repository containing backgrounds
-    if ! git clone --depth 1 https://github.com/ChrisTitusTech/nord-background.git "$PIC_DIR/backgrounds"; then
-        # If the git clone command fails, print an error message and return with a status of 1
-        printf "%b\n" "${red}Failed to clone the repository${no_color}"
-        return 1
-    fi
-    # Print a success message indicating that the backgrounds have been downloaded
-    printf "%b\n" "${green}Downloaded desktop backgrounds to $BG_DIR${no_color}"    
+	# If the backgrounds directory doesn't exist, attempt to clone a repository containing backgrounds
+	if ! git clone --depth 1 https://github.com/ChrisTitusTech/nord-background.git "$PIC_DIR/backgrounds"; then
+		# If the git clone command fails, print an error message and return with a status of 1
+		printf "%b\n" "${red}Failed to clone the repository${no_color}"
+		return 1
+	fi
+	# Print a success message indicating that the backgrounds have been downloaded
+	printf "%b\n" "${green}Downloaded desktop backgrounds to $BG_DIR${no_color}"	
 else
-    # If the backgrounds directory already exists, print a message indicating that the download is being skipped
-    printf "%b\n" "${yellow}Path $BG_DIR exists for desktop backgrounds, skipping download of backgrounds${no_color}"
+	# If the backgrounds directory already exists, print a message indicating that the download is being skipped
+	printf "%b\n" "${yellow}Path $BG_DIR exists for desktop backgrounds, skipping download of backgrounds${no_color}"
 fi

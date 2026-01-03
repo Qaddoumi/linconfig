@@ -4,12 +4,12 @@ file=$1
 folder=$2
 
 if [ ! -f "$file" ]; then
-    echo "File not found: $file"
-    exit 1
+	echo "File not found: $file"
+	exit 1
 fi
 
 if [ -z "$folder" ]; then
-    folder="$(basename "$file" .iso)"
+	folder="$(basename "$file" .iso)"
 fi
 
 mkdir -p "$folder"

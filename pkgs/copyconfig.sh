@@ -2,9 +2,9 @@
 
 sourceDir=""
 if [[ "$(pwd)" != *"shared"* ]]; then
-    sourceDir=~/linconfig
+	sourceDir=~/linconfig
 else
-    sourceDir=~/shared/github/MyGithubs/linconfig
+	sourceDir=~/shared/github/MyGithubs/linconfig
 fi
 
 

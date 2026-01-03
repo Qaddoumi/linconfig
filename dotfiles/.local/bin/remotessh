@@ -12,9 +12,9 @@ ip_address="${1:-notset}"
 ssh_user="${2:-root}"
 
 if [ "$ip_address" == "notset" ]; then
-    echo -e "${red}Error: No IP address provided.${no_color}"
-    echo "Usage: $0 <IP_ADDRESS> [SSH_USER]"
-    exit 1
+	echo -e "${red}Error: No IP address provided.${no_color}"
+	echo "Usage: $0 <IP_ADDRESS> [SSH_USER]"
+	exit 1
 fi
 
 # Remove old host key and connect
