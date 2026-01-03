@@ -261,9 +261,11 @@ echo -e "${green}		  └── Window 3\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-server-xwayland # XWayland for compatibility with X11 applications
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xdg-desktop-portal xdg-desktop-portal-wlr # Portal for Wayland
+sudo pacman -S --needed --noconfirm xdg-desktop-portal xdg-user-dirs xdg-desktop-portal-gtk # XDG Portal for Wayland and X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xdg-user-dirs xdg-desktop-portal-gtk # User directories and portal
+sudo pacman -S --needed --noconfirm xdg-desktop-portal-hyprland # Portal for Hyprland
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm xdg-desktop-portal-wlr # Portal for other Waylands
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
 echo -e "${blue}--------------------------------------------------\n${no_color}"

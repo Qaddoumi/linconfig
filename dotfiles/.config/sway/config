@@ -60,6 +60,7 @@ exec --no-startup-id dbus-update-activation-environment --systemd --all
 # Start xdg-desktop-portal services (ensure wlr starts first)
 exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr &
 exec --no-startup-id /usr/lib/xdg-desktop-portal -r
+exec xdg-user-dirs-update
 
 ### Sov ==> Sway Overview install from https://github.com/milgra/sov
 # An overlay that shows schemas for all workspaces to make navigation in sway easier.
@@ -142,10 +143,13 @@ font pango:JetBrainsMono Nerd Font Propo 12
 #exec autotiling -l 2
 
 # Autostart apps in /etc/xdg/autostart/ or ~/.config/autostart/
-exec dex -a
+# exec dex -a
 
 # Start polkit authentication agent
-exec_always /usr/lib/hyprpolkitagent/hyprpolkitagent
+exec /usr/lib/hyprpolkitagent/hyprpolkitagent
+
+exec /usr/bin/gnome-keyring-daemon --start --components=secrets,pkcs11,ssh
+exec /usr/lib/at-spi-bus-launcher --launch-immediately
 
 ## Emacs Daemon
 #exec /usr/bin/emacs --daemon
@@ -154,9 +158,8 @@ exec_always /usr/lib/hyprpolkitagent/hyprpolkitagent
 # Wayland clipboard history
 # exec_always wl-paste --type text --watch xclip -selection clipboard
 
-## SPICE Agent (Clipboard Sharing for VMs)
-# should autostart with dex
-# exec_always bash -c "killall -q spice-vdagentd; sleep 3; gtk_backend=x11 spice-vdagent"
+## SPICE Agent (Clipboard Sharing for VMs, etc ...)
+exec spice-vdagent
 
 ## X11 to Wayland Clipboard Bridge
 # This bridges clipboard from spice-vdagent (X11) to Wayland
@@ -168,10 +171,10 @@ exec copyq --start-server
 exec dunst
 
 ## quickshell
-exec_always bash -c "killall -q quickshell ; quickshell"
+exec_always bash -c "killall -q -9 quickshell ; quickshell"
 
-## Autostart Applications
-exec bash -c 'sleep 4; swaymsg "workspace 1; exec kitty"'
+## Autostart kitty
+# exec bash -c 'sleep 4; swaymsg "workspace 1; exec kitty"'
 
 exec flameshot
 
