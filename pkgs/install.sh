@@ -168,15 +168,17 @@ fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
-echo -e "${green}Installing Hyprland...${no_color}"
-echo ""
-sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
-#TODO: uwsm
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+if [ "$is_vm" = true ]; then
+	echo -e "${green}Installing Hyprland...${no_color}"
+	echo ""
+	sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
+	#TODO: uwsm
+else
+	echo -e "${green}Installing Sway...${no_color}"
+	echo ""
+	sudo pacman -S --needed --noconfirm sway # Sway window manager
+fi
 
-echo -e "${green}Installing Sway...${no_color}"
-echo ""
-sudo pacman -S --needed --noconfirm sway # Sway window manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swayidle # Idle management for sway/hyprland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -185,18 +187,18 @@ sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway/hyprland
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
 
 
-echo -e "${green}Installing awesome an X11 window manager...${no_color}"
-echo ""
+# echo -e "${green}Installing awesome an X11 window manager...${no_color}"
+# echo ""
 
-sudo pacman -S --needed --noconfirm awesome # X11 window manager
-# the next lines is needed to setup variables like $XDG_CURRENT_DESKTOP and $XDG_SESSION_DESKTOP by sddm
-if grep -q "DesktopNames" "/usr/share/xsessions/awesome.desktop"; then
-	echo "Existing 'DesktopNames' found. Updating/Uncommenting to 'awesome'..."
-	sed -i "s/^#*\s*DesktopNames=.*/DesktopNames=awesome/" "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to update DesktopNames${no_color}"
-else
-	echo "'DesktopNames' not found. Appending to /usr/share/xsessions/awesome.desktop."
-	echo "DesktopNames=awesome" | sudo tee -a "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to append DesktopNames${no_color}"
-fi
+# sudo pacman -S --needed --noconfirm awesome # X11 window manager
+# # the next lines is needed to setup variables like $XDG_CURRENT_DESKTOP and $XDG_SESSION_DESKTOP by sddm
+# if grep -q "DesktopNames" "/usr/share/xsessions/awesome.desktop"; then
+# 	echo "Existing 'DesktopNames' found. Updating/Uncommenting to 'awesome'..."
+# 	sed -i "s/^#*\s*DesktopNames=.*/DesktopNames=awesome/" "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to update DesktopNames${no_color}"
+# else
+# 	echo "'DesktopNames' not found. Appending to /usr/share/xsessions/awesome.desktop."
+# 	echo "DesktopNames=awesome" | sudo tee -a "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to append DesktopNames${no_color}"
+# fi
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-xinit xorg-server dbus # X11 display server, initialization and dbus
@@ -275,7 +277,7 @@ sudo pacman -S --needed --noconfirm gnome-system-monitor # System monitor GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wget # Download utility
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway
+sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway and hyprland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm feh # Wallpaper setter for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
