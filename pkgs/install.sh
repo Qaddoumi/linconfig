@@ -508,7 +508,7 @@ if ! grep -q '^gitpush()' "$BASHRC_FILE"; then
 
 gitpush() {
 	echo -e "\n\033[0;32mAdding changes\033[0m"
-	git add . || true
+	git add -A || true
 	echo -e "\n\033[0;32mCommitting changes\033[0m"
 	#git commit --allow-empty-message -m "" || true
 	git commit -m "$1" || true
