@@ -58,10 +58,6 @@ echo -e "${green}\nInstalling dwm...${no_color}"
 cd ~/.local/share/dwm
 sudo make clean install || true
 
-echo -e "${green}\nInstalling dwl...${no_color}"
-cd ~/.local/share/dwl
-sudo make clean install || true
-
 cd ~
 
 echo -e "${green}\nReload session with \$mod + Shift + c${no_color}"

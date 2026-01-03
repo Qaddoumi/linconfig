@@ -27,6 +27,5 @@ cp -af $sourceDir/pkgs/installconfig.sh ~/installconfig.sh
 chmod +x ~/installconfig.sh
 
 cd ~/.local/share/dwm && sudo make clean install || true
-cd ~/.local/share/dwl && sudo make clean install || true
 cd ~
 echo -e "\nReload session with \$mod + Shift + c"
