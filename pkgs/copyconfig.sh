@@ -14,7 +14,6 @@ sudo rm -f ~/.config/mimeinfo.cache ~/.local/share/applications/mimeinfo.cache |
 sudo update-desktop-database ~/.local/share/applications || true
 
 echo "Setting up permissions for configuration files"
-sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
 find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
 
@@ -28,5 +27,6 @@ cp -af $sourceDir/pkgs/installconfig.sh ~/installconfig.sh
 chmod +x ~/installconfig.sh
 
 cd ~/.local/share/dwm && sudo make clean install || true
+cd ~/.local/share/dwl && sudo make clean install || true
 cd ~
 echo -e "\nReload session with \$mod + Shift + c"

@@ -189,12 +189,12 @@ fi
 # Create tooltip with all prayer times
 tooltip="Prayer Times $offline_mode\\n"
 tooltip+="\\n"
-tooltip+="Fajr:	$fajr\\n"
+tooltip+="Fajr:    $fajr\\n"
 tooltip+="Dhuhr:   $dhuhr\\n"
-tooltip+="Asr:	 $asr\\n"
+tooltip+="Asr:     $asr\\n"
 tooltip+="Maghrib: $maghrib\\n"
-tooltip+="Isha:	$isha\\n\\n"
-tooltip+="Next: $next_prayer_name in $time_remaining"
+tooltip+="Isha:    $isha\\n\\n"
+tooltip+="Next:    $next_prayer_name in $time_remaining"
 
 # Current prayer indicator
 if [[ -n "$current_prayer" ]]; then

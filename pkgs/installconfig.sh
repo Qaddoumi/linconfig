@@ -30,7 +30,6 @@ sudo rm -f ~/.config/mimeinfo.cache ~/.local/share/applications/mimeinfo.cache |
 sudo update-desktop-database ~/.local/share/applications || true
 
 echo -e "${green}Setting up permissions for configuration files${no_color}"
-sudo chmod +x ~/.config/waybar/scripts/*.sh > /dev/null || true
 sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
 find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
 
@@ -57,6 +56,10 @@ chmod +x ~/installconfig.sh
 
 echo -e "${green}\nInstalling dwm...${no_color}"
 cd ~/.local/share/dwm
+sudo make clean install || true
+
+echo -e "${green}\nInstalling dwl...${no_color}"
+cd ~/.local/share/dwl
 sudo make clean install || true
 
 cd ~

@@ -147,8 +147,8 @@ case "${1:-toggle}" in
 	*)
 		echo "Usage: $0 {toggle|on|off|status|check}"
 		echo "  toggle - Toggle idle inhibitor on/off"
-		echo "  on	 - Activate idle inhibitor"
-		echo "  off	- Deactivate idle inhibitor"
+		echo "  on     - Activate idle inhibitor"
+		echo "  off    - Deactivate idle inhibitor"
 		echo "  status - Output JSON status (for Waybar)"
 		echo "  check  - Check if active (exit 0) or inactive (exit 1)"
 		exit 1
