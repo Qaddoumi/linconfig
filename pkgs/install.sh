@@ -452,33 +452,6 @@ else
 fi
 echo -e "${yellow}You'll need to restart your session for this to take effect system-wide${no_color}"
 
-# add this to fix an issue with gtk apps not working
-#Gtk-CRITICAL **: 10:43:17.835: gtk_native_get_surface: assertion 'GTK_IS_NATIVE (self)' failed
-#Gdk-Message: 10:43:18.010: Error 22 (Invalid argument) dispatching to Wayland display.
-if grep -q "GSK_RENDERER" "$ENV_FILE"; then
-	echo -e "${green}GSK_RENDERER already exists in $ENV_FILE${no_color}"
-else
-	echo -e "${green}Adding GSK_RENDERER to $ENV_FILE...${no_color}"
-	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-	echo "GSK_RENDERER=ngl" | sudo tee -a "$ENV_FILE" > /dev/null || true
-fi
-
-# Check if running in vm
-if [ "$is_vm" = true ]; then
-	echo -e "${green}Running in a VM:${no_color}"
-	echo -e "${green}Setting the cursor rendering${no_color}"
-
-	if grep -q "WLR_NO_HARDWARE_CURSORS" "$ENV_FILE"; then 
-		echo -e "${green}Cursor is already set in $ENV_FILE${no_color}"
-	else
-		echo -e "${green}Adding cursor to "$ENV_FILE"...${no_color}"
-		echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-		echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a "$ENV_FILE" > /dev/null || true
-	fi
-else
-	echo -e "${green}Not running in a VM, no need to set the cursor${no_color}"
-fi
-
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 # Check if .bashrc exists
