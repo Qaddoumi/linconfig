@@ -23,6 +23,13 @@ static const float fullscreen_bg[] = {0.0f, 0.0f, 0.0f,
 /* logging */
 static int log_level = WLR_ERROR;
 
+/* Autostart */
+static const char *const autostart[] = {
+  "wbg", "/path/to/your/image", NULL,
+  NULL /* terminate */
+};
+
+
 static const Rule rules[] = {
     /* app_id             title       tags mask     isfloating   monitor */
     {"Gimp_EXAMPLE", NULL, 0, 1,
