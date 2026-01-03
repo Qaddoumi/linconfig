@@ -201,6 +201,8 @@ fi
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-xinit xorg-server dbus # X11 display server, initialization and dbus
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm xorg-xrandr # Xrandr for X11 (used for screen resolution)
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm picom # Compositor for X11 (used for animation, transparency and blur)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xscreensaver # Screen saver for X11
