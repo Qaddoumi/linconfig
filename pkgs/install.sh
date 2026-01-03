@@ -203,7 +203,7 @@ sudo pacman -S --needed --noconfirm xorg-xinit xorg-server dbus # X11 display se
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-xrandr # Xrandr for X11 (used for screen resolution, and monitors configuration)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm picom # Compositor for X11 (used for animation, transparency and blur)
+sudo pacman -S --needed --noconfirm picom # Compositor for X11 (used for animation, transparency and blur, "it helps with screen tearing")
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xscreensaver # Screen saver for X11
 echo -e "${green}Setting Auth for xscreensaver...${no_color}"
