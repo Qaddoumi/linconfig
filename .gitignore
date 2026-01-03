@@ -21,3 +21,7 @@ nohup.out
 
 /release/**
 /release
+
+*-protocol.c
+*-protocol.h
+.ccls-cache
