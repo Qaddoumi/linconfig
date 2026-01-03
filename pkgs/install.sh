@@ -275,8 +275,6 @@ sudo pacman -S --needed --noconfirm gnome-system-monitor # System monitor GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wget # Download utility
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm hyprpaper # Background setting utility for hyprland
-echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm feh # Wallpaper setter for X11
