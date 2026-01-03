@@ -687,6 +687,15 @@ info "Mirror configuration process completed"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
+info "Enabling multilib repository for the installer environment"
+CONFIG_FILE="/etc/pacman.conf"
+if grep -q "^#\[multilib\]" "$CONFIG_FILE"; then
+	sed -i '/\[multilib\]/,/Include/s/^#//' "$CONFIG_FILE"
+	pacman -Sy --noconfirm || warn "Failed to update package databases with multilib enabled"
+fi
+
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
+
 info "Updating package databases..."
 pacman -Sy --noconfirm || warn "Failed to update package databases"
 
@@ -916,7 +925,7 @@ chmod 755 "/home/$USERNAME"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
-info "Enabling multilib repos"
+info "Enabling multilib repos for the new system"
 CONFIG_FILE="/etc/pacman.conf"
 info "Checking if config file exists"
 if [[ ! -f "$CONFIG_FILE" ]]; then
