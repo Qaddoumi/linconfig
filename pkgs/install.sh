@@ -420,10 +420,15 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm google-chrome || echo -e "${red}Failed to install google-chrome${no_color}" # Web browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm antigravity || echo -e "${red}Failed to install antigravity-bin${no_color}" # AI IDE
+antigravity --install-extension sdras.night-owl # dark theme
+antigravity --install-extension Gruntfuggly.todo-tree # todo tree
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm brave-bin || echo -e "${red}Failed to install brave-bin${no_color}" # Brave browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm visual-studio-code-bin || echo -e "${red}Failed to install visual-studio-code-bin${no_color}" # Visual Studio Code
+code --install-extension Continue.continue # for local ai and agent in vscode
+code --install-extension sdras.night-owl # dark theme
+code --install-extension Gruntfuggly.todo-tree # todo tree
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm powershell-bin || echo -e "${red}Failed to install powershell-bin${no_color}" # PowerShell
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -431,7 +436,6 @@ yay -S --needed --noconfirm oh-my-posh || echo -e "${red}Failed to install oh-my
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
-echo -e "${green}Setting up environment variable for Electron apps so they lunch in wayland mode${no_color}"
 ENV_FILE="/etc/environment"
 if [ ! -f "$ENV_FILE" ]; then
 	echo -e "${green}Creating $ENV_FILE${no_color}"
@@ -446,6 +450,7 @@ else
 	echo "export PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin" | sudo tee -a "$ENV_FILE" > /dev/null || true
 fi
 
+echo -e "${green}Setting up environment variable for Electron apps so they lunch in wayland mode${no_color}"
 if grep -q "ELECTRON_OZONE_PLATFORM_HINT" "$ENV_FILE"; then
 	echo "${green}ELECTRON_OZONE_PLATFORM_HINT already exists in $ENV_FILE${no_color}"
 else
