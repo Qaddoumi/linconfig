@@ -85,14 +85,12 @@ include ~/.config/sway/outputs
 ## SWWW Wallpaper Daemon
 #exec swww-daemon
 ## SWWW Random Wallpaper
-#TODO: Change the path to your wallpaper directory
+#TODO: use awww instead of swaybg
 #exec bash -c 'swww img "$(find ~/wallpapers-extra/flowers -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.webp" \) | shuf -n1)" -t none'
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 #output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 exec swaybg --mode fit --output '*' --image ~/.config/sway/dark-mode-image.png
 
-## OBS Fixes and XDG Desktop
-# Set XDG_CURRENT_DESKTOP for proper Wayland support
 exec --no-startup-id dbus-update-activation-environment --systemd --all
 # Start xdg-desktop-portal services (ensure wlr starts first)
 exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr &
