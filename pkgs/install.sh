@@ -1226,6 +1226,82 @@ fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
+echo -e "${green}Creating udev rules for GPU to get the stable path...${no_color}"
+echo -e "${green}This is required for Hyprland to work on the inegrated gpu or the virtio gpu${no_color}"
+
+gpu_devices=$(lspci -nn | grep -E "(VGA|3D controller)")
+
+
+if [ -z "$gpu_devices" ]; then
+    echo -e "${red}No GPU detected.${no_color}"
+else
+	echo -e "Detected GPUs:\n$gpu_devices\n"
+
+	generate_rule() {
+		local bus_id=$1
+		local symlink_name=$2
+		local gpu_name=$3
+		local rule_file="/etc/udev/rules.d/10-hyprland-${symlink_name}.rules"
+
+		# Explanation of the Udev Rule:
+		# KERNEL=="card*":
+		#   Matches device nodes that start with "card" (e.g., /dev/dri/card0), which are DRM devices.
+		# SUBSYSTEM=="drm":
+		#   Ensures the rule only applies to devices in the Direct Rendering Manager subsystem.
+		# SUBSYSTEMS=="pci":
+		#   Matches devices that are part of the PCI bus.
+		# KERNELS=="0000:$bus_id":
+		#   The specific PCI slot identifier for the GPU. This ensures we target the exact hardware device.
+		# SYMLINK+="dri/$symlink_name":
+		#   Creates a persistent symlink in /dev/dri/ (e.g., /dev/dri/intel-igpu) that points to the dynamic cardX device.
+		#   This effectively "fixes" the card number issue by providing a stable name.
+		
+		local udev_rule="KERNEL==\"card*\", SUBSYSTEM==\"drm\", SUBSYSTEMS==\"pci\", KERNELS==\"0000:$bus_id\", SYMLINK+=\"dri/$symlink_name\""
+
+		echo -e "${green}Processing $gpu_name ($bus_id)...${no_color}"
+		
+		echo "$udev_rule" | sudo tee "$rule_file" > /dev/null || true
+
+		sudo chmod 644 "$rule_file" || true
+		sudo chown root:root "$rule_file" || true
+		
+		echo -e "  -> Created udev rule at: $rule_file"
+		echo -e "  -> Symlink will be: /dev/dri/$symlink_name"
+	}
+
+	while IFS= read -r line; do
+		# Extract the PCI Bus ID (first field, e.g., 00:02.0)
+		bus_id=$(echo "$line" | awk '{print $1}')
+
+		if [[ $line == *"NVIDIA"* ]]; then
+			generate_rule "$bus_id" "nvidia-dgpu" "NVIDIA dGPU"
+			
+		elif [[ $line == *"Intel"* ]]; then
+			generate_rule "$bus_id" "intel-igpu" "Intel iGPU"
+			
+		elif [[ $line == *"Red Hat"* ]] || [[ $line == *"Virtio"* ]]; then
+			generate_rule "$bus_id" "virtio-gpu" "VirtIO GPU"
+			
+		elif [[ $line == *"AMD"* ]] || [[ $line == *"Advanced Micro Devices"* ]]; then
+			# Assuming AMD as iGPU
+			# TODO: Add support for AMD dGPU
+			generate_rule "$bus_id" "amd-igpu" "AMD GPU"
+		else
+			echo -e "${red}Unknown GPU: $line${no_color}"
+		fi
+	done <<< "$gpu_devices"
+
+	sudo udevadm control --reload-rules || true
+	sudo udevadm trigger || true
+
+	echo -e "\n${green}Success! Udev rules have been created.${no_color}"
+	echo ""
+	echo "For Hyprland, you can now use these stable paths in your config:"
+	echo "env = AQ_DRM_DEVICES,/dev/dri/intel-igpu:/dev/dri/amd-igpu:/dev/dri/virtio-gpu"
+fi
+
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
+
 echo -e "${green}adding user to necessary groups...${no_color}"
 
 sudo usermod -aG video $USER || true
