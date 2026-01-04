@@ -29,6 +29,9 @@ echo -e "${green}Removing mimeinfo cache...${no_color}"
 sudo rm -f ~/.config/mimeinfo.cache ~/.local/share/applications/mimeinfo.cache || true
 sudo update-desktop-database ~/.local/share/applications || true
 
+echo -e "${green}Restarting xdg-desktop-portal...${no_color}"
+systemctl --user restart xdg-desktop-portal.service
+
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 sudo chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
 find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
