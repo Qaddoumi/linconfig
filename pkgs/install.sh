@@ -390,6 +390,9 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 flatpak install -y --user flathub org.dupot.easyflatpak || echo -e "${red}Failed to install easyflatpak\n${no_color}" # Flatpak application manager (GUI store)
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm fuse2 # require for AppImages pkgs
+
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm cpupower # CPU frequency scaling utility ==> change powersave to performance mode.
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm tlp # TLP for power management
