@@ -233,15 +233,11 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 # sudo pacman -S --needed --noconfirm quickshell # a shell for both wayland and x11
 yay -S --needed --noconfirm quickshell-allflags-git || echo -e "${red}Failed to install quickshell${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm waybar # Status bar for wayland
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm wofi # Application launcher for wayland
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm rofi # Application launcher for X11
+sudo pacman -S --needed --noconfirm rofi rofi-emoji # Application launcher for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm playerctl # Media control used in quickshell
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm dex # Autostart manager (i dont't know why, but it make spice runs without issues in vm)
+# sudo pacman -S --needed --noconfirm dex # Autostart manager (Autostart apps in /etc/xdg/autostart/ or ~/.config/autostart/)
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm dunst # Notification daemon for X11 and wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"

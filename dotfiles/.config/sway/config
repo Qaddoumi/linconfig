@@ -54,19 +54,6 @@ set $lock 'swaylock \
 
 ### General configuration
 #
-## OBS Fixes and XDG Desktop
-# Set XDG_CURRENT_DESKTOP for proper Wayland support
-exec --no-startup-id dbus-update-activation-environment --systemd --all
-# Start xdg-desktop-portal services (ensure wlr starts first)
-exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr &
-exec --no-startup-id /usr/lib/xdg-desktop-portal -r
-exec xdg-user-dirs-update
-
-### Sov ==> Sway Overview install from https://github.com/milgra/sov
-# An overlay that shows schemas for all workspaces to make navigation in sway easier.
-#exec rm -f /tmp/sovpipe && mkfifo /tmp/sovpipe && tail -f /tmp/sovpipe | sov -t 500
-
-#exec /usr/local/bin/gpu-switch.sh host
 
 ### Colorscheme
 
@@ -83,9 +70,18 @@ set $cyan   #8ec07c
 set $white  #ebdbb2
 set $orange #fe8019
 
+### Font Configuration
+font pango:JetBrainsMono Nerd Font Propo 12
 
 ### Output configuration
 #
+# Example configuration for vm:
+#output Virtual-1 resolution 1920x1080@60Hz position 1920,0
+#
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+include ~/.config/sway/outputs
+
+### autostart apps
 ## SWWW Wallpaper Daemon
 #exec swww-daemon
 ## SWWW Random Wallpaper
@@ -95,17 +91,21 @@ set $orange #fe8019
 #output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 exec swaybg --mode fit --output '*' --image ~/.config/sway/dark-mode-image.png
 
+## OBS Fixes and XDG Desktop
+# Set XDG_CURRENT_DESKTOP for proper Wayland support
+exec --no-startup-id dbus-update-activation-environment --systemd --all
+# Start xdg-desktop-portal services (ensure wlr starts first)
+exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr &
+exec --no-startup-id /usr/lib/xdg-desktop-portal -r
+exec xdg-user-dirs-update
 
-# Example configuration for vm:
-#output Virtual-1 resolution 1920x1080@60Hz position 1920,0
-#
-# You can get the names of your outputs by running: swaymsg -t get_outputs
-include ~/.config/sway/outputs
+### Sov ==> Sway Overview install from https://github.com/milgra/sov
+# An overlay that shows schemas for all workspaces to make navigation in sway easier.
+#exec rm -f /tmp/sovpipe && mkfifo /tmp/sovpipe && tail -f /tmp/sovpipe | sov -t 500
 
-### Idle configuration
-#
-# Example configuration:
-#
+#exec /usr/local/bin/gpu-switch.sh host
+
+# Idle configuration
 exec swayidle -w \
 	timeout 300 'swaylock \
 		--color 2d353b \
@@ -134,25 +134,16 @@ exec swayidle -w \
 # your displays after another 30 minutes, and turn your screens back on when
 # resumed. It will also lock your screen before your computer goes to sleep.
 
-### Font Configuration
-font pango:JetBrainsMono Nerd Font Propo 12
-
 ## Sway Automatic Tiling
 # Automatically chooses split direction based on the current container's aspect ratio
 # Wide containers get vertical splits, tall containers get horizontal splits
 #exec autotiling -l 2
-
-# Autostart apps in /etc/xdg/autostart/ or ~/.config/autostart/
-# exec dex -a
 
 # Start polkit authentication agent
 exec /usr/lib/hyprpolkitagent/hyprpolkitagent
 
 exec /usr/bin/gnome-keyring-daemon --start --components=secrets,pkcs11,ssh
 exec /usr/lib/at-spi-bus-launcher --launch-immediately
-
-## Emacs Daemon
-#exec /usr/bin/emacs --daemon
 
 ## Clipboard (with X11 sync for XWayland apps)
 # Wayland clipboard history
@@ -174,10 +165,9 @@ exec dunst
 exec_always bash -c "killall -q -9 quickshell ; quickshell"
 
 ## Autostart kitty
-# exec bash -c 'sleep 4; swaymsg "workspace 1; exec kitty"'
+# exec bash -c 'sleep 3; swaymsg "workspace 1; exec kitty"'
 
 exec flameshot
-
 
 ### Window Rules
 # to get app_id or class, use `swaymsg -t get_tree | grep -A 23 "File Operation Progress"`
@@ -244,7 +234,7 @@ input "type:keyboard" {
 	bindsym $mod+b exec $browser
 
 	# Emoji Picker
-	#bindsym $mod+s exec rofi -show emoji -modi emoji -matching regex -sorting-method levenshtein
+	bindsym $mod+s exec rofi -show emoji -modi emoji -matching regex -sorting-method levenshtein
 
 	# Clipboard
 	bindsym $mod+v exec copyq toggle
