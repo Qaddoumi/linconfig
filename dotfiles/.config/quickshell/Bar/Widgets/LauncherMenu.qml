@@ -8,7 +8,7 @@ import qs.Theme
 
 Text {
 	text: ""
-	color: ThemeManager.accentCyan
+	color: ThemeManager.accentBlue
 	font.pixelSize: ThemeManager.fontSizeBar
 	font.family: ThemeManager.fontFamily
 	font.bold: true

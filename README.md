@@ -40,6 +40,7 @@ After installation, you can:
 ---
 
 # Credit
-- [yahr-quickshell](https://github.com/bgibson72/yahr-quickshell)
 - [linutil](https://github.com/ChrisTitusTech/linutil)
 - [dwm-titus](https://github.com/ChrisTitusTech/dwm-titus)
+- [yahr-quickshell](https://github.com/bgibson72/yahr-quickshell)
+- [night-owl-vscode-theme](https://github.com/sdras/night-owl-vscode-theme)
