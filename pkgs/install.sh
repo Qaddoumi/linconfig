@@ -1303,6 +1303,10 @@ else
 	if [ "$is_vm" = true ]; then
 		echo -e "${green}Setting up WLR_DRM_DEVICES for wlroots in vm...${no_color}"
 		echo "WLR_DRM_DEVICES=/dev/dri/$gpu_type" | sudo tee ~/.config/environment.d/10-wlroots-gpu.conf > /dev/null || true
+		if ! grep -q "WLR_DRM_DEVICES" $ENV_FILE; then
+			echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
+			echo -e "WLR_DRM_DEVICES=/dev/dri/$gpu_type" | sudo tee -a $ENV_FILE > /dev/null || true
+		fi
 	fi
 fi
 
