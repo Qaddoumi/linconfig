@@ -66,8 +66,8 @@ fi
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 IS_VM=false
-VIRT_PKGS=""
-GPU_PKGS=""
+declare -a VIRT_PKGS=()
+declare -a GPU_PKGS=()
 
 info "Detecting system environment..."
 if systemd-detect-virt --vm &>/dev/null; then
@@ -78,19 +78,19 @@ if systemd-detect-virt --vm &>/dev/null; then
 	info "Configuring VM graphics drivers..."
 	case "$VIRT_TYPE" in
 		"kvm"|"qemu"|"microsoft")
-			VIRT_PKGS="qemu-guest-agent spice-vdagent xf86-video-qxl vulkan-virtio virglrenderer"
+			VIRT_PKGS+=("qemu-guest-agent" "spice-vdagent" "xf86-video-qxl" "vulkan-virtio" "virglrenderer")
 			info "Added VirtIO/QXL drivers with VirGL 3D acceleration"
 			;;
 		"virtualbox")
-			VIRT_PKGS="virtualbox-guest-utils"
+			VIRT_PKGS+=("virtualbox-guest-utils")
 			info "Added VirtualBox guest utilities"
 			;;
 		"vmware"|"svga")
-			VIRT_PKGS="open-vm-tools xf86-video-vmware"
+			VIRT_PKGS+=("open-vm-tools" "xf86-video-vmware")
 			info "Added VMware SVGA driver"
 			;;
 		*)
-			VIRT_PKGS="vulkan-swrast"
+			VIRT_PKGS+=("vulkan-swrast")
 			warn "Unknown virtualization platform: $VIRT_TYPE"
 			info "Using Software Rasterizer (vulkan-swrast) for fallback"
 			;;
@@ -99,10 +99,10 @@ else
 	info "Running on physical hardware"
 fi
 
-if [ -z "$VIRT_PKGS" ]; then
+if [[ ${#VIRT_PKGS[@]} -eq 0 ]]; then
 	info "No virtualization packages will be installed."
 else
-	info "Virtualization packages: $VIRT_PKGS"
+	info "Virtualization packages: ${VIRT_PKGS[*]}"
 fi
 
 info "Detecting GPU devices..."
@@ -119,9 +119,9 @@ done
 if [[ ${#GPU_DEVICES[@]} -eq 0 ]]; then
 	warn "No GPU devices detected!"
 	if [[ "$IS_VM" == true ]]; then
-		GPU_PKGS="mesa"  # Mesa only for VMs without detected GPU
+		GPU_PKGS+=("mesa")  # Mesa only for VMs without detected GPU
 	else
-		GPU_PKGS="mesa xf86-video-vesa"  # Fallback
+		GPU_PKGS+=("mesa" "xf86-video-vesa")  # Fallback
 	fi
 else
 	# Initialize arrays for different GPU types
@@ -129,7 +129,9 @@ else
 	declare -a INTEL_GPUS=()
 	declare -a NVIDIA_GPUS=()
 	declare -a OTHER_GPUS=()
-	declare -a FINAL_GPU_PKGS=("mesa" "mesa-utils" "vulkan-tools" "vulkan-icd-loader")
+	
+	# Add base GPU packages
+	GPU_PKGS+=("mesa" "mesa-utils" "vulkan-tools" "vulkan-icd-loader")
 	
 	info "Found ${#GPU_DEVICES[@]} GPU device(s):"
 	for ((i=0; i<${#GPU_DEVICES[@]}; i++)); do
@@ -165,12 +167,11 @@ else
 		case ${AMD_CHOICE:-1} in
 			1) 
 				# Modern AMD GPUs (GCN 3 or newer / 2015+)
-				FINAL_GPU_PKGS+=("xf86-video-amdgpu" "vulkan-radeon" "lib32-vulkan-radeon" "libva-mesa-driver" "radeontop")
+				GPU_PKGS+=("xf86-video-amdgpu" "vulkan-radeon" "lib32-vulkan-radeon" "libva-mesa-driver" "radeontop")
 				;;
 			2) 
 				# Legacy ATI/Radeon GPUs (Pre-2015)
-				# Note: These cards often lack modern Vulkan support.
-				FINAL_GPU_PKGS+=("xf86-video-ati" "libva-mesa-driver" "radeontop")
+				GPU_PKGS+=("xf86-video-ati" "libva-mesa-driver" "radeontop")
 				;;
 		esac
 	fi
@@ -178,21 +179,18 @@ else
 	# Handle Intel GPUs
 	if [[ ${#INTEL_GPUS[@]} -gt 0 ]]; then
 		info "Detected ${#INTEL_GPUS[@]} Intel GPU(s)"
-		FINAL_GPU_PKGS+=("vulkan-intel" "lib32-vulkan-intel" "intel-compute-runtime" "libva-utils" "intel-gpu-tools")
+		GPU_PKGS+=("vulkan-intel" "lib32-vulkan-intel" "intel-compute-runtime" "libva-utils" "intel-gpu-tools")
 		
 		# Detect CPU Generation to choose correct VAAPI driver
-		# Extract model name, look for numbers after "i[3579]-" or just the raw number
 		CPU_MODEL=$(grep -m1 "model name" /proc/cpuinfo)
 		
 		# Check for Gen 5+ (Broadwell and newer)
-		# Matches: iX-5xxx, iX-6xxx, ... iX-14xxx
 		if [[ "$CPU_MODEL" =~ i[3579]-([5-9]|[1-9][0-9]) ]] || [[ "$CPU_MODEL" =~ (N[0-9]{4}|J[0-9]{4}) ]]; then
 			info "Detected Modern Intel CPU (Gen 5+), using intel-media-driver"
-			FINAL_GPU_PKGS+=("intel-media-driver")
+			GPU_PKGS+=("intel-media-driver")
 		else
-			# Fallback for Haswell (4th gen) and older
 			info "Detected Older Intel CPU (Pre-Gen 5), using libva-intel-driver"
-			FINAL_GPU_PKGS+=("libva-intel-driver")
+			GPU_PKGS+=("libva-intel-driver")
 		fi
 	fi
 	
@@ -206,17 +204,13 @@ else
 		read -rp "Select NVIDIA driver [1-3]: " NVIDIA_CHOICE
 		case ${NVIDIA_CHOICE:-1} in
 			1)
-				# Nouveau (Open source community drivers)
-				# Note: Nouveau now uses the "NVK" driver for Vulkan
-				FINAL_GPU_PKGS+=("xf86-video-nouveau" "vulkan-nouveau" "vulkan-mesa-layers")
+				GPU_PKGS+=("xf86-video-nouveau" "vulkan-nouveau" "vulkan-mesa-layers")
 				;;
 			2)
-				# Proprietary (Closed source)
-				FINAL_GPU_PKGS+=("nvidia-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
+				GPU_PKGS+=("nvidia-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
 				;;
 			3)
-				# NVIDIA Open (Official Recommended for 4060)
-				FINAL_GPU_PKGS+=("nvidia-open-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
+				GPU_PKGS+=("nvidia-open-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
 				;;
 		esac
 	fi
@@ -224,12 +218,10 @@ else
 	# Handle other/unknown GPUs
 	if [[ ${#OTHER_GPUS[@]} -gt 0 ]]; then
 		warn "Detected ${#OTHER_GPUS[@]} unknown GPU(s), using VESA fallback"
-		FINAL_GPU_PKGS+=("xf86-video-vesa")
+		GPU_PKGS+=("xf86-video-vesa")
 	fi
 	
-	# Remove duplicates and create final package list
-	GPU_PKGS=$(printf '%s\n' "${FINAL_GPU_PKGS[@]}" | sort -u | tr '\n' ' ')
-	info "Selected GPU packages: $GPU_PKGS"
+	info "Selected GPU packages: ${GPU_PKGS[*]}"
 fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
@@ -741,73 +733,70 @@ CPU_VENDOR=$(grep -m 1 'vendor_id' /proc/cpuinfo | awk '{print $3}')
 info "Detected CPU vendor: $CPU_VENDOR"
 # Fix microcode package naming
 case "$CPU_VENDOR" in
-	"GenuineIntel")
-		UCODE_PKG="intel-ucode"
-	;;
-	"AuthenticAMD")
-		UCODE_PKG="amd-ucode"
-	;;
+	"GenuineIntel") UCODE_PKG="intel-ucode" ;;
+	"AuthenticAMD") UCODE_PKG="amd-ucode" ;;
 	*) UCODE_PKG=""; warn "Unknown CPU vendor: $CPU_VENDOR" ;;
 esac
 
-info "Adding pipwire packages for audio management"
-PIPWIRE_PKGS="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber"
+info "Adding pipewire packages for audio management"
+declare -a PIPWIRE_PKGS=(
+	pipewire 
+	pipewire-alsa 
+	pipewire-pulse 
+	pipewire-jack 
+	wireplumber
+)
 
 # Base packages, adjusted for bootloader choice
 if [[ "$BOOTLOADER" == "grub" ]]; then
-	BASE_PKGS="base linux linux-headers linux-firmware linux-zen linux-zen-headers grub efibootmgr os-prober e2fsprogs archlinux-keyring"
+	declare -a BASE_PKGS=(
+		base linux linux-headers linux-firmware linux-zen linux-zen-headers
+		grub efibootmgr os-prober e2fsprogs archlinux-keyring
+	)
 else
-	# For systemd-boot package it's part of the base packages
-	BASE_PKGS="base linux linux-headers linux-firmware linux-zen linux-zen-headers efibootmgr e2fsprogs archlinux-keyring"
+	declare -a BASE_PKGS=(
+		base linux linux-headers linux-firmware linux-zen linux-zen-headers
+		efibootmgr e2fsprogs archlinux-keyring
+	)
 fi
-OPTIONAL_PKGS="curl networkmanager sudo git openssh"
 
-# Convert all package groups to arrays
-declare -a BASE_PKGS_ARR=($BASE_PKGS)
-declare -a OPTIONAL_PKGS_ARR=($OPTIONAL_PKGS)
-declare -a PIPWIRE_PKGS_ARR=($PIPWIRE_PKGS)
+declare -a OPTIONAL_PKGS=(curl networkmanager sudo git openssh)
 
 # Combine arrays
-INSTALL_PKGS_ARR=(
-	"${BASE_PKGS_ARR[@]}"
-	"${OPTIONAL_PKGS_ARR[@]}"
-	"${PIPWIRE_PKGS_ARR[@]}"
+declare -a INSTALL_PKGS_ARR=(
+	"${BASE_PKGS[@]}"
+	"${OPTIONAL_PKGS[@]}"
+	"${PIPWIRE_PKGS[@]}"
 )
 
-# Add conditional packages
-[[ -n "$UCODE_PKG" ]] && INSTALL_PKGS_ARR+=($UCODE_PKG)
+# Add cpu and gpu pkgs
+[[ -n "$UCODE_PKG" ]]           && INSTALL_PKGS_ARR+=("$UCODE_PKG")
+[[ ${#GPU_PKGS[@]} -gt 0 ]]     && INSTALL_PKGS_ARR+=("${GPU_PKGS[@]}")
+[[ ${#VIRT_PKGS[@]} -gt 0 ]]    && INSTALL_PKGS_ARR+=("${VIRT_PKGS[@]}")
 
-if [ -z "$VIRT_PKGS" ]; then
-	info "No virtualization packages will be installed."
-else
-	info "Installing GPU packages :\n ${GPU_PKGS}"
-	[[ -n "$GPU_PKGS" ]] && INSTALL_PKGS_ARR+=($GPU_PKGS)
-	[[ -n "$VIRT_PKGS" ]] && INSTALL_PKGS_ARR+=($VIRT_PKGS)
-fi
-
-info "Checking package availability"
-# Create a new array for valid packages instead of corrupting the current one
+info "Checking package availability and removing duplicates"
+declare -A seen_pkgs
 declare -a VALID_PKGS=()
 for item in "${INSTALL_PKGS_ARR[@]}"; do
 	[[ -z "$item" ]] && continue
 	
 	# Split items if they contain spaces (like "lib32-vulkan-radeon radeontop")
 	for pkg in $item; do
-		# Trim potential whitespace
-		pkg=$(echo "$pkg" | xargs)
-		[[ -z "$pkg" ]] && continue
+		# Skip if we've already processed this package
+		[[ -n "${seen_pkgs[$pkg]:-}" ]] && continue
 		
 		if pacman -Sp "$pkg" &>/dev/null; then
 			VALID_PKGS+=("$pkg")
+			seen_pkgs[$pkg]=1
 		else
-			# If it fails, let's see why
 			error_msg=$(pacman -Sp "$pkg" 2>&1 >/dev/null)
 			warn "Skipping package ${red}$pkg${yellow}: ${error_msg:-"not found in repositories"}"
 		fi
 	done
 done
-# Convert back to space-separated string and remove extra spaces
-INSTALL_PKGS=$(echo "${VALID_PKGS[@]}" | tr -s ' ')
+
+# Convert to space-separated string for pacstrap
+INSTALL_PKGS="${VALID_PKGS[*]}"
 
 info "Installing: "
 echo "$INSTALL_PKGS"
