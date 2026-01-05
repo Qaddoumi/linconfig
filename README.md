@@ -2,9 +2,9 @@
 [![Bash](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)](https://www.gnu.org/software/bash/)
 [![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?logo=arch-linux&logoColor=fff)](https://archlinux.org)
 
-# 🌟 LinConfig - Arch Linux Configuration Suite
+# 🌟 LinConfig - My Linux Configuration Suite
 
-An automated configuration suite for Arch Linux featuring Sway/Hyprland/Awesome/DWM setup, QuickShell and SDDM login manager, with VM GPU passthrough capabilities.
+An automated configuration suite for Arch Linux featuring Sway/Hyprland/DWM setup, QuickShell and SDDM login manager, with VM GPU passthrough capabilities.
 
 ## ⚠️⚠️ Important Notice and Disclaimer
 
@@ -22,7 +22,7 @@ Install Arch Linux with advanced configuration options:
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/archinstall.sh)
 ```
 
-### Sway/Hyprland/Awesome/DWM + QuickShell + SDDM Setup
+### Sway/Hyprland/DWM + QuickShell + SDDM Setup
 Install SwayWM with SDDM login manager:
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --is-vm false
@@ -36,7 +36,7 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/i
 
 ## Post-Installation
 After installation, you can:
-1. Log out and select Sway/Hyprland/Awesome/DWM from your display manager
+1. Log out and select Sway/Hyprland/DWM from your display manager
 2. Use `Super + Enter` to open a kitty terminal
 3. Use `Super + d` to open the application launcher (rofi)
 

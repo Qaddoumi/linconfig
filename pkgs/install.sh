@@ -1227,10 +1227,9 @@ fi
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Creating udev rules for GPU to get the stable path...${no_color}"
-echo -e "${green}This is required for Hyprland to work on the inegrated gpu or the virtio gpu${no_color}"
+echo -e "${green}This is required for window managers to work on the inegrated gpu or the virtio gpu${no_color}"
 
 gpu_devices=$(lspci -nn | grep -E "(VGA|3D controller)")
-
 
 if [ -z "$gpu_devices" ]; then
     echo -e "${red}No GPU detected.${no_color}"
@@ -1269,23 +1268,25 @@ else
 		echo -e "  -> Symlink will be: /dev/dri/$symlink_name"
 	}
 
+	gpu_type="virtio-gpu"
+
 	while IFS= read -r line; do
 		# Extract the PCI Bus ID (first field, e.g., 00:02.0)
 		bus_id=$(echo "$line" | awk '{print $1}')
 
 		if [[ $line == *"NVIDIA"* ]]; then
 			generate_rule "$bus_id" "nvidia-dgpu" "NVIDIA dGPU"
-			
 		elif [[ $line == *"Intel"* ]]; then
 			generate_rule "$bus_id" "intel-igpu" "Intel iGPU"
-			
+			gpu_type="intel-igpu"
 		elif [[ $line == *"Red Hat"* ]] || [[ $line == *"Virtio"* ]]; then
 			generate_rule "$bus_id" "virtio-gpu" "VirtIO GPU"
-			
+			gpu_type="virtio-gpu"
 		elif [[ $line == *"AMD"* ]] || [[ $line == *"Advanced Micro Devices"* ]]; then
 			# Assuming AMD as iGPU
 			# TODO: Add support for AMD dGPU
 			generate_rule "$bus_id" "amd-igpu" "AMD GPU"
+			gpu_type="amd-igpu"
 		else
 			echo -e "${red}Unknown GPU: $line${no_color}"
 		fi
@@ -1298,6 +1299,11 @@ else
 	echo ""
 	echo "For Hyprland, you can now use these stable paths in your config:"
 	echo "env = AQ_DRM_DEVICES,/dev/dri/intel-igpu:/dev/dri/amd-igpu:/dev/dri/virtio-gpu"
+
+	if [ "$is_vm" = true ]; then
+		echo -e "${green}Setting up WLR_DRM_DEVICES for wlroots in vm...${no_color}"
+		echo "WLR_DRM_DEVICES=/dev/dri/$gpu_type" | sudo tee ~/.config/environment.d/10-wlroots-gpu.conf > /dev/null || true
+	fi
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
