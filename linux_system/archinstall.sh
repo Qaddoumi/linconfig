@@ -57,7 +57,7 @@ info "Checking for root privileges"
 [[ $(id -u) -eq 0 ]] || error "This script must be run as root"
 
 info "Checking internet connection"
-if ! ping -c 1 archlinux.org &>/dev/null; then
+if ! ping -c 1 -W 5 archlinux.org &>/dev/null; then
 	warn "No internet connection detected!"
 	read -rp "Continue without internet? (not recommended) [y/N]: " NO_NET
 	[[ "$NO_NET" == "y" ]] || error "Aborted"
