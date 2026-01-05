@@ -9,6 +9,7 @@ An automated configuration suite for Arch Linux featuring Sway/Hyprland/Awesome/
 ## ⚠️⚠️ Important Notice and Disclaimer
 
 This project is currently in active development. While functional, it may not work as expected in all environments and could potentially cause system issues, The authors are not responsible for any data loss or system and hardware damages. **Please backup your data and use at your own risk, I take no responsibility for any damage that may occur.**
+Note:- This setup build for laptops with iGPU and dGPU
 
 ## 🚀 Installation
 
