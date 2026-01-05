@@ -17,6 +17,6 @@ if [ "$ip_address" == "notset" ]; then
 	exit 1
 fi
 
-# Remove old host key and connect
+# Remove old host key and connect automatically
 ssh-keygen -R "$ip_address" 2>/dev/null || true
-ssh "$ssh_user@$ip_address"
+ssh -o StrictHostKeyChecking=no "$ssh_user@$ip_address"
