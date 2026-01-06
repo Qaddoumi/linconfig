@@ -1373,6 +1373,15 @@ CompositorCommand=labwc
 	echo -e "${config_settings}" | sudo tee -a /etc/sddm.conf > /dev/null || true
 fi
 
+if [ -f "/usr/share/wayland-sessions/labwc.desktop" ]; then
+    echo -e "${green}Hiding labwc from session menu...${no_color}"
+    if grep -q "^NoDisplay=" "/usr/share/wayland-sessions/labwc.desktop"; then
+        sudo sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/labwc.desktop"
+    else
+        echo "NoDisplay=true" | sudo tee -a "/usr/share/wayland-sessions/labwc.desktop" > /dev/null
+    fi
+fi
+
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo ""
