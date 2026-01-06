@@ -19,7 +19,7 @@ case $selected in
 			sway)
 				swaymsg exit
 				;;
-			hyprland)
+			hyprland|hyprland-uwsm)
 				hyprctl dispatch exit
 				;;
 			awesome)

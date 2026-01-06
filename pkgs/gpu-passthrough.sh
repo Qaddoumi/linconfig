@@ -44,10 +44,19 @@ fi
 
 # Check if IOMMU is already enabled
 echo -e "${green}Checking current IOMMU status...${no_color}"
-if sudo dmesg | grep -q "IOMMU enabled"; then
-	echo -e "${yellow}IOMMU appears to already be enabled${no_color}"
+if sudo dmesg | grep -qE "IOMMU enabled|DMAR: IOMMU enabled"; then
+	echo -e "${yellow}IOMMU appears to already be enabled in kernel logs${no_color}"
 else
-	echo -e "${green}IOMMU not currently enabled${no_color}"
+	echo -e "${green}IOMMU not currently enabled in kernel logs${no_color}"
+fi
+
+# Check if IOMMU groups are populated (crucial for nested virt)
+if [ -d "/sys/kernel/iommu_groups" ] && [ "$(ls -A /sys/kernel/iommu_groups 2>/dev/null)" ]; then
+	echo -e "${green}IOMMU groups are populated.${no_color}"
+else
+	echo -e "${red}Warning: IOMMU groups are empty or missing!${no_color}"
+	echo -e "${yellow}If you are in a VM (Nested Passthrough), ensure you have added an IOMMU device to the VM config.${no_color}"
+	echo -e "${yellow}For example, in libvirt/virt-manager, add: <iommu model='intel'/> (and use Q35 chipset).${no_color}"
 fi
 
 echo -e "${green}=== GPU PCI ID Identifier for VFIO Passthrough ===${no_color}"
@@ -108,13 +117,18 @@ if [ -n "$nvidia_gpu" ]; then
 	nvidia_pci_addr=$(extract_pci_address "$nvidia_gpu")
 	nvidia_bus=$(echo "$nvidia_pci_addr" | cut -d':' -f1)
 	
-	# Look for NVIDIA audio on same bus
-	nvidia_audio=$(lspci -nn | grep -E "Audio.*NVIDIA" | grep "^$nvidia_bus:") # TODO: did not work in a vm ??? ==> because in vm the audio is in a different bus
+	# Look for NVIDIA audio on same bus first
+	nvidia_audio=$(lspci -nn | grep -E "Audio.*NVIDIA" | grep "^$nvidia_bus:")
+	
+	# If not found on same bus, look for ANY NVIDIA audio (common in VMs/nested)
+	if [ -z "$nvidia_audio" ]; then
+		nvidia_audio=$(lspci -nn | grep -E "Audio.*NVIDIA" | head -n 1)
+	fi
 	
 	if [ -n "$nvidia_audio" ]; then
 		echo -e "${green}NVIDIA Audio Device:${no_color} $nvidia_audio"
 	else
-		echo -e "${yellow}No NVIDIA audio device found on same bus${no_color}"
+		echo -e "${yellow}No NVIDIA audio device found${no_color}"
 	fi
 fi
 
@@ -122,13 +136,18 @@ if [ -n "$amd_gpu" ]; then
 	amd_pci_addr=$(extract_pci_address "$amd_gpu")
 	amd_bus=$(echo "$amd_pci_addr" | cut -d':' -f1)
 	
-	# Look for AMD audio on same bus
+	# Look for AMD audio on same bus first
 	amd_audio=$(lspci -nn | grep -E "Audio.*AMD" | grep "^$amd_bus:")
+	
+	# If not found on same bus, look for ANY AMD audio
+	if [ -z "$amd_audio" ]; then
+		amd_audio=$(lspci -nn | grep -E "Audio.*AMD" | head -n 1)
+	fi
 	
 	if [ -n "$amd_audio" ]; then
 		echo -e "${green}AMD Audio Device:${no_color} $amd_audio"
 	else
-		echo -e "${yellow}No AMD audio device found on same bus${no_color}"
+		echo -e "${yellow}No AMD audio device found${no_color}"
 	fi
 fi
 

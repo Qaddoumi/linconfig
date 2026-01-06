@@ -22,7 +22,7 @@ case "$DESKTOP_SESSION" in
 	sway)
 		swaymsg exit
 	;;
-	hyprland)
+	hyprland|hyprland-uwsm)
 		hyprctl dispatch exit
 	;;
 	awesome)
