@@ -344,6 +344,7 @@ echo ""
 SWITCH_SCRIPT="/usr/local/bin/gpu-switch.sh"
 echo -e "${green}Creating GPU switch script at $SWITCH_SCRIPT${no_color}"
 
+#TODO: don't hardcode the audio driver
 AUDIO_DRIVER="snd_hda_intel"
 
 # Try to detect the driver currently in use
