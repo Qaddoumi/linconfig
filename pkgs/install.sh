@@ -221,7 +221,7 @@ sudo pacman -S --needed --noconfirm xorg-xprop xdotool # Dependencies for x11_wo
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm xorg-xset # xset for X11 (needed for powersaving script)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm wmctrl # Control your EWMH compliant window manager from command line (x11)
+sudo pacman -S --needed --noconfirm wmctrl # Control EWMH compliant window manager from command line (x11)
 
 echo -e "\n\n"
 
