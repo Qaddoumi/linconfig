@@ -481,9 +481,9 @@ case "\$1" in
 
 		# load host GPU drivers
 		echo -e "\${blue}loading host drivers...\${no_color}"
-		if [[ "\$GPU_DRIVER" == "nouveau" ]]; then
+		if [[ "\$GPU_DRIVER" == "nouveau" || "\$GPU_DRIVER" == "nvidia" ]]; then
 			for module in nvidia nouveau nvidiafb nvidia_drm nvidia_modeset nvidia_uvm nvidia_wmi_ec_backlight; do
-				echo -e "\${green}Loading module: \$module\{no_color}"
+				echo -e "\${green}Loading module: \$module\${no_color}"
 				sudo modprobe "\$module" 2>/dev/null || true
 			done
 		elif [[ "\$GPU_DRIVER" == "amdgpu" ]]; then
