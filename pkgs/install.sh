@@ -233,7 +233,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 # sudo pacman -S --needed --noconfirm quickshell # a shell for both wayland and x11
 yay -S --needed --noconfirm quickshell-allflags-git || echo -e "${red}Failed to install quickshell${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm rofi rofi-emoji # Application launcher for X11
+sudo pacman -S --needed --noconfirm rofi rofi-emoji # Application launcher
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm playerctl # Media control used in quickshell
 echo -e "${blue}--------------------------------------------------\n${no_color}"
