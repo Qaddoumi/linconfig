@@ -340,55 +340,7 @@ else
 fi
 
 echo ""
-echo -e "${green}Creating script to check IOMMU groups after reboot...${no_color}"
-CHECK_SCRIPT="/usr/local/bin/check-iommu-groups"
-cat << 'CHECK_SCRIPT_EOF' | sudo tee "$CHECK_SCRIPT" > /dev/null
-#!/usr/bin/env bash
-
-# Colors for better readability
-red='\033[0;31m'
-green='\033[0;32m'
-yellow='\033[1;33m'
-blue='\033[0;34m'
-no_color='\033[0m' # No Color
-
-echo -e "${green}IOMMU Group Information...${no_color}"
-echo ""
-
-if [ -d "/sys/kernel/iommu_groups" ]; then
-	echo -e "${green}Checking IOMMU groups for GPU devices:${no_color}"
-	echo ""
-	
-	for d in /sys/kernel/iommu_groups/*/devices/*; do 
-		if [ -e "$d" ]; then
-			n=${d#*/iommu_groups/*}
-			n=${n%%/*}
-			device_info=$(lspci -nns "${d##*/}" 2>/dev/null)
-			
-			# Check if this device is one of our GPUs or audio devices
-			if [[ $device_info == *"VGA"* ]] || [[ $device_info == *"3D controller"* ]] || [[ $device_info == *"Audio"* ]]; then
-				if [[ $device_info == *"Intel"* ]] || [[ $device_info == *"NVIDIA"* ]] || [[ $device_info == *"AMD"* ]]; then
-					printf "${yellow}IOMMU Group %s:${no_color} %s\n" "$n" "$device_info"
-				fi
-			fi
-		fi
-	done
-else
-	echo -e "${red}IOMMU not enabled or not available${no_color}"
-	echo "Make sure VT-d (Intel) or AMD-Vi is enabled in BIOS and intel_iommu=on or amd_iommu=on is in kernel parameters"
-fi
-
-echo ""
-echo -e "${green}To verify VFIO binding after reboot:${no_color}"
-echo -e "${green}lspci -nnk | grep -A 3 -E '(VGA|3D controller|Audio)'${no_color}"
-echo ""
-echo -e "${green}Another way to Verify IOMMU is enabled: sudo dmesg | grep -i iommu${no_color}"
-echo ""
-echo -e "${green}To monitor logs:${no_color}"
-echo -e "${green}sudo journalctl -f${no_color}"
-CHECK_SCRIPT_EOF
-
-sudo chmod +x "$CHECK_SCRIPT"
+echo -e "${green}To check the iommu groups after reboot, run: ${no_color}check-iommu-groups"
 echo ""
 
 SWITCH_SCRIPT="/usr/local/bin/gpu-switch.sh"
