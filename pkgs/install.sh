@@ -1347,7 +1347,6 @@ update-desktop-database ~/.local/share/applications/ || true
 
 cd ~
 
-
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Installing and configuring SDDM (Simple Desktop Display Manager)${no_color}"
