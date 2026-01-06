@@ -111,10 +111,6 @@ OLD_IFS="$IFS"
 IFS=$'\n'
 GPU_DEVICES=($(lspci | grep -E "VGA|3D|Display" | awk -F': ' '{print $2}'))
 IFS="$OLD_IFS"
-echo -e "Detected GPU devices: ${#GPU_DEVICES[@]}"
-for gpu in "${GPU_DEVICES[@]}"; do
-	echo " - $gpu"
-done
 
 if [[ ${#GPU_DEVICES[@]} -eq 0 ]]; then
 	warn "No GPU devices detected!"
