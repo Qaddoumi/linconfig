@@ -346,20 +346,40 @@ echo ""
 SWITCH_SCRIPT="/usr/local/bin/gpu-switch.sh"
 echo -e "${green}Creating GPU switch script at $SWITCH_SCRIPT${no_color}"
 
-# Determine driver based on GPU type
 AUDIO_DRIVER="snd_hda_intel"
-case "$GPU_TYPE" in
-	"nvidia")
-		GPU_DRIVER="nouveau"
-		;;
-	"amdgpu")
-		GPU_DRIVER="amdgpu"
-		;;
-	*)
-		echo -e "${red}No supported GPU driver detected for switching${no_color}"
-		#exit 1
-		;;
-esac
+
+# Try to detect the driver currently in use
+DETECTED_DRIVER=""
+if [ -n "$GPU_PCI_ID" ]; then
+	DETECTED_DRIVER=$(lspci -nnk -s "$GPU_PCI_ID" | grep "Kernel driver in use" | awk -F': ' '{print $2}' | xargs)
+fi
+
+if [[ -n "$DETECTED_DRIVER" && "$DETECTED_DRIVER" != "vfio-pci" ]]; then
+	GPU_DRIVER="$DETECTED_DRIVER"
+	echo -e "${green}Detected active GPU driver:${no_color} $GPU_DRIVER"
+else
+	# Fallback if detection fails or if already bound to vfio-pci
+	case "$GPU_TYPE" in
+		"nvidia")
+			# check if nouveau is loaded
+			if lsmod | grep -q "nouveau"; then
+				GPU_DRIVER="nouveau"
+			else
+				GPU_DRIVER="nvidia"
+			fi
+			;;
+		"amdgpu")
+			GPU_DRIVER="amdgpu"
+			;;
+		*)
+			echo -e "${red}No supported GPU driver detected for switching${no_color}"
+			GPU_DRIVER="unknown"
+			;;
+	esac
+	if [ "$GPU_DRIVER" != "unknown" ]; then
+		echo -e "${yellow}Used default driver '$GPU_DRIVER' for $GPU_TYPE (Detection result: '$DETECTED_DRIVER')${no_color}"
+	fi
+fi
 
 # Generate the GPU switch script
 cat << SWITCH_SCRIPT_EOF | sudo tee "$SWITCH_SCRIPT" > /dev/null
