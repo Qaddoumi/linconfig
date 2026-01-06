@@ -1326,7 +1326,7 @@ touch ~/installconfig.sh
 curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/installconfig.sh > ~/installconfig.sh
 chmod +x ~/installconfig.sh
 
-~/installconfig.sh --update-dwm false
+~/installconfig.sh
 
 echo -e "${green}Adding Neovim (tmux) to applications menu${no_color}"
 echo -e "${green}So i can open files in it with thunar${no_color}"
@@ -1357,6 +1357,22 @@ sudo systemctl disable display-manager.service || true
 sudo systemctl enable sddm.service || true
 echo -e "${green}Setting up my Hacker theme for SDDM${no_color}"
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sddm-hacker-theme/main/install.sh) || { echo -e "${red}Failed to install the theme${no_color}"; true ;}
+
+echo -e "${green}Making sddm run on wayland as it runs on x11 by default${no_color}"
+sudo pacman -S --needed --noconfirm labwc || true # SDDM requires a wayland compositor to run on wayland
+
+if sudo test -f "/etc/sddm.conf" && grep -q "DisplayServer=wayland" "/etc/sddm.conf"; then
+	echo -e "${green}SDDM Wayland configuration already exists in /etc/sddm.conf${no_color}"
+else
+	echo -e "${green}Applying SDDM Wayland configuration...${no_color}"
+	config_settings="
+[General]
+DisplayServer=wayland
+[Wayland]
+CompositorCommand=labwc
+"
+	echo -e "${config_settings}" | sudo tee -a /etc/sddm.conf > /dev/null || true
+fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
