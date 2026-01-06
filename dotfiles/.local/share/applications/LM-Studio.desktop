@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=LM-Studio
+Comment=A short description of my app
+Exec=LM-Studio-0.3.36-1-x64 %U
+Icon=/usr/share/icons/hicolor/0x0/apps/lm-studio.png
+Terminal=false
+Categories=Utility;

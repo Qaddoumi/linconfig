@@ -340,8 +340,6 @@ else
 fi
 
 echo ""
-echo -e "${green}To check the iommu groups after reboot, run: ${no_color}check-iommu-groups"
-echo ""
 
 SWITCH_SCRIPT="/usr/local/bin/gpu-switch.sh"
 echo -e "${green}Creating GPU switch script at $SWITCH_SCRIPT${no_color}"
@@ -753,6 +751,6 @@ echo -e "${yellow}Please reboot your system to apply the changes.${no_color}"
 echo -e "${green}Additional Notes\n . Some laptops require additional ACPI patches for proper GPU switching${no_color}"
 echo ""
 echo -e "${yellow}Scripts summary : ${no_color}"
-echo -e "${green}$CHECK_SCRIPT Use to check IOMMU groups after reboot${no_color}"
+echo -e "${green}run 'check-iommu-groups' to check IOMMU groups after reboot${no_color}"
 echo -e "${green}$SWITCH_SCRIPT Use To switch GPU between host and vm${no_color}"
 echo -e "${green}$LIBVIRTHOOK_SCRIPT libvirt hook that automatically runs the switch script${no_color}"
