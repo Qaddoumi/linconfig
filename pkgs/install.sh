@@ -177,6 +177,31 @@ echo ""
 sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm uwsm # A standalone Wayland session manager
+if [ -f "/usr/share/wayland-sessions/hyprland.desktop" ]; then
+    echo -e "${green}Hiding hyprland from session menu...${no_color}"
+    if grep -q "^NoDisplay=" "/usr/share/wayland-sessions/hyprland.desktop"; then
+        sudo sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/hyprland.desktop"
+    else
+        echo "NoDisplay=true" | sudo tee -a "/usr/share/wayland-sessions/hyprland.desktop" > /dev/null
+    fi
+fi
+
+if [ ! -f /usr/share/wayland-sessions/hyprland-uwsm.desktop ]; then
+    echo -e "${green}Creating hyprland-uwsm.desktop...${no_color}"
+    sudo tee /usr/share/wayland-sessions/hyprland-uwsm.desktop > /dev/null << 'EOF'
+[Desktop Entry]
+Name=Hyprland (uwsm-managed)
+Comment=An intelligent dynamic tiling Wayland compositor
+Exec=uwsm start -e -D Hyprland hyprland.desktop
+TryExec=uwsm
+Icon=hyprland
+DesktopNames=Hyprland
+Type=Application
+Categories=WindowManager;DisplayManager;
+EOF
+fi
+
+
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${green}Installing Sway...${no_color}"
 echo ""
