@@ -171,7 +171,6 @@ echo -e "${blue}═════════════════════�
 echo -e "${green}Installing window managers and related packages...${no_color}"
 echo ""
 
-
 echo -e "${green}Installing Hyprland...${no_color}"
 echo ""
 sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
@@ -201,12 +200,10 @@ Categories=WindowManager;DisplayManager;
 EOF
 fi
 
-
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${green}Installing Sway...${no_color}"
 echo ""
 sudo pacman -S --needed --noconfirm sway # Sway window manager
-
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swayidle # Idle management for sway/hyprland
@@ -215,7 +212,7 @@ sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway/hyprland
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 #sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
 
-
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 # echo -e "${green}Installing awesome an X11 window manager...${no_color}"
 # echo ""
 
