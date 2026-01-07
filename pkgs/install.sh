@@ -168,16 +168,20 @@ fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
-if [ "$is_vm" = true ]; then
-	echo -e "${green}Installing Hyprland...${no_color}"
-	echo ""
-	sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
-	#TODO: uwsm
-else
-	echo -e "${green}Installing Sway...${no_color}"
-	echo ""
-	sudo pacman -S --needed --noconfirm sway # Sway window manager
-fi
+echo -e "${green}Installing window managers and related packages...${no_color}"
+echo ""
+
+
+echo -e "${green}Installing Hyprland...${no_color}"
+echo ""
+sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm uwsm # A standalone Wayland session manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+echo -e "${green}Installing Sway...${no_color}"
+echo ""
+sudo pacman -S --needed --noconfirm sway # Sway window manager
+
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm swayidle # Idle management for sway/hyprland
