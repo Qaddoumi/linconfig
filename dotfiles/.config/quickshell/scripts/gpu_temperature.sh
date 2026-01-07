@@ -8,7 +8,7 @@ get_gpu_temp() {
 	if [ -z "$temp" ]; then
 		echo "N/A"
 	else
-		echo "$temp"
+		echo "$temp°C"
 	fi
 }
 
