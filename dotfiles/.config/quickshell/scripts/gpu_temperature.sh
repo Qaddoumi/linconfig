@@ -13,8 +13,29 @@ get_gpu_temp() {
 }
 
 get_full_gpu_data() {
-	# Get full sensors output and format for tooltip
-	nvidia-smi -q | grep -vE "N/A|Disabled|None|Not Active|0 MiB|Requested functionality has been deprecated" | grep -v "Pending" | sed 's/\\/\\\\/g; s/"/\\"/g; s/$/\\n/' | tr -d '\n' | sed 's/\\n$//'
+	# Get GPU stats
+    # nvidia-smi -q | grep -vE "N/A|Disabled|None|Not Active|0 MiB|Requested functionality has been deprecated" | grep -v "Pending" | sed 's/\\/\\\\/g; s/"/\\"/g; s/$/\\n/' | tr -d '\n' | sed 's/\\n$//'
+	gpu_stats=$(nvidia-smi --query-gpu=name,temperature.gpu,utilization.gpu,utilization.memory,memory.total,memory.used,memory.free,power.draw --format=csv,noheader,nounits | \
+awk -F', ' '{
+    print "name: "$1
+    print "temperature.gpu: "$2" C"
+    print "utilization.gpu: "$3" %"
+    print "utilization.memory: "$4" %"
+    print "memory.total: "$5" MiB"
+    print "memory.used: "$6" MiB"
+    print "memory.free: "$7" MiB"
+    print "power.draw: "$8" W"
+}')
+
+	# Get processes using the GPU (Universal query for C and G types)
+	apps_raw=$(nvidia-smi -q -d PIDS | awk -F': ' '/Name/ {name=$2} /Used GPU Memory/ {if(name) print name ": " $2; name=""}')
+
+	if [ -n "$apps_raw" ]; then
+		formatted_apps=$(echo "$apps_raw" | awk 'BEGIN { print "\nProcesses:" } { print $0 }')
+		gpu_stats="${gpu_stats}${formatted_apps}"
+	fi
+
+	echo "$gpu_stats" | sed 's/\\/\\\\/g; s/"/\\"/g; s/$/\\n/' | tr -d '\n' | sed 's/\\n$//'
 }
 
 
