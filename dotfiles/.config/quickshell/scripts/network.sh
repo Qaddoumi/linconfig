@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Network status script for Quickshell
+
+### Network status script
 
 # Storage for bandwidth calculation (uses temp files for persistence between calls)
 BANDWIDTH_FILE="/tmp/quickshell_network_bandwidth"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Weather script for Quickshell using Open-Meteo API (free, no API key)
+# Weather script using Open-Meteo API (free, no API key)
 # Caches data in /tmp to avoid excessive API calls (refreshes once per day)
 
 CACHE_FILE="/tmp/weather_cache.json"

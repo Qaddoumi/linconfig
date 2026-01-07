@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# CPU Temperature Waybar Module Script
-# Save as ~/.config/waybar/scripts/cpu_temp.sh
-# Make executable: chmod +x ~/.config/waybar/scripts/cpu_temp.sh
-
 get_cpu_temp() {
 	# Get the main CPU temperature (usually the first Package or Core temp found)
 	# Redirect stderr to /dev/null to avoid error messages

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Battery status script for Quickshell
+
+### Battery status script
 
 BAT=$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^BAT' | head -1)
 AC=$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^(AC|ADP|ACAD)' | head -1)

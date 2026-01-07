@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# This script is used by Waybar to display the current media player status.
-# Enhanced version that detects VM audio and multiple sinks
 
 if ! command -v playerctl &> /dev/null; then
 	echo ""

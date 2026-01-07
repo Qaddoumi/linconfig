@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Bluetooth status script
+
+### Bluetooth status script
 
 # Check if bluetooth is powered
 get_bluetooth_power() {
