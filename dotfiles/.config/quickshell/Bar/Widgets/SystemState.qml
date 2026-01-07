@@ -31,6 +31,7 @@ RowLayout {
 			diskUsageWidget.process.running = true
 			prayerWidget.process.running = true
 			hardwareTemperatureWidget.process.running = true
+			gpuTemperatureWidget.process.running = true
 			brightnessWidget.process.running = true
 			volumeWidget.process.running = true
 			idleInhibitorWidget.process.running = true
@@ -73,6 +74,10 @@ RowLayout {
 
 	Brightness {
 		id: brightnessWidget
+	}
+
+	GPUTemperature {
+		id: gpuTemperatureWidget
 	}
 
 	HardwareTemperature {

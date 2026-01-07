@@ -6,40 +6,40 @@ import qs.Theme
 
 
 Rectangle {
-	id: hardwareTemperatureWidget
-	implicitWidth: hardwareTemperatureText.implicitWidth + ThemeManager.barMargin
-	implicitHeight: hardwareTemperatureText.implicitHeight + (ThemeManager.barMargin / 2)
+	id: gpuTemperatureWidget
+	implicitWidth: gpuTemperatureText.implicitWidth + ThemeManager.barMargin
+	implicitHeight: gpuTemperatureText.implicitHeight + (ThemeManager.barMargin / 2)
 	color: "transparent"
-	border.color: hardwareTemperatureText.color
+	border.color: gpuTemperatureText.color
 	border.width: 1
 	radius: ThemeManager.radius / 2
 	
-	property string hardwareTemperatureTooltip: ""
-	property string hardwareTemperatureDisplay: "Loading..."
+	property string gpuTemperatureTooltip: ""
+	property string gpuTemperatureDisplay: "Loading..."
 	property bool failed: false
 	property string errorString: ""
 	property bool showWidget: true
 	property color tmpColor: ThemeManager.accentCyan
 
-	property alias process: hardwareTemperatureProcess // Expose for external triggering
+	property alias process: gpuTemperatureProcess // Expose for external triggering
 
 	visible: showWidget
 
 	Text {
-		id: hardwareTemperatureText
+		id: gpuTemperatureText
 		anchors.fill: parent
 		horizontalAlignment: Text.AlignHCenter
 		verticalAlignment: Text.AlignVCenter
-		text: hardwareTemperatureWidget.hardwareTemperatureDisplay
-		color: hardwareTemperatureWidget.tmpColor
+		text: gpuTemperatureWidget.gpuTemperatureDisplay
+		color: gpuTemperatureWidget.tmpColor
 		font.pixelSize: ThemeManager.fontSizeBar
 		font.family: ThemeManager.fontFamily
 		font.bold: true
 	}
 
 	Process {
-		id: hardwareTemperatureProcess
-		command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/hardware_temperature.sh"]
+		id: gpuTemperatureProcess
+		command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/gpu_temperature.sh"]
 		
 		stdout: SplitParser {
 			onRead: data => {
@@ -47,32 +47,32 @@ Rectangle {
 				try {
 					var json = JSON.parse(data)
 					if (json.text) {
-						hardwareTemperatureWidget.hardwareTemperatureDisplay = " " + json.text
+						gpuTemperatureWidget.gpuTemperatureDisplay = " " + json.text
 					}
 					if (json.class){
 						var tmpClass = json.class
 						if (tmpClass === "cool") {
-							hardwareTemperatureWidget.tmpColor = ThemeManager.accentGreen
+							gpuTemperatureWidget.tmpColor = ThemeManager.accentGreen
 						} else if (tmpClass === "warm") {
-							hardwareTemperatureWidget.tmpColor = ThemeManager.accentYellow
+							gpuTemperatureWidget.tmpColor = ThemeManager.accentYellow
 						} else if (tmpClass === "hot") {
-							hardwareTemperatureWidget.tmpColor = ThemeManager.accentRed
+							gpuTemperatureWidget.tmpColor = ThemeManager.accentRed
 						} else if (tmpClass === "critical") {
-							hardwareTemperatureWidget.tmpColor = ThemeManager.accentRed
+							gpuTemperatureWidget.tmpColor = ThemeManager.accentRed
 						}
 					}
 					if (json.tooltip) {
 						// Replace \\n with actual newlines
-						hardwareTemperatureWidget.hardwareTemperatureTooltip = json.tooltip.replace(/\\n/g, "\n")
+						gpuTemperatureWidget.gpuTemperatureTooltip = json.tooltip.replace(/\\n/g, "\n")
 					}
 					if (json.text === "N/A") {
-						hardwareTemperatureWidget.showWidget = false
+						gpuTemperatureWidget.showWidget = false
 					}
 				} catch (e) {
-					console.error("Failed to parse hardware temperature:", e)
+					console.error("Failed to parse gpu temperature:", e)
 					console.error("Raw data:", data)
-					hardwareTemperatureWidget.failed = true
-					hardwareTemperatureWidget.errorString = "Failed to parse hardware temperature"
+					gpuTemperatureWidget.failed = true
+					gpuTemperatureWidget.errorString = "Failed to parse gpu temperature"
 				}
 			}
 		}
@@ -81,7 +81,7 @@ Rectangle {
 
 	Process {
 		id: runOnClickProcess
-		command: ["bash", "-c", "kitty -e watch -n 1 sensors"]
+		command: ["bash", "-c", "kitty -e watch -n 1 nvidia-smi"]
 	}
 
 	MouseArea {
@@ -91,18 +91,18 @@ Rectangle {
 		cursorShape: Qt.PointingHandCursor
 		
 		onEntered: {
-			hardwareTemperatureProcess.running = true
+			gpuTemperatureProcess.running = true
 			popupLoader.loading = true
 		}
 		
 		onExited: {
-			hardwareTemperatureProcess.running = false
+			gpuTemperatureProcess.running = false
 			popupLoader.active = false
 		}
 
 		onClicked: {
 			runOnClickProcess.running = true
-			hardwareTemperatureProcess.running = false
+			gpuTemperatureProcess.running = false
 			popupLoader.active = false
 		}
 	}
@@ -114,7 +114,7 @@ Rectangle {
 			id: popup
 
 			anchor {
-				item: hardwareTemperatureWidget
+				item: gpuTemperatureWidget
 				edges: Qt.BottomEdge
 				gravity: Qt.BottomEdge
 				margins.top: 3  // Small gap below the widget; adjust as needed
@@ -132,7 +132,7 @@ Rectangle {
 				color: failed ? ThemeManager.accentRed : ThemeManager.bgBase
 				Text {
 					id: popupText
-					text: hardwareTemperatureWidget.failed ? "Reload failed." : hardwareTemperatureWidget.hardwareTemperatureTooltip
+					text: gpuTemperatureWidget.failed ? "Reload failed." : gpuTemperatureWidget.gpuTemperatureTooltip
 					color: ThemeManager.accentCyan
 					font.pixelSize: ThemeManager.fontSizeBar
 					font.family: ThemeManager.fontFamily
