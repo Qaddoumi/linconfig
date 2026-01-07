@@ -5,7 +5,7 @@
 get_gpu_temp() {
 	local temp=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader)
 
-	if [ -z "$temp" ]; then
+	if [ -z "$temp" ] || [[ "$temp" == *"command not found"* ]]; then
 		echo "N/A"
 	else
 		echo "$temp°C"
