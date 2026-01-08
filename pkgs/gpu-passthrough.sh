@@ -372,15 +372,32 @@ if [ -n "$GPU_PCI_ID" ]; then
 	DETECTED_DRIVER=$(lspci -nnk -s "$GPU_PCI_ID" | grep "Kernel driver in use" | awk -F': ' '{print $2}' | xargs)
 fi
 
+# Check if we are potentially in an install environment where nouveau is active but nvidia is installed
+HAS_NVIDIA_INSTALLED=false
+if command -v pacman &>/dev/null; then
+	if pacman -Qq | grep -qE "^nvidia-dkms$|^nvidia-open-dkms$|^nvidia$"; then
+		HAS_NVIDIA_INSTALLED=true
+	fi
+fi
+
 if [[ -n "$DETECTED_DRIVER" && "$DETECTED_DRIVER" != "vfio-pci" ]]; then
-	GPU_DRIVER="$DETECTED_DRIVER"
-	echo -e "${green}Detected active GPU driver:${no_color} $GPU_DRIVER"
+	# If nouveau is detected but nvidia explicitly installed, prefer nvidia for the switch script
+	if [[ "$DETECTED_DRIVER" == "nouveau" && "$HAS_NVIDIA_INSTALLED" == "true" ]]; then
+		GPU_DRIVER="nvidia"
+		echo -e "${yellow}Detected 'nouveau' active, but Nvidia proprietary packages are installed.${no_color}"
+		echo -e "${green}Defaulting to 'nvidia' driver for host mode.${no_color}"
+	else
+		GPU_DRIVER="$DETECTED_DRIVER"
+		echo -e "${green}Detected active GPU driver:${no_color} $GPU_DRIVER"
+	fi
 else
 	# Fallback if detection fails or if already bound to vfio-pci
 	case "$GPU_TYPE" in
 		"nvidia")
-			# check if nouveau is loaded
-			if lsmod | grep -q "nouveau"; then
+			# check if nouveau is active or if nvidia is preferred
+			if [[ "$HAS_NVIDIA_INSTALLED" == "true" ]]; then
+				GPU_DRIVER="nvidia"
+			elif lsmod | grep -q "nouveau"; then
 				GPU_DRIVER="nouveau"
 			else
 				GPU_DRIVER="nvidia"
@@ -427,13 +444,15 @@ GPU_PCI_ID="$GPU_PCI_ID"
 AUDIO_PCI_ID="$AUDIO_PCI_ID"
 GPU_DRIVER="$GPU_DRIVER"
 AUDIO_DRIVER="$AUDIO_DRIVER"
+HAS_NVIDIA_INSTALLED="$HAS_NVIDIA_INSTALLED"
 
 case "\$1" in
 	"vm")
 		echo -e "\${green}Switching GPU to VM mode...\${no_color}"
 
 		echo -e "\${blue}Unloading host drivers...\${no_color}"
-		for module in nvidia nouveau nvidiafb nvidia_drm nvidia_modeset nvidia_uvm nvidia_wmi_ec_backlight amdgpu radeon; do
+		# Unload nvidia_drm first because of modeset dependencies
+		for module in nvidia_wmi_ec_backlight nvidia_drm nvidia_modeset nvidia_uvm nvidia nouveau nvidiafb amdgpu radeon; do
 			echo -e "\${green}Looking for module: \$module\${no_color}"
 			if lsmod | grep -q "\$module"; then
 				echo -e "\${green}Removing module: \$module\${no_color}"
@@ -501,6 +520,10 @@ case "\$1" in
 		echo -e "\${blue}loading host drivers...\${no_color}"
 		if [[ "\$GPU_DRIVER" == "nouveau" || "\$GPU_DRIVER" == "nvidia" ]]; then
 			for module in nvidia nouveau nvidiafb nvidia_drm nvidia_modeset nvidia_uvm nvidia_wmi_ec_backlight; do
+				if [[ "\$module" == "nouveau" && "\$HAS_NVIDIA_INSTALLED" == "true" ]]; then
+					echo -e "\${yellow}Skipping nouveau module (Nvidia drivers installed)\${no_color}"
+					continue
+				fi
 				echo -e "\${green}Loading module: \$module\${no_color}"
 				sudo modprobe "\$module" 2>/dev/null || true
 			done

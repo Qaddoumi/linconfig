@@ -68,6 +68,7 @@ newTask "═══════════════════════�
 IS_VM=false
 declare -a VIRT_PKGS=()
 declare -a GPU_PKGS=()
+GPU_OPTS=""
 
 info "Detecting system environment..."
 if systemd-detect-virt --vm &>/dev/null; then
@@ -204,9 +205,15 @@ else
 				;;
 			2)
 				GPU_PKGS+=("nvidia-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
+				GPU_OPTS="nvidia_drm.modeset=1 nouveau.modeset=0"
 				;;
 			3)
 				GPU_PKGS+=("nvidia-open-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
+				GPU_OPTS="nvidia_drm.modeset=1 nouveau.modeset=0"
+				;;
+			*)
+				warn "Invalid choice. Defaulting to Nouveau (Option 1)."
+				GPU_PKGS+=("xf86-video-nouveau" "vulkan-nouveau" "vulkan-mesa-layers")
 				;;
 		esac
 	fi
@@ -307,6 +314,11 @@ if read -rp "Select bootloader kernel mode [1-2] (press Enter for quiet): " -t 3
 else
 	KERNEL_CMDLINE="quiet"
 	info "Timeout, defaulting to quiet mode"
+fi
+
+if [[ -n "$GPU_OPTS" ]]; then
+	KERNEL_CMDLINE="$KERNEL_CMDLINE $GPU_OPTS"
+	info "Added GPU-specific kernel options: $GPU_OPTS"
 fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
@@ -756,7 +768,7 @@ else
 	)
 fi
 
-declare -a OPTIONAL_PKGS=(curl networkmanager sudo git openssh)
+declare -a OPTIONAL_PKGS=(curl networkmanager sudo git openssh terminus-font)
 
 # Combine arrays
 declare -a INSTALL_PKGS_ARR=(
@@ -797,6 +809,12 @@ INSTALL_PKGS="${VALID_PKGS[*]}"
 info "Installing: "
 echo "$INSTALL_PKGS"
 pacstrap /mnt $INSTALL_PKGS || error "Package installation failed"
+
+if [[ "$GPU_OPTS" == *"nouveau.modeset=0"* ]]; then
+	info "Blacklisting nouveau driver..."
+	mkdir -p /mnt/etc/modprobe.d
+	echo "blacklist nouveau" > /mnt/etc/modprobe.d/blacklist-nouveau.conf
+fi
 
 # Ensure /mnt/etc exists before generating fstab
 mkdir -p /mnt/etc
@@ -874,6 +892,9 @@ info "Setting keymap to ${KEYMAP}"
 echo "KEYMAP=${KEYMAP}" > /etc/vconsole.conf
 echo "XKBLAYOUT=${KEYMAP}" >> /etc/vconsole.conf
 echo "Keymap set to: ${KEYMAP}"
+info "Installing tty font"
+echo "FONT=ter-v18b" >> /etc/vconsole.conf
+setfont -C /dev/tty1 ter-v18b
 
 # Set hostname and hosts
 info "Setting hostname to ${HOSTNAME}"
