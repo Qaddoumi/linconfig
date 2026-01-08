@@ -565,49 +565,51 @@ mkdir -p ~/.config/fontconfig > /dev/null || true
 
 FONTCONF=~/.config/fontconfig/fonts.conf
 echo -e "${green}Writing fonts.conf...${no_color}"
-cat > "$FONTCONF" <<'EOF'
-<?xml version='1.0'?>
-<!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
+cat <<EOF > "$FONTCONF"
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
 <fontconfig>
-  <!-- Defaults -->
+
+  <!-- 1. THE ARABIC FIX: Force high-quality Arabic when 'ar' text is detected -->
+  <match target="pattern">
+    <test name="lang" compare="contains">
+      <string>ar</string>
+    </test>
+    <edit name="family" mode="prepend" binding="strong">
+      <string>Noto Sans Arabic</string>
+    </edit>
+  </match>
+
+  <!-- 2. SANS-SERIF: Noto Sans for Latin, fallback to Arabic if needed -->
   <alias>
-	<family>serif</family>
-	<prefer>
-	  <family>Noto Serif</family>
-	  <family>Noto Sans Arabic</family>
-	</prefer>
+    <family>sans-serif</family>
+    <prefer>
+      <family>Noto Sans</family>
+      <family>Noto Sans Arabic</family>
+    </prefer>
   </alias>
+
+  <!-- 3. SERIF: Noto Serif for Latin, fallback to Arabic -->
   <alias>
-	<family>sans-serif</family>
-	<prefer>
-	  <family>Noto Sans</family>
-	  <family>Noto Sans Arabic</family>
-	</prefer>
+    <family>serif</family>
+    <prefer>
+      <family>Noto Serif</family>
+      <family>Noto Sans Arabic</family>
+    </prefer>
   </alias>
+
+  <!-- 4. MONOSPACE: Your preferred coding font -->
   <alias>
-	<family>sans</family>
-	<prefer>
-	  <family>Noto Sans</family>
-	  <family>Noto Sans Arabic</family>
-	</prefer>
+    <family>monospace</family>
+    <prefer>
+      <family>JetBrainsMono Nerd Font Propo</family>
+      <family>Noto Sans Mono</family>
+    </prefer>
   </alias>
-  <alias>
-	<family>monospace</family>
-	<prefer>
-	  <family>JetBrainsMono Nerd Font Mono</family>
-	  <family>Noto Sans Mono</family>
-	</prefer>
-  </alias>
-  <!-- Arial -->
-  <alias>
-	<family>Arial</family>
-	<prefer>
-	  <family>Noto Sans</family>
-	  <family>Noto Sans Arabic</family>
-	</prefer>
-  </alias>
+
 </fontconfig>
 EOF
+
 echo -e "${green}fonts.conf written to $FONTCONF${no_color}"
 
 echo -e "${green}Refreshing font cache${no_color}"
