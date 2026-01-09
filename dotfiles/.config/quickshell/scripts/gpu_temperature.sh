@@ -5,7 +5,7 @@
 get_gpu_temp() {
 	local temp=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader)
 
-	if [ -z "$temp" ] || [[ "$temp" == *"command not found"* ]] || \ 
+	if [ -z "$temp" ] || [[ "$temp" == *"command not found"* ]] || \
 	   [[ "$temp" == *"failed"* ]] || [[ "$temp" == *"No supported GPUs"* ]]; then
 	    local if_vfio=$(lspci -nnk | grep -A 3 "NVIDIA" | grep "vfio-pci")
 		if [ -n "$if_vfio" ]; then
