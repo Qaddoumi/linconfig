@@ -37,7 +37,7 @@ if [ -n "$MOUNT_POINT" ]; then
 		echo "Error: Failed to unmount $DRIVE_NAME"
 		echo "find what is using the drive"
 		lsof +D "$MOUNT_POINT"
-		# Alternative: fuser -v "$MOUNT_POINT"
+		echo "Alternative: fuser -v \"$MOUNT_POINT\""
 		exit 1
 	fi
 else

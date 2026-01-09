@@ -67,9 +67,12 @@ extract_pci_id() {
 	echo "$1" | grep -o '[0-9a-f]\{4\}:[0-9a-f]\{4\}' | tail -1
 }
 
-# Function to extract PCI address
+# Function to extract PCI address (with domain prefix for sysfs compatibility)
 extract_pci_address() {
-	echo "$1" | cut -d' ' -f1
+	local short_addr
+	short_addr=$(echo "$1" | cut -d' ' -f1)
+	# Add the PCI domain prefix (0000:) required for sysfs paths
+	echo "0000:$short_addr"
 }
 
 echo -e "${green}Detecting all GPUs in system...${no_color}"
@@ -360,7 +363,7 @@ fi
 
 echo ""
 
-SWITCH_SCRIPT=~/.local/bin/gpu-switch.sh
+SWITCH_SCRIPT=~/.local/bin/gpu-switch
 echo -e "${green}Creating GPU switch script at $SWITCH_SCRIPT${no_color}"
 
 #TODO: don't hardcode the audio driver
@@ -426,6 +429,10 @@ yellow='\033[1;33m'
 blue='\033[0;34m'
 no_color='\033[0m' # No Color
 
+# Log to /tmp so it persists across session crashes
+exec > >(tee -i /tmp/gpu-switch.log)
+exec 2>&1
+
 # Delay function with progress indicator
 delay_with_progress() {
 	local secs=\$1
@@ -463,34 +470,81 @@ case "\$1" in
 		done
 		delay_with_progress 3
 
-		# Unbind devices from host drivers
-		echo -e "\${blue}Unbinding GPU and audio devices from host drivers...\${no_color}"
-		if [[ -n "\$GPU_PCI_ID" && -d "/sys/bus/pci/devices/\$GPU_PCI_ID" ]]; then
-			echo -e "\${green}Unbinding GPU: \$GPU_PCI_ID\${no_color}"
-			echo "\$GPU_PCI_ID" | sudo tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver/unbind 2>/dev/null || true
-		fi
-		if [[ -n "\$AUDIO_PCI_ID" && -d "/sys/bus/pci/devices/\$AUDIO_PCI_ID" ]]; then
-			echo -e "\${green}Unbinding Audio: \$AUDIO_PCI_ID\${no_color}"
-			echo "\$AUDIO_PCI_ID" | sudo tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver/unbind 2>/dev/null || true
-		fi
-		
-		# Bind to vfio-pci
-		echo -e "\${blue}Binding GPU and audio devices to vfio-pci...\${no_color}"
+		# Load vfio-pci module first
+		echo -e "\${blue}Loading vfio-pci module...\${no_color}"
 		if ! sudo modprobe vfio-pci; then
-			echo -e "\${red}Failed to load vfio-pci\${no_color}"
+			echo -e "\${red}Failed to load vfio-pci module\${no_color}"
 			exit 1
 		fi
-		
+		sleep 1
+
+		# Bind GPU to vfio-pci
 		if [[ -n "\$GPU_PCI_ID" && -d "/sys/bus/pci/devices/\$GPU_PCI_ID" ]]; then
-			echo -e "\${green}Binding GPU: \$GPU_PCI_ID to vfio-pci\${no_color}"
-			echo "\$GPU_PCI_ID" | sudo tee /sys/bus/pci/drivers/vfio-pci/bind 2>/dev/null || true
+			echo -e "\${blue}Processing GPU: \$GPU_PCI_ID\${no_color}"
+			
+			# Unbind from current driver if any
+			if [[ -L "/sys/bus/pci/devices/\$GPU_PCI_ID/driver" ]]; then
+				echo -e "\${green}Unbinding GPU from current driver...\${no_color}"
+				echo "\$GPU_PCI_ID" | sudo tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver/unbind > /dev/null 2>&1 || true
+				sleep 0.5
+			fi
+			
+			# Set driver_override to vfio-pci
+			echo -e "\${green}Setting driver_override for GPU to vfio-pci...\${no_color}"
+			echo "vfio-pci" | sudo tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver_override > /dev/null
+			
+			# Bind to vfio-pci
+			echo -e "\${green}Binding GPU to vfio-pci...\${no_color}"
+			echo "\$GPU_PCI_ID" | sudo tee /sys/bus/pci/drivers/vfio-pci/bind > /dev/null 2>&1 || true
+			
+			# Verify binding
+			if [[ -L "/sys/bus/pci/devices/\$GPU_PCI_ID/driver" ]]; then
+				gpu_driver=\$(basename \$(readlink /sys/bus/pci/devices/\$GPU_PCI_ID/driver))
+				if [[ "\$gpu_driver" == "vfio-pci" ]]; then
+					echo -e "\${green}GPU successfully bound to vfio-pci\${no_color}"
+				else
+					echo -e "\${red}GPU bound to \$gpu_driver instead of vfio-pci\${no_color}"
+				fi
+			else
+				echo -e "\${red}GPU has no driver bound after bind attempt\${no_color}"
+			fi
 		fi
+
+		# Bind Audio to vfio-pci
 		if [[ -n "\$AUDIO_PCI_ID" && -d "/sys/bus/pci/devices/\$AUDIO_PCI_ID" ]]; then
-			echo -e "\${green}Binding Audio: \$AUDIO_PCI_ID to vfio-pci\${no_color}"
-			echo "\$AUDIO_PCI_ID" | sudo tee /sys/bus/pci/drivers/vfio-pci/bind 2>/dev/null || true
+			echo -e "\${blue}Processing Audio: \$AUDIO_PCI_ID\${no_color}"
+			
+			# Unbind from current driver if any
+			if [[ -L "/sys/bus/pci/devices/\$AUDIO_PCI_ID/driver" ]]; then
+				echo -e "\${green}Unbinding Audio from current driver...\${no_color}"
+				echo "\$AUDIO_PCI_ID" | sudo tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver/unbind > /dev/null 2>&1 || true
+				sleep 0.5
+			fi
+			
+			# Set driver_override to vfio-pci
+			echo -e "\${green}Setting driver_override for Audio to vfio-pci...\${no_color}"
+			echo "vfio-pci" | sudo tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver_override > /dev/null
+			
+			# Bind to vfio-pci
+			echo -e "\${green}Binding Audio to vfio-pci...\${no_color}"
+			echo "\$AUDIO_PCI_ID" | sudo tee /sys/bus/pci/drivers/vfio-pci/bind > /dev/null 2>&1 || true
+			
+			# Verify binding
+			if [[ -L "/sys/bus/pci/devices/\$AUDIO_PCI_ID/driver" ]]; then
+				audio_driver=\$(basename \$(readlink /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver))
+				if [[ "\$audio_driver" == "vfio-pci" ]]; then
+					echo -e "\${green}Audio successfully bound to vfio-pci\${no_color}"
+				else
+					echo -e "\${red}Audio bound to \$audio_driver instead of vfio-pci\${no_color}"
+				fi
+			else
+				echo -e "\${red}Audio has no driver bound after bind attempt\${no_color}"
+			fi
 		fi
 
 		echo -e "\${green}GPU switched to VM mode\${no_color}"
+		echo "To check , look for 'vfio-pci' in the output of 'lspci -nnk | grep -A 3 "NVIDIA"'"
+		echo "you should see 'Kernel driver in use: vfio-pci' in both GPU and Audio"
 		;;
 	"host")
 		echo -e "\${green}Switching GPU to host mode...\${no_color}"
@@ -504,6 +558,7 @@ case "\$1" in
 			echo -e "\${green}Unbinding Audio: \$AUDIO_PCI_ID from vfio-pci\${no_color}"
 			echo "\$AUDIO_PCI_ID" | sudo tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver/unbind 2>/dev/null || true
 		fi
+		sleep 1
 
 		# Clear driver overrides
 		echo -e "\${blue}Clearing driver overrides...\${no_color}"
@@ -515,6 +570,7 @@ case "\$1" in
 			echo -e "\${green}Clearing Audio driver override: \$AUDIO_PCI_ID\${no_color}"
 			echo "" | sudo tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver_override 2>/dev/null || true
 		fi
+		sleep 1
 
 		# load host GPU drivers
 		echo -e "\${blue}loading host drivers...\${no_color}"
@@ -533,6 +589,7 @@ case "\$1" in
 				sudo modprobe "\$module" 2>/dev/null || true
 			done
 		fi
+		sleep 1
 
 		# Bind to host drivers
 		echo -e "\${blue}Binding GPU and audio devices to host drivers...\${no_color}"
@@ -546,11 +603,14 @@ case "\$1" in
 		fi
 
 		echo -e "\${green}GPU switched to host mode\${no_color}"
+		echo "To check , look for 'nvidia'|'nouveau' or 'amdgpu' in the output of 'lspci -nnk | grep -A 3 "NVIDIA"'"
+		echo "you should see 'Kernel driver in use: nvidia' or 'Kernel driver in use: amdgpu'"
 		;;
 	*)
 		echo -e "\${red}Usage: \$0 {vm|host}\${no_color}"
 		echo -e "\${yellow}  vm   - Switch GPU to VM mode (bind to vfio-pci)\${no_color}"
 		echo -e "\${yellow}  host - Switch GPU to host mode (bind to host driver)\${no_color}"
+		echo "To check what's using your gpu run: 'fuser -v /dev/nvidia*'"
 		exit 1
 		;;
 esac
