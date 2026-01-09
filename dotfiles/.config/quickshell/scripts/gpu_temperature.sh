@@ -7,7 +7,12 @@ get_gpu_temp() {
 
 	if [ -z "$temp" ] || [[ "$temp" == *"command not found"* ]] || \ 
 	   [[ "$temp" == *"failed"* ]] || [[ "$temp" == *"No supported GPUs"* ]]; then
-		echo "N/A"
+	    local if_vfio=$(lspci -nnk | grep -A 3 "NVIDIA" | grep "vfio-pci")
+		if [ -n "$if_vfio" ]; then
+		    echo "VFIO GPU"
+		else
+		    echo "N/A"
+		fi
 	else
 		echo "$temp°C"
 	fi
@@ -66,6 +71,9 @@ case $1 in
 			else
 				class="critical"
 			fi
+		elif [ "$temp" == "VFIO GPU" ]; then
+			class="cool"
+			tooltip="GPU Passthrough is on"
 		else
 			class="unknown"
 		fi
