@@ -468,12 +468,12 @@ if [ ! -f "$ENV_FILE" ]; then
 	sudo touch "$ENV_FILE"
 fi
 
-if grep -q "export PATH" "$ENV_FILE"; then
+if grep -q "PATH" "$ENV_FILE"; then
 	echo -e "${green}PATHs already set in $ENV_FILE${no_color}"
 else
 	echo -e "${green}Adding PATHs to $ENV_FILE${no_color}"
 	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-	echo "export PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo "PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin" | sudo tee -a "$ENV_FILE" > /dev/null || true
 fi
 
 echo -e "${green}Setting up environment variable for Electron apps so they lunch in wayland mode${no_color}"
