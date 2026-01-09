@@ -211,7 +211,7 @@ if [ -n "$amd_gpu" ]; then
 	GPU_PCI_ID="$amd_pci_addr"
 fi
 
-echo -e "${green}\nAdding $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS to the bootloader\n${no_color}"
+echo -e "${green}\nAdding $IOMMU_PARAM iommu=pt to the bootloader\n${no_color}"
 
 echo -e "${green}Detecting bootloader...${no_color}"
 bootloader_type=2
@@ -269,7 +269,7 @@ if [ -n "$VFIO_IDS" ]; then
 			
 			if [[ -z "$entries_dir" ]] || ! sudo test -d "$entries_dir"; then
 				echo -e "${red}Could not locate systemd-boot entries directory${no_color}"
-				echo -e "${yellow}Please manually add '$IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS' to your boot entry${no_color}"
+				echo -e "${yellow}Please manually add '$IOMMU_PARAM iommu=pt' to your boot entry${no_color}"
 				#exit 1
 			fi
 			
@@ -307,12 +307,12 @@ if [ -n "$VFIO_IDS" ]; then
 				
 				# Add IOMMU parameter to the options line
 				if sudo grep -q "^options" "$entry"; then
-					sudo sed -i "/^options/ s/$/ $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS/" "$entry"
-					echo -e "${green}Updated $(basename "$entry") with: $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS${no_color}"
+					sudo sed -i "/^options/ s/$/ $IOMMU_PARAM iommu=pt/" "$entry"
+					echo -e "${green}Updated $(basename "$entry") with: $IOMMU_PARAM iommu=pt${no_color}"
 				else
 					# If no options line exists, add one
-					echo "options $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS" | sudo tee -a "$entry" > /dev/null
-					echo -e "${green}Added options line to $(basename "$entry") with: $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS${no_color}"
+					echo "options $IOMMU_PARAM iommu=pt" | sudo tee -a "$entry" > /dev/null
+					echo -e "${green}Added options line to $(basename "$entry") with: $IOMMU_PARAM iommu=pt${no_color}"
 				fi
 			done
 			;;
@@ -333,8 +333,8 @@ if [ -n "$VFIO_IDS" ]; then
 				echo -e "${yellow}IOMMU parameter already present in GRUB configuration${no_color}"
 			else
 				# Add IOMMU parameter to GRUB_CMDLINE_LINUX_DEFAULT
-				sudo sed -i "/GRUB_CMDLINE_LINUX_DEFAULT=/ s/\"$/ $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS\"/" "$GRUB_CONFIG"
-				echo -e "${green}Updated GRUB configuration with: $IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS${no_color}"
+				sudo sed -i "/GRUB_CMDLINE_LINUX_DEFAULT=/ s/\"$/ $IOMMU_PARAM iommu=pt\"/" "$GRUB_CONFIG"
+				echo -e "${green}Updated GRUB configuration with: $IOMMU_PARAM iommu=pt${no_color}"
 			fi
 
 			# Regenerate GRUB configuration
@@ -349,7 +349,7 @@ if [ -n "$VFIO_IDS" ]; then
 		2)
 			# No bootloader detected
 			echo -e "${red}Unable to detect bootloader (GRUB or systemd-boot)${no_color}"
-			echo -e "${red}Please manually add '$IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS' to your kernel parameters${no_color}"
+			echo -e "${red}Please manually add '$IOMMU_PARAM iommu=pt' to your kernel parameters${no_color}"
 			#exit 1
 			;;
 	esac
@@ -360,7 +360,7 @@ fi
 
 echo ""
 
-SWITCH_SCRIPT="/usr/local/bin/gpu-switch.sh"
+SWITCH_SCRIPT=~/.local/bin/gpu-switch.sh
 echo -e "${green}Creating GPU switch script at $SWITCH_SCRIPT${no_color}"
 
 #TODO: don't hardcode the audio driver
@@ -452,7 +452,7 @@ case "\$1" in
 
 		echo -e "\${blue}Unloading host drivers...\${no_color}"
 		# Unload nvidia_drm first because of modeset dependencies
-		for module in nvidia_wmi_ec_backlight nvidia_drm nvidia_modeset nvidia_uvm nvidia nouveau nvidiafb amdgpu radeon; do
+		for module in nvidia_drm nvidia_modeset nvidia_uvm nvidia nouveau nvidiafb amdgpu radeon; do
 			echo -e "\${green}Looking for module: \$module\${no_color}"
 			if lsmod | grep -q "\$module"; then
 				echo -e "\${green}Removing module: \$module\${no_color}"
@@ -519,7 +519,7 @@ case "\$1" in
 		# load host GPU drivers
 		echo -e "\${blue}loading host drivers...\${no_color}"
 		if [[ "\$GPU_DRIVER" == "nouveau" || "\$GPU_DRIVER" == "nvidia" ]]; then
-			for module in nvidia nouveau nvidiafb nvidia_drm nvidia_modeset nvidia_uvm nvidia_wmi_ec_backlight; do
+			for module in nvidia nouveau nvidiafb nvidia_drm nvidia_modeset nvidia_uvm; do
 				if [[ "\$module" == "nouveau" && "\$HAS_NVIDIA_INSTALLED" == "true" ]]; then
 					echo -e "\${yellow}Skipping nouveau module (Nvidia drivers installed)\${no_color}"
 					continue
@@ -628,8 +628,8 @@ fi
 # 	echo -e "blacklist amdgpu\nblacklist radeon" | sudo tee /etc/modprobe.d/blacklist-amd.conf > /dev/null
 # fi
 
-echo -e "${green}Creating VFIO configuration file /etc/modprobe.d/vfio.conf${no_color}"
-echo -e "options vfio-pci ids=$VFIO_IDS" | sudo tee /etc/modprobe.d/vfio.conf > /dev/null
+# echo -e "${green}Creating VFIO configuration file /etc/modprobe.d/vfio.conf${no_color}"
+# echo -e "options vfio-pci ids=$VFIO_IDS" | sudo tee /etc/modprobe.d/vfio.conf > /dev/null
 
 # Update initramfs
 echo -e "${green}Updating initramfs...${no_color}"
