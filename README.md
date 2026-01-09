@@ -23,7 +23,7 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_
 ```
 
 ### Sway/Hyprland/DWM + QuickShell + SDDM Setup
-Install SwayWM with SDDM login manager:
+Install with:
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --is-vm false
 ```
