@@ -168,8 +168,8 @@ Rectangle {
 	}
 	
 	Process {
-		id: dunstCloseAll
-		command: ["dunstctl", "close-all"]
+		id: dunstClearAllHistory
+		command: ["dunstctl", "history-clear"]
 		onExited: refreshTimer.start()
 	}
 	
@@ -212,7 +212,7 @@ Rectangle {
 	MouseArea {
 		anchors.fill: parent
 		cursorShape: Qt.PointingHandCursor
-		acceptedButtons: Qt.LeftButton | Qt.RightButton
+		acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
 		
 		onClicked: (mouse) => {
 			if (notificationDaemon === "swaync") {
@@ -231,6 +231,9 @@ Rectangle {
 				} else if (mouse.button === Qt.RightButton) {
 					// console.log("Toggle dunst DND")
 					dunstDndToggle.running = true
+				} else if (mouse.button === Qt.MiddleButton) {
+					// console.log("Close all dunst notifications")
+					dunstClearAllHistory.running = true
 				}
 			}
 		}
