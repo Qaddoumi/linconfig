@@ -7,20 +7,20 @@ get_gpu_temp() {
 
 	if [ -z "$temp" ] || [[ "$temp" == *"command not found"* ]] || \
 	   [[ "$temp" == *"failed"* ]] || [[ "$temp" == *"No supported GPUs"* ]]; then
-	    local if_vfio=$(lspci -nnk | grep -A 3 "NVIDIA" | grep "vfio-pci")
+		local if_vfio=$(lspci -nnk | grep -A 3 "NVIDIA" | grep "vfio-pci")
 		if [ -n "$if_vfio" ]; then
-		    echo "VFIO GPU"
+			echo "VFIO GPU"
 		else
-		    echo "N/A"
+			echo "N/A"
 		fi
 	else
-		echo "$temp°C"
+		echo " $temp°C"
 	fi
 }
 
 get_full_gpu_data() {
 	# Get GPU stats
-    # nvidia-smi -q | grep -vE "N/A|Disabled|None|Not Active|0 MiB|Requested functionality has been deprecated" | grep -v "Pending" | sed 's/\\/\\\\/g; s/"/\\"/g; s/$/\\n/' | tr -d '\n' | sed 's/\\n$//'
+	# nvidia-smi -q | grep -vE "N/A|Disabled|None|Not Active|0 MiB|Requested functionality has been deprecated" | grep -v "Pending" | sed 's/\\/\\\\/g; s/"/\\"/g; s/$/\\n/' | tr -d '\n' | sed 's/\\n$//'
 	gpu_stats=$(nvidia-smi --query-gpu=name,temperature.gpu,utilization.gpu,utilization.memory,memory.total,memory.used,memory.free,power.draw --format=csv,noheader,nounits | \
 awk -F', ' '{
     print "name: "$1

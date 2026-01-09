@@ -47,11 +47,7 @@ Rectangle {
 				try {
 					var json = JSON.parse(data)
 					if (json.text) {
-						if (json.text === "VFIO GPU") {
-							gpuTemperatureWidget.gpuTemperatureDisplay = "VFIO GPU"
-						} else {
-							gpuTemperatureWidget.gpuTemperatureDisplay = " " + json.text
-						}
+						gpuTemperatureWidget.gpuTemperatureDisplay = json.text
 					}
 					if (json.class){
 						var tmpClass = json.class
