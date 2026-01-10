@@ -46,6 +46,11 @@ Rectangle {
 				if (!data) return
 				try {
 					var json = JSON.parse(data)
+					if (json.text === "N/A") {
+						gpuTemperatureWidget.showWidget = false
+						return
+					}
+					gpuTemperatureWidget.showWidget = true
 					if (json.text) {
 						gpuTemperatureWidget.gpuTemperatureDisplay = json.text
 					}
@@ -64,9 +69,6 @@ Rectangle {
 					if (json.tooltip) {
 						// Replace \\n with actual newlines
 						gpuTemperatureWidget.gpuTemperatureTooltip = json.tooltip.replace(/\\n/g, "\n")
-					}
-					if (json.text === "N/A") {
-						gpuTemperatureWidget.showWidget = false
 					}
 				} catch (e) {
 					console.error("Failed to parse gpu temperature:", e)
