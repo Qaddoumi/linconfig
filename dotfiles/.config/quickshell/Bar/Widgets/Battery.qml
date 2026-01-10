@@ -75,7 +75,7 @@ Rectangle {
 						batteryWidget.showWidget = false
 						return
 					}
-					
+
 					batteryWidget.capacity = json.capacity || 0
 					batteryWidget.status = json.status || "Unknown"
 					batteryWidget.isCharging = json.status === "Charging"
@@ -106,6 +106,7 @@ Rectangle {
 					}
 					
 					batteryWidget.batteryDisplay = icon + " " + cap + "%"
+					batteryWidget.showWidget = true
 					
 					// Build tooltip
 					var tooltip = "Battery state: " + batteryWidget.status

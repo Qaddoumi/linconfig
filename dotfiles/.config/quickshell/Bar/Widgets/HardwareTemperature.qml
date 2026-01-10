@@ -46,6 +46,11 @@ Rectangle {
 				if (!data) return
 				try {
 					var json = JSON.parse(data)
+					if (json.text === "N/A") {
+						hardwareTemperatureWidget.showWidget = false
+						return
+					}
+					hardwareTemperatureWidget.showWidget = true
 					if (json.text) {
 						hardwareTemperatureWidget.hardwareTemperatureDisplay = " " + json.text
 					}
@@ -64,9 +69,6 @@ Rectangle {
 					if (json.tooltip) {
 						// Replace \\n with actual newlines
 						hardwareTemperatureWidget.hardwareTemperatureTooltip = json.tooltip.replace(/\\n/g, "\n")
-					}
-					if (json.text === "N/A") {
-						hardwareTemperatureWidget.showWidget = false
 					}
 				} catch (e) {
 					console.error("Failed to parse hardware temperature:", e)
