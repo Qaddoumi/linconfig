@@ -68,7 +68,7 @@ newTask "═══════════════════════�
 IS_VM=false
 declare -a VIRT_PKGS=()
 declare -a GPU_PKGS=()
-GPU_OPTS=""
+GPU_OPTS=false
 
 info "Detecting system environment..."
 if systemd-detect-virt --vm &>/dev/null; then
@@ -202,18 +202,20 @@ else
 		case ${NVIDIA_CHOICE:-1} in
 			1)
 				GPU_PKGS+=("xf86-video-nouveau" "vulkan-nouveau" "vulkan-mesa-layers")
+				GPU_OPTS=false
 				;;
 			2)
 				GPU_PKGS+=("nvidia-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
-				GPU_OPTS="nvidia_drm.modeset=1 nouveau.modeset=0"
+				GPU_OPTS=true
 				;;
 			3)
 				GPU_PKGS+=("nvidia-open-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
-				GPU_OPTS="nvidia_drm.modeset=1 nouveau.modeset=0"
+				GPU_OPTS=true
 				;;
 			*)
 				warn "Invalid choice. Defaulting to Nouveau (Option 1)."
 				GPU_PKGS+=("xf86-video-nouveau" "vulkan-nouveau" "vulkan-mesa-layers")
+				GPU_OPTS=false
 				;;
 		esac
 	fi
@@ -314,11 +316,6 @@ if read -rp "Select bootloader kernel mode [1-2] (press Enter for quiet): " -t 3
 else
 	KERNEL_CMDLINE="quiet"
 	info "Timeout, defaulting to quiet mode"
-fi
-
-if [[ -n "$GPU_OPTS" ]]; then
-	KERNEL_CMDLINE="$KERNEL_CMDLINE $GPU_OPTS"
-	info "Added GPU-specific kernel options: $GPU_OPTS"
 fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
@@ -810,14 +807,14 @@ info "Installing: "
 echo "$INSTALL_PKGS"
 pacstrap /mnt $INSTALL_PKGS || error "Package installation failed"
 
-if [[ "$GPU_OPTS" == *"nouveau.modeset=0"* ]]; then
+# Ensure /mnt/etc exists before generating fstab
+mkdir -p /mnt/etc
+
+if [[ "$GPU_OPTS" == true ]]; then
 	info "Blacklisting nouveau driver..."
 	mkdir -p /mnt/etc/modprobe.d
 	echo "blacklist nouveau" > /mnt/etc/modprobe.d/blacklist-nouveau.conf
 fi
-
-# Ensure /mnt/etc exists before generating fstab
-mkdir -p /mnt/etc
 
 info "Generating fstab"
 genfstab -U /mnt >> /mnt/etc/fstab || error "Failed to generate fstab"
