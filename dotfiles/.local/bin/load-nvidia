@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-sudo modprobe nvidia || true
-sudo modprobe nvidia_drm || true
-sudo modprobe nvidia_modeset || true
-sudo modprobe nouveau || true
-sudo modprobe nvidiafb || true
-sudo modprobe nvidia_uvm || true
