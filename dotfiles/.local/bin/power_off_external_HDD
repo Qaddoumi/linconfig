@@ -8,7 +8,7 @@ DRIVE_NAME="Mkohaa4TB"
 echo "Starting unmount process for $DRIVE_NAME..."
 
 # Find the device path by searching for the drive label
-DEVICE_NAME=$(lsblk -no NAME,LABEL | grep "$DRIVE_NAME" | awk '{print $1}' | sed 's/^[^a-zA-Z0-9]*//')
+DEVICE_NAME=$(lsblk -no NAME,LABEL,UUID,MOUNTPOINTS | grep "$DRIVE_NAME" | awk '{print $1}' | head -n 1 | sed 's/^[^a-zA-Z0-9]*//')
 DEVICE="/dev/$DEVICE_NAME"
 
 if [ -z "$DEVICE_NAME" ]; then
