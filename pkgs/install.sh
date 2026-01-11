@@ -646,12 +646,20 @@ echo -e "${green}Available icon and cursor themes:${no_color}"
 ls /usr/share/icons/
 
 # # Additional theming setup
-gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact' || true
-gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark' || true
-gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors' || true
+# gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact' || true
+# gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark' || true
+# gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors' || true
+# # To get list of options run 'gsettings range org.gnome.desktop.interface color-scheme'
+# gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' || true
+# gsettings set org.gnome.desktop.interface enable-animations false || true
+
+dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact'
+dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors'
 # To get list of options run 'gsettings range org.gnome.desktop.interface color-scheme'
-gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' || true
-gsettings set org.gnome.desktop.interface enable-animations false || true
+dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface enable-animations false
+
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 
