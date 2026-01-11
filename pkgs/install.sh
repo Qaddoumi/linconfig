@@ -653,12 +653,28 @@ ls /usr/share/icons/
 # gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' || true
 # gsettings set org.gnome.desktop.interface enable-animations false || true
 
-dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact'
-dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
-dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors'
-# To get list of options run 'gsettings range org.gnome.desktop.interface color-scheme'
-dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface enable-animations false
+# dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface gtk-theme 'Materia-dark-compact'
+# dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+# dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine-cursors'
+# # To get list of options run 'gsettings range org.gnome.desktop.interface color-scheme'
+# dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+# dbus-launch --exit-with-session gsettings set org.gnome.desktop.interface enable-animations false
+
+# Create the local schema overrides directory
+sudo mkdir -p /usr/share/glib-2.0/schemas/
+
+# Create the override file (sets defaults for ALL users)
+cat <<EOF | sudo tee /usr/share/glib-2.0/schemas/99_ext_settings.gschema.override
+[org.gnome.desktop.interface]
+gtk-theme='Materia-dark-compact'
+icon-theme='Papirus-Dark'
+cursor-theme='Capitaine-cursors'
+color-scheme='prefer-dark'
+enable-animations=false
+EOF
+
+# Compile the schemas so the system recognizes the new defaults
+sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
