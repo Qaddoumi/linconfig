@@ -632,6 +632,14 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm capitaine-cursors # Cursor theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
+if grep -q "GTK_THEME" "$ENV_FILE"; then
+	echo -e "${green}GTK_THEME already set in $ENV_FILE${no_color}"
+else
+	echo -e "${green}Adding GTK_THEME to $ENV_FILE${no_color}"
+	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo "GTK_THEME=Materia-dark-compact" | sudo tee -a "$ENV_FILE" > /dev/null || true
+fi
+
 echo -e "${green}Showing available themes${no_color}"
 ls /usr/share/themes/
 echo -e "${green}Available icon and cursor themes:${no_color}"
