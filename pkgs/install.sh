@@ -863,6 +863,29 @@ echo -e "${green}Setting up virt-manager one-time network configuration complete
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
+echo -e "${green}Setting up virt-manager default settings${no_color}"
+sudo mkdir -p /usr/share/glib-2.0/schemas/ 
+mkdir -p "/home/$USER/VM_Images" "/home/$USER/ISOs" "/home/$USER/Pictures/VM_Screenshots"
+cat <<EOF | sudo tee /usr/share/glib-2.0/schemas/99_virt_manager_custom.gschema.override
+[org.virt-manager.virt-manager]
+system-tray=true
+xmleditor-enabled=true
+enable-libguestfs-vm-inspection=true
+
+[org.virt-manager.virt-manager.paths]
+# Note: Strings must be wrapped in single quotes
+image-default='/home/$USER/VM_Images'
+media-default='/home/$USER/ISOs'
+screenshot-default='/home/$USER/Pictures/VM_Screenshots'
+EOF
+# Compile the schemas so the system recognizes the new defaults
+sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
+
+echo -e "${green}Setting up virt-manager default settings completed${no_color}"
+echo -e "${green}If changes did not apply, you need to remove ~/.config/dconf/user then apply the settings again${no_color}"
+
+echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
+
 #bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/hugepages.sh)
 # echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
