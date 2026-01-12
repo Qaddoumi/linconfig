@@ -44,6 +44,5 @@ ShellRoot {
 
 	Component.onCompleted: {
 		console.log("Desktop:", root.desktop)
-		console.log("Distro:", root.distro)
 	}
 }
