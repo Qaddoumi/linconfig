@@ -97,8 +97,6 @@ exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr &
 exec --no-startup-id /usr/lib/xdg-desktop-portal -r
 exec xdg-user-dirs-update
 
-#exec /usr/local/bin/gpu-switch.sh host
-
 # Idle configuration
 exec swayidle -w \
 	timeout 300 'swaylock \
