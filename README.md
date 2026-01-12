@@ -12,6 +12,7 @@ This project is currently in active development. While functional, it may not wo
 
 - Note 0.1 :- This setup build for laptops with iGPU and dGPU
 - Note 0.2 :- And it has not been tested on AMD cpus or gpus
+              and needs some adjustments for it to work
 - Note 0.3 :- This is not meant to be a minimal setup
 
 ## 🚀 Installation
