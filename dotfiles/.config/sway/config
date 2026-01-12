@@ -177,6 +177,8 @@ for_window [app_id="quickshell"] floating enable, border none
 for_window [app_id="gcr-prompter"] floating enable, move container to workspace current
 for_window [app_id="com.github.hluk.copyq"] floating enable, move container to workspace current
 for_window [class="Polkit-gnome-authentication-agent-1"] floating enable, move container to workspace current
+for_window [class="Polkit-mate-authentication-agent-1"] floating enable, move container to workspace current
+for_window [class="hyprpolkitagent"] floating enable, move container to workspace current
 for_window [title="Authentication Required"] floating enable, move container to workspace current
 for_window [title="Authentication"] floating enable, move container to workspace current
 for_window [app_id="virt-manager" title="Virtual Machine Manager"] move left, resize set width 20 ppt
