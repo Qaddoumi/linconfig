@@ -15,16 +15,17 @@ ShellRoot {
 	property bool isWayland: Quickshell.env("XDG_SESSION_TYPE") === "wayland"
 	property string desktop: Quickshell.env("XDG_CURRENT_DESKTOP")
 	property string distro: "unknown"
+	property bool ready: false
 
 	//Loading the top Bar
 	Loader {
-		active: true
+		active: root.ready
 		sourceComponent: Bar {}
 	}
-	
+
 	// For loading the calendar on demand
 	Loader {
-		active: root.calendarVisible
+		active: root.ready && root.calendarVisible
 		sourceComponent: Calendar {}
 	}
 
@@ -37,6 +38,7 @@ ShellRoot {
 					root.distro = data.trim()
 					console.log("Detected distro:", root.distro)
 				}
+				root.ready = true
 			}
 		}
 		running: true
