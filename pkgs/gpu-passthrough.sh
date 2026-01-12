@@ -803,9 +803,19 @@ is_gpu_passed_to_vm() {
 if is_gpu_passed_to_vm "\$GUEST_NAME"; then
 	echo -e "\${green}GPU is passed to VM\${no_color}"
 	if [ "\$HOOK_NAME" = "prepare" ] && [ "\$STATE_NAME" = "begin" ]; then
-		$SWITCH_SCRIPT vm
+		# $SWITCH_SCRIPT vm
+		if lspci -nnk -s "${GPU_PCI_ID#0000:}" | grep -q "vfio-pci"; then
+			echo -e "\${green}GPU is already passed to VM\${no_color}"
+			notify-send "GPU Passthrough" "GPU is passed to VM, continue running the vm"
+		else
+			echo -e "\${red}GPU is not passed to VM\${no_color}"
+			notify-send -u critical "GPU Passthrough" "ERROR: GPU not bound to vfio-pci. Aborting VM start."
+			notify-send "GPU Passthrough" "run 'gpu-switch vm' to pass the gpu to vm, if it hangs then logout and login, then try again."
+			exit 1
+		fi
 	elif [ "\$HOOK_NAME" = "release" ] && [ "\$STATE_NAME" = "end" ]; then
-		$SWITCH_SCRIPT host
+		# $SWITCH_SCRIPT host
+		notify-send "GPU Passthrough" "VM stopped. You can now run 'gpu-switch host' manually."
 	else
 		echo -e "\${red}Unknown HOOK: \$HOOK_NAME\${no_color}"
 	fi
