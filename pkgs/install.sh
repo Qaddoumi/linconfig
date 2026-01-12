@@ -177,17 +177,17 @@ sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm uwsm # A standalone Wayland session manager
 if [ -f "/usr/share/wayland-sessions/hyprland.desktop" ]; then
-    echo -e "${green}Hiding hyprland from session menu...${no_color}"
-    if grep -q "^NoDisplay=" "/usr/share/wayland-sessions/hyprland.desktop"; then
-        sudo sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/hyprland.desktop"
-    else
-        echo "NoDisplay=true" | sudo tee -a "/usr/share/wayland-sessions/hyprland.desktop" > /dev/null
-    fi
+	echo -e "${green}Hiding hyprland from session menu...${no_color}"
+	if grep -q "^NoDisplay=" "/usr/share/wayland-sessions/hyprland.desktop"; then
+		sudo sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/hyprland.desktop"
+	else
+		echo "NoDisplay=true" | sudo tee -a "/usr/share/wayland-sessions/hyprland.desktop" > /dev/null
+	fi
 fi
 
 if [ ! -f /usr/share/wayland-sessions/hyprland-uwsm.desktop ]; then
-    echo -e "${green}Creating hyprland-uwsm.desktop...${no_color}"
-    sudo tee /usr/share/wayland-sessions/hyprland-uwsm.desktop > /dev/null << 'EOF'
+	echo -e "${green}Creating hyprland-uwsm.desktop...${no_color}"
+	sudo tee /usr/share/wayland-sessions/hyprland-uwsm.desktop > /dev/null << 'EOF'
 [Desktop Entry]
 Name=Hyprland (uwsm-managed)
 Comment=An intelligent dynamic tiling Wayland compositor
@@ -1304,7 +1304,7 @@ echo -e "${green}This is required for window managers to work on the inegrated g
 gpu_devices=$(lspci -nn | grep -E "(VGA|3D controller)")
 
 if [ -z "$gpu_devices" ]; then
-    echo -e "${red}No GPU detected.${no_color}"
+	echo -e "${red}No GPU detected.${no_color}"
 else
 	echo -e "Detected GPUs:\n$gpu_devices\n"
 
@@ -1444,12 +1444,12 @@ CompositorCommand=labwc
 fi
 
 if [ -f "/usr/share/wayland-sessions/labwc.desktop" ]; then
-    echo -e "${green}Hiding labwc from session menu...${no_color}"
-    if grep -q "^NoDisplay=" "/usr/share/wayland-sessions/labwc.desktop"; then
-        sudo sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/labwc.desktop"
-    else
-        echo "NoDisplay=true" | sudo tee -a "/usr/share/wayland-sessions/labwc.desktop" > /dev/null
-    fi
+	echo -e "${green}Hiding labwc from session menu...${no_color}"
+	if grep -q "^NoDisplay=" "/usr/share/wayland-sessions/labwc.desktop"; then
+		sudo sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/labwc.desktop"
+	else
+		echo "NoDisplay=true" | sudo tee -a "/usr/share/wayland-sessions/labwc.desktop" > /dev/null
+	fi
 fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
