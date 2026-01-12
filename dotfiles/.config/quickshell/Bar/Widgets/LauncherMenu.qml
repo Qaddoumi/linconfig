@@ -11,7 +11,9 @@ Text {
 			root.desktop.indexOf("sway") !== -1 ? "" :
 			root.desktop.indexOf("awesome") !== -1 ? "" :
 			root.desktop.indexOf("dwm") !== -1 ? "" :
-			"󰣇"
+			root.distro.indexOf("arch") !== -1 ? "󰣇" :
+			root.distro.indexOf("void") !== -1 ? "" :
+			""
 	color: ThemeManager.accentBlue
 	font.pixelSize: ThemeManager.fontSizeBar
 	font.family: ThemeManager.fontFamily
