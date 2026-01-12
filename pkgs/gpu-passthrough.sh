@@ -707,18 +707,69 @@ echo -e "${green}Create libvirt hook to automate GPU switching, at $LIBVIRTHOOK_
 cat << LIBVIRTHOOK_SCRIPT_EOF | sudo tee "$LIBVIRTHOOK_SCRIPT" > /dev/null
 #!/usr/bin/env bash
 
-# Reference : https://libvirt.org/hooks.html
+exec >> /tmp/libvirt-hook-execution.log 2>&1
+echo "=== Hook executed at \$(date) ==="
 
-red='\033[0;31m'
-green='\033[0;32m'
-yellow='\033[1;33m'
-blue='\033[0;34m'
-no_color='\033[0m' # No Color
+# Reference : https://libvirt.org/hooks.html
 
 GUEST_NAME="\$1"
 HOOK_NAME="\$2" # prepare, start, started, stopped or release
 STATE_NAME="\$3" # begin or end
 SHUTOFF_REASON="\$4" # provides the reason for the shutdown of the domain
+
+# Function to send notifications to the user
+# we need this method because libvirt hook runs as root
+# and does not know the user name or session
+send_notification() {
+    local title="\$1"
+    local message="\$2"
+    local urgency="\${3:-normal}"
+    
+    # Debug log file
+    local log_file="/tmp/libvirt-notification-debug.log"
+    echo "=== \$(date) ===" >> "\$log_file"
+    echo "Attempting to send notification: \$title - \$message" >> "\$log_file"
+    
+    # Try multiple methods to find active user session
+    for user_dir in /run/user/*; do
+        echo "Checking user_dir: \$user_dir" >> "\$log_file"
+        [ -d "\$user_dir" ] || continue
+        
+        user_uid=\$(basename "\$user_dir")
+        user_name=\$(id -nu "\$user_uid" 2>/dev/null) || continue
+        
+        echo "Found user: \$user_name (UID: \$user_uid)" >> "\$log_file"
+        
+        # Skip if not a real user
+        [ "\$user_uid" -ge 1000 ] || continue
+        
+        dbus_addr="unix:path=\${user_dir}/bus"
+        display=":0"
+        
+        # Try to get actual DISPLAY if possible
+        if [ -f "/proc/\$(pgrep -u "\$user_uid" -x Xorg | head -n1)/environ" 2>/dev/null ]; then
+            display=\$(tr '\0' '\n' < "/proc/\$(pgrep -u "\$user_uid" -x Xorg | head -n1)/environ" 2>/dev/null | grep ^DISPLAY= | cut -d= -f2)
+            echo "Found DISPLAY: \$display" >> "\$log_file"
+        fi
+        
+        echo "Attempting notification with DISPLAY=\$display DBUS=\$dbus_addr" >> "\$log_file"
+        
+        # Send notification
+        if sudo -u "\$user_name" \
+            DISPLAY="\$display" \
+            DBUS_SESSION_BUS_ADDRESS="\$dbus_addr" \
+            notify-send -u "\$urgency" "\$title" "\$message" 2>>"\$log_file"; then
+            echo "SUCCESS: Notification sent!" >> "\$log_file"
+            return 0
+        else
+            echo "FAILED: notify-send returned error code \$?" >> "\$log_file"
+        fi
+    done
+    
+    echo "All attempts failed, falling back to syslog" >> "\$log_file"
+    # Fallback: log to syslog
+    logger -t "libvirt-hook" "\$title: \$message"
+}
 
 # Function to extract PCI devices from VM XML using xmllint (more robust)
 get_vm_pci_devices_xmllint() {
@@ -731,7 +782,7 @@ get_vm_pci_devices_xmllint() {
 		# called by libvirt, A deadlock is likely to occur.
 		local vm_xml=\$(timeout 10 sudo virsh dumpxml "\$vm_name" 2>/dev/null)
 		if [ \$? -eq 124 ]; then
-			echo -e "\${red}virsh dumpxml timed out\${no_color}" >&2
+			echo "virsh dumpxml timed out" >&2
 			return 1
 		fi
 	else
@@ -740,7 +791,7 @@ get_vm_pci_devices_xmllint() {
 	fi
 
 	if [ -z "\$vm_xml" ]; then
-		echo -e "\${red}Failed to get XML for VM: \$vm_name\${no_color}" >&2
+		echo "Failed to get XML for VM: \$vm_name" >&2
 		return 1
 	fi
 
@@ -755,7 +806,7 @@ get_vm_pci_devices_xmllint() {
 		slot_dec=\$(printf "%02x" \$slot)
 		func_dec=\$(printf "%01x" \$function)
 
-		echo -e "\${green}\${domain_dec}:\${bus_dec}:\${slot_dec}.\${func_dec}\${no_color}"
+		echo "\${domain_dec}:\${bus_dec}:\${slot_dec}.\${func_dec}"
 	done
 }
 
@@ -763,64 +814,64 @@ is_gpu_passed_to_vm() {
 	local vm_name="\$1"
 
 	if [ -z "\$vm_name" ]; then
-		echo -e "\${yellow}Usage: \$0 <vm-name>\${no_color}"
-		echo -e "\${green}Available VMs:\${no_color}"
+		echo "Usage: \$0 <vm-name>"
+		echo "Available VMs:"
 		sudo virsh list --all --name || true
 		return 1
 	fi
 
-	echo -e "\${green}Testing VM: \$vm_name\${no_color}"
+	echo "Testing VM: \$vm_name"
 	echo ""
 
-	echo -e "\${green}Using (xmllint) to check if the gpu is passed to vm:\${no_color}"
+	echo "Using (xmllint) to check if the gpu is passed to vm:"
 	if command -v xmllint &> /dev/null; then
 		pci_devices_xmllint=\$(get_vm_pci_devices_xmllint "\$vm_name")
 		if [ -n "\$pci_devices_xmllint" ]; then
-			echo -e "\${green}\$pci_devices_xmllint\${no_color}"
+			echo "\$pci_devices_xmllint"
 			while IFS= read -r pci_device; do
 				if [ -n "\$pci_device" ]; then
 					local pci_addr=\$(echo "\$pci_device" | sed 's/^0000://')
 					# Check if this PCI device is a VGA controller or 3D controller
 					if lspci -s "\$pci_addr" 2>/dev/null | grep -qE "(VGA|3D controller)"; then
-						echo -e "\${green}GPU found: \$pci_addr\${no_color}"
+						echo "GPU found: \$pci_addr"
 						return 0
 					else
-						echo -e "\${yellow}Not a GPU: \$pci_addr\${no_color}"
+						echo "Not a GPU: \$pci_addr"
 					fi
 				fi
 			done <<< "\$pci_devices_xmllint"
 		else
-			echo -e "\${red}No PCI devices found\${no_color}"
+			echo "No PCI devices found"
 			return 1
 		fi
 	else
-		echo -e "\${red}xmllint not available, can't run the script\${no_color}"
+		echo "xmllint not available, can't run the script"
 	fi
 	return 1
 }
 
 # Main execution
 if is_gpu_passed_to_vm "\$GUEST_NAME"; then
-	echo -e "\${green}GPU is passed to VM\${no_color}"
+	echo "GPU is passed to VM"
 	if [ "\$HOOK_NAME" = "prepare" ] && [ "\$STATE_NAME" = "begin" ]; then
-		# $SWITCH_SCRIPT vm
+		# $SWITCH_SCRIPT vm # i comment this part because i want to run the script manually
 		if lspci -nnk -s "${GPU_PCI_ID#0000:}" | grep -q "vfio-pci"; then
-			echo -e "\${green}GPU is already passed to VM\${no_color}"
-			notify-send "GPU Passthrough" "GPU is passed to VM, continue running the vm"
+			echo "GPU is already passed to VM"
+			send_notification "GPU Passthrough" "GPU is passed to VM, continue running the vm"
 		else
-			echo -e "\${red}GPU is not passed to VM\${no_color}"
-			notify-send -u critical "GPU Passthrough" "ERROR: GPU not bound to vfio-pci. Aborting VM start."
-			notify-send "GPU Passthrough" "run 'gpu-switch vm' to pass the gpu to vm, if it hangs then logout and login, then try again."
+			echo "GPU is not passed to VM"
+			send_notification "GPU Passthrough" "ERROR: GPU not bound to vfio-pci. Aborting VM start." "critical"
+			send_notification "GPU Passthrough" "run 'gpu-switch vm' to pass the gpu to vm"
 			exit 1
 		fi
 	elif [ "\$HOOK_NAME" = "release" ] && [ "\$STATE_NAME" = "end" ]; then
 		# $SWITCH_SCRIPT host
-		notify-send "GPU Passthrough" "VM stopped. You can now run 'gpu-switch host' manually."
+		send_notification "GPU Passthrough" "VM stopped. You can now run 'gpu-switch host' to get the gpu back to host"
 	else
-		echo -e "\${red}Unknown HOOK: \$HOOK_NAME\${no_color}"
+		echo "Unknown HOOK: \$HOOK_NAME"
 	fi
 else
-	echo -e "\${red}GPU is not passed to VM, Or something happen during the process!!\${no_color}"
+	echo "GPU is not passed to VM, Or something happen during the process!!"
 fi
 
 ##TODO: make running the hugepages dynamic by checking the xml if it contains the hugepages tag.
@@ -832,6 +883,7 @@ fi
 #	 echo "Disabling hugepages..."
 #	 echo 0 | sudo tee /proc/sys/vm/nr_hugepages
 # fi
+
 
 
 LIBVIRTHOOK_SCRIPT_EOF
