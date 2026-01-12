@@ -514,7 +514,7 @@ gitpush() {
 	git add -A || true
 	echo -e "\n\033[0;32mCommitting changes\033[0m"
 	#git commit --allow-empty-message -m "" || true
-	git commit -m "$1" || true
+	git commit -m "$*" || true
 	echo -e "\n\033[0;32mPushing changes\033[0m"
 	git push || true
 }
