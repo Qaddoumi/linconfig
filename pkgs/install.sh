@@ -86,16 +86,16 @@ echo -e "${blue}═════════════════════�
 
 echo -e "${green}Installing yay (Yet Another Yaourt)${no_color}"
 
-sudo pacman -S --needed --noconfirm git base-devel go || true
+sudo pacman -S --needed --noconfirm git base-devel || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm jq || true # JSON processor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 install_yay() {
-	git clone --depth 1 https://aur.archlinux.org/yay.git ~/yay || true
-	cd yay || true
-	makepkg -si --noconfirm || true
-	cd .. && sudo rm -rf yay || true
+	echo -e "${yellow}Installing yay as AUR helper...${no_color}"
+	cd /opt && sudo git clone https://aur.archlinux.org/yay-bin.git && sudo chown -R "$USER": ./yay-bin
+	cd yay-bin && makepkg --noconfirm -si
+	echo -e "${green}Yay installed${no_color}"
 	yay --version || true
 }
 
@@ -121,6 +121,7 @@ else
 	echo "yay is not installed. Proceeding with installation..."
 	install_yay || true
 fi
+cd ~
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 # Yay Configuration Optimizer ...
@@ -455,6 +456,8 @@ yay -S --needed --noconfirm visual-studio-code-bin || echo -e "${red}Failed to i
 code --install-extension Continue.continue # for local ai and agent in vscode
 code --install-extension sdras.night-owl # dark theme
 code --install-extension Gruntfuggly.todo-tree # todo tree
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+yay -S --noconfirm --needed aur/anythingllm-appimage --mflags --skipinteg || echo -e "${red}Failed to install anythingllm-appimage${no_color}" # all-in-one AI app
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm powershell-bin || echo -e "${red}Failed to install powershell-bin${no_color}" # PowerShell
 echo -e "${blue}--------------------------------------------------\n${no_color}"

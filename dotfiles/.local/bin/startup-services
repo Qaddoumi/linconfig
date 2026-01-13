@@ -1,0 +1,1 @@
+sudo systemctl list-units --type=service --state=running --no-pager | head -n -6 | awk 'NR>1 {print $1}'
