@@ -1,13 +1,12 @@
 # Check systemd failed services
-# systemctl --failed
+echo -e "• Use systemctl --failed to check failed services"
 
 # Log files check
-# sudo journalctl -p 3 -xb
+echo -e "• Use sudo journalctl -p 3 -xb to check log files"
 
-# Update
-sudo pacman -Syu
-
-# Yay Update
+# Update databases and upgrade packages
+echo "• when using yay -Syu, it will update both pacman and yay"
+# sudo pacman -Syu
 yay -Syu
 
 #Delete Pacman Cache
@@ -17,8 +16,8 @@ sudo pacman -Sc
 yay -Sc
 
 # Delete unwanted dependencies
-echo -e "• Use ${blue}yay -Ps to see yay statistics"
-echo -e "• Use ${blue}yay -Yc to clean unneeded dependencies"
+echo "• Use yay -Ps to see yay statistics"
+echo "• Use yay -Yc to clean unneeded dependencies"
 yay -Yc
 
 # Remove Orphan packages if exists
@@ -26,7 +25,7 @@ if pacman -Qtdq > /dev/null 2>&1; then
 	sudo pacman -Rns $(pacman -Qtdq)
 fi
 
-# Clean the Cache
+# Clean user cache
 rm -rf ~/.cache/*
 
 # Clean the journal (pacman logs and system logs)
