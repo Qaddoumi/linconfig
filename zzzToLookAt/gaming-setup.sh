@@ -28,6 +28,8 @@ installDepend() {
                     printf "%b\n" "${GREEN}Multilib is already enabled.${RC}"
                 fi
             fi
+            #TODO:don't just install amd drivers or non used drivers like the cups or samba
+            # check the gpu first ,
             DISTRO_DEPS="gnutls lib32-gnutls base-devel gtk3 lib32-gtk3 python-google-auth python-protobuf \
                 libpulse lib32-libpulse alsa-lib lib32-alsa-lib alsa-utils alsa-plugins lib32-alsa-plugins \
                 giflib lib32-giflib libpng lib32-libpng libldap lib32-libldap openal lib32-openal \
