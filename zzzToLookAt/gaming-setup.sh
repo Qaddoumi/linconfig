@@ -1,125 +1,111 @@
-#!/bin/sh -e
+#!/usr/bin/env bash
 
-# shellcheck disable=SC2086
+# Color codes
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[1;33m'
+blue='\033[0;34m'
+cyan='\033[0;36m'
+bold="\e[1m"
+no_color='\033[0m' # reset the color to default
 
-. ../common-script.sh
+# Check if multilib is enabled (Required for lib32 packages)
+if ! grep -q "^\[multilib\]" /etc/pacman.conf; then
+	printf "%b\n" "${yellow}Enabling multilib repository...${no_color}"
+	if grep -q "^#\[multilib\]" /etc/pacman.conf; then
+		# Uncomment existing multilib section
+		sudo sed -i '/\[multilib\]/,/Include/s/^#//' /etc/pacman.conf
+	else
+		# Add multilib section if missing
+		echo -e "\n[multilib]\nInclude = /etc/pacman.d/mirrorlist" | sudo tee -a /etc/pacman.conf
+	fi
+else
+	printf "%b\n" "${green}Multilib already enabled.${no_color}"
+fi
 
-installDepend() {
-    DEPENDENCIES='wine dbus git'
-    printf "%b\n" "${YELLOW}Installing dependencies...${RC}"
-    case "$PACKAGER" in
-        pacman)
-            if grep -qi "Artix" /etc/os-release; then # Detect Artix Linux
-                # Check for lib32
-                if ! grep -q "^\s*\[lib32\]" /etc/pacman.conf; then
-                    echo "[lib32]" | "$ESCALATION_TOOL" tee -a /etc/pacman.conf
-                    echo "Include = /etc/pacman.d/mirrorlist" | "$ESCALATION_TOOL" tee -a /etc/pacman.conf
-                    "$ESCALATION_TOOL" "$PACKAGER" -Syu
-                else
-                    printf "%b\n" "${GREEN}lib32 is already enabled.${RC}"
-                fi
-            else
-                # Check for multilib
-                if ! grep -q "^\s*\[multilib\]" /etc/pacman.conf; then
-                    echo "[multilib]" | "$ESCALATION_TOOL" tee -a /etc/pacman.conf
-                    echo "Include = /etc/pacman.d/mirrorlist" | "$ESCALATION_TOOL" tee -a /etc/pacman.conf
-                    "$ESCALATION_TOOL" "$PACKAGER" -Syu
-                else
-                    printf "%b\n" "${GREEN}Multilib is already enabled.${RC}"
-                fi
-            fi
-            #TODO:don't just install amd drivers or non used drivers like the cups or samba
-            # check the gpu first ,
-            DISTRO_DEPS="gnutls lib32-gnutls base-devel gtk3 lib32-gtk3 python-google-auth python-protobuf \
-                libpulse lib32-libpulse alsa-lib lib32-alsa-lib alsa-utils alsa-plugins lib32-alsa-plugins \
-                giflib lib32-giflib libpng lib32-libpng libldap lib32-libldap openal lib32-openal \
-                libxcomposite lib32-libxcomposite libxinerama lib32-libxinerama libgcrypt lib32-libgcrypt \
-                libgpg-error lib32-libgpg-error ncurses lib32-ncurses mpg123 lib32-mpg123 \
-                libjpeg-turbo lib32-libjpeg-turbo sqlite lib32-sqlite libva lib32-libva \
-                gst-plugins-base-libs lib32-gst-plugins-base-libs sdl2 lib32-sdl2 v4l-utils lib32-v4l-utils \
-                vulkan-icd-loader lib32-vulkan-icd-loader ocl-icd lib32-ocl-icd opencl-icd-loader lib32-opencl-icd-loader \
-                libxslt lib32-libxslt cups samba lib32-mesa vulkan-radeon lib32-vulkan-radeon \
-                gamescope mangohud lib32-mangohud gamemode lib32-gamemode"
+sudo pacman -Syy --noconfirm
 
-            $AUR_HELPER -S --needed --noconfirm $DEPENDENCIES $DISTRO_DEPS
-            ;;
-        apt-get | nala)
-            "$ESCALATION_TOOL" dpkg --add-architecture i386
-            "$ESCALATION_TOOL" "$PACKAGER" update
-            
-            "$ESCALATION_TOOL" "$PACKAGER" install -y $DEPENDENCIES
-            
-            DISTRO_DEPS="libasound2-plugins:i386 libsdl2-2.0-0:i386 libdbus-1-3:i386 libsqlite3-0:i386 wine32:i386"
-            apt-cache show software-properties-common >/dev/null 2>&1 && DISTRO_DEPS="$DISTRO_DEPS software-properties-common"
-            
-            "$ESCALATION_TOOL" "$PACKAGER" install -y $DISTRO_DEPS
-            ;;
-        dnf)
-            printf "%b\n" "${CYAN}Installing rpmfusion repos.${RC}"
-            "$ESCALATION_TOOL" "$PACKAGER" install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm -y
-            "$ESCALATION_TOOL" "$PACKAGER" config-manager setopt --repo fedora-cisco-openh264 enabled=1
-    
-            "$ESCALATION_TOOL" "$PACKAGER" install -y $DEPENDENCIES
-            ;;
-        zypper)
-            "$ESCALATION_TOOL" "$PACKAGER" -n install $DEPENDENCIES
-            ;;
-        eopkg)
-            DISTRO_DEPS="libgnutls libgtk-2 libgtk-3 pulseaudio alsa-lib alsa-plugins giflib libpng openal-soft libxcomposite libxinerama ncurses vulkan ocl-icd libva gst-plugins-base sdl2 v4l-utils sqlite3"
+# 1. Base Essentials
+BASE_DEPS="base-devel wine dbus git steam lutris goverlay"
 
-            "$ESCALATION_TOOL" "$PACKAGER" install -y $DEPENDENCIES $DISTRO_DEPS
-            ;;
-        *)
-            printf "%b\n" "${RED}Unsupported package manager ${PACKAGER}${RC}"
-            exit 1
-            ;;
-    esac
-}
+# 2. 32-bit Libraries (Non-negotiable for Proton/Wine)
+LIB32_DEPS="
+	lib32-mesa
+	lib32-vulkan-icd-loader
+	lib32-gnutls
+	lib32-gtk3
+	lib32-libpulse
+	lib32-alsa-lib
+	lib32-alsa-plugins
+	lib32-giflib
+	lib32-libpng
+	lib32-libldap
+	lib32-libxcomposite
+	lib32-libxinerama
+	lib32-libgcrypt
+	lib32-libgpg-error
+	lib32-ncurses
+	lib32-mpg123
+	lib32-libjpeg-turbo
+	lib32-sqlite
+	lib32-libva
+	lib32-sdl2
+	lib32-v4l-utils
+	lib32-ocl-icd
+	lib32-opencl-icd-loader
+	lib32-libxslt
+"
 
-installAdditionalDepend() {
-    case "$PACKAGER" in
-        pacman)
-            DISTRO_DEPS='steam lutris goverlay'
-            "$ESCALATION_TOOL" "$PACKAGER" -S --needed --noconfirm $DISTRO_DEPS
-            ;;
-        apt-get | nala)
-            printf "%b\n" "${YELLOW}Installing Lutris...${RC}"
-            lutris_url=$(curl -s https://api.github.com/repos/lutris/lutris/releases/latest | grep "browser_download_url.*\.deb" | cut -d '"' -f 4)
-            
-            if [ -n "$lutris_url" ]; then
-                printf "%b\n" "${YELLOW}Downloading latest Lutris from GitHub...${RC}"
-                curl -sSLo lutris.deb "$lutris_url"
-                "$ESCALATION_TOOL" "$PACKAGER" install -y ./lutris.deb
-                rm lutris.deb
-                "$ESCALATION_TOOL" "$PACKAGER" update
-                "$ESCALATION_TOOL" "$PACKAGER" install -y lutris
-            fi
+# 3. Graphics & Vulkan (Host)
+GRAPHICS_DEPS="mesa vulkan-icd-loader libva libxcomposite libxinerama libpng libjpeg-turbo giflib sdl2"
 
-            printf "%b\n" "${GREEN}Lutris Installation complete.${RC}"
-            printf "%b\n" "${YELLOW}Installing steam...${RC}"
-            "$ESCALATION_TOOL" "$PACKAGER" install -y steam
-            ;;
-        dnf)
-            DISTRO_DEPS='steam lutris'
-            "$ESCALATION_TOOL" "$PACKAGER" install -y $DISTRO_DEPS
-            ;;
-        zypper)
-            DISTRO_DEPS='lutris'
-            "$ESCALATION_TOOL" "$PACKAGER" -n install $DISTRO_DEPS
-            ;;
-        eopkg)
-            DISTRO_DEPS='steam lutris'
-            "$ESCALATION_TOOL" "$PACKAGER" install -y $DISTRO_DEPS
-            ;;
-        *)
-            printf "%b\n" "${RED}Unsupported package manager ${PACKAGER}${RC}"
-            exit 1
-            ;;
-    esac
-}
+# 4. Audio (Host)
+AUDIO_DEPS="alsa-lib alsa-utils alsa-plugins libpulse mpg123"
 
-checkEnv
-checkAURHelper
-checkEscalationTool
-installDepend
-installAdditionalDepend
+# 5. Compatibility & Support Libraries
+COMPAT_DEPS="
+	gnutls
+	gtk3
+	sqlite
+	libxslt
+	libldap
+	libgcrypt
+	libgpg-error
+	ncurses
+	v4l-utils
+	ocl-icd
+	opencl-icd-loader
+	python-google-auth
+	python-protobuf
+"
+
+# 6. Optional & Network Features
+FEATURE_DEPS="
+	gamescope
+	mangohud lib32-mangohud
+	gamemode lib32-gamemode
+	openal lib32-openal
+	gst-plugins-base-libs lib32-gst-plugins-base-libs
+	cups
+	samba
+"
+
+printf "%b\n" "${blue}Installing core gaming dependencies...${no_color}"
+sudo pacman -S --needed --noconfirm $BASE_DEPS $LIB32_DEPS $GRAPHICS_DEPS $AUDIO_DEPS $COMPAT_DEPS $FEATURE_DEPS
+
+# # 7. GPU-Specific Driver Detection
+# printf "%b\n" "${blue}Detecting GPU and installing specific drivers...${no_color}"
+# gpu_info=$(lspci | grep -Ei "VGA|3D")
+
+# if echo "$gpu_info" | grep -qi "NVIDIA"; then
+# 	printf "%b\n" "${green}NVIDIA GPU detected.${no_color}"
+# 	sudo pacman -S --needed --noconfirm nvidia-utils lib32-nvidia-utils
+# elif echo "$gpu_info" | grep -qi "AMD"; then
+# 	printf "%b\n" "${green}AMD GPU detected.${no_color}"
+# 	sudo pacman -S --needed --noconfirm vulkan-radeon lib32-vulkan-radeon
+# elif echo "$gpu_info" | grep -qi "Intel"; then
+# 	printf "%b\n" "${green}Intel GPU detected.${no_color}"
+# 	sudo pacman -S --needed --noconfirm vulkan-intel lib32-vulkan-intel
+# else
+# 	printf "%b\n" "${red}No specific GPU detected for proprietary/Vulkan drivers. Skipping...${no_color}"
+# fi
