@@ -435,6 +435,8 @@ sudo pacman -S --needed --noconfirm core/python # Python
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm python-pip # Python package manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm python-pipx # Python package manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm python-virtualenv # Python virtual environment
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
