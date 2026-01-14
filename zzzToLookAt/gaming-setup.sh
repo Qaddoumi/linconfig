@@ -44,7 +44,7 @@ pkgs=(
 	"sdl2-compat" "lib32-sdl2-compat" # library for portable low-level access to a video framebuffer, audio output, mouse, and keyboard (Version 2)
 
 	"alsa-lib" "lib32-alsa-lib" # An alternative implementation of Linux sound support
-	"alsa-utils" "lib32-alsa-utils" # Advanced Linux Sound Architecture - Utilities
+	"alsa-utils" # Advanced Linux Sound Architecture - Utilities
 	"alsa-plugins" "lib32-alsa-plugins" # Additional ALSA plugins
 	"libpulse" "lib32-libpulse" # A featureful, general-purpose sound server (client library)
 	"mpg123" "lib32-mpg123" # Console based real time MPEG Audio Player for Layer 1, 2 and 3
