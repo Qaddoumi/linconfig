@@ -128,7 +128,7 @@ else
 	declare -a OTHER_GPUS=()
 	
 	# Add base GPU packages
-	GPU_PKGS+=("mesa" "mesa-utils" "vulkan-tools" "vulkan-icd-loader")
+	GPU_PKGS+=("mesa" "lib32-mesa" "mesa-utils" "lib32-mesa-utils" "vulkan-tools" "vulkan-icd-loader" "lib32-vulkan-icd-loader")
 	
 	info "Found ${#GPU_DEVICES[@]} GPU device(s):"
 	for ((i=0; i<${#GPU_DEVICES[@]}; i++)); do
@@ -184,10 +184,10 @@ else
 		# Check for Gen 5+ (Broadwell and newer)
 		if [[ "$CPU_MODEL" =~ i[3579]-([5-9]|[1-9][0-9]) ]] || [[ "$CPU_MODEL" =~ (N[0-9]{4}|J[0-9]{4}) ]]; then
 			info "Detected Modern Intel CPU (Gen 5+), using intel-media-driver"
-			GPU_PKGS+=("intel-media-driver")
+			GPU_PKGS+=("intel-media-driver" "lib32-intel-media-driver")
 		else
 			info "Detected Older Intel CPU (Pre-Gen 5), using libva-intel-driver"
-			GPU_PKGS+=("libva-intel-driver")
+			GPU_PKGS+=("libva-intel-driver" "lib32-libva-intel-driver")
 		fi
 	fi
 	

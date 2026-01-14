@@ -25,75 +25,56 @@ fi
 
 sudo pacman -Syy --noconfirm
 
-# 1. Base Essentials
-BASE_DEPS="base-devel wine dbus git steam lutris goverlay"
+pkgs=(
+	"base-devel" # Basic tools to build Arch Linux packages
+	"wine" # A compatibility layer for running Windows programs
+	"dbus" # Freedesktop.org message bus system
+	"git" # the fast distributed version control system
+	"steam" # Valve's digital software delivery system
+	"lutris" # Open Gaming Platform
+	"goverlay" # A GUI to help manage Vulkan/OpenGL overlays
 
-# 2. 32-bit Libraries (Non-negotiable for Proton/Wine)
-LIB32_DEPS="
-	lib32-mesa
-	lib32-vulkan-icd-loader
-	lib32-gnutls
-	lib32-gtk3
-	lib32-libpulse
-	lib32-alsa-lib
-	lib32-alsa-plugins
-	lib32-giflib
-	lib32-libpng
-	lib32-libldap
-	lib32-libxcomposite
-	lib32-libxinerama
-	lib32-libgcrypt
-	lib32-libgpg-error
-	lib32-ncurses
-	lib32-mpg123
-	lib32-libjpeg-turbo
-	lib32-sqlite
-	lib32-libva
-	lib32-sdl2
-	lib32-v4l-utils
-	lib32-ocl-icd
-	lib32-opencl-icd-loader
-	lib32-libxslt
-"
+	"libxcomposite" "lib32-libxcomposite" # X11 Composite extension library
+	"libxinerama" "lib32-libxinerama" # X11 Xinerama extension library
 
-# 3. Graphics & Vulkan (Host)
-GRAPHICS_DEPS="mesa vulkan-icd-loader libva libxcomposite libxinerama libpng libjpeg-turbo giflib sdl2"
+	"libpng" "lib32-libpng" # A collection of routines used to create PNG format graphics files
+	"libjpeg-turbo" "lib32-libjpeg-turbo" # JPEG image codec with accelerated baseline compression and decompression
+	"giflib" "lib32-giflib" # Library for reading and writing gif images
 
-# 4. Audio (Host)
-AUDIO_DEPS="alsa-lib alsa-utils alsa-plugins libpulse mpg123"
+	"sdl2-compat" "lib32-sdl2-compat" # library for portable low-level access to a video framebuffer, audio output, mouse, and keyboard (Version 2)
 
-# 5. Compatibility & Support Libraries
-COMPAT_DEPS="
-	gnutls
-	gtk3
-	sqlite
-	libxslt
-	libldap
-	libgcrypt
-	libgpg-error
-	ncurses
-	v4l-utils
-	ocl-icd
-	opencl-icd-loader
-	python-google-auth
-	python-protobuf
-"
+	"alsa-lib" "lib32-alsa-lib" # An alternative implementation of Linux sound support
+	"alsa-utils" "lib32-alsa-utils" # Advanced Linux Sound Architecture - Utilities
+	"alsa-plugins" "lib32-alsa-plugins" # Additional ALSA plugins
+	"libpulse" "lib32-libpulse" # A featureful, general-purpose sound server (client library)
+	"mpg123" "lib32-mpg123" # Console based real time MPEG Audio Player for Layer 1, 2 and 3
 
-# 6. Optional & Network Features
-FEATURE_DEPS="
-	gamescope
-	mangohud lib32-mangohud
-	gamemode lib32-gamemode
-	openal lib32-openal
-	gst-plugins-base-libs lib32-gst-plugins-base-libs
-	cups
-	samba
-"
+	"gnutls" "lib32-gnutls" # A library which provides a secure layer over a reliable transport layer
+	"gtk3" "lib32-gtk3" # GObject-based multi-platform GUI toolkit
+	"sqlite" "lib32-sqlite" # A C library that implements an SQL database engine
+	"libxslt" "lib32-libxslt" # XML stylesheet transformation library
+	"libldap" "lib32-libldap" # Lightweight Directory Access Protocol (LDAP) client libraries
+	"libgcrypt" "lib32-libgcrypt" # General purpose cryptographic library based on the code from GnuPG
+	"libgpg-error" "lib32-libgpg-error" # Support library for libgcrypt
+	"ncurses" "lib32-ncurses" # System V Release 4.0 curses emulation library
+	"v4l-utils" "lib32-v4l-utils" # Userspace tools and conversion library for Video 4 Linux
+	"ocl-icd" "lib32-ocl-icd" # OpenCL ICD Bindings
+	"python-google-auth" # Google Authentication Library
+	"python-protobuf" # Python 3 bindings for Google Protocol Buffers
+
+	"gamescope" # SteamOS session compositing window manager
+	"mangohud" "lib32-mangohud" # A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more.
+	"gamemode" "lib32-gamemode" # A daemon/lib combo that allows games to request a set of optimisations be temporarily applied to the host OS
+	"openal" "lib32-openal" # Cross-platform 3D audio library, software implementation
+	"gst-plugins-base-libs" "lib32-gst-plugins-base-libs" # Multimedia graph framework - base
+	"cups" # OpenPrinting CUPS - daemon package
+	"samba" # SMB Fileserver and AD Domain server
+)
 
 printf "%b\n" "${blue}Installing core gaming dependencies...${no_color}"
-sudo pacman -S --needed --noconfirm $BASE_DEPS $LIB32_DEPS $GRAPHICS_DEPS $AUDIO_DEPS $COMPAT_DEPS $FEATURE_DEPS
+sudo pacman -S --needed --noconfirm "${pkgs[@]}"
 
-# # 7. GPU-Specific Driver Detection
+## GPU-Specific Driver Detection
 # printf "%b\n" "${blue}Detecting GPU and installing specific drivers...${no_color}"
 # gpu_info=$(lspci | grep -Ei "VGA|3D")
 
