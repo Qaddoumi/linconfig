@@ -1,8 +1,8 @@
 # Check systemd failed services
-systemctl --failed
+# systemctl --failed
 
 # Log files check
-sudo journalctl -p 3 -xb
+# sudo journalctl -p 3 -xb
 
 # Update
 sudo pacman -Syu
@@ -35,4 +35,5 @@ sudo journalctl --vacuum-time=2weeks  # Keep only 2 weeks
 
 # refresh the mirror list (-a for age, 24 hours)
 # you can add -n 20 to limit the number of mirrors to 20
-sudo reflector -c Germany -a 24 --sort rate --save /etc/pacman.d/mirrorlist
+# sudo reflector -c Germany -a 24 --sort rate --save /etc/pacman.d/mirrorlist
+sudo reflector --country Germany,France,Netherlands --protocol https --age 12 --sort rate --save /etc/pacman.d/mirrorlist
