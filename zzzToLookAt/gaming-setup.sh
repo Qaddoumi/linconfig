@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#Note: i do have the gpu drivers installed already in linux_system script, if you are using this script
+#      make sure to install the gpu drivers yourself
+
 # Color codes
 red='\033[0;31m'
 green='\033[0;32m'
@@ -73,20 +76,3 @@ pkgs=(
 
 printf "%b\n" "${blue}Installing core gaming dependencies...${no_color}"
 sudo pacman -S --needed --noconfirm "${pkgs[@]}"
-
-## GPU-Specific Driver Detection
-# printf "%b\n" "${blue}Detecting GPU and installing specific drivers...${no_color}"
-# gpu_info=$(lspci | grep -Ei "VGA|3D")
-
-# if echo "$gpu_info" | grep -qi "NVIDIA"; then
-# 	printf "%b\n" "${green}NVIDIA GPU detected.${no_color}"
-# 	sudo pacman -S --needed --noconfirm nvidia-utils lib32-nvidia-utils
-# elif echo "$gpu_info" | grep -qi "AMD"; then
-# 	printf "%b\n" "${green}AMD GPU detected.${no_color}"
-# 	sudo pacman -S --needed --noconfirm vulkan-radeon lib32-vulkan-radeon
-# elif echo "$gpu_info" | grep -qi "Intel"; then
-# 	printf "%b\n" "${green}Intel GPU detected.${no_color}"
-# 	sudo pacman -S --needed --noconfirm vulkan-intel lib32-vulkan-intel
-# else
-# 	printf "%b\n" "${red}No specific GPU detected for proprietary/Vulkan drivers. Skipping...${no_color}"
-# fi
