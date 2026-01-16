@@ -298,6 +298,8 @@ sudo systemctl start bluetooth.service
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm btop # System monitor TUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm nvtop # GPU monitor TUI
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm gnome-system-monitor # System monitor GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 sudo pacman -S --needed --noconfirm wget # Download utility
