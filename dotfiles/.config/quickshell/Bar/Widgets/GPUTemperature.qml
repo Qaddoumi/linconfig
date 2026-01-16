@@ -83,7 +83,7 @@ Rectangle {
 
 	Process {
 		id: runOnClickProcess
-		command: ["bash", "-c", "kitty -e watch -n 1 nvidia-smi"]
+		command: ["bash", "-c", "kitty -e nvtop || kitty -e watch -n 1 nvidia-smi"]
 	}
 
 	MouseArea {
