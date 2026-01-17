@@ -1277,28 +1277,13 @@ else
 	echo -e "${green}Restarting libvirtd service to apply changes...${no_color}"
 	sudo systemctl restart libvirtd || true
 
-	echo -e "${green}Make sure to add the following line to your VM XML configuration:
+	echo -e "${cyan}Make sure to add the following line to your VM XML configuration:
 	<shmem name='looking-glass'>
 	<model type='ivshmem-plain'/>
 	<size unit='M'>128</size>
 	</shmem>${no_color}"
 	echo -e "${green}You can also use the following command to check if the shared memory device is created:${no_color}"
 	echo -e "${green}ls -l /dev/shm/looking-glass*${no_color}"
-
-	echo -e "${green}Creating desktop entries for Looking Glass Client to run in fullscreen${no_color}"
-	sudo mkdir -p ~/.local/share/applications/ || true
-	sudo tee ~/.local/share/applications/looking-glass-fullscreen.desktop > /dev/null << 'EOF'
-[Desktop Entry]
-Name=Looking Glass Client (Fullscreen)
-Comment=View KVM guest desktop in fullscreen
-Exec=looking-glass-client -F
-Icon=looking-glass-client
-Terminal=false
-Type=Application
-Categories=Utility;System;
-EOF
-	sudo chmod +x ~/.local/share/applications/looking-glass-fullscreen.desktop
-	sudo chown -R $USER:$USER ~/.local/share/applications/
 
 	echo -e "${green}Setting up looking-glass completed${no_color}"
 fi
