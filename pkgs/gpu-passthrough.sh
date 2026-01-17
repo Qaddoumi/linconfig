@@ -10,11 +10,24 @@ yellow='\033[1;33m'
 blue='\033[0;34m'
 no_color='\033[0m' # No Color
 
+for tool in sudo doas pkexec; do
+	if command -v "${tool}" >/dev/null 2>&1; then
+		ESCALATION_TOOL="${tool}"
+		echo -e "${blue}Using ${tool} for privilege escalation${no_color}"
+		break
+	fi
+done
+if [ -z "${ESCALATION_TOOL}" ]; then
+	echo -e "${red}Error: This script requires root privileges. Please install sudo, doas, or pkexec.${no_color}"
+	exit 1
+fi
+
+
 # Function to create backup files
 backup_file() {
 	local file="$1"
-	if sudo test -f "$file"; then
-		sudo cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
+	if "$ESCALATION_TOOL" test -f "$file"; then
+		"$ESCALATION_TOOL" cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
 		echo -e "${green}Backed up $file${no_color}"
 	else
 		echo -e "${yellow}File $file does not exist, skipping backup${no_color}"
@@ -44,7 +57,7 @@ fi
 
 # Check if IOMMU is already enabled
 echo -e "${green}Checking current IOMMU status...${no_color}"
-if sudo dmesg | grep -qE "IOMMU enabled|DMAR: IOMMU enabled"; then
+if "$ESCALATION_TOOL" dmesg | grep -qE "IOMMU enabled|DMAR: IOMMU enabled"; then
 	echo -e "${yellow}IOMMU appears to already be enabled in kernel logs${no_color}"
 else
 	echo -e "${green}IOMMU not currently enabled in kernel logs${no_color}"
@@ -225,7 +238,7 @@ if bootctl status 2>/dev/null | grep -q "systemd-boot"; then
 fi
 if (( bootloader_type == 2 )); then
 	echo -e "${green}check for Grub bootloader${no_color}"
-	if [[ -f "/boot/grub/grub.cfg" ]] || sudo test -d "/boot/grub"; then
+	if [[ -f "/boot/grub/grub.cfg" ]] || "$ESCALATION_TOOL" test -d "/boot/grub"; then
 		echo -e "${green}GRUB bootloader detected${no_color}"
 		bootloader_type=1 # GRUB detected
 	fi
@@ -238,11 +251,11 @@ if [ -n "$VFIO_IDS" ]; then
 			echo -e "${green}Configuring systemd-boot...${no_color}"
 			
 			# Find the correct entries directory
-			# You can run 'sudo bootctl list' to find them
+			# You can run '$ESCALATION_TOOL bootctl list' to find them
 			entries_dir=""
 			for path in "/boot/efi/loader/entries" "/boot/loader/entries" "/efi/loader/entries" "/boot/EFI/loader/entries"; do
 				echo -e "${blue}Checking path: $path${no_color}"
-				if sudo test -d "$path"; then
+				if "$ESCALATION_TOOL" test -d "$path"; then
 					entries_dir="$path"
 					echo -e "${green}Found entries directory: $entries_dir${no_color}"
 					break
@@ -270,14 +283,14 @@ if [ -n "$VFIO_IDS" ]; then
 				fi
 			fi
 			
-			if [[ -z "$entries_dir" ]] || ! sudo test -d "$entries_dir"; then
+			if [[ -z "$entries_dir" ]] || ! "$ESCALATION_TOOL" test -d "$entries_dir"; then
 				echo -e "${red}Could not locate systemd-boot entries directory${no_color}"
 				echo -e "${yellow}Please manually add '$IOMMU_PARAM iommu=pt' to your boot entry${no_color}"
 				#exit 1
 			fi
 			
 			# Get all .conf files (including backups and fallbacks)
-			all_entries=($(sudo find "$entries_dir" -name "*.conf" 2>/dev/null))
+			all_entries=($("$ESCALATION_TOOL" find "$entries_dir" -name "*.conf" 2>/dev/null))
 
 			# Filter out backups and fallbacks
 			boot_entries=()
@@ -303,18 +316,18 @@ if [ -n "$VFIO_IDS" ]; then
 				backup_file "$entry"
 				
 				# Check if IOMMU parameter already exists
-				if sudo grep -q "$IOMMU_PARAM" "$entry"; then
+				if "$ESCALATION_TOOL" grep -q "$IOMMU_PARAM" "$entry"; then
 					echo -e "${yellow}IOMMU parameter already present in $(basename "$entry")${no_color}"
 					continue
 				fi
 				
 				# Add IOMMU parameter to the options line
-				if sudo grep -q "^options" "$entry"; then
-					sudo sed -i "/^options/ s/$/ $IOMMU_PARAM iommu=pt/" "$entry"
+				if "$ESCALATION_TOOL" grep -q "^options" "$entry"; then
+					"$ESCALATION_TOOL" sed -i "/^options/ s/$/ $IOMMU_PARAM iommu=pt/" "$entry"
 					echo -e "${green}Updated $(basename "$entry") with: $IOMMU_PARAM iommu=pt${no_color}"
 				else
 					# If no options line exists, add one
-					echo "options $IOMMU_PARAM iommu=pt" | sudo tee -a "$entry" > /dev/null
+					echo "options $IOMMU_PARAM iommu=pt" | "$ESCALATION_TOOL" tee -a "$entry" > /dev/null
 					echo -e "${green}Added options line to $(basename "$entry") with: $IOMMU_PARAM iommu=pt${no_color}"
 				fi
 			done
@@ -326,23 +339,23 @@ if [ -n "$VFIO_IDS" ]; then
 			backup_file "$GRUB_CONFIG"
 
 			# Check if GRUB_CMDLINE_LINUX_DEFAULT exists
-			if ! sudo grep -q "GRUB_CMDLINE_LINUX_DEFAULT" "$GRUB_CONFIG"; then
+			if ! "$ESCALATION_TOOL" grep -q "GRUB_CMDLINE_LINUX_DEFAULT" "$GRUB_CONFIG"; then
 				echo -e "${red}GRUB_CMDLINE_LINUX_DEFAULT not found in $GRUB_CONFIG${no_color}"
 				#exit 1
 			fi
 
 			# Check if IOMMU parameter already exists
-			if sudo grep "GRUB_CMDLINE_LINUX_DEFAULT" "$GRUB_CONFIG" | grep -q "$IOMMU_PARAM"; then
+			if "$ESCALATION_TOOL" grep "GRUB_CMDLINE_LINUX_DEFAULT" "$GRUB_CONFIG" | grep -q "$IOMMU_PARAM"; then
 				echo -e "${yellow}IOMMU parameter already present in GRUB configuration${no_color}"
 			else
 				# Add IOMMU parameter to GRUB_CMDLINE_LINUX_DEFAULT
-				sudo sed -i "/GRUB_CMDLINE_LINUX_DEFAULT=/ s/\"$/ $IOMMU_PARAM iommu=pt\"/" "$GRUB_CONFIG"
+				"$ESCALATION_TOOL" sed -i "/GRUB_CMDLINE_LINUX_DEFAULT=/ s/\"$/ $IOMMU_PARAM iommu=pt\"/" "$GRUB_CONFIG"
 				echo -e "${green}Updated GRUB configuration with: $IOMMU_PARAM iommu=pt${no_color}"
 			fi
 
 			# Regenerate GRUB configuration
 			echo -e "${green}Regenerating GRUB configuration...${no_color}"
-			if sudo grub-mkconfig -o /boot/grub/grub.cfg; then
+			if "$ESCALATION_TOOL" grub-mkconfig -o /boot/grub/grub.cfg; then
 				echo -e "${green}GRUB configuration updated successfully${no_color}"
 			else
 				echo -e "${red}Failed to regenerate GRUB configuration${no_color}"
@@ -420,7 +433,7 @@ else
 fi
 
 # Generate the GPU switch script
-cat << SWITCH_SCRIPT_EOF | sudo tee "$SWITCH_SCRIPT" > /dev/null
+cat << SWITCH_SCRIPT_EOF | "$ESCALATION_TOOL" tee "$SWITCH_SCRIPT" > /dev/null
 #!/usr/bin/env bash
 
 red='\033[0;31m'
@@ -432,6 +445,8 @@ no_color='\033[0m' # No Color
 # Log to /tmp so it persists across session crashes
 exec > >(tee -i /tmp/gpu-switch.log)
 exec 2>&1
+
+ESCALATION_TOOL="$ESCALATION_TOOL"
 
 # Delay function with progress indicator
 delay_with_progress() {
@@ -463,7 +478,7 @@ case "\$1" in
 			echo -e "\${green}Looking for module: \$module\${no_color}"
 			if lsmod | grep -q "\$module"; then
 				echo -e "\${green}Removing module: \$module\${no_color}"
-				sudo modprobe -r "\$module" 2>/dev/null || true
+				"\$ESCALATION_TOOL" modprobe -r "\$module" 2>/dev/null || true
 			else
 				echo -e "\${yellow}Module \$module not found, skipping.\${no_color}"
 			fi
@@ -472,7 +487,7 @@ case "\$1" in
 
 		# Load vfio-pci module first
 		echo -e "\${blue}Loading vfio-pci module...\${no_color}"
-		if ! sudo modprobe vfio-pci; then
+		if ! "\$ESCALATION_TOOL" modprobe vfio-pci; then
 			echo -e "\${red}Failed to load vfio-pci module\${no_color}"
 			exit 1
 		fi
@@ -485,17 +500,17 @@ case "\$1" in
 			# Unbind from current driver if any
 			if [[ -L "/sys/bus/pci/devices/\$GPU_PCI_ID/driver" ]]; then
 				echo -e "\${green}Unbinding GPU from current driver...\${no_color}"
-				echo "\$GPU_PCI_ID" | sudo tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver/unbind > /dev/null 2>&1 || true
+				echo "\$GPU_PCI_ID" | "\$ESCALATION_TOOL" tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver/unbind > /dev/null 2>&1 || true
 				sleep 0.5
 			fi
 			
 			# Set driver_override to vfio-pci
 			echo -e "\${green}Setting driver_override for GPU to vfio-pci...\${no_color}"
-			echo "vfio-pci" | sudo tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver_override > /dev/null
+			echo "vfio-pci" | "\$ESCALATION_TOOL" tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver_override > /dev/null
 			
 			# Bind to vfio-pci
 			echo -e "\${green}Binding GPU to vfio-pci...\${no_color}"
-			echo "\$GPU_PCI_ID" | sudo tee /sys/bus/pci/drivers/vfio-pci/bind > /dev/null 2>&1 || true
+			echo "\$GPU_PCI_ID" | "\$ESCALATION_TOOL" tee /sys/bus/pci/drivers/vfio-pci/bind > /dev/null 2>&1 || true
 			
 			# Verify binding
 			if [[ -L "/sys/bus/pci/devices/\$GPU_PCI_ID/driver" ]]; then
@@ -517,17 +532,17 @@ case "\$1" in
 			# Unbind from current driver if any
 			if [[ -L "/sys/bus/pci/devices/\$AUDIO_PCI_ID/driver" ]]; then
 				echo -e "\${green}Unbinding Audio from current driver...\${no_color}"
-				echo "\$AUDIO_PCI_ID" | sudo tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver/unbind > /dev/null 2>&1 || true
+				echo "\$AUDIO_PCI_ID" | "\$ESCALATION_TOOL" tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver/unbind > /dev/null 2>&1 || true
 				sleep 0.5
 			fi
 			
 			# Set driver_override to vfio-pci
 			echo -e "\${green}Setting driver_override for Audio to vfio-pci...\${no_color}"
-			echo "vfio-pci" | sudo tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver_override > /dev/null
+			echo "vfio-pci" | "\$ESCALATION_TOOL" tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver_override > /dev/null
 			
 			# Bind to vfio-pci
 			echo -e "\${green}Binding Audio to vfio-pci...\${no_color}"
-			echo "\$AUDIO_PCI_ID" | sudo tee /sys/bus/pci/drivers/vfio-pci/bind > /dev/null 2>&1 || true
+			echo "\$AUDIO_PCI_ID" | "\$ESCALATION_TOOL" tee /sys/bus/pci/drivers/vfio-pci/bind > /dev/null 2>&1 || true
 			
 			# Verify binding
 			if [[ -L "/sys/bus/pci/devices/\$AUDIO_PCI_ID/driver" ]]; then
@@ -552,11 +567,11 @@ case "\$1" in
 		echo -e "\${blue}Unbinding GPU and audio devices from vfio-pci...\${no_color}"
 		if [[ -n "\$GPU_PCI_ID" && -d "/sys/bus/pci/devices/\$GPU_PCI_ID" ]]; then
 			echo -e "\${green}Unbinding GPU: \$GPU_PCI_ID from vfio-pci\${no_color}"
-			echo "\$GPU_PCI_ID" | sudo tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver/unbind 2>/dev/null || true
+			echo "\$GPU_PCI_ID" | "\$ESCALATION_TOOL" tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver/unbind 2>/dev/null || true
 		fi
 		if [[ -n "\$AUDIO_PCI_ID" && -d "/sys/bus/pci/devices/\$AUDIO_PCI_ID" ]]; then
 			echo -e "\${green}Unbinding Audio: \$AUDIO_PCI_ID from vfio-pci\${no_color}"
-			echo "\$AUDIO_PCI_ID" | sudo tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver/unbind 2>/dev/null || true
+			echo "\$AUDIO_PCI_ID" | "\$ESCALATION_TOOL" tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver/unbind 2>/dev/null || true
 		fi
 		sleep 1
 
@@ -564,11 +579,11 @@ case "\$1" in
 		echo -e "\${blue}Clearing driver overrides...\${no_color}"
 		if [[ -n "\$GPU_PCI_ID" && -d "/sys/bus/pci/devices/\$GPU_PCI_ID" ]]; then
 			echo -e "\${green}Clearing GPU driver override: \$GPU_PCI_ID\${no_color}"
-			echo "" | sudo tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver_override 2>/dev/null || true
+			echo "" | "\$ESCALATION_TOOL" tee /sys/bus/pci/devices/\$GPU_PCI_ID/driver_override 2>/dev/null || true
 		fi
 		if [[ -n "\$AUDIO_PCI_ID" && -d "/sys/bus/pci/devices/\$AUDIO_PCI_ID" ]]; then
 			echo -e "\${green}Clearing Audio driver override: \$AUDIO_PCI_ID\${no_color}"
-			echo "" | sudo tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver_override 2>/dev/null || true
+			echo "" | "\$ESCALATION_TOOL" tee /sys/bus/pci/devices/\$AUDIO_PCI_ID/driver_override 2>/dev/null || true
 		fi
 		sleep 1
 
@@ -581,12 +596,12 @@ case "\$1" in
 					continue
 				fi
 				echo -e "\${green}Loading module: \$module\${no_color}"
-				sudo modprobe "\$module" 2>/dev/null || true
+				"\$ESCALATION_TOOL" modprobe "\$module" 2>/dev/null || true
 			done
 		elif [[ "\$GPU_DRIVER" == "amdgpu" ]]; then
 			for module in amdgpu radeon; do
 				echo -e "\${green}Loading module: \$module\${no_color}"
-				sudo modprobe "\$module" 2>/dev/null || true
+				"\$ESCALATION_TOOL" modprobe "\$module" 2>/dev/null || true
 			done
 		fi
 		sleep 1
@@ -595,11 +610,11 @@ case "\$1" in
 		echo -e "\${blue}Binding GPU and audio devices to host drivers...\${no_color}"
 		if [[ -n "\$GPU_PCI_ID" && -d "/sys/bus/pci/devices/\$GPU_PCI_ID" ]]; then
 			echo -e "\${green}Binding GPU: \$GPU_PCI_ID to \$GPU_DRIVER\${no_color}"
-			echo "\$GPU_PCI_ID" | sudo tee /sys/bus/pci/drivers/\$GPU_DRIVER/bind 2>/dev/null || true
+			echo "\$GPU_PCI_ID" | "\$ESCALATION_TOOL" tee /sys/bus/pci/drivers/\$GPU_DRIVER/bind 2>/dev/null || true
 		fi
 		if [[ -n "\$AUDIO_PCI_ID" && -d "/sys/bus/pci/devices/\$AUDIO_PCI_ID" ]]; then
 			echo -e "\${green}Binding Audio: \$AUDIO_PCI_ID to \$AUDIO_DRIVER\${no_color}"
-			echo "\$AUDIO_PCI_ID" | sudo tee /sys/bus/pci/drivers/\$AUDIO_DRIVER/bind 2>/dev/null || true
+			echo "\$AUDIO_PCI_ID" | "\$ESCALATION_TOOL" tee /sys/bus/pci/drivers/\$AUDIO_DRIVER/bind 2>/dev/null || true
 		fi
 
 		echo -e "\${green}GPU switched to host mode\${no_color}"
@@ -616,14 +631,14 @@ case "\$1" in
 esac
 SWITCH_SCRIPT_EOF
 
-sudo chmod +x "$SWITCH_SCRIPT"
+"$ESCALATION_TOOL" chmod +x "$SWITCH_SCRIPT"
 
 echo ""
 # Load vfio modules
 echo -e "${green}Loading VFIO kernel modules...${no_color}"
 MODULES_LOAD_CONF="/etc/modules-load.d/vfio.conf"
 if [[ ! -f "$MODULES_LOAD_CONF" ]]; then
-	echo -e "vfio\nvfio_iommu_type1\nvfio_pci" | sudo tee "$MODULES_LOAD_CONF" > /dev/null
+	echo -e "vfio\nvfio_iommu_type1\nvfio_pci" | "$ESCALATION_TOOL" tee "$MODULES_LOAD_CONF" > /dev/null
 	echo -e "${green}Created $MODULES_LOAD_CONF with VFIO modules${no_color}"
 else
 	echo -e "${yellow}VFIO modules configuration already exists${no_color}"
@@ -645,13 +660,13 @@ else
 	backup_file "$MKINITCPIO_CONF"
 
 	# Check if MODULES line exists
-	if ! sudo grep -q "^MODULES=" "$MKINITCPIO_CONF"; then
+	if ! "$ESCALATION_TOOL" grep -q "^MODULES=" "$MKINITCPIO_CONF"; then
 		echo -e "${yellow}No MODULES line found in $MKINITCPIO_CONF${no_color}"
 		echo -e "${green}Adding MODULES line with VFIO modules${no_color}"
-		echo "MODULES=($VFIO_MODULES)" | sudo tee -a "$MKINITCPIO_CONF" > /dev/null
+		echo "MODULES=($VFIO_MODULES)" | "$ESCALATION_TOOL" tee -a "$MKINITCPIO_CONF" > /dev/null
 	else
 		# Get current MODULES line
-		current_modules=$(sudo grep "^MODULES=" "$MKINITCPIO_CONF" | sed 's/MODULES=//; s/[()]//g')
+		current_modules=$("$ESCALATION_TOOL" grep "^MODULES=" "$MKINITCPIO_CONF" | sed 's/MODULES=//; s/[()]//g')
 
 		# Check if all VFIO modules are already present
 		all_present=true
@@ -667,12 +682,12 @@ else
 		else
 			echo -e "${green}Adding missing VFIO modules to $MKINITCPIO_CONF${no_color}"
 			# Remove existing MODULES line
-			sudo sed -i "/^MODULES=/d" "$MKINITCPIO_CONF"
+			"$ESCALATION_TOOL" sed -i "/^MODULES=/d" "$MKINITCPIO_CONF"
 			# Add new MODULES line with all modules
 			new_modules="$current_modules $VFIO_MODULES"
 			# Remove duplicates and extra spaces
 			new_modules=$(echo "$new_modules" | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/ $//')
-			echo "MODULES=($new_modules)" | sudo tee -a "$MKINITCPIO_CONF" > /dev/null
+			echo "MODULES=($new_modules)" | "$ESCALATION_TOOL" tee -a "$MKINITCPIO_CONF" > /dev/null
 			echo -e "${green}Updated MODULES line with: $new_modules${no_color}"
 		fi
 	fi
@@ -683,17 +698,17 @@ fi
 
 # echo -e "${green}Blacklist host GPU drivers to prevent automatic binding:${no_color}"
 # if [ "$GPU_TYPE" = "nvidia" ]; then
-# 	echo -e "blacklist nvidia\nblacklist nvidia_drm\nblacklist nvidia_modeset\nblacklist nouveau\nblacklist nvidiafb\nblacklist nvidia_uvm" | sudo tee /etc/modprobe.d/blacklist-nvidia.conf > /dev/null
+# 	echo -e "blacklist nvidia\nblacklist nvidia_drm\nblacklist nvidia_modeset\nblacklist nouveau\nblacklist nvidiafb\nblacklist nvidia_uvm" | "$ESCALATION_TOOL" tee /etc/modprobe.d/blacklist-nvidia.conf > /dev/null
 # elif [ "$GPU_TYPE" = "amdgpu" ]; then
-# 	echo -e "blacklist amdgpu\nblacklist radeon" | sudo tee /etc/modprobe.d/blacklist-amd.conf > /dev/null
+# 	echo -e "blacklist amdgpu\nblacklist radeon" | "$ESCALATION_TOOL" tee /etc/modprobe.d/blacklist-amd.conf > /dev/null
 # fi
 
 # echo -e "${green}Creating VFIO configuration file /etc/modprobe.d/vfio.conf${no_color}"
-# echo -e "options vfio-pci ids=$VFIO_IDS" | sudo tee /etc/modprobe.d/vfio.conf > /dev/null
+# echo -e "options vfio-pci ids=$VFIO_IDS" | "$ESCALATION_TOOL" tee /etc/modprobe.d/vfio.conf > /dev/null
 
 # Update initramfs
 echo -e "${green}Updating initramfs...${no_color}"
-if sudo mkinitcpio -P; then  # Note: Run 'update-initramfs -u' for debian based distro and Run 'kernelstub' if you are on popos
+if "$ESCALATION_TOOL" mkinitcpio -P; then  # Note: Run 'update-initramfs -u' for debian based distro and Run 'kernelstub' if you are on popos
 	echo -e "${green}Initramfs updated successfully${no_color}"
 else
 	echo -e "${red}Failed to update initramfs${no_color}"
@@ -701,10 +716,10 @@ fi
 
 echo ""
 LIBVIRTHOOK_SCRIPT="/etc/libvirt/hooks/qemu"
-sudo mkdir -p "/etc/libvirt/hooks" || true
+"$ESCALATION_TOOL" mkdir -p "/etc/libvirt/hooks" || true
 echo -e "${green}Create libvirt hook to automate GPU switching, at $LIBVIRTHOOK_SCRIPT${no_color}"
 
-cat << LIBVIRTHOOK_SCRIPT_EOF | sudo tee "$LIBVIRTHOOK_SCRIPT" > /dev/null
+cat << LIBVIRTHOOK_SCRIPT_EOF | "$ESCALATION_TOOL" tee "$LIBVIRTHOOK_SCRIPT" > /dev/null
 #!/usr/bin/env bash
 
 exec >> /tmp/libvirt-hook-execution.log 2>&1
@@ -755,7 +770,7 @@ send_notification() {
         echo "Attempting notification with DISPLAY=\$display DBUS=\$dbus_addr" >> "\$log_file"
         
         # Send notification
-        if sudo -u "\$user_name" \
+        if "$ESCALATION_TOOL" -u "\$user_name" \
             DISPLAY="\$display" \
             DBUS_SESSION_BUS_ADDRESS="\$dbus_addr" \
             notify-send -u "\$urgency" "\$title" "\$message" 2>>"\$log_file"; then
@@ -780,7 +795,7 @@ get_vm_pci_devices_xmllint() {
 		# No stdin, use virsh
 		# NOTE: This may cause libvirt to hang or stuck in infinite loop, if it 
 		# called by libvirt, A deadlock is likely to occur.
-		local vm_xml=\$(timeout 10 sudo virsh dumpxml "\$vm_name" 2>/dev/null)
+		local vm_xml=\$(timeout 10 "$ESCALATION_TOOL" virsh dumpxml "\$vm_name" 2>/dev/null)
 		if [ \$? -eq 124 ]; then
 			echo "virsh dumpxml timed out" >&2
 			return 1
@@ -816,7 +831,7 @@ is_gpu_passed_to_vm() {
 	if [ -z "\$vm_name" ]; then
 		echo "Usage: \$0 <vm-name>"
 		echo "Available VMs:"
-		sudo virsh list --all --name || true
+		"$ESCALATION_TOOL" virsh list --all --name || true
 		return 1
 	fi
 
@@ -878,18 +893,18 @@ fi
 ## and check the memory size to determine the size of hugepages.
 # if [ "\$HOOK_NAME" = "prepare" ] && [ "\$STATE_NAME" = "begin" ]; then
 #	 echo "Enabling hugepages..."
-#	 echo $size_of_pages | sudo tee /proc/sys/vm/nr_hugepages
+#	 echo $size_of_pages | "$ESCALATION_TOOL" tee /proc/sys/vm/nr_hugepages
 # elif [ "\$HOOK_NAME" = "release" ] && [ "\$STATE_NAME" = "end" ]; then
 #	 echo "Disabling hugepages..."
-#	 echo 0 | sudo tee /proc/sys/vm/nr_hugepages
+#	 echo 0 | "$ESCALATION_TOOL" tee /proc/sys/vm/nr_hugepages
 # fi
 
 
 
 LIBVIRTHOOK_SCRIPT_EOF
-sudo chmod +x $LIBVIRTHOOK_SCRIPT
+"$ESCALATION_TOOL" chmod +x $LIBVIRTHOOK_SCRIPT
 
-sudo systemctl restart libvirtd || true
+"$ESCALATION_TOOL" systemctl restart libvirtd || true
 
 echo ""
 
@@ -906,7 +921,7 @@ echo -e "${green}You should now only see one card listed (e.g., card0, renderD12
 # echo -e "${blue}List of GPU driver files:${no_color}"
 # ls -la /sys/class/drm/card*/device/driver || true
 # echo -e "${blue}List of open files for GPU devices:${no_color}"
-# sudo lsof /dev/dri/card* || true
+# "$ESCALATION_TOOL" lsof /dev/dri/card* || true
 # echo -e "${blue}List of PCI devices related to GPU:${no_color}"
 # lspci | grep -E "(VGA|3D|Display)"
 

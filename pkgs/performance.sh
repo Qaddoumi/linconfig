@@ -9,10 +9,23 @@ yellow='\033[1;33m'
 blue='\033[0;34m'
 no_color='\033[0m' # reset the color to default
 
+for tool in sudo doas pkexec; do
+	if command -v "${tool}" >/dev/null 2>&1; then
+		ESCALATION_TOOL="${tool}"
+		echo -e "${blue}Using ${tool} for privilege escalation${no_color}"
+		break
+	fi
+done
+if [ -z "${ESCALATION_TOOL}" ]; then
+	echo -e "${red}Error: This script requires root privileges. Please install sudo, doas, or pkexec.${no_color}"
+	exit 1
+fi
+
+
 backup_file() {
 	local file="$1"
-	if sudo test -f "$file"; then
-		sudo cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
+	if "$ESCALATION_TOOL" test -f "$file"; then
+		"$ESCALATION_TOOL" cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
 		echo -e "${green}Backed up $file${no_color}"
 	else
 		echo -e "${yellow}File $file does not exist, skipping backup${no_color}"
@@ -21,7 +34,7 @@ backup_file() {
 
 echo -e "${green}=== Optimized Performance Setup for Lenovo LOQ ===${no_color}"
 
-sudo pacman -S --needed --noconfirm i2cdetect lm_sensors cpupower tlp tlp-rdw thermald
+"$ESCALATION_TOOL" pacman -S --needed --noconfirm i2cdetect lm_sensors cpupower tlp tlp-rdw thermald
 
 echo -e "${green}Installing and configuring TLP for automatic performance management...${no_color}"
 
@@ -32,7 +45,7 @@ backup_file /etc/tlp.conf
 echo -e "${green}Configuring TLP for automatic AC/Battery performance switching...${no_color}"
 
 # Create optimized TLP configuration for Lenovo LOQ
-sudo tee /etc/tlp.conf > /dev/null <<'EOF'
+"$ESCALATION_TOOL" tee /etc/tlp.conf > /dev/null <<'EOF'
 
 # Processor
 CPU_SCALING_GOVERNOR_ON_AC=performance
@@ -117,18 +130,18 @@ TPSMAPI_ENABLE=1
 EOF
 
 echo -e "${green}Enabling and starting TLP service...${no_color}"
-sudo systemctl enable tlp.service
-sudo systemctl start tlp.service
+"$ESCALATION_TOOL" systemctl enable tlp.service
+"$ESCALATION_TOOL" systemctl start tlp.service
 
 # Install TLP-RDW for additional NetworkManager integration
 if ! pacman -Q tlp-rdw &>/dev/null; then
 	echo -e "${green}Installing TLP-RDW for NetworkManager integration...${no_color}"
-	sudo pacman -S --noconfirm tlp-rdw
+	"$ESCALATION_TOOL" pacman -S --noconfirm tlp-rdw
 fi
 
 # Check current power source and apply settings
 echo -e "${green}Applying TLP settings for current power source...${no_color}"
-sudo tlp start
+"$ESCALATION_TOOL" tlp start
 
 # Hardware sensors setup (keeping your existing logic but cleaned up)
 echo -e "${green}=== Automated Hardware Sensors Detection ===${no_color}"
@@ -136,8 +149,8 @@ echo -e "${green}Backing up existing config (if exists)...${no_color}"
 backup_file /etc/conf.d/lm_sensors
 
 echo -e "${green}Detecting system information...${no_color}"
-SYSTEM_VENDOR=$(sudo dmidecode -s system-manufacturer 2>/dev/null | head -1)
-SYSTEM_MODEL=$(sudo dmidecode -s system-product-name 2>/dev/null | head -1)
+SYSTEM_VENDOR=$("$ESCALATION_TOOL" dmidecode -s system-manufacturer 2>/dev/null | head -1)
+SYSTEM_MODEL=$("$ESCALATION_TOOL" dmidecode -s system-product-name 2>/dev/null | head -1)
 CPU_VENDOR=$(lscpu | grep "Vendor ID" | awk '{print $3}' | head -1)
 CPU_MODEL=$(lscpu | grep "Model name" | cut -d: -f2 | xargs)
 echo -e "${green}System: $SYSTEM_VENDOR $SYSTEM_MODEL${no_color}"
@@ -149,14 +162,14 @@ DETECTED_MODULES=""
 # Intel CPU thermal sensors
 if [[ "$CPU_VENDOR" == "GenuineIntel" ]]; then
 	echo "Detecting Intel CPU thermal sensors..."
-	if sudo modprobe coretemp 2>/dev/null; then
+	if "$ESCALATION_TOOL" modprobe coretemp 2>/dev/null; then
 		echo "✓ Intel coretemp module loaded"
 		DETECTED_MODULES="$DETECTED_MODULES coretemp"
 	fi
 # AMD CPU thermal sensors
 elif [[ "$CPU_VENDOR" == "AuthenticAMD" ]]; then
 	echo "Detecting AMD CPU thermal sensors..."
-	if sudo modprobe k10temp 2>/dev/null; then
+	if "$ESCALATION_TOOL" modprobe k10temp 2>/dev/null; then
 		echo "✓ AMD k10temp module loaded"
 		DETECTED_MODULES="$DETECTED_MODULES k10temp"
 	fi
@@ -165,7 +178,7 @@ fi
 # Check for ACPI thermal zones
 if [ -d /sys/class/thermal ] && [ "$(ls -A /sys/class/thermal/thermal_zone* 2>/dev/null)" ]; then
 	echo "✓ ACPI thermal zones detected"
-	if sudo modprobe acpi-thermal 2>/dev/null; then
+	if "$ESCALATION_TOOL" modprobe acpi-thermal 2>/dev/null; then
 		echo "✓ ACPI thermal module loaded"
 	fi
 fi
@@ -173,7 +186,7 @@ fi
 # Check for NVMe drive temperatures
 if lspci | grep -i nvme >/dev/null 2>&1; then
 	echo "✓ NVMe drives detected"
-	if sudo modprobe nvme 2>/dev/null; then
+	if "$ESCALATION_TOOL" modprobe nvme 2>/dev/null; then
 		echo "✓ NVMe temperature monitoring available"
 	fi
 fi
@@ -181,16 +194,16 @@ fi
 # Common sensor chips for laptops
 CHIP_MODULES="it87 nct6775 w83627ehf"
 for module in $CHIP_MODULES; do
-	if sudo modprobe "$module" 2>/dev/null; then
+	if "$ESCALATION_TOOL" modprobe "$module" 2>/dev/null; then
 		echo "✓ Chip module $module loaded successfully"
 		DETECTED_MODULES="$DETECTED_MODULES $module"
-		sudo modprobe -r "$module" 2>/dev/null || true
+		"$ESCALATION_TOOL" modprobe -r "$module" 2>/dev/null || true
 	fi
 done
 
 # I2C support
 if command -v i2cdetect &> /dev/null; then
-	if sudo modprobe i2c-i801 2>/dev/null; then
+	if "$ESCALATION_TOOL" modprobe i2c-i801 2>/dev/null; then
 		echo "✓ I2C support loaded"
 		DETECTED_MODULES="$DETECTED_MODULES i2c-i801"
 	fi
@@ -198,7 +211,7 @@ fi
 
 # Create lm_sensors configuration
 echo -e "${green}Creating lm_sensors configuration...${no_color}"
-sudo tee /etc/conf.d/lm_sensors > /dev/null <<EOF
+"$ESCALATION_TOOL" tee /etc/conf.d/lm_sensors > /dev/null <<EOF
 # Generated by automated sensor detection script
 # $(date)
 # System: $SYSTEM_VENDOR $SYSTEM_MODEL
@@ -211,7 +224,7 @@ EOF
 if [ -n "$DETECTED_MODULES" ]; then
 	echo -e "${green}Loading detected sensor modules...${no_color}"
 	for module in $DETECTED_MODULES; do
-		if sudo modprobe "$module"; then
+		if "$ESCALATION_TOOL" modprobe "$module"; then
 			echo "✓ Module $module loaded successfully"
 		fi
 	done
@@ -219,13 +232,13 @@ fi
 
 # Enable and start lm_sensors
 echo -e "${green}Enabling and starting lm_sensors service...${no_color}"
-sudo systemctl enable lm_sensors.service &>/dev/null || true
-sudo systemctl start lm_sensors.service &>/dev/null || true
+"$ESCALATION_TOOL" systemctl enable lm_sensors.service &>/dev/null || true
+"$ESCALATION_TOOL" systemctl start lm_sensors.service &>/dev/null || true
 
 # Initialize sensors
 echo -e "${green}Initializing sensors...${no_color}"
 if command -v sensors &> /dev/null; then
-	sudo sensors -s 2>/dev/null || true
+	"$ESCALATION_TOOL" sensors -s 2>/dev/null || true
 	echo -e "${green}✓ Sensors initialized${no_color}"
 else
 	echo -e "${yellow}⚠ sensors command not available${no_color}"
@@ -233,7 +246,7 @@ fi
 
 echo -e "${green}=== Setup Complete ===${no_color}"
 echo -e "${green}Current TLP Status:${no_color}"
-sudo tlp-stat -s
+"$ESCALATION_TOOL" tlp-stat -s
 
 echo -e "${green}Current Power Source and Settings:${no_color}"
 if [ -f /sys/class/power_supply/AC*/online ]; then
@@ -272,8 +285,8 @@ echo -e "${green}Setting up thermal management...${no_color}"
 # Configure thermald for Intel systems
 if [[ "$CPU_VENDOR" == "GenuineIntel" ]]; then
 	echo -e "${green}Configuring Intel thermal daemon...${no_color}"
-	sudo systemctl enable thermald
-	sudo systemctl start thermald
+	"$ESCALATION_TOOL" systemctl enable thermald
+	"$ESCALATION_TOOL" systemctl start thermald
 	echo -e "${green}✓ Thermald enabled for Intel CPU${no_color}"
 fi
 
@@ -281,7 +294,7 @@ fi
 echo -e "${green}Configuring thermal protection...${no_color}"
 
 # Create thermal protection script
-sudo tee /usr/local/bin/thermal-protect.sh > /dev/null <<'EOF'
+"$ESCALATION_TOOL" tee /usr/local/bin/thermal-protect.sh > /dev/null <<'EOF'
 #!/usr/bin/env bash
 
 # Thermal protection thresholds (in millicelsius)
@@ -321,10 +334,10 @@ else
 fi
 EOF
 
-sudo chmod +x /usr/local/bin/thermal-protect.sh
+"$ESCALATION_TOOL" chmod +x /usr/local/bin/thermal-protect.sh
 
 # Create systemd timer for thermal monitoring
-sudo tee /etc/systemd/system/thermal-monitor.service > /dev/null <<EOF
+"$ESCALATION_TOOL" tee /etc/systemd/system/thermal-monitor.service > /dev/null <<EOF
 [Unit]
 Description=Thermal Protection Monitor
 After=multi-user.target
@@ -335,7 +348,7 @@ ExecStart=/usr/local/bin/thermal-protect.sh
 User=root
 EOF
 
-sudo tee /etc/systemd/system/thermal-monitor.timer > /dev/null <<EOF
+"$ESCALATION_TOOL" tee /etc/systemd/system/thermal-monitor.timer > /dev/null <<EOF
 [Unit]
 Description=Run thermal protection every 10 seconds
 Requires=thermal-monitor.service
@@ -349,14 +362,14 @@ WantedBy=timers.target
 EOF
 
 echo -e "${green}Enabling thermal monitoring timer...${no_color}"
-sudo systemctl enable thermal-monitor.timer
-sudo systemctl start thermal-monitor.timer
+"$ESCALATION_TOOL" systemctl enable thermal-monitor.timer
+"$ESCALATION_TOOL" systemctl start thermal-monitor.timer
 
 # Configure fan curves if possible
 echo -e "${green}Checking for fan control capabilities...${no_color}"
 if command -v pwmconfig &> /dev/null; then
-	echo -e "${yellow}Fan control available! Run 'sudo pwmconfig' manually to configure fan curves${no_color}"
-	echo -e "${yellow}After pwmconfig, use 'sudo systemctl enable fancontrol' to enable automatic fan control${no_color}"
+	echo -e "${yellow}Fan control available! Run '$ESCALATION_TOOL pwmconfig' manually to configure fan curves${no_color}"
+	echo -e "${yellow}After pwmconfig, use '$ESCALATION_TOOL systemctl enable fancontrol' to enable automatic fan control${no_color}"
 else
 	echo -e "${yellow}pwmconfig not found - check if lm_sensors is properly installed${no_color}"
 fi
@@ -390,9 +403,9 @@ echo -e "${yellow}Check thermal protection: systemctl status thermal-monitor.tim
 echo ""
 echo -e "${green}=== Usage Instructions ===${no_color}"
 echo -e "${green}• TLP automatically switches between performance/power-saving based on AC/Battery${no_color}"
-echo -e "${green}• Check status: sudo tlp-stat -s${no_color}"
-echo -e "${green}• Force AC mode: sudo tlp ac${no_color}"
-echo -e "${green}• Force Battery mode: sudo tlp bat${no_color}"
+echo -e "${green}• Check status: $ESCALATION_TOOL tlp-stat -s${no_color}"
+echo -e "${green}• Force AC mode: $ESCALATION_TOOL tlp ac${no_color}"
+echo -e "${green}• Force Battery mode: $ESCALATION_TOOL tlp bat${no_color}"
 echo -e "${green}• Check temperatures: sensors${no_color}"
 echo -e "${green}• Battery care: Charging limited to 80% to extend battery life${no_color}"
 echo ""

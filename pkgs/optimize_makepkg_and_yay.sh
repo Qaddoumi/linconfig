@@ -10,11 +10,24 @@ blue='\033[0;34m'
 cyan='\033[0;36m'
 no_color='\033[0m' # reset the color to default
 
+for tool in sudo doas pkexec; do
+	if command -v "${tool}" >/dev/null 2>&1; then
+		ESCALATION_TOOL="${tool}"
+		echo -e "${cyan}Using ${tool} for privilege escalation${no_color}"
+		break
+	fi
+done
+if [ -z "${ESCALATION_TOOL}" ]; then
+	echo -e "${red}Error: This script requires root privileges. Please install sudo, doas, or pkexec.${no_color}"
+	exit 1
+fi
+
+
 # Common backup function
 backup_file() {
 	local file="$1"
-	if sudo test -f "$file"; then
-		sudo cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
+	if "$ESCALATION_TOOL" test -f "$file"; then
+		"$ESCALATION_TOOL" cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
 		echo -e "${green}Backed up $file${no_color}"
 	else
 		echo -e "${yellow}File $file does not exist, skipping backup${no_color}"
@@ -51,7 +64,7 @@ optimize_makepkg() {
 
 	if [ ${#missing_packages[@]} -ne 0 ]; then
 		echo -e "${yellow}Installing missing packages: ${missing_packages[*]}${no_color}"
-		sudo pacman -S --needed --noconfirm "${missing_packages[@]}" || true
+		"$ESCALATION_TOOL" pacman -S --needed --noconfirm "${missing_packages[@]}" || true
 	else
 		echo -e "${green}All compression tools are installed.${no_color}"
 	fi
@@ -73,16 +86,16 @@ optimize_makepkg() {
 			if grep -q "^${replacement}$" "$MAKEPKG_CONF"; then
 				echo -e "${green}✓${no_color} $description: ${green}Already optimized${no_color}"
 			else
-				sudo sed -i "s|^${pattern%%=*}=.*|$replacement|" "$MAKEPKG_CONF"
+				"$ESCALATION_TOOL" sed -i "s|^${pattern%%=*}=.*|$replacement|" "$MAKEPKG_CONF"
 				echo -e "${green}✓${no_color} Updated: $description"
 			fi
 		elif grep -q "^#${pattern%%=*}=" "$MAKEPKG_CONF"; then
 			# Setting exists but is commented out
-			sudo sed -i "s|^#\?${pattern%%=*}=.*|$replacement|" "$MAKEPKG_CONF"
+			"$ESCALATION_TOOL" sed -i "s|^#\?${pattern%%=*}=.*|$replacement|" "$MAKEPKG_CONF"
 			echo -e "${green}✓${no_color} Uncommented & Updated: $description"
 		else
 			# Setting doesn't exist, add it
-			echo "$replacement" | sudo tee -a "$MAKEPKG_CONF" > /dev/null
+			echo "$replacement" | "$ESCALATION_TOOL" tee -a "$MAKEPKG_CONF" > /dev/null
 			echo -e "${green}✓${no_color} Added: $description"
 		fi
 	}

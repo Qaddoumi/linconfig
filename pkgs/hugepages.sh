@@ -9,6 +9,18 @@ yellow='\033[1;33m'
 blue='\033[0;34m'
 no_color='\033[0m' # reset the color to default
 
+for tool in sudo doas pkexec; do
+	if command -v "${tool}" >/dev/null 2>&1; then
+		ESCALATION_TOOL="${tool}"
+		echo -e "${blue}Using ${tool} for privilege escalation${no_color}"
+		break
+	fi
+done
+if [ -z "${ESCALATION_TOOL}" ]; then
+	echo -e "${red}Error: This script requires root privileges. Please install sudo, doas, or pkexec.${no_color}"
+	exit 1
+fi
+
 
 #TODO: make hugepages dynamic by checking the xml and build basied on the memory allocated to the VM.
 echo -e "${green}Setting up Hugepages for KVM guests${no_color}"
@@ -33,10 +45,10 @@ else
 		echo -e "${green}Configuring hugepages for KVM guests...${no_color}"
 		
 		# Set runtime hugepages
-		echo $size_of_pages | sudo tee /proc/sys/vm/nr_hugepages > /dev/null || true
+		echo $size_of_pages | "$ESCALATION_TOOL" tee /proc/sys/vm/nr_hugepages > /dev/null || true
 		
 		# Make it persistent
-		echo "vm.nr_hugepages=$size_of_pages" | sudo tee /etc/sysctl.d/99-hugepages.conf > /dev/null || true
+		echo "vm.nr_hugepages=$size_of_pages" | "$ESCALATION_TOOL" tee /etc/sysctl.d/99-hugepages.conf > /dev/null || true
 		
 		# Also add kernel parameter for boot-time allocation (more reliable)
 		echo -e "${green}Detecting bootloader...${no_color}"
@@ -44,7 +56,7 @@ else
 		echo -e "${green}check for systemd-boot first${no_color}"
 		if bootctl status 2>/dev/null | grep -q "systemd-boot"; then
 			echo -e "${green}systemd-boot confirmed via bootctl${no_color}"
-		elif [[ -f "/boot/grub/grub.cfg" ]] || sudo test -d "/boot/grub"; then
+		elif [[ -f "/boot/grub/grub.cfg" ]] || "$ESCALATION_TOOL" test -d "/boot/grub"; then
 				echo -e "${green}GRUB bootloader detected${no_color}"
 				bootloader_type="grub" # GRUB detected
 		fi
@@ -53,15 +65,15 @@ else
 			if ! grep -q "hugepages=$size_of_pages" /etc/default/grub; then
 				backup_file "/etc/default/grub"
 				
-				sudo sed -i "s/GRUB_CMDLINE_LINUX=\"/GRUB_CMDLINE_LINUX=\"hugepages=$size_of_pages /" /etc/default/grub
-				sudo grub-mkconfig -o /boot/grub/grub.cfg
+				"$ESCALATION_TOOL" sed -i "s/GRUB_CMDLINE_LINUX=\"/GRUB_CMDLINE_LINUX=\"hugepages=$size_of_pages /" /etc/default/grub
+				"$ESCALATION_TOOL" grub-mkconfig -o /boot/grub/grub.cfg
 				echo -e "${yellow}Kernel parameters updated. Reboot required for optimal hugepages allocation.${no_color}"
 			fi
 		elif [ "$bootloader_type" = "systemd-boot" ]; then
 			entries_dir=""
 			for path in "/boot/efi/loader/entries" "/boot/loader/entries" "/efi/loader/entries" "/boot/EFI/loader/entries"; do
 				echo -e "${blue}Checking path: $path${no_color}"
-				if sudo test -d "$path"; then
+				if "$ESCALATION_TOOL" test -d "$path"; then
 					entries_dir="$path"
 					echo -e "${green}Found entries directory: $entries_dir${no_color}"
 					break
@@ -89,14 +101,14 @@ else
 				fi
 			fi
 			
-			if [[ -z "$entries_dir" ]] || ! sudo test -d "$entries_dir"; then
+			if [[ -z "$entries_dir" ]] || ! "$ESCALATION_TOOL" test -d "$entries_dir"; then
 				echo -e "${red}Could not locate systemd-boot entries directory${no_color}"
 				echo -e "${yellow}Please manually add '$IOMMU_PARAM iommu=pt vfio-pci.ids=$VFIO_IDS $integrated_gpu_modeset $discrete_gpu_modeset' to your boot entry${no_color}"
 				#exit 1
 			fi
 			
 			# Get all .conf files (including backups and fallbacks)
-			all_entries=($(sudo find "$entries_dir" -name "*.conf" 2>/dev/null))
+			all_entries=($("$ESCALATION_TOOL" find "$entries_dir" -name "*.conf" 2>/dev/null))
 
 			# Filter out backups and fallbacks
 			boot_entries=()
@@ -122,7 +134,7 @@ else
 						backup_file "$entry"
 						echo -e "${green}Updating entry: $(basename "$entry")${no_color}"
 						# More robust sed command that handles various options line formats
-						sudo sed -i "/^options/ { /hugepages=/ ! s/options /&hugepages=$size_of_pages / }" "$entry"
+						"$ESCALATION_TOOL" sed -i "/^options/ { /hugepages=/ ! s/options /&hugepages=$size_of_pages / }" "$entry"
 					else
 						echo -e "${green}Entry $(basename "$entry") already has hugepages configured${no_color}"
 					fi
@@ -139,22 +151,22 @@ else
 		echo -e "${green}Hugepages are already mounted${no_color}"
 	else
 		echo -e "${green}Mounting hugepages...${no_color}"
-		sudo mkdir -p /dev/hugepages || true
+		"$ESCALATION_TOOL" mkdir -p /dev/hugepages || true
 		
 		
-		sudo mount -a || true
+		"$ESCALATION_TOOL" mount -a || true
 		echo -e "${green}Hugepages mounted at /dev/hugepages${no_color}"
 	fi
 	# Check if already in fstab
 	if ! grep -q "/dev/hugepages" /etc/fstab; then
-		echo "hugetlbfs /dev/hugepages hugetlbfs mode=1770,gid=kvm 0 0" | sudo tee -a /etc/fstab > /dev/null || true
+		echo "hugetlbfs /dev/hugepages hugetlbfs mode=1770,gid=kvm 0 0" | "$ESCALATION_TOOL" tee -a /etc/fstab > /dev/null || true
 	fi
 
 	# this part not recommended for most workloads
 	# # Disabling Transparent hugepages for better performance
 	# if grep -q "transparent_hugepage" /sys/kernel/mm/transparent_hugepage/enabled; then
 	#	 echo -e "${green}Disabling Transparent Hugepages...${no_color}"
-	#	 echo never | sudo tee /sys/kernel/mm/transparent_hugepage/enabled > /dev/null || true
+	#	 echo never | "$ESCALATION_TOOL" tee /sys/kernel/mm/transparent_hugepage/enabled > /dev/null || true
 	#	 echo -e "${green}Transparent Hugepages disabled${no_color}"
 	# else
 	#	 echo -e "${yellow}Transparent Hugepages not supported or already disabled${no_color}"
