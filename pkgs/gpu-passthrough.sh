@@ -646,73 +646,116 @@ fi
 echo ""
 echo -e "${green}Update initramfs to include VFIO modules:${no_color}"
 
-# Configuration file
-MKINITCPIO_CONF="/etc/mkinitcpio.conf"
+# Initramfs Configuration & Regeneration
+echo -e "${green}Configuring VFIO modules for Initramfs...${no_color}"
 VFIO_MODULES="vfio vfio_iommu_type1 vfio_pci"
+INITRAMFS_UPDATED=false
 
-echo -e "${green}Starting VFIO modules configuration for $MKINITCPIO_CONF...${no_color}"
+# 1. Dracut
+if command -v dracut &>/dev/null; then
+	echo -e "${blue}Dracut detected.${no_color}"
+	DRACUT_CONF_DIR="/etc/dracut.conf.d"
+	"$ESCALATION_TOOL" mkdir -p "$DRACUT_CONF_DIR"
+	DRACUT_VFIO_CONF="$DRACUT_CONF_DIR/10-vfio.conf"
+	
+	echo -e "${green}Writing Dracut configuration to $DRACUT_VFIO_CONF...${no_color}"
+	echo "force_drivers+=\" $VFIO_MODULES \"" | "$ESCALATION_TOOL" tee "$DRACUT_VFIO_CONF" > /dev/null
+	
+	echo -e "${green}Regenerating Dracut initramfs...${no_color}"
+	if command -v xbps-reconfigure &>/dev/null; then
+		"$ESCALATION_TOOL" xbps-reconfigure -fa || echo -e "${red}Dracut regeneration failed${no_color}"
+	else
+		"$ESCALATION_TOOL" dracut --force --regenerate-all || echo -e "${red}Dracut regeneration failed${no_color}"
+	fi
+	INITRAMFS_UPDATED=true
+fi
 
-# Check if mkinitcpio.conf exists
-if [[ ! -f "$MKINITCPIO_CONF" ]]; then
-	echo -e "${red}Error: $MKINITCPIO_CONF not found${no_color}"
-else 
-	# Backup the configuration file
+# 2. Booster
+if command -v booster &>/dev/null; then
+	echo -e "${blue}Booster detected.${no_color}"
+	BOOSTER_OPTS="vfio,vfio_iommu_type1,vfio_pci"
+	BOOSTER_CONF="/etc/booster.yaml"
+	
+	# Check configuration
+	if [ -f "$BOOSTER_CONF" ]; then
+		if "$ESCALATION_TOOL" grep -q "modules_force_load:" "$BOOSTER_CONF"; then
+			if ! "$ESCALATION_TOOL" grep -q "vfio" "$BOOSTER_CONF"; then
+				echo -e "${yellow}Adding VFIO modules to $BOOSTER_CONF${no_color}"
+				"$ESCALATION_TOOL" sed -i "/^modules_force_load:/ s/$/,$BOOSTER_OPTS/" "$BOOSTER_CONF"
+			fi
+		else
+			echo "modules_force_load: $BOOSTER_OPTS" | "$ESCALATION_TOOL" tee -a "$BOOSTER_CONF" > /dev/null
+		fi
+	else
+		echo "modules_force_load: $BOOSTER_OPTS" | "$ESCALATION_TOOL" tee "$BOOSTER_CONF" > /dev/null
+	fi
+	
+	echo -e "${green}Regenerating Booster initramfs...${no_color}"
+	if command -v xbps-reconfigure &>/dev/null; then
+		"$ESCALATION_TOOL" xbps-reconfigure -fa || echo -e "${red}Booster regeneration failed${no_color}"
+	else
+		# Try to detect kernel version for manual build
+		for kmod in /lib/modules/*; do
+			kver=$(basename "$kmod")
+			if [[ -d "$kmod" ]]; then
+				echo -e "Building for kernel $kver..."
+				"$ESCALATION_TOOL" booster build --force --kernel-version "$kver" /boot/initramfs-"$kver".img || true
+			fi
+		done
+	fi
+	INITRAMFS_UPDATED=true
+fi
+
+# 3. Mkinitcpio (Standard Arch)
+MKINITCPIO_CONF="/etc/mkinitcpio.conf"
+if [ -f "$MKINITCPIO_CONF" ]; then
+	echo -e "${blue}Mkinitcpio detected ($MKINITCPIO_CONF).${no_color}"
 	backup_file "$MKINITCPIO_CONF"
 
-	# Check if MODULES line exists
 	if ! "$ESCALATION_TOOL" grep -q "^MODULES=" "$MKINITCPIO_CONF"; then
-		echo -e "${yellow}No MODULES line found in $MKINITCPIO_CONF${no_color}"
-		echo -e "${green}Adding MODULES line with VFIO modules${no_color}"
 		echo "MODULES=($VFIO_MODULES)" | "$ESCALATION_TOOL" tee -a "$MKINITCPIO_CONF" > /dev/null
 	else
-		# Get current MODULES line
 		current_modules=$("$ESCALATION_TOOL" grep "^MODULES=" "$MKINITCPIO_CONF" | sed 's/MODULES=//; s/[()]//g')
-
-		# Check if all VFIO modules are already present
 		all_present=true
 		for module in $VFIO_MODULES; do
 			if ! echo "$current_modules" | grep -qw "$module"; then
-				all_present=false
-				break
+				all_present=false; break
 			fi
 		done
-
-		if [[ "$all_present" == true ]]; then
-			echo -e "${yellow}All VFIO modules ($VFIO_MODULES) are already present in $MKINITCPIO_CONF${no_color}"
-		else
-			echo -e "${green}Adding missing VFIO modules to $MKINITCPIO_CONF${no_color}"
-			# Remove existing MODULES line
+		if [[ "$all_present" == false ]]; then
 			"$ESCALATION_TOOL" sed -i "/^MODULES=/d" "$MKINITCPIO_CONF"
-			# Add new MODULES line with all modules
-			new_modules="$current_modules $VFIO_MODULES"
-			# Remove duplicates and extra spaces
-			new_modules=$(echo "$new_modules" | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/ $//')
+			new_modules=$(echo "$current_modules $VFIO_MODULES" | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/ $//')
 			echo "MODULES=($new_modules)" | "$ESCALATION_TOOL" tee -a "$MKINITCPIO_CONF" > /dev/null
-			echo -e "${green}Updated MODULES line with: $new_modules${no_color}"
+			echo -e "${green}Updated MODULES in mkinitcpio.conf${no_color}"
 		fi
 	fi
 
-	echo -e "${green}VFIO modules configuration completed${no_color}"
+	#Note: blacklising is no longer needed as im doing the gpu switch.
+	# echo -e "${green}Blacklist host GPU drivers to prevent automatic binding:${no_color}"
+	# if [ "$GPU_TYPE" = "nvidia" ]; then
+	# 	echo -e "blacklist nvidia\nblacklist nvidia_drm\nblacklist nvidia_modeset\nblacklist nouveau\nblacklist nvidiafb\nblacklist nvidia_uvm" | "$ESCALATION_TOOL" tee /etc/modprobe.d/blacklist-nvidia.conf > /dev/null
+	# elif [ "$GPU_TYPE" = "amdgpu" ]; then
+	# 	echo -e "blacklist amdgpu\nblacklist radeon" | "$ESCALATION_TOOL" tee /etc/modprobe.d/blacklist-amd.conf > /dev/null
+	# fi
 
+	# echo -e "${green}Creating VFIO configuration file /etc/modprobe.d/vfio.conf${no_color}"
+	# echo -e "options vfio-pci ids=$VFIO_IDS" | "$ESCALATION_TOOL" tee /etc/modprobe.d/vfio.conf > /dev/null
+
+	echo -e "${green}Regenerating Mkinitcpio initramfs...${no_color}"
+	if "$ESCALATION_TOOL" mkinitcpio -P; then
+		echo -e "${green}Initramfs updated successfully${no_color}"
+	else
+		echo -e "${red}Failed to update initramfs${no_color}"
+	fi
+	INITRAMFS_UPDATED=true
 fi
 
-# echo -e "${green}Blacklist host GPU drivers to prevent automatic binding:${no_color}"
-# if [ "$GPU_TYPE" = "nvidia" ]; then
-# 	echo -e "blacklist nvidia\nblacklist nvidia_drm\nblacklist nvidia_modeset\nblacklist nouveau\nblacklist nvidiafb\nblacklist nvidia_uvm" | "$ESCALATION_TOOL" tee /etc/modprobe.d/blacklist-nvidia.conf > /dev/null
-# elif [ "$GPU_TYPE" = "amdgpu" ]; then
-# 	echo -e "blacklist amdgpu\nblacklist radeon" | "$ESCALATION_TOOL" tee /etc/modprobe.d/blacklist-amd.conf > /dev/null
-# fi
-
-# echo -e "${green}Creating VFIO configuration file /etc/modprobe.d/vfio.conf${no_color}"
-# echo -e "options vfio-pci ids=$VFIO_IDS" | "$ESCALATION_TOOL" tee /etc/modprobe.d/vfio.conf > /dev/null
-
-# Update initramfs
-echo -e "${green}Updating initramfs...${no_color}"
-if "$ESCALATION_TOOL" mkinitcpio -P; then  # Note: Run 'update-initramfs -u' for debian based distro and Run 'kernelstub' if you are on popos
-	echo -e "${green}Initramfs updated successfully${no_color}"
-else
-	echo -e "${red}Failed to update initramfs${no_color}"
+if [ "$INITRAMFS_UPDATED" = false ]; then
+	echo -e "${red}Error: No supported initramfs generator detected (dracut, booster, mkinitcpio)${no_color}"
+	echo -e "${yellow}Please manually configure VFIO modules: $VFIO_MODULES${no_color}"
 fi
+
+# 4. Note: Run 'update-initramfs -u' for debian based distro and Run 'kernelstub' if you are on popos
 
 echo ""
 LIBVIRTHOOK_SCRIPT="/etc/libvirt/hooks/qemu"
