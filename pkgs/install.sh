@@ -41,6 +41,14 @@ if [ -z "${ESCALATION_TOOL}" ]; then
 	exit 1
 fi
 
+for pgm in nala apt-get dnf pacman zypper apk xbps-install eopkg; do
+	if command -v "${pgm}" >/dev/null 2>&1; then
+		PACKAGER=${pgm}
+		echo -e "${cyan}Using ${pgm} as package manager${no_color}"
+		break
+	fi
+done
+
 backup_file() {
 	local file="$1"
 	if "${ESCALATION_TOOL}" test -f "$file"; then
