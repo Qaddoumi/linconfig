@@ -25,14 +25,26 @@ no_color='\033[0m' # reset the color to default
 
 # # Check if running as root
 # if [[ $EUID -eq 0 ]]; then
-#	echo -e "${red}This script should not be run as root. Please run as a regular user with sudo privileges.${no_color}"
+#	echo -e "${red}This script should not be run as root. Please run as a regular user with root privileges.${no_color}"
 #	exit 1
 # fi
 
+for tool in sudo doas pkexec; do
+	if command -v "${tool}" >/dev/null 2>&1; then
+		ESCALATION_TOOL="${tool}"
+		echo -e "${cyan}Using ${tool} for privilege escalation${no_color}"
+		break
+	fi
+done
+if [ -z "${ESCALATION_TOOL}" ]; then
+	echo -e "${red}Error: This script requires root privileges. Please install sudo, doas, or pkexec.${no_color}"
+	exit 1
+fi
+
 backup_file() {
 	local file="$1"
-	if sudo test -f "$file"; then
-		sudo cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
+	if "${ESCALATION_TOOL}" test -f "$file"; then
+		"${ESCALATION_TOOL}" cp -an "$file" "$file.backup.$(date +%Y%m%d_%H%M%S)"
 		echo -e "${green}Backed up $file${no_color}"
 	else
 		echo -e "${yellow}File $file does not exist, skipping backup${no_color}"
@@ -79,21 +91,21 @@ fi
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Updating databases and upgrading packages...${no_color}"
-sudo pacman -Syy --noconfirm || echo -e "${yellow}Failed to update package databases${no_color}"
-sudo pacman -Syu --noconfirm || echo -e "${yellow}Failed to upgrade packages${no_color}"
+"${ESCALATION_TOOL}" pacman -Syy --noconfirm || echo -e "${yellow}Failed to update package databases${no_color}"
+"${ESCALATION_TOOL}" pacman -Syu --noconfirm || echo -e "${yellow}Failed to upgrade packages${no_color}"
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Installing yay (Yet Another Yaourt)${no_color}"
 
-sudo pacman -S --needed --noconfirm git base-devel || true
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm git base-devel || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm jq || true # JSON processor
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm jq || true # JSON processor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 install_yay() {
 	echo -e "${yellow}Installing yay as AUR helper...${no_color}"
-	cd /opt && sudo git clone https://aur.archlinux.org/yay-bin.git && sudo chown -R "$USER": ./yay-bin
+	cd /opt && "${ESCALATION_TOOL}" git clone https://aur.archlinux.org/yay-bin.git && "${ESCALATION_TOOL}" chown -R "$USER": ./yay-bin
 	cd yay-bin && makepkg --noconfirm -si
 	echo -e "${green}Yay installed${no_color}"
 	yay --version || true
@@ -131,7 +143,7 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/o
 
 # echo -e "${green}Setting up aria2 to speed up downlaod for pacman and yay...${no_color}"
 
-# sudo pacman -S --needed --noconfirm aria2
+# "${ESCALATION_TOOL}" pacman -S --needed --noconfirm aria2
 
 # # Backup pacman.conf
 # echo -e "${green}Backing up /etc/pacman.conf...${no_color}"
@@ -141,10 +153,10 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/o
 # echo -e "${green}Configuring pacman to use aria2...${no_color}"
 
 # # Remove any existing uncommented XferCommand line
-# sudo sed -i '/^[[:space:]]*XferCommand[[:space:]]*=/d' /etc/pacman.conf
+# "${ESCALATION_TOOL}" sed -i '/^[[:space:]]*XferCommand[[:space:]]*=/d' /etc/pacman.conf
 
 # # Add XferCommand after the [options] section
-# sudo sed -i '/^\[options\]/a XferCommand = /usr/bin/aria2c --allow-overwrite=true --continue=true --file-allocation=none --log-level=error --max-tries=2 --max-connection-per-server=2 --max-file-not-found=5 --min-split-size=5M --no-conf --remote-time=true --summary-interval=60 --timeout=5 --dir=/ --out %o %u' /etc/pacman.conf
+# "${ESCALATION_TOOL}" sed -i '/^\[options\]/a XferCommand = /usr/bin/aria2c --allow-overwrite=true --continue=true --file-allocation=none --log-level=error --max-tries=2 --max-connection-per-server=2 --max-file-not-found=5 --min-split-size=5M --no-conf --remote-time=true --summary-interval=60 --timeout=5 --dir=/ --out %o %u' /etc/pacman.conf
 
 # echo -e "${green}Setup complete! pacman (and yay) will now use aria2 for faster downloads.${no_color}"
 # echo -e "${green}Your original pacman.conf has been backed up to /etc/pacman.conf.backup.${no_color}"
@@ -155,12 +167,12 @@ echo -e "${green}Installing Chaotic-AUR repository...${no_color}"
 if ! grep -q "\[chaotic-aur\]" /etc/pacman.conf; then
 	echo -e "${green}Chaotic-AUR repository not found. Proceeding with installation...${no_color}"
 	# install and enable Chaotic-AUR
-	sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || true
-	sudo pacman-key --lsign-key 3056513887B78AEB || true
-	sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' || true
-	sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' || true
-	echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf > /dev/null || true
-	sudo pacman -Syu --noconfirm || true
+	"${ESCALATION_TOOL}" pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || true
+	"${ESCALATION_TOOL}" pacman-key --lsign-key 3056513887B78AEB || true
+	"${ESCALATION_TOOL}" pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' || true
+	"${ESCALATION_TOOL}" pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' || true
+	echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | "${ESCALATION_TOOL}" tee -a /etc/pacman.conf > /dev/null || true
+	"${ESCALATION_TOOL}" pacman -Syu --noconfirm || true
 	# Print message indicating Chaotic-AUR has been installed and enabled
 	echo -e "${green}Chaotic-AUR repository installed and enabled${no_color}"
 else
@@ -174,21 +186,21 @@ echo ""
 
 echo -e "${green}Installing Hyprland...${no_color}"
 echo ""
-sudo pacman -S --needed --noconfirm hyprland # Hyprland window manager
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm hyprland # Hyprland window manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm uwsm # A standalone Wayland session manager
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm uwsm # A standalone Wayland session manager
 if [ -f "/usr/share/wayland-sessions/hyprland.desktop" ]; then
 	echo -e "${green}Hiding hyprland from session menu...${no_color}"
 	if grep -q "^NoDisplay=" "/usr/share/wayland-sessions/hyprland.desktop"; then
-		sudo sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/hyprland.desktop"
+		"${ESCALATION_TOOL}" sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/hyprland.desktop"
 	else
-		echo "NoDisplay=true" | sudo tee -a "/usr/share/wayland-sessions/hyprland.desktop" > /dev/null
+		echo "NoDisplay=true" | "${ESCALATION_TOOL}" tee -a "/usr/share/wayland-sessions/hyprland.desktop" > /dev/null
 	fi
 fi
 
 if [ ! -f /usr/share/wayland-sessions/hyprland-uwsm.desktop ]; then
 	echo -e "${green}Creating hyprland-uwsm.desktop...${no_color}"
-	sudo tee /usr/share/wayland-sessions/hyprland-uwsm.desktop > /dev/null << 'EOF'
+	"${ESCALATION_TOOL}" tee /usr/share/wayland-sessions/hyprland-uwsm.desktop > /dev/null << 'EOF'
 [Desktop Entry]
 Name=Hyprland (uwsm-managed)
 Comment=An intelligent dynamic tiling Wayland compositor
@@ -204,75 +216,75 @@ fi
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${green}Installing Sway...${no_color}"
 echo ""
-sudo pacman -S --needed --noconfirm sway # Sway window manager
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm sway # Sway window manager
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swayidle # Idle management for sway/hyprland
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm swayidle # Idle management for sway/hyprland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swaylock # Screen locker for sway/hyprland
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm swaylock # Screen locker for sway/hyprland
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
-#sudo pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
+#"${ESCALATION_TOOL}" pacman -S --needed --noconfirm autotiling # Auto-tiling for sway
 
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 # echo -e "${green}Installing awesome an X11 window manager...${no_color}"
 # echo ""
 
-# sudo pacman -S --needed --noconfirm awesome # X11 window manager
+# "${ESCALATION_TOOL}" pacman -S --needed --noconfirm awesome # X11 window manager
 # # the next lines is needed to setup variables like $XDG_CURRENT_DESKTOP and $XDG_SESSION_DESKTOP by sddm
 # if grep -q "DesktopNames" "/usr/share/xsessions/awesome.desktop"; then
 # 	echo "Existing 'DesktopNames' found. Updating/Uncommenting to 'awesome'..."
-# 	sed -i "s/^#*\s*DesktopNames=.*/DesktopNames=awesome/" "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to update DesktopNames${no_color}"
+# 	"${ESCALATION_TOOL}" sed -i "s/^#*\s*DesktopNames=.*/DesktopNames=awesome/" "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to update DesktopNames${no_color}"
 # else
 # 	echo "'DesktopNames' not found. Appending to /usr/share/xsessions/awesome.desktop."
-# 	echo "DesktopNames=awesome" | sudo tee -a "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to append DesktopNames${no_color}"
+# 	echo "DesktopNames=awesome" | "${ESCALATION_TOOL}" tee -a "/usr/share/xsessions/awesome.desktop" || echo -e "${red}Failed to append DesktopNames${no_color}"
 # fi
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xorg-xinit xorg-server dbus # X11 display server, initialization and dbus
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xorg-xinit xorg-server dbus # X11 display server, initialization and dbus
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xorg-xrandr # Xrandr for X11 (used for screen resolution, and monitors configuration)
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xorg-xrandr # Xrandr for X11 (used for screen resolution, and monitors configuration)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm picom # Compositor for X11 (used for animation, transparency and blur, "it helps with screen tearing")
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm picom # Compositor for X11 (used for animation, transparency and blur, "it helps with screen tearing")
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xscreensaver # Screen saver for X11
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xscreensaver # Screen saver for X11
 echo -e "${green}Setting Auth for xscreensaver...${no_color}"
 if grep -q "password include system-auth" "/etc/pam.d/xscreensaver"; then
 	echo -e "${green}Auth already set in /etc/pam.d/xscreensaver${no_color}"
 else
 	echo -e "${green}Adding Auth's to /etc/pam.d/xscreensaver${no_color}"
-	echo "" | sudo tee -a "/etc/pam.d/xscreensaver" > /dev/null || true
-	echo -e "auth	   include	  system-auth\naccount	include	  system-auth\npassword   include	  system-auth\nsession	include	  system-auth" | sudo tee -a "/etc/pam.d/xscreensaver" > /dev/null || true
+	echo "" | "${ESCALATION_TOOL}" tee -a "/etc/pam.d/xscreensaver" > /dev/null || true
+	echo -e "auth	   include	  system-auth\naccount	include	  system-auth\npassword   include	  system-auth\nsession	include	  system-auth" | "${ESCALATION_TOOL}" tee -a "/etc/pam.d/xscreensaver" > /dev/null || true
 fi
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xorg-xprop xdotool # Dependencies for x11_workspaces.sh in quickshell
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xorg-xprop xdotool # Dependencies for x11_workspaces.sh in quickshell
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xorg-xset # xset for X11 (needed for powersaving script)
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xorg-xset # xset for X11 (needed for powersaving script)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm wmctrl # Control EWMH compliant window manager from command line (x11)
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm wmctrl # Control EWMH compliant window manager from command line (x11)
 
 echo -e "\n\n"
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm gnome-keyring # Authentication agent for privileged operations
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm gnome-keyring # Authentication agent for privileged operations
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm nwg-displays # Display configuration GUI for hyperland and sway
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm nwg-displays # Display configuration GUI for hyperland and sway
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm quickshell # a shell for both wayland and x11
+# "${ESCALATION_TOOL}" pacman -S --needed --noconfirm quickshell # a shell for both wayland and x11
 yay -S --needed --noconfirm quickshell-allflags-git || echo -e "${red}Failed to install quickshell${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm rofi rofi-emoji # Application launcher
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm rofi rofi-emoji # Application launcher
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm playerctl # Media control used in quickshell
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm playerctl # Media control used in quickshell
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm dex # Autostart manager (Autostart apps in /etc/xdg/autostart/ or ~/.config/autostart/)
+# "${ESCALATION_TOOL}" pacman -S --needed --noconfirm dex # Autostart manager (Autostart apps in /etc/xdg/autostart/ or ~/.config/autostart/)
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm dunst # Notification daemon for X11 and wayland
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm dunst # Notification daemon for X11 and wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libappindicator-gtk3 libayatana-appindicator # AppIndicator support for tray
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm libappindicator-gtk3 libayatana-appindicator # AppIndicator support for tray
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm kitty # Terminal emulator
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm kitty # Terminal emulator
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm tmux # Terminal multiplexer
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm tmux # Terminal multiplexer
 echo -e "${green}TMUX explanation tree${no_color}"
 echo -e "${green}\nYour Terminal (Kitty/Ghostty/etc)${no_color}"
 echo -e "${green}	└── tmux session${no_color}"
@@ -282,87 +294,87 @@ echo -e "${green}		  │	 └── Pane 2${no_color}"
 echo -e "${green}		  ├── Window 2${no_color}"
 echo -e "${green}		  └── Window 3\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xorg-server-xwayland # XWayland for compatibility with X11 applications
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xorg-server-xwayland # XWayland for compatibility with X11 applications
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xdg-desktop-portal xdg-user-dirs xdg-desktop-portal-gtk # XDG Portal for Wayland and X11
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xdg-desktop-portal xdg-user-dirs xdg-desktop-portal-gtk # XDG Portal for Wayland and X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xdg-desktop-portal-hyprland # Portal for Hyprland
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xdg-desktop-portal-hyprland # Portal for Hyprland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xdg-desktop-portal-wlr # Portal for other Waylands
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xdg-desktop-portal-wlr # Portal for other Waylands
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm pavucontrol # PulseAudio volume control
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm bluetui bluez-utils # Bluetooth TUI
-sudo systemctl enable bluetooth.service
-sudo systemctl start bluetooth.service
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm bluetui bluez-utils # Bluetooth TUI
+"${ESCALATION_TOOL}" systemctl enable bluetooth.service
+"${ESCALATION_TOOL}" systemctl start bluetooth.service
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm btop # System monitor TUI
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm btop # System monitor TUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm nvtop # GPU monitor TUI
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm nvtop # GPU monitor TUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm gnome-system-monitor # System monitor GUI
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm gnome-system-monitor # System monitor GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm wget # Download utility
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm wget # Download utility
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swaybg # Background setting utility for sway and hyprland
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm swaybg # Background setting utility for sway and hyprland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm feh # Wallpaper setter for X11
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm feh # Wallpaper setter for X11
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm thunar # File manager
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm thunar # File manager
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm thunar-media-tags-plugin # Plugin for editing audio/video metadata tags for thunar
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm thunar-media-tags-plugin # Plugin for editing audio/video metadata tags for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm thunar-archive-plugin # Plugin for creating/extracting archives (zip, tar, etc.) for thunar
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm thunar-archive-plugin # Plugin for creating/extracting archives (zip, tar, etc.) for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm thunar-volman # Automatic management of removable drives and media for thunar
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm thunar-volman # Automatic management of removable drives and media for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm tumbler # Thumbnail service for generating image previews for thunar
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm tumbler # Thumbnail service for generating image previews for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm ffmpegthumbnailer # Video thumbnails for thunar
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm ffmpegthumbnailer # Video thumbnails for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm poppler-glib # PDF thumbnails for thunar
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm poppler-glib # PDF thumbnails for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libgsf # Office document thumbnails for thunar
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm libgsf # Office document thumbnails for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives and MTP devices
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives and MTP devices
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo systemctl enable udisks2.service || true
-sudo systemctl start udisks2.service || true
-sudo usermod -aG storage $USER || true
+"${ESCALATION_TOOL}" systemctl enable udisks2.service || true
+"${ESCALATION_TOOL}" systemctl start udisks2.service || true
+"${ESCALATION_TOOL}" usermod -aG storage $USER || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm zenity # Dialogs from terminal,(used for thunar)
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm zenity # Dialogs from terminal,(used for thunar)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm nano # Text editor
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm nano # Text editor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm neovim # Neovim text editor
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm neovim # Neovim text editor
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm gnome-calculator # Calculator
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm gnome-calculator # Calculator
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm brightnessctl # Brightness control
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm brightnessctl # Brightness control
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm hyprpolkitagent # PolicyKit authentication agent (give sudo access to GUI apps)
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm hyprpolkitagent # PolicyKit authentication agent (give root access to GUI apps)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm mate-polkit # Authentication agent for privileged operations (used for x11)
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm mate-polkit # Authentication agent for privileged operations (used for x11)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm s-tui # Terminal UI for monitoring CPU
+# "${ESCALATION_TOOL}" pacman -S --needed --noconfirm s-tui # Terminal UI for monitoring CPU
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm gdu # Disk usage analyzer
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm gdu # Disk usage analyzer
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm bc # Arbitrary precision calculator language
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm bc # Arbitrary precision calculator language
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm fastfetch # Fast system information tool
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm fastfetch # Fast system information tool
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm less # Pager program for viewing text files
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm less # Pager program for viewing text files
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm man-db man-pages # Manual pages and database
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm man-db man-pages # Manual pages and database
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm mpv # video player
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm mpv # video player
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm celluloid # frontend for mpv video player
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm celluloid # frontend for mpv video player
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm imv # image viewer
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm imv # image viewer
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xarchiver # Lightweight archive manager
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xarchiver # Lightweight archive manager
 # Optional dependencies for xarchiver
 #	 arj: ARJ support
 #	 binutils: deb support [installed]
@@ -384,65 +396,65 @@ sudo pacman -S --needed --noconfirm xarchiver # Lightweight archive manager
 #	 zip: ZIP support
 #	 zstd: zstd support [installed]
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm unzip # Unzip utility
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm unzip # Unzip utility
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm trash-cli # Command line trash management
-sudo mkdir -p ~/.local/share/Trash/{files,info}
-sudo chmod 700 ~/.local/share/Trash
-sudo chown -R $USER:$USER ~/.local
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm trash-cli # Command line trash management
+"${ESCALATION_TOOL}" mkdir -p ~/.local/share/Trash/{files,info}
+"${ESCALATION_TOOL}" chmod 700 ~/.local/share/Trash
+"${ESCALATION_TOOL}" chown -R $USER:$USER ~/.local
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libxml2 # XML parsing library
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm libxml2 # XML parsing library
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm pv # progress bar in terminal
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm pv # progress bar in terminal
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-# sudo pacman -S --needed --noconfirm network-manager-applet # Network management applet
+# "${ESCALATION_TOOL}" pacman -S --needed --noconfirm network-manager-applet # Network management applet
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm flameshot # Screenshot utility with annotation tools
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm flameshot # Screenshot utility with annotation tools
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm grim # Screenshot tool
-sudo mkdir -p ~/Pictures || true
-sudo chown -R $USER:$USER ~/Pictures || true
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm grim # Screenshot tool
+"${ESCALATION_TOOL}" mkdir -p ~/Pictures || true
+"${ESCALATION_TOOL}" chown -R $USER:$USER ~/Pictures || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm slurp # Selection tool for Wayland
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm slurp # Selection tool for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm wl-clipboard # Clipboard management for Wayland
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm wl-clipboard # Clipboard management for Wayland
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm copyq # Clipboard history manager with tray
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm copyq # Clipboard history manager with tray
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm xclip # Clipboard management used by X11 (used to sync clipboard between vms and host)
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm xclip # Clipboard management used by X11 (used to sync clipboard between vms and host)
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm flatpak # Flatpak package manager
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm flatpak # Flatpak package manager
 # Add Flathub repository
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo > /dev/null 2>&1 || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 flatpak install -y --user flathub org.dupot.easyflatpak || echo -e "${red}Failed to install easyflatpak\n${no_color}" # Flatpak application manager (GUI store)
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm fuse2 # require for AppImages pkgs
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm fuse2 # require for AppImages pkgs
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm cpupower # CPU frequency scaling utility ==> change powersave to performance mode.
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm cpupower # CPU frequency scaling utility ==> change powersave to performance mode.
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm tlp # TLP for power management
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm tlp # TLP for power management
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm lm_sensors # Hardware monitoring
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm lm_sensors # Hardware monitoring
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm thermald # Intel thermal daemon
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm thermald # Intel thermal daemon
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm dmidecode # Desktop Management Interface table related utilities
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-
-sudo pacman -S --needed --noconfirm core/python # Python
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm python-pip # Python package manager
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm python-pipx # Python package manager
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm python-virtualenv # Python virtual environment
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm dmidecode # Desktop Management Interface table related utilities
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
-sudo pacman -S --needed --noconfirm obs-studio # live streaming and recording
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm core/python # Python
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm python-pip # Python package manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm python-pipx # Python package manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm python-virtualenv # Python virtual environment
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm obs-studio # live streaming and recording
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 
@@ -472,15 +484,15 @@ echo -e "${blue}═════════════════════�
 ENV_FILE="/etc/environment"
 if [ ! -f "$ENV_FILE" ]; then
 	echo -e "${green}Creating $ENV_FILE${no_color}"
-	sudo touch "$ENV_FILE"
+	"${ESCALATION_TOOL}" touch "$ENV_FILE"
 fi
 
 if grep -q "PATH" "$ENV_FILE"; then
 	echo -e "${green}PATHs already set in $ENV_FILE${no_color}"
 else
 	echo -e "${green}Adding PATHs to $ENV_FILE${no_color}"
-	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-	echo "PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo "" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
+	echo "PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
 fi
 
 echo -e "${green}Setting up environment variable for Electron apps so they lunch in wayland mode${no_color}"
@@ -488,8 +500,8 @@ if grep -q "ELECTRON_OZONE_PLATFORM_HINT" "$ENV_FILE"; then
 	echo "${green}ELECTRON_OZONE_PLATFORM_HINT already exists in $ENV_FILE${no_color}"
 else
 	echo -e "${green}Adding ELECTRON_OZONE_PLATFORM_HINT to $ENV_FILE...${no_color}"
-	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-	echo "ELECTRON_OZONE_PLATFORM_HINT=wayland" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo "" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
+	echo "ELECTRON_OZONE_PLATFORM_HINT=wayland" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
 fi
 echo -e "${yellow}You'll need to restart your session for this to take effect system-wide${no_color}"
 
@@ -560,11 +572,11 @@ echo -e "${blue}═════════════════════�
 
 echo -e "${green}Installing fonts${no_color}"
 
-sudo pacman -S --needed --noconfirm font-manager # a gui to manage fonts, and review them
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm font-manager # a gui to manage fonts, and review them
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd # Nerd font for JetBrains Mono
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd # Nerd font for JetBrains Mono
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm noto-fonts noto-fonts-extra noto-fonts-emoji # Noto fonts (English + Arabic) and Emoji font
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm noto-fonts noto-fonts-extra noto-fonts-emoji # Noto fonts (English + Arabic) and Emoji font
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Creating fontconfig directory...${no_color}"
@@ -628,23 +640,23 @@ echo -e "${green}Test with:\n  fc-match 'Noto Sans Arabic'\n  fc-match 'JetBrain
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Setting Dark theme for GTK applications${no_color}"
-sudo pacman -S --needed --noconfirm nwg-look # GTK theme configuration GUI
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm nwg-look # GTK theme configuration GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm materia-gtk-theme # Material Design GTK theme
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm materia-gtk-theme # Material Design GTK theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm papirus-icon-theme # Icon theme
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm papirus-icon-theme # Icon theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm breeze-icons # Icon theme (papirus does not have icons for some applications)
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm breeze-icons # Icon theme (papirus does not have icons for some applications)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm capitaine-cursors # Cursor theme
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm capitaine-cursors # Cursor theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 if grep -q "GTK_THEME" "$ENV_FILE"; then
 	echo -e "${green}GTK_THEME already set in $ENV_FILE${no_color}"
 else
 	echo -e "${green}Adding GTK_THEME to $ENV_FILE${no_color}"
-	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-	echo "GTK_THEME=Materia-dark-compact" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo "" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
+	echo "GTK_THEME=Materia-dark-compact" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
 fi
 
 echo -e "${green}Showing available themes${no_color}"
@@ -657,10 +669,10 @@ ls /usr/share/icons/
 # and dont use dbus-launch --exit-with-session gsettings... as it does not work in chroot too.
 
 # Create the local schema overrides directory
-sudo mkdir -p /usr/share/glib-2.0/schemas/
+"${ESCALATION_TOOL}" mkdir -p /usr/share/glib-2.0/schemas/
 
 # Create the override file (sets defaults for ALL users)
-cat <<EOF | sudo tee /usr/share/glib-2.0/schemas/99_ext_settings.gschema.override
+cat <<EOF | "${ESCALATION_TOOL}" tee /usr/share/glib-2.0/schemas/99_ext_settings.gschema.override
 [org.gnome.desktop.interface]
 gtk-theme='Materia-dark-compact'
 icon-theme='Papirus-Dark'
@@ -670,27 +682,27 @@ enable-animations=false
 EOF
 
 # Compile the schemas so the system recognizes the new defaults
-sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
+"${ESCALATION_TOOL}" glib-compile-schemas /usr/share/glib-2.0/schemas/
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 
 echo -e "${green}Setting Dark theme for Qt applications${no_color}"
-sudo pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration GUI
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm kvantum kvantum-qt5 # Qt theme configuration GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm qt5ct qt6ct # Qt theme configuration GUI
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm qt5ct qt6ct # Qt theme configuration GUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm kvantum-theme-materia # Material Design Qt theme
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm kvantum-theme-materia # Material Design Qt theme
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Setting Qt to use qt5ct which uses kvantum...${no_color}"
 if grep -q "QT_QPA_PLATFORMTHEME" "$ENV_FILE"; then
 	echo -e "${yellow}QT_QPA_PLATFORMTHEME already exists in $ENV_FILE, updating...${no_color}"
-	sudo sed -i 's/^QT_QPA_PLATFORMTHEME=.*/QT_QPA_PLATFORMTHEME=qt5ct/' "$ENV_FILE"
+	"${ESCALATION_TOOL}" sed -i 's/^QT_QPA_PLATFORMTHEME=.*/QT_QPA_PLATFORMTHEME=qt5ct/' "$ENV_FILE"
 else
 	echo -e "${green}Adding QT_QPA_PLATFORMTHEME to $ENV_FILE...${no_color}"
-	echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-	echo "QT_QPA_PLATFORMTHEME=qt5ct" | sudo tee -a "$ENV_FILE" > /dev/null || true
+	echo "" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
+	echo "QT_QPA_PLATFORMTHEME=qt5ct" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
 fi
 
 echo -e "${green}Qt theming configured. Please log out and log back in for changes to take effect.${no_color}"
@@ -708,61 +720,61 @@ fi
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Installing and configuring Qemu/Libvirt for virtualization${no_color}"
-sudo pacman -S --needed --noconfirm qemu-full # Full QEMU package with all features
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm qemu-full # Full QEMU package with all features
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm qemu-img # QEMU disk image utility: provides create, convert, modify, and snapshot, offline disk images
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm qemu-img # QEMU disk image utility: provides create, convert, modify, and snapshot, offline disk images
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libvirt # Libvirt for managing virtualization: provides a unified interface for managing virtual machines
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm libvirt # Libvirt for managing virtualization: provides a unified interface for managing virtual machines
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm virt-install # Tool for installing virtual machines: CLI tool to create guest VMs
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm virt-install # Tool for installing virtual machines: CLI tool to create guest VMs
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm virt-manager # GUI for managing virtual machines: GUI tool to create and manage guest VMs
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm virt-manager # GUI for managing virtual machines: GUI tool to create and manage guest VMs
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm virt-viewer # Viewer for virtual machines
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm virt-viewer # Viewer for virtual machines
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm edk2-ovmf # UEFI firmware for virtual machines
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm edk2-ovmf # UEFI firmware for virtual machines
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm dnsmasq # DNS and DHCP server: lightweight DNS forwarder and DHCP server
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm dnsmasq # DNS and DHCP server: lightweight DNS forwarder and DHCP server
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm swtpm # Software TPM emulator
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm swtpm # Software TPM emulator
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm guestfs-tools # Tools for managing guest file systems
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm guestfs-tools # Tools for managing guest file systems
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm libosinfo # Library for managing OS information
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm libosinfo # Library for managing OS information
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 #TODO: Optimise Host with TuneD , for now tlp is conflic with tuned, so we only can use one of them.
-# sudo pacman -S --needed --noconfirm tuned || true # system tuning service for linux allows us to optimise the hypervisor for speed.
-# sudo systemctl enable --now tuned
-# sudo tuned-adm profile virtual-host # or throughput-performance
+# "${ESCALATION_TOOL}" pacman -S --needed --noconfirm tuned || true # system tuning service for linux allows us to optimise the hypervisor for speed.
+# "${ESCALATION_TOOL}" systemctl enable --now tuned
+# "${ESCALATION_TOOL}" tuned-adm profile virtual-host # or throughput-performance
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
-#sudo pacman -S --needed --noconfirm spice-vdagent # SPICE agent for guest OS
+#"${ESCALATION_TOOL}" pacman -S --needed --noconfirm spice-vdagent # SPICE agent for guest OS
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm bridge-utils # Utilities for managing network bridges
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm bridge-utils # Utilities for managing network bridges
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm linux-headers # for vfio modules
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm linux-headers # for vfio modules
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-sudo pacman -S --needed --noconfirm linux-zen-headers # for zen kernel vfio modules
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm linux-zen-headers # for zen kernel vfio modules
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Enabling and starting libvirtd service${no_color}"
-sudo systemctl enable libvirtd || true
-sudo systemctl start libvirtd || true
-sudo systemctl enable virtlogd.socket || true
+"${ESCALATION_TOOL}" systemctl enable libvirtd || true
+"${ESCALATION_TOOL}" systemctl start libvirtd || true
+"${ESCALATION_TOOL}" systemctl enable virtlogd.socket || true
 # sleep 2  # Give libvirtd a moment to fully start
 
 echo -e "${green}Adding current user to libvirt group${no_color}"
-sudo usermod -aG libvirt $(whoami) || true
+"${ESCALATION_TOOL}" usermod -aG libvirt $(whoami) || true
 echo -e "${green}Adding libvirt-qemu user to input group${no_color}"
-sudo usermod -aG input libvirt-qemu || true
+"${ESCALATION_TOOL}" usermod -aG input libvirt-qemu || true
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Setting up virt-manager one-time network configuration script${no_color}"
 
-sudo mkdir -p ~/.local/share/applications/ || true
-sudo chown -R $USER:$USER ~/.local/share/applications/ || true
+"${ESCALATION_TOOL}" mkdir -p ~/.local/share/applications/ || true
+"${ESCALATION_TOOL}" chown -R $USER:$USER ~/.local/share/applications/ || true
 echo -e "${green}Creating ~/.config/virt-manager-oneshot.sh${no_color}"
-sudo tee ~/.config/virt-manager-oneshot.sh > /dev/null << 'EOF'
+"${ESCALATION_TOOL}" tee ~/.config/virt-manager-oneshot.sh > /dev/null << 'EOF'
 #!/usr/bin/env bash
 
 LOG_FILE="$HOME/virt-network-setup.log"
@@ -810,10 +822,10 @@ echo "Setup finished at $(date)"
 rm -- "$0"
 EOF
 
-sudo chmod +x ~/.config/virt-manager-oneshot.sh || true
+"${ESCALATION_TOOL}" chmod +x ~/.config/virt-manager-oneshot.sh || true
 
 echo -e "${green}Creating /usr/local/bin/virt-manager wrapper script${no_color}"
-sudo tee /usr/local/bin/virt-manager > /dev/null << 'EOF'
+"${ESCALATION_TOOL}" tee /usr/local/bin/virt-manager > /dev/null << 'EOF'
 #!/usr/bin/env bash
 
 # Define where the one-time payload lives
@@ -858,22 +870,22 @@ wait_for_libvirt
 exec /usr/bin/virt-manager "$@"
 EOF
 
-sudo chmod +x /usr/local/bin/virt-manager || true
+"${ESCALATION_TOOL}" chmod +x /usr/local/bin/virt-manager || true
 
 echo -e "${green}Creating desktop entry for virt-manager wrapper${no_color}"
 cp /usr/share/applications/virt-manager.desktop ~/.local/share/applications/
 
 echo -e "${green}Modifying desktop entry to use wrapper script${no_color}"
-sudo sed -i 's|^Exec=virt-manager|Exec=/usr/local/bin/virt-manager|g' ~/.local/share/applications/virt-manager.desktop
+"${ESCALATION_TOOL}" sed -i 's|^Exec=virt-manager|Exec=/usr/local/bin/virt-manager|g' ~/.local/share/applications/virt-manager.desktop
 
 echo -e "${green}Setting up virt-manager one-time network configuration completed${no_color}"
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Setting up virt-manager default settings${no_color}"
-sudo mkdir -p /usr/share/glib-2.0/schemas/ 
+"${ESCALATION_TOOL}" mkdir -p /usr/share/glib-2.0/schemas/ 
 mkdir -p "/home/$USER/VM_Images" "/home/$USER/ISOs" "/home/$USER/Pictures/VM_Screenshots"
-cat <<EOF | sudo tee /usr/share/glib-2.0/schemas/99_virt_manager_custom.gschema.override
+cat <<EOF | "${ESCALATION_TOOL}" tee /usr/share/glib-2.0/schemas/99_virt_manager_custom.gschema.override
 [org.virt-manager.virt-manager]
 system-tray=true
 xmleditor-enabled=true
@@ -886,7 +898,7 @@ media-default='/home/$USER/ISOs'
 screenshot-default='/home/$USER/Pictures/VM_Screenshots'
 EOF
 # Compile the schemas so the system recognizes the new defaults
-sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
+"${ESCALATION_TOOL}" glib-compile-schemas /usr/share/glib-2.0/schemas/
 
 echo -e "${green}Setting up virt-manager default settings completed${no_color}"
 echo -e "${green}If changes did not apply, you need to remove ~/.config/dconf/user then apply the settings again${no_color}"
@@ -906,13 +918,13 @@ fi
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Installing QEMU Guest Agents and enabling their services${no_color}"
-sudo pacman -S --needed --noconfirm qemu-guest-agent spice-vdagent # QEMU Guest Agent and SPICE agent for better VM integration
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm qemu-guest-agent spice-vdagent # QEMU Guest Agent and SPICE agent for better VM integration
 
-sudo systemctl enable qemu-guest-agent > /dev/null || true
-sudo systemctl start qemu-guest-agent > /dev/null || true
+"${ESCALATION_TOOL}" systemctl enable qemu-guest-agent > /dev/null || true
+"${ESCALATION_TOOL}" systemctl start qemu-guest-agent > /dev/null || true
 
-sudo systemctl enable spice-vdagentd > /dev/null || true
-sudo systemctl start spice-vdagentd > /dev/null || true
+"${ESCALATION_TOOL}" systemctl enable spice-vdagentd > /dev/null || true
+"${ESCALATION_TOOL}" systemctl start spice-vdagentd > /dev/null || true
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
@@ -943,7 +955,7 @@ enable_nested_virtualization(){
 	echo -e "${green}Checking KVM modules...${no_color}"
 	if ! lsmod | grep -q "^kvm "; then
 		echo -e "${red}KVM module is not loaded${no_color}"
-		echo -e "${red}Please install KVM first: sudo pacman -S qemu-full${no_color}"
+		echo -e "${red}Please install KVM first: ${ESCALATION_TOOL} pacman -S qemu-full${no_color}"
 		return 1
 	fi
 	local kvm_module=""
@@ -958,7 +970,7 @@ enable_nested_virtualization(){
 	if ! lsmod | grep -q "^$kvm_module "; then
 		echo -e "${red}$kvm_module module is not loaded${no_color}"
 		echo -e "${green}Loading $kvm_module module...${no_color}"
-		sudo modprobe "$kvm_module"
+		"${ESCALATION_TOOL}" modprobe "$kvm_module"
 	fi
 	echo -e "${green}KVM modules are loaded${no_color}"
 
@@ -998,12 +1010,12 @@ enable_nested_virtualization(){
 	echo -e "${green}Enabling nested virtualization for current session...${no_color}"
 	case "$cpu_type" in
 		"intel")
-			sudo modprobe -r kvm_intel
-			sudo modprobe kvm_intel nested=1
+			"${ESCALATION_TOOL}" modprobe -r kvm_intel
+			"${ESCALATION_TOOL}" modprobe kvm_intel nested=1
 			;;
 		"amd")
-			sudo modprobe -r kvm_amd
-			sudo modprobe kvm_amd nested=1
+			"${ESCALATION_TOOL}" modprobe -r kvm_amd
+			"${ESCALATION_TOOL}" modprobe kvm_amd nested=1
 			;;
 	esac
 	echo -e "${green}Nested virtualization enabled for current session${no_color}"
@@ -1025,7 +1037,7 @@ enable_nested_virtualization(){
 	if [[ -f "$conf_file" ]] && grep -q "nested=1" "$conf_file"; then
 		echo -e "${green}Persistent nested virtualization is already configured${no_color}"
 	else
-		echo "options $module_name nested=1" | sudo tee "$conf_file"
+		echo "options $module_name nested=1" | "${ESCALATION_TOOL}" tee "$conf_file"
 		echo -e "${green}Persistent nested virtualization configuration created: $conf_file${no_color}"
 	fi
 
@@ -1060,9 +1072,9 @@ kvm_acl_setup() {
 	if ! command -v getfacl &> /dev/null; then
 		echo -e "${red}getfacl command not found. ACL tools are not installed.${no_color}"
 		echo -e "${green}Install ACL tools:${no_color}"
-		echo -e "${green}  Ubuntu/Debian: sudo apt install acl${no_color}"
-		echo -e "${green}  CentOS/RHEL: sudo yum install acl${no_color}"
-		echo -e "${green}  Fedora: sudo dnf install acl${no_color}"
+		echo -e "${green}  Ubuntu/Debian: ${ESCALATION_TOOL} apt install acl${no_color}"
+		echo -e "${green}  CentOS/RHEL: ${ESCALATION_TOOL} yum install acl${no_color}"
+		echo -e "${green}  Fedora: ${ESCALATION_TOOL} dnf install acl${no_color}"
 		return
 	fi
 	if ! command -v setfacl &> /dev/null; then
@@ -1082,7 +1094,7 @@ kvm_acl_setup() {
 
 	echo -e "${green}Checking ACL support for filesystem...${no_color}"
 	# Try to read ACL - if it fails, ACL might not be supported
-	if ! sudo getfacl "$KVM_IMAGES_DIR" &>/dev/null; then
+	if ! "${ESCALATION_TOOL}" getfacl "$KVM_IMAGES_DIR" &>/dev/null; then
 		echo -e "${red}ACL is not supported on this filesystem${no_color}"
 		echo -e "${green}Make sure the filesystem is mounted with ACL support${no_color}"
 		echo -e "${green}For ext4: mount -o remount,acl /mount/point${no_color}"
@@ -1092,14 +1104,14 @@ kvm_acl_setup() {
 
 	echo -e "${green}Current ACL permissions for $KVM_IMAGES_DIR:${no_color}"
 	echo "----------------------------------------"
-	sudo getfacl "$KVM_IMAGES_DIR" 2>/dev/null || {
+	"${ESCALATION_TOOL}" getfacl "$KVM_IMAGES_DIR" 2>/dev/null || {
 		echo -e "${red}Failed to read ACL permissions${no_color}"
 		return
 	}
 	echo "----------------------------------------"
 
 	echo -e "${green}Backing up current ACL permissions to: $backup_file${no_color}"
-	if sudo getfacl -R "$KVM_IMAGES_DIR" > "$backup_file" 2>/dev/null; then
+	if "${ESCALATION_TOOL}" getfacl -R "$KVM_IMAGES_DIR" > "$backup_file" 2>/dev/null; then
 		echo -e "${green}ACL permissions backed up to: $backup_file${no_color}"
 		echo "$backup_file"
 	else
@@ -1115,7 +1127,7 @@ kvm_acl_setup() {
 	fi
 
 	echo -e "${green}Removing existing ACL permissions from $KVM_IMAGES_DIR...${no_color}"
-	if sudo setfacl -R -b "$KVM_IMAGES_DIR" 2>/dev/null; then
+	if "${ESCALATION_TOOL}" setfacl -R -b "$KVM_IMAGES_DIR" 2>/dev/null; then
 		echo -e "${green}Existing ACL permissions removed${no_color}"
 	else
 		echo -e "${red}Failed to remove existing ACL permissions${no_color}"
@@ -1123,7 +1135,7 @@ kvm_acl_setup() {
 	fi
 
 	echo -e "${green}Granting permissions to user: $target_user${no_color}"
-	if sudo setfacl -R -m "u:${target_user}:rwX" "$KVM_IMAGES_DIR" 2>/dev/null; then
+	if "${ESCALATION_TOOL}" setfacl -R -m "u:${target_user}:rwX" "$KVM_IMAGES_DIR" 2>/dev/null; then
 		echo -e "${green}Granted rwX permissions to user: $target_user${no_color}"
 	else
 		echo -e "${red}Failed to grant permissions to user: $target_user${no_color}"
@@ -1131,7 +1143,7 @@ kvm_acl_setup() {
 	fi
 
 	echo -e "${green}Setting default ACL for new files/directories...${no_color}"
-	if sudo setfacl -m "d:u:${target_user}:rwx" "$KVM_IMAGES_DIR" 2>/dev/null; then
+	if "${ESCALATION_TOOL}" setfacl -m "d:u:${target_user}:rwx" "$KVM_IMAGES_DIR" 2>/dev/null; then
 		echo -e "${green}Default ACL set for user: $target_user${no_color}"
 	else
 		echo -e "${red}Failed to set default ACL for user: $target_user${no_color}"
@@ -1141,7 +1153,7 @@ kvm_acl_setup() {
 	echo -e "${green}Verifying ACL setup...${no_color}"
 	# Check if user has the expected permissions
 	local acl_output
-	acl_output=$(sudo getfacl "$KVM_IMAGES_DIR" 2>/dev/null)
+	acl_output=$("${ESCALATION_TOOL}" getfacl "$KVM_IMAGES_DIR" 2>/dev/null)
 	if echo "$acl_output" | grep -q "user:$target_user:rwx"; then
 		echo -e "${green}User ACL permissions verified${no_color}"
 	else
@@ -1190,7 +1202,7 @@ kvm_acl_setup() {
 
 	echo -e "${green}Final ACL permissions for $KVM_IMAGES_DIR:${no_color}"
 	echo "========================================"
-	sudo getfacl "$KVM_IMAGES_DIR" 2>/dev/null || {
+	"${ESCALATION_TOOL}" getfacl "$KVM_IMAGES_DIR" 2>/dev/null || {
 		echo -e "${red}Failed to read final ACL permissions${no_color}"
 		return
 	}
@@ -1225,10 +1237,10 @@ if [ "$is_vm" = true ]; then
 
 	# echo -e "${green}Enable virtual display (vkms)${no_color}"
 	# if [ ! -f /etc/modules-load.d/vkms.conf ]; then
-	#	 sudo touch /etc/modules-load.d/vkms.conf || true
+	#	 "${ESCALATION_TOOL}" touch /etc/modules-load.d/vkms.conf || true
 	# fi
 	# if ! grep -q "vkms" /etc/modules-load.d/vkms.conf; then
-	#	 echo "vkms" | sudo tee -a /etc/modules-load.d/vkms.conf > /dev/null || true
+	#	 echo "vkms" | "${ESCALATION_TOOL}" tee -a /etc/modules-load.d/vkms.conf > /dev/null || true
 	# fi
 else
 	echo -e "${green}System is not detected to be running in a VM, proceeding with looking-glass client setup${no_color}"
@@ -1237,45 +1249,45 @@ else
 	yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
 
 	# Create the shared memory directory if it doesn't exist
-	sudo mkdir -p /dev/shm || true
+	"${ESCALATION_TOOL}" mkdir -p /dev/shm || true
 
 	# Add your user to the kvm group (if not already)
-	sudo usermod -a -G kvm $USER || true
+	"${ESCALATION_TOOL}" usermod -a -G kvm $USER || true
 
 	# Create a udev rule for the shared memory device
-	#echo "SUBSYSTEM==\"kvmfr\", OWNER=\"$USER\", GROUP=\"kvm\", MODE=\"0660\"" | sudo tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
-	echo "SUBSYSTEM==\"kvmfr\", GROUP=\"kvm\", MODE=\"0660\", TAG+=\"uaccess\"" | sudo tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
+	#echo "SUBSYSTEM==\"kvmfr\", OWNER=\"$USER\", GROUP=\"kvm\", MODE=\"0660\"" | "${ESCALATION_TOOL}" tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
+	echo "SUBSYSTEM==\"kvmfr\", GROUP=\"kvm\", MODE=\"0660\", TAG+=\"uaccess\"" | "${ESCALATION_TOOL}" tee /etc/udev/rules.d/99-looking-glass.rules > /dev/null || true
 
 	# Reload udev rules
-	sudo udevadm control --reload-rules || true
-	sudo udevadm trigger || true
+	"${ESCALATION_TOOL}" udevadm control --reload-rules || true
+	"${ESCALATION_TOOL}" udevadm trigger || true
 
 	#Edit libvirt configuration:
 	LIBVIRT_CONF="/etc/libvirt/qemu.conf"
 	if grep -qE '^\s*#\s*user\s*=' "$LIBVIRT_CONF"; then
 		echo -e "${green}Uncommenting user line and setting to $USER in $LIBVIRT_CONF${no_color}"
-		sudo sed -i "s|^\s*#\s*user\s*=.*|user = \"$USER\"|" "$LIBVIRT_CONF" || true
+		"${ESCALATION_TOOL}" sed -i "s|^\s*#\s*user\s*=.*|user = \"$USER\"|" "$LIBVIRT_CONF" || true
 	elif grep -q 'user = ' "$LIBVIRT_CONF"; then
 		echo -e "${green}Changing user in $LIBVIRT_CONF to $USER${no_color}"
-		sudo sed -i "s|user = \".*\"|user = \"$USER\"|" "$LIBVIRT_CONF" || true
+		"${ESCALATION_TOOL}" sed -i "s|user = \".*\"|user = \"$USER\"|" "$LIBVIRT_CONF" || true
 	else
 		echo -e "${green}Adding user = \"$USER\" to $LIBVIRT_CONF${no_color}"
-		echo "user = \"$USER\"" | sudo tee -a "$LIBVIRT_CONF" > /dev/null
+		echo "user = \"$USER\"" | "${ESCALATION_TOOL}" tee -a "$LIBVIRT_CONF" > /dev/null
 	fi
 
 	if grep -qE '^\s*#\s*group\s*=' "$LIBVIRT_CONF"; then
 		echo -e "${green}Uncommenting group line and setting to kvm in $LIBVIRT_CONF${no_color}"
-		sudo sed -i "s|^\s*#\s*group\s*=.*|group = \"kvm\"|" "$LIBVIRT_CONF" || true
+		"${ESCALATION_TOOL}" sed -i "s|^\s*#\s*group\s*=.*|group = \"kvm\"|" "$LIBVIRT_CONF" || true
 	elif grep -q 'group = ' "$LIBVIRT_CONF"; then
 		echo -e "${green}Changing group in $LIBVIRT_CONF to kvm${no_color}"
-		sudo sed -i "s|group = \".*\"|group = \"kvm\"|" "$LIBVIRT_CONF" || true
+		"${ESCALATION_TOOL}" sed -i "s|group = \".*\"|group = \"kvm\"|" "$LIBVIRT_CONF" || true
 	else
 		echo -e "${green}Adding group = \"kvm\" to $LIBVIRT_CONF${no_color}"
-		echo "group = \"kvm\"" | sudo tee -a "$LIBVIRT_CONF" > /dev/null
+		echo "group = \"kvm\"" | "${ESCALATION_TOOL}" tee -a "$LIBVIRT_CONF" > /dev/null
 	fi
 
 	echo -e "${green}Restarting libvirtd service to apply changes...${no_color}"
-	sudo systemctl restart libvirtd || true
+	"${ESCALATION_TOOL}" systemctl restart libvirtd || true
 
 	echo -e "${cyan}Make sure to add the following line to your VM XML configuration:
 	<shmem name='looking-glass'>
@@ -1323,10 +1335,10 @@ else
 
 		echo -e "${green}Processing $gpu_name ($bus_id)...${no_color}"
 		
-		echo "$udev_rule" | sudo tee "$rule_file" > /dev/null || true
+		echo "$udev_rule" | "${ESCALATION_TOOL}" tee "$rule_file" > /dev/null || true
 
-		sudo chmod 644 "$rule_file" || true
-		sudo chown root:root "$rule_file" || true
+		"${ESCALATION_TOOL}" chmod 644 "$rule_file" || true
+		"${ESCALATION_TOOL}" chown root:root "$rule_file" || true
 		
 		echo -e "  -> Created udev rule at: $rule_file"
 		echo -e "  -> Symlink will be: /dev/dri/$symlink_name"
@@ -1356,8 +1368,8 @@ else
 		fi
 	done <<< "$gpu_devices"
 
-	sudo udevadm control --reload-rules || true
-	sudo udevadm trigger || true
+	"${ESCALATION_TOOL}" udevadm control --reload-rules || true
+	"${ESCALATION_TOOL}" udevadm trigger || true
 
 	echo -e "\n${green}Success! Udev rules have been created.${no_color}"
 	echo ""
@@ -1365,10 +1377,10 @@ else
 	echo "env = AQ_DRM_DEVICES,/dev/dri/intel-igpu:/dev/dri/amd-igpu:/dev/dri/virtio-gpu"
 
 	echo -e "${green}Setting up WLR_DRM_DEVICES for wlroots ...${no_color}"
-	echo "WLR_DRM_DEVICES=/dev/dri/$gpu_type" | sudo tee ~/.config/environment.d/10-wlroots-gpu.conf > /dev/null || true
+	echo "WLR_DRM_DEVICES=/dev/dri/$gpu_type" | "${ESCALATION_TOOL}" tee ~/.config/environment.d/10-wlroots-gpu.conf > /dev/null || true
 	if ! grep -q "WLR_DRM_DEVICES" $ENV_FILE; then
-		echo "" | sudo tee -a "$ENV_FILE" > /dev/null || true
-		echo -e "WLR_DRM_DEVICES=/dev/dri/$gpu_type" | sudo tee -a $ENV_FILE > /dev/null || true
+		echo "" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
+		echo -e "WLR_DRM_DEVICES=/dev/dri/$gpu_type" | "${ESCALATION_TOOL}" tee -a $ENV_FILE > /dev/null || true
 	fi
 fi
 
@@ -1376,9 +1388,9 @@ echo -e "${blue}═════════════════════�
 
 echo -e "${green}adding user to necessary groups...${no_color}"
 
-sudo usermod -aG video $USER || true
-sudo usermod -aG audio $USER || true
-sudo usermod -aG input $USER || true
+"${ESCALATION_TOOL}" usermod -aG video $USER || true
+"${ESCALATION_TOOL}" usermod -aG audio $USER || true
+"${ESCALATION_TOOL}" usermod -aG input $USER || true
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
@@ -1413,16 +1425,16 @@ echo -e "${blue}═════════════════════�
 
 echo -e "${green}Installing and configuring SDDM (Simple Desktop Display Manager)${no_color}"
 
-sudo pacman -S --needed --noconfirm sddm || true
-sudo systemctl disable display-manager.service || true
-sudo systemctl enable sddm.service || true
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm sddm || true
+"${ESCALATION_TOOL}" systemctl disable display-manager.service || true
+"${ESCALATION_TOOL}" systemctl enable sddm.service || true
 echo -e "${green}Setting up my Hacker theme for SDDM${no_color}"
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sddm-hacker-theme/main/install.sh) || { echo -e "${red}Failed to install the theme${no_color}"; true ;}
 
 echo -e "${green}Making sddm run on wayland as it runs on x11 by default${no_color}"
-sudo pacman -S --needed --noconfirm labwc || true # SDDM requires a wayland compositor to run on wayland
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm labwc || true # SDDM requires a wayland compositor to run on wayland
 
-if sudo test -f "/etc/sddm.conf" && grep -q "DisplayServer=wayland" "/etc/sddm.conf"; then
+if "${ESCALATION_TOOL}" test -f "/etc/sddm.conf" && grep -q "DisplayServer=wayland" "/etc/sddm.conf"; then
 	echo -e "${green}SDDM Wayland configuration already exists in /etc/sddm.conf${no_color}"
 else
 	echo -e "${green}Applying SDDM Wayland configuration...${no_color}"
@@ -1432,15 +1444,15 @@ DisplayServer=wayland
 [Wayland]
 CompositorCommand=labwc
 "
-	echo -e "${config_settings}" | sudo tee -a /etc/sddm.conf > /dev/null || true
+	echo -e "${config_settings}" | "${ESCALATION_TOOL}" tee -a /etc/sddm.conf > /dev/null || true
 fi
 
 if [ -f "/usr/share/wayland-sessions/labwc.desktop" ]; then
 	echo -e "${green}Hiding labwc from session menu...${no_color}"
 	if grep -q "^NoDisplay=" "/usr/share/wayland-sessions/labwc.desktop"; then
-		sudo sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/labwc.desktop"
+		"${ESCALATION_TOOL}" sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/labwc.desktop"
 	else
-		echo "NoDisplay=true" | sudo tee -a "/usr/share/wayland-sessions/labwc.desktop" > /dev/null
+		echo "NoDisplay=true" | "${ESCALATION_TOOL}" tee -a "/usr/share/wayland-sessions/labwc.desktop" > /dev/null
 	fi
 fi
 
