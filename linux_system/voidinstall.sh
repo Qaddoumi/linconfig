@@ -848,7 +848,6 @@ HOSTSEOF
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 sed -i 's/sha512/yescrypt/' /etc/pam.d/system-auth
-sed -i 's/sha512/yescrypt/' /etc/pam.d/password-auth
 if grep -q "^ENCRYPT_METHOD" /etc/login.defs; then
 	sed -i 's/^ENCRYPT_METHOD.*/ENCRYPT_METHOD YESCRYPT/' /etc/login.defs
 else
