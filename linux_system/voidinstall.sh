@@ -292,32 +292,8 @@ else
 	info "BIOS/Legacy boot mode detected"
 fi
 
-info "Select bootloader:"
-if [[ "$BOOT_MODE" == "UEFI" ]]; then
-	echo "1) GRUB"
-	echo "2) rEFInd"
-	if read -rp "Select bootloader [1-2] (press Enter for grub): " -t 30 BOOTLOADER_CHOICE; then
-		BOOTLOADER_CHOICE=${BOOTLOADER_CHOICE:-1}
-		if [[ -z "$BOOTLOADER_CHOICE" ]]; then
-			info "Choosing GRUB as bootloader"
-			BOOTLOADER="grub"
-		else
-			case $BOOTLOADER_CHOICE in
-				1) BOOTLOADER="grub" ;;
-				2) BOOTLOADER="refind" ;;
-				*) warn "Invalid choice. Defaulting to GRUB."
-					BOOTLOADER="grub" ;;
-			esac
-		fi
-	else
-		BOOTLOADER="grub"
-		info "Timeout, defaulting to GRUB"
-	fi
-else
-	BOOTLOADER="grub"
-	info "Using GRUB as bootloader for BIOS mode"
-fi
-info "Selected bootloader: $BOOTLOADER"
+BOOTLOADER="grub"
+info "Using GRUB as bootloader."
 
 echo
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -547,7 +523,6 @@ if [[ "$BOOT_MODE" == "UEFI" ]]; then
 	info "Mounting ESP at /mnt/boot/efi for GRUB"
 	mkdir -p /mnt/boot/efi || error "Failed to create /mnt/boot/efi"
 	chmod 700 /mnt/boot/efi || error "Failed to set permissions on /mnt/boot/efi"
-	mkdir -p /mnt/boot/efi/loader || error "Failed to create /mnt/boot/efi/loader"
 	mount "$EFI_PART" /mnt/boot/efi || error "Failed to mount EFI partition"
 else
 	info "Creating BIOS partitions..."
@@ -678,20 +653,11 @@ declare -a PIPEWIRE_PKGS=(
 	wireplumber
 )
 
-# Base packages for Void Linux (using base-container for minimal install + booster for fast initramfs)
-# Note: We don't install linux-headers here to avoid pulling linux-base which depends on dracut
-# Install linux-headers manually after first boot if needed
-if [[ "$BOOTLOADER" == "grub" ]]; then
-	declare -a BASE_PKGS=(
-		base-container linux linux-firmware linux-headers booster
-		grub grub-x86_64-efi efibootmgr os-prober e2fsprogs void-repo-nonfree void-repo-multilib
-	)
-else
-	declare -a BASE_PKGS=(
-		base-container linux linux-firmware linux-headers booster
-		refind efibootmgr e2fsprogs void-repo-nonfree void-repo-multilib
-	)
-fi
+# Base packages for Void Linux
+declare -a BASE_PKGS=(
+	base-container linux linux-firmware linux-headers booster
+	grub grub-x86_64-efi efibootmgr os-prober e2fsprogs void-repo-nonfree void-repo-multilib
+)
 
 declare -a OPTIONAL_PKGS=(bash curl NetworkManager dbus opendoas git openssh terminus-font chrony neovim)
 
@@ -931,31 +897,32 @@ fi
 info "Regenerating initramfs with booster..."
 xbps-reconfigure -fa || warn "Failed to reconfigure packages"
 
-info "Installing ${BOOTLOADER} bootloader for $BOOT_MODE mode"
-if [[ "$BOOTLOADER" == "grub" ]]; then
-	info "Installing GRUB bootloader"
-	if [[ "$BOOT_MODE" == "UEFI" ]]; then
-		grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --removable || {
-			error "GRUB UEFI installation failed"
-		}
-		info "GRUB installed successfully for UEFI"
-	else
-		grub-install --target=i386-pc "/dev/$DISK" || {
-			error "GRUB BIOS installation failed"
-		}
-		info "GRUB installed successfully for BIOS"
+info "Installing GRUB bootloader for $BOOT_MODE mode"
+if [[ "$BOOT_MODE" == "UEFI" ]]; then
+	# Ensure efivars are mounted inside chroot (fix for mounting issues)
+	if ! mountpoint -q /sys/firmware/efi/efivars; then
+		info "Mounting efivars..."
+		mount -t efivarfs efivarfs /sys/firmware/efi/efivars || warn "Failed to mount efivars, GRUB installation might fail"
 	fi
-elif [[ "$BOOTLOADER" == "refind" ]]; then
-	if [[ "$BOOT_MODE" != "UEFI" ]]; then
-		error "rEFInd requires UEFI boot mode"
-	fi
-	
-	info "Installing rEFInd bootloader"
-	refind-install || {
-		error "rEFInd installation failed"
+
+	info "Installing GRUB (Standard)..."
+	grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id="Void Linux" || {
+		error "GRUB UEFI installation failed"
 	}
-	info "rEFInd installed successfully for UEFI"
+
+	info "Installing GRUB (Removable Fallback)..."
+	# Installs to EFI/BOOT/BOOTX64.EFI - fixes issues on some motherboards that don't look at NVRAM
+	grub-install --target=x86_64-efi --efi-directory=/boot/efi --removable || {
+		warn "GRUB fallback installation failed"
+	}
+	info "GRUB installed successfully for UEFI"
+else
+	grub-install --target=i386-pc "/dev/$DISK" || {
+		error "GRUB BIOS installation failed"
+	}
+	info "GRUB installed successfully for BIOS"
 fi
+
 
 # Now configure hibernation with proper error checking
 info "Configuring hibernation"
@@ -993,110 +960,84 @@ else
 	warn "Swapfile not found at /swapfile"
 fi
 
-if [[ "$BOOTLOADER" == "grub" ]]; then
-	# Generate GRUB config with proper path
-	info "Generating GRUB configuration"
-	mkdir -p /boot/grub || error "Failed to create /boot/grub directory"
+# Generate GRUB config with proper path
+info "Generating GRUB configuration"
+mkdir -p /boot/grub || error "Failed to create /boot/grub directory"
 
-	info "Backing up original GRUB configuration"
-	cp -an /etc/default/grub /etc/default/grub.backup 2>/dev/null || true
+info "Backing up original GRUB configuration"
+cp -an /etc/default/grub /etc/default/grub.backup 2>/dev/null || true
 
-	# Final validation for GRUB
-	if [[ -z "$SWAPFILE_OFFSET" ]] || [[ "$SWAPFILE_OFFSET" == "0" ]]; then
-		warn "Could not determine swapfile offset. Hibernation may not work."
-		warn "You can calculate it manually later with: filefrag -v /swapfile"
-		# Set default GRUB config without hibernation
-		sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 $KERNEL_CMDLINE\"/" /etc/default/grub
-	else
-		info "Swapfile offset: $SWAPFILE_OFFSET"
-		# Configure GRUB with hibernation support
-		sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 $KERNEL_CMDLINE resume=UUID=$ROOT_UUID resume_offset=$SWAPFILE_OFFSET\"/" /etc/default/grub
-	fi
-
-	GRUB_CONFIG_FILE="/etc/default/grub"
-
-	info "Configuring GRUB for dual boot"
-	if grep -q "GRUB_DISABLE_OS_PROBER" "$GRUB_CONFIG_FILE"; then
-		echo "Existing 'GRUB_DISABLE_OS_PROBER' found. Updating/Uncommenting to 'false'..."
-		sed -i 's/^#*\s*GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_DISABLE_OS_PROBER"
-	else
-		echo "'GRUB_DISABLE_OS_PROBER' not found. Appending new line to file."
-		echo "GRUB_DISABLE_OS_PROBER=false" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_DISABLE_OS_PROBER"
-	fi
-
-	info "Disabling GRUB submenu"
-	NEW_LINE="GRUB_DISABLE_SUBMENU=y"
-
-	# Check 1: Check if the variable exists (commented or uncommented)
-	if grep -q "GRUB_DISABLE_SUBMENU" "$GRUB_CONFIG_FILE"; then
-		echo "Existing 'GRUB_DISABLE_SUBMENU' found. Updating/Uncommenting to 'y'..."
-		sed -i 's/^#*\s*GRUB_DISABLE_SUBMENU=.*/GRUB_DISABLE_SUBMENU=y/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_DISABLE_SUBMENU"
-	else
-		echo "'GRUB_DISABLE_SUBMENU' not found. Appending new line to file."
-		echo "$NEW_LINE" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_DISABLE_SUBMENU"
-	fi
-
-	info "Setting default option for grub"
-	GRUB_TOP_LEVEL="/boot/vmlinuz-linux"
-	if grep -q "GRUB_TOP_LEVEL" "$GRUB_CONFIG_FILE"; then
-		echo "Existing 'GRUB_TOP_LEVEL' found. Updating/Uncommenting to '$GRUB_TOP_LEVEL'..."
-		sed -i "s/^#*\s*GRUB_TOP_LEVEL=.*/GRUB_TOP_LEVEL=\"$GRUB_TOP_LEVEL\"/" "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TOP_LEVEL"
-	else
-		echo "'GRUB_TOP_LEVEL' not found. Appending to $GRUB_CONFIG_FILE."
-		echo "GRUB_TOP_LEVEL=\"$GRUB_TOP_LEVEL\"" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_TOP_LEVEL"
-	fi
-
-	info "setting default timeout"
-	GRUB_TIMEOUT="1"
-	if grep -q "GRUB_TIMEOUT" "$GRUB_CONFIG_FILE"; then
-		echo "Existing 'GRUB_TIMEOUT' found. Updating/Uncommenting to '$GRUB_TIMEOUT'..."
-		sed -i "s/^#*\s*GRUB_TIMEOUT=.*/GRUB_TIMEOUT=\"$GRUB_TIMEOUT\"/" "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TIMEOUT"
-	else
-		echo "'GRUB_TIMEOUT' not found. Appending to $GRUB_CONFIG_FILE."
-		echo "GRUB_TIMEOUT=\"$GRUB_TIMEOUT\"" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_TIMEOUT"
-	fi
-
-	info "run grub-mkconfig to generate GRUB configuration"
-	grub-mkconfig -o /boot/grub/grub.cfg || error "Failed to generate GRUB configuration"
-
-	info "Installing grub CyberRe theme"
-	# Clone the repository
-	git clone --depth 1 https://github.com/Qaddoumi/grub-theme-mr-robot.git
-
-	# Navigate to the directory
-	cd grub-theme-mr-robot
-
-	# Run the installation script
-	./install.sh
-
-	# Clean up
-	cd ..
-	rm -rf grub-theme-mr-robot
-
-elif [[ "$BOOTLOADER" == "refind" ]]; then
-	info "Configuring rEFInd boot entries"
-	# rEFInd auto-detects kernels, but we can add hibernation parameters
-	
-	mkdir -p /boot/efi/EFI/refind
-	
-	# Create refind_linux.conf with hibernation parameters
-	if [[ -n "$SWAPFILE_OFFSET" ]] && [[ "$SWAPFILE_OFFSET" != "0" ]]; then
-		cat > /boot/refind_linux.conf <<REFINDEOF
-"Boot with standard options"  "root=UUID=${ROOT_UUID} rw loglevel=3 $KERNEL_CMDLINE resume=UUID=${ROOT_UUID} resume_offset=${SWAPFILE_OFFSET}"
-"Boot to single-user mode"    "root=UUID=${ROOT_UUID} rw single"
-"Boot with minimal options"   "root=UUID=${ROOT_UUID} ro"
-REFINDEOF
-	else
-		cat > /boot/refind_linux.conf <<REFINDEOF
-"Boot with standard options"  "root=UUID=${ROOT_UUID} rw loglevel=3 $KERNEL_CMDLINE"
-"Boot to single-user mode"    "root=UUID=${ROOT_UUID} rw single"
-"Boot with minimal options"   "root=UUID=${ROOT_UUID} ro"
-REFINDEOF
-		warn "Could not determine swapfile offset. Hibernation may not work."
-	fi
-	
-	info "rEFInd configuration completed"
+# Final validation for GRUB
+if [[ -z "$SWAPFILE_OFFSET" ]] || [[ "$SWAPFILE_OFFSET" == "0" ]]; then
+	warn "Could not determine swapfile offset. Hibernation may not work."
+	warn "You can calculate it manually later with: filefrag -v /swapfile"
+	# Set default GRUB config without hibernation
+	sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 $KERNEL_CMDLINE\"/" /etc/default/grub
+else
+	info "Swapfile offset: $SWAPFILE_OFFSET"
+	# Configure GRUB with hibernation support
+	sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 $KERNEL_CMDLINE resume=UUID=$ROOT_UUID resume_offset=$SWAPFILE_OFFSET\"/" /etc/default/grub
 fi
+
+GRUB_CONFIG_FILE="/etc/default/grub"
+
+info "Configuring GRUB for dual boot"
+if grep -q "GRUB_DISABLE_OS_PROBER" "$GRUB_CONFIG_FILE"; then
+	echo "Existing 'GRUB_DISABLE_OS_PROBER' found. Updating/Uncommenting to 'false'..."
+	sed -i 's/^#*\s*GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_DISABLE_OS_PROBER"
+else
+	echo "'GRUB_DISABLE_OS_PROBER' not found. Appending new line to file."
+	echo "GRUB_DISABLE_OS_PROBER=false" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_DISABLE_OS_PROBER"
+fi
+
+info "Disabling GRUB submenu"
+NEW_LINE="GRUB_DISABLE_SUBMENU=y"
+
+# Check 1: Check if the variable exists (commented or uncommented)
+if grep -q "GRUB_DISABLE_SUBMENU" "$GRUB_CONFIG_FILE"; then
+	echo "Existing 'GRUB_DISABLE_SUBMENU' found. Updating/Uncommenting to 'y'..."
+	sed -i 's/^#*\s*GRUB_DISABLE_SUBMENU=.*/GRUB_DISABLE_SUBMENU=y/' "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_DISABLE_SUBMENU"
+else
+	echo "'GRUB_DISABLE_SUBMENU' not found. Appending new line to file."
+	echo "$NEW_LINE" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_DISABLE_SUBMENU"
+fi
+
+info "Setting default option for grub"
+GRUB_TOP_LEVEL="/boot/vmlinuz-linux"
+if grep -q "GRUB_TOP_LEVEL" "$GRUB_CONFIG_FILE"; then
+	echo "Existing 'GRUB_TOP_LEVEL' found. Updating/Uncommenting to '$GRUB_TOP_LEVEL'..."
+	sed -i "s/^#*\s*GRUB_TOP_LEVEL=.*/GRUB_TOP_LEVEL=\"$GRUB_TOP_LEVEL\"/" "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TOP_LEVEL"
+else
+	echo "'GRUB_TOP_LEVEL' not found. Appending to $GRUB_CONFIG_FILE."
+	echo "GRUB_TOP_LEVEL=\"$GRUB_TOP_LEVEL\"" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_TOP_LEVEL"
+fi
+
+info "setting default timeout"
+GRUB_TIMEOUT="1"
+if grep -q "GRUB_TIMEOUT" "$GRUB_CONFIG_FILE"; then
+	echo "Existing 'GRUB_TIMEOUT' found. Updating/Uncommenting to '$GRUB_TIMEOUT'..."
+	sed -i "s/^#*\s*GRUB_TIMEOUT=.*/GRUB_TIMEOUT=\"$GRUB_TIMEOUT\"/" "$GRUB_CONFIG_FILE" || warn "Failed to update GRUB_TIMEOUT"
+else
+	echo "'GRUB_TIMEOUT' not found. Appending to $GRUB_CONFIG_FILE."
+	echo "GRUB_TIMEOUT=\"$GRUB_TIMEOUT\"" | tee -a "$GRUB_CONFIG_FILE" || warn "Failed to append GRUB_TIMEOUT"
+fi
+
+info "run grub-mkconfig to generate GRUB configuration"
+grub-mkconfig -o /boot/grub/grub.cfg || error "Failed to generate GRUB configuration"
+
+info "Installing grub CyberRe theme"
+# Clone the repository
+git clone --depth 1 https://github.com/Qaddoumi/grub-theme-mr-robot.git
+
+# Navigate to the directory
+cd grub-theme-mr-robot
+
+# Run the installation script
+./install.sh
+
+# Clean up
+cd ..
+rm -rf grub-theme-mr-robot
 
 info "Bootloader configuration completed for $BOOTLOADER in $BOOT_MODE mode"
 info "Resume UUID: $ROOT_UUID"
