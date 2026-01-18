@@ -57,7 +57,7 @@ info "Checking for root privileges"
 info "Checking internet connection"
 if ! ping -c 1 -W 5 voidlinux.org &>/dev/null; then
 	warn "No internet connection detected!"
-	read -rp "Continue without internet? (not recommended) [y/N]: " NO_NET < /dev/tty
+	read -rp "Continue without internet? (not recommended) [y/N]: " NO_NET
 	[[ "$NO_NET" == "y" ]] || error "Aborted"
 fi
 
@@ -187,7 +187,7 @@ else
 		echo "Select AMD driver:"
 		echo "1) AMDGPU (recommended for GCN 1.2+ and newer)"
 		echo "2) Radeon (legacy, for older GPUs)"
-		read -rp "Select AMD driver [1-2]: " AMD_CHOICE < /dev/tty
+		read -rp "Select AMD driver [1-2]: " AMD_CHOICE
 		case ${AMD_CHOICE:-1} in
 			1) 
 				# Modern AMD GPUs (GCN 3 or newer / 2015+)
@@ -224,7 +224,7 @@ else
 		echo "Select NVIDIA driver:"
 		echo "1) Nouveau (open-source, default)"
 		echo "2) Proprietary NVIDIA (better performance)"
-		read -rp "Select NVIDIA driver [1-2]: " NVIDIA_CHOICE < /dev/tty
+		read -rp "Select NVIDIA driver [1-2]: " NVIDIA_CHOICE
 		case ${NVIDIA_CHOICE:-1} in
 			1)
 				GPU_PKGS+=("xf86-video-nouveau" "mesa-nouveau-dri")
@@ -260,7 +260,7 @@ echo "2) Europe (Germany)"
 echo "3) North America (US)"
 echo "4) Asia"
 
-if read -rp "Select mirror region [1-4] (press Enter for Worldwide): " -t 30 REGION_CHOICE < /dev/tty; then
+if read -rp "Select mirror region [1-4] (press Enter for Worldwide): " -t 30 REGION_CHOICE; then
 	info "Region choice: $REGION_CHOICE"
 else
 	REGION_CHOICE=1  # Default to Worldwide if no input
@@ -296,7 +296,7 @@ info "Select bootloader:"
 if [[ "$BOOT_MODE" == "UEFI" ]]; then
 	echo "1) GRUB"
 	echo "2) rEFInd"
-	if read -rp "Select bootloader [1-2] (press Enter for grub): " -t 30 BOOTLOADER_CHOICE < /dev/tty; then
+	if read -rp "Select bootloader [1-2] (press Enter for grub): " -t 30 BOOTLOADER_CHOICE; then
 		BOOTLOADER_CHOICE=${BOOTLOADER_CHOICE:-1}
 		if [[ -z "$BOOTLOADER_CHOICE" ]]; then
 			info "Choosing GRUB as bootloader"
@@ -324,7 +324,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 info "Bootloader kernel command line options:"
 echo "1) quiet (minimal output, recommended for daily use)"
 echo "2) debug (verbose output, useful for troubleshooting)"
-if read -rp "Select bootloader kernel mode [1-2] (press Enter for quiet): " -t 30 KERNEL_MODE_CHOICE < /dev/tty; then
+if read -rp "Select bootloader kernel mode [1-2] (press Enter for quiet): " -t 30 KERNEL_MODE_CHOICE; then
 	KERNEL_MODE_CHOICE=${KERNEL_MODE_CHOICE:-1}
 	if [[ "$KERNEL_MODE_CHOICE" == "2" ]]; then
 		KERNEL_CMDLINE="debug"
@@ -346,7 +346,7 @@ echo "Default user password: [hidden]"
 echo
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-if read -rp "Enter username (default: $DEFAULT_USERNAME): " -t 30 USERNAME < /dev/tty; then
+if read -rp "Enter username (default: $DEFAULT_USERNAME): " -t 30 USERNAME; then
 	# If user pressed enter without typing anything, use default
 	if [[ -z "$USERNAME" ]]; then
 		USERNAME="$DEFAULT_USERNAME"
@@ -362,7 +362,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 [[ "$USERNAME" =~ ^[a-z_][a-z0-9_-]*$ ]] || error "Invalid username"
 
 while true; do
-	if read -rsp "Enter password for $USERNAME (default: [hidden]): " -t 30 USER_PASSWORD < /dev/tty; then
+	if read -rsp "Enter password for $USERNAME (default: [hidden]): " -t 30 USER_PASSWORD; then
 		echo
 		# If user pressed enter without typing anything, use default
 		if [[ -z "$USER_PASSWORD" ]]; then
@@ -380,7 +380,7 @@ while true; do
 
 	[[ -n "$USER_PASSWORD" ]] || { warn "Password cannot be empty"; continue; }
 
-	read -rsp "Confirm password: " USER_PASSWORD_CONFIRM < /dev/tty
+	read -rsp "Confirm password: " USER_PASSWORD_CONFIRM
 	echo
 	[[ "$USER_PASSWORD" == "$USER_PASSWORD_CONFIRM" ]] && break
 	warn "Passwords don't match!"
@@ -397,7 +397,7 @@ newTask "═══════════════════════�
 info "Available disks:"
 lsblk -d -o NAME,SIZE,MODEL,TRAN,MOUNTPOINT
 
-read -rp "Enter disk to wipe (e.g., vda, sda, nvme0n1): " DISK < /dev/tty
+read -rp "Enter disk to wipe (e.g., vda, sda, nvme0n1): " DISK
 [[ -e "/dev/$DISK" ]] || error "Disk /dev/$DISK not found"
 
 echo
@@ -405,13 +405,13 @@ info "Selected disk layout:"
 lsblk "/dev/$DISK"
 
 # Final confirmation
-read -rp "WARNING: ALL DATA ON /dev/$DISK WILL BE DESTROYED! Confirm (type 'y'): " CONFIRM < /dev/tty
+read -rp "WARNING: ALL DATA ON /dev/$DISK WILL BE DESTROYED! Confirm (type 'y'): " CONFIRM
 [[ "$CONFIRM" == "y" ]] || error "Operation cancelled"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Would you like to run my post-install script? to install sway and other packages? with my configuration files ?"
-read -rp "Type 'y' to run post-install script, or hit enter to skip: " RUN_POST_INSTALL < /dev/tty
+read -rp "Type 'y' to run post-install script, or hit enter to skip: " RUN_POST_INSTALL
 RUN_POST_INSTALL=${RUN_POST_INSTALL:-n}
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
 	info "Post-install script will be run after installation"
@@ -422,7 +422,7 @@ fi
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Would you like to reboot the system after the installation?"
-read -rp "Type 'y' to reboot, or hit enter to skip: " REBOOT_AFTER_INSTALL < /dev/tty
+read -rp "Type 'y' to reboot, or hit enter to skip: " REBOOT_AFTER_INSTALL
 REBOOT_AFTER_INSTALL=${REBOOT_AFTER_INSTALL:-n}
 if [[ "$REBOOT_AFTER_INSTALL" == "y" ]]; then
 	info "System will reboot after installation"
