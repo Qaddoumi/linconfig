@@ -657,6 +657,7 @@ declare -a PIPEWIRE_PKGS=(
 declare -a BASE_PKGS=(
 	base-container linux linux-firmware linux-headers booster
 	grub grub-x86_64-efi efibootmgr os-prober e2fsprogs void-repo-nonfree void-repo-multilib
+	eudev
 )
 
 declare -a OPTIONAL_PKGS=(bash curl NetworkManager dbus opendoas git openssh terminus-font chrony neovim)
@@ -883,8 +884,15 @@ cat > /etc/booster.yaml <<BOOSTEREOF
 # Booster initramfs configuration
 modules_force_load: ext4,vfat,fat,nls_cp437,nls_iso8859_1
 compression: zstd
+
+# Include udev for device management
+enable_lvm: true
+enable_mdraid: false
+
 # Hibernation/resume support
 resume: UUID=${ROOT_UUID_EARLY}
+
+# Universal mode - includes all necessary modules
 universal: true
 BOOSTEREOF
 
@@ -1084,16 +1092,30 @@ SV_DIR="/etc/runit/runsvdir/default"
 mkdir -p "$SV_DIR"
 
 # Create service links
+info "Enabling udevd (device manager - must be first)"
+ln -sf /etc/sv/udevd "$SV_DIR/" || warn "Failed to enable udevd"
+
+info "Enabling dbus (message bus)"
 ln -sf /etc/sv/dbus "$SV_DIR/" || warn "Failed to enable dbus"
+
+info "Enabling elogind (session/power management)"
+ln -sf /etc/sv/elogind "$SV_DIR/" || warn "Failed to enable elogind"
+
+info "Enabling NetworkManager"
 ln -sf /etc/sv/NetworkManager "$SV_DIR/" || warn "Failed to enable NetworkManager"
-ln -sf /etc/sv/sshd "$SV_DIR/" || warn "Failed to enable sshd"
+
+info "Enabling chronyd (time sync)"
 ln -sf /etc/sv/chronyd "$SV_DIR/" || warn "Failed to enable chronyd"
 
-# Enable elogind for power management
-ln -sf /etc/sv/elogind "$SV_DIR/" || warn "Failed to enable elogind"
+info "Enabling sshd (optional)"
+ln -sf /etc/sv/sshd "$SV_DIR/" || warn "Failed to enable sshd"
 
 # PipeWire services (user services - handled differently in Void)
 info "PipeWire services will start automatically via pipewire user service"
+
+info "Setting up user services directory"
+mkdir -p /home/${USERNAME}/.config/sv
+chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.config
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
