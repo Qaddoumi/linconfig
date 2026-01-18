@@ -683,17 +683,17 @@ declare -a PIPEWIRE_PKGS=(
 # Install linux-headers manually after first boot if needed
 if [[ "$BOOTLOADER" == "grub" ]]; then
 	declare -a BASE_PKGS=(
-		base-container linux linux-firmware booster
+		base-container linux linux-firmware linux-headers booster
 		grub grub-x86_64-efi efibootmgr os-prober e2fsprogs void-repo-nonfree void-repo-multilib
 	)
 else
 	declare -a BASE_PKGS=(
-		base-container linux linux-firmware booster
+		base-container linux linux-firmware linux-headers booster
 		refind efibootmgr e2fsprogs void-repo-nonfree void-repo-multilib
 	)
 fi
 
-declare -a OPTIONAL_PKGS=(curl NetworkManager dbus opendoas git openssh terminus-font chrony)
+declare -a OPTIONAL_PKGS=(curl NetworkManager dbus opendoas git openssh terminus-font chrony neovim)
 
 # Combine arrays
 declare -a INSTALL_PKGS_ARR=(
@@ -902,7 +902,7 @@ BOOSTEREOF
 # Swap dracut for booster - remove dracut first
 info "Removing dracut and switching to booster..."
 if xbps-query -l | grep -q dracut; then
-	xbps-remove -Ry dracut || warn "Failed to remove dracut"
+	xbps-remove -RyF dracut || warn "Failed to remove dracut"
 fi
 
 # Regenerate initramfs using xbps-reconfigure (automatically uses booster)
