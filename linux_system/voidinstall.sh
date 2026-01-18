@@ -847,14 +847,22 @@ HOSTSEOF
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
+sed -i 's/sha512/yescrypt/' /etc/pam.d/system-auth
+sed -i 's/sha512/yescrypt/' /etc/pam.d/password-auth
+if grep -q "^ENCRYPT_METHOD" /etc/login.defs; then
+	sed -i 's/^ENCRYPT_METHOD.*/ENCRYPT_METHOD YESCRYPT/' /etc/login.defs
+else
+	echo "ENCRYPT_METHOD YESCRYPT" >> /etc/login.defs
+fi
+
 # Set root password
 info "Setting root password"
-printf "root:%s\n" "${ROOT_PASSWORD}" | chpasswd -c SHA512
+printf "root:%s\n" "${ROOT_PASSWORD}" | chpasswd -c YESCRYPT
 
 # Create user 
 info "Creating user ${USERNAME} account"
 useradd -m -G wheel,audio,video,storage,network -s /bin/bash "${USERNAME}"
-printf "%s:%s\n" "${USERNAME}" "${USER_PASSWORD}" | chpasswd -c SHA512
+printf "%s:%s\n" "${USERNAME}" "${USER_PASSWORD}" | chpasswd -c YESCRYPT
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
