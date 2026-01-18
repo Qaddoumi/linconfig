@@ -881,10 +881,11 @@ ROOT_UUID_EARLY=$(blkid -s UUID -o value "${ROOT_PART}")
 
 cat > /etc/booster.yaml <<BOOSTEREOF
 # Booster initramfs configuration
-modules_force_load: ext4
+modules_force_load: ext4,vfat,fat,nls_cp437,nls_iso8859_1
 compression: zstd
 # Hibernation/resume support
 resume: UUID=${ROOT_UUID_EARLY}
+universal: true
 BOOSTEREOF
 
 # Swap dracut for booster - remove dracut first
