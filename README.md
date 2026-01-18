@@ -26,7 +26,7 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_
 ### Complete Void Linux Installation
 Install Void Linux with advanced configuration options:
 ```bash
-sudo xbps-install -Sy libssh2 curl && curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/voidinstall.sh | sudo bash
+sudo xbps-install -Syu xbps libssh2 curl; curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/voidinstall.sh -o /tmp/voidinstall.sh; sudo bash /tmp/voidinstall.sh
 ```
 
 ### Sway/Hyprland/DWM + QuickShell + SDDM Setup
