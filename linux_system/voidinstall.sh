@@ -693,7 +693,7 @@ else
 	)
 fi
 
-declare -a OPTIONAL_PKGS=(curl NetworkManager dbus opendoas git openssh terminus-font chrony neovim)
+declare -a OPTIONAL_PKGS=(bash curl NetworkManager dbus opendoas git openssh terminus-font chrony neovim)
 
 # Combine arrays
 declare -a INSTALL_PKGS_ARR=(
@@ -789,6 +789,8 @@ chroot /mnt /bin/bash -s -- \
 <<'EOF' || error "Chroot commands failed"
 
 set -e
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 
 # Pass variables from parent script
 ROOT_PASSWORD="${1}"
