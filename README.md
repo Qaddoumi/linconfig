@@ -1,10 +1,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bash](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)](https://www.gnu.org/software/bash/)
 [![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?logo=arch-linux&logoColor=fff)](https://archlinux.org)
+[![Void Linux](https://img.shields.io/badge/Void%20Linux-1793D1?logo=void-linux&logoColor=fff)](https://voidlinux.org)
 
 # 🌟 LinConfig - My Linux Configuration Suite
 
-An automated configuration suite for Arch Linux featuring Sway/Hyprland/DWM setup, QuickShell and SDDM login manager, with VM GPU passthrough capabilities.
+An automated configuration suite for Arch|Void Linux featuring Sway/Hyprland/DWM setup, QuickShell and SDDM login manager, with VM GPU passthrough capabilities.
 
 ## ⚠️⚠️ Important Notice and Disclaimer
 
@@ -20,6 +21,12 @@ This project is currently in active development. While functional, it may not wo
 Install Arch Linux with advanced configuration options:
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/archinstall.sh)
+```
+
+### Complete Void Linux Installation
+Install Void Linux with advanced configuration options:
+```bash
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/voidinstall.sh)
 ```
 
 ### Sway/Hyprland/DWM + QuickShell + SDDM Setup
