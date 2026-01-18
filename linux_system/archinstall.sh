@@ -1122,17 +1122,17 @@ if [[ "$BOOTLOADER" == "grub" ]]; then
 
 	info "Installing grub CyberRe theme"
 	# Clone the repository
-	git clone --depth 1 https://github.com/Qaddoumi/grub-theme.git
+	git clone --depth 1 https://github.com/Qaddoumi/grub-theme-mr-robot.git
 
 	# Navigate to the directory
-	cd grub-theme
+	cd grub-theme-mr-robot
 
 	# Run the installation script
 	./install.sh
 
 	# Clean up
 	cd ..
-	rm -rf grub-theme
+	rm -rf grub-theme-mr-robot
 
 elif [[ "$BOOTLOADER" == "systemd-boot" ]]; then
 	# For systemd-boot, everything goes in /boot (which is the ESP)
