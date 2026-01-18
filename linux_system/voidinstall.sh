@@ -788,7 +788,7 @@ chroot /mnt /bin/bash -s -- \
 	"$BOOT_MODE" "$KERNEL_CMDLINE" \
 <<'EOF' || error "Chroot commands failed"
 
-set +u
+set -e
 
 # Pass variables from parent script
 ROOT_PASSWORD="${1}"
@@ -849,12 +849,12 @@ newTask "═══════════════════════�
 
 # Set root password
 info "Setting root password"
-echo "root:${ROOT_PASSWORD}" | chpasswd
+printf "root:%s\n" "${ROOT_PASSWORD}" | chpasswd -c SHA512
 
 # Create user 
 info "Creating user ${USERNAME} account"
 useradd -m -G wheel,audio,video,storage,network -s /bin/bash "${USERNAME}"
-echo "${USERNAME}:${USER_PASSWORD}" | chpasswd
+printf "%s:%s\n" "${USERNAME}" "${USER_PASSWORD}" | chpasswd -c SHA512
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
