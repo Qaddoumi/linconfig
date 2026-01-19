@@ -61,16 +61,6 @@ if ! ping -c 1 -W 5 voidlinux.org &>/dev/null; then
 	[[ "$NO_NET" == "y" ]] || error "Aborted"
 fi
 
-info "Checking for required host tools on live environment..."
-REQUIRED_HOST_TOOLS=("parted" "lsof")
-xbps-install -Sy xbps || warn "Failed to update xbps"
-for tool in "${REQUIRED_HOST_TOOLS[@]}"; do
-	if ! command -v "$tool" &>/dev/null; then
-		info "Installing $tool..."
-		xbps-install -Sy "$tool" || error "Failed to install $tool"
-	fi
-done
-
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 IS_VM=false
@@ -412,17 +402,43 @@ cleanup_disks() {
 	local attempts=3
 	info "Starting cleanup process (3 attempts)..."
 	
+	# Helper to find PIDs using the disk
+	find_pids_using_disk() {
+		local disk_path="/dev/$DISK"
+		local pids=""
+		# Scan /proc for open file descriptors
+		for pid in /proc/[0-9]*; do
+			pid=${pid##*/}
+			# content of fd directory
+			if [ -d "/proc/$pid/fd" ]; then
+				if ls -l /proc/$pid/fd 2>/dev/null | grep -q "$disk_path"; then
+					pids="$pids $pid"
+				elif grep -q "$disk_path" /proc/$pid/mounts 2>/dev/null; then
+					pids="$pids $pid"
+				fi
+			fi
+		done
+		echo "$pids"
+	}
+
 	while (( attempts-- > 0 )); do
 		# Kill processes using the disk
 		info "Attempt $((3-attempts)): Killing processes..."
-		pids=$(lsof +f -- "/dev/$DISK"* 2>/dev/null | awk '{print $2}' | uniq)
+		
+		# Initial check and kill
+		pids=$(find_pids_using_disk)
+		if [[ -n "$pids" ]]; then
+			echo "Killing PIDs: $pids"
+			kill -9 $pids 2>/dev/null
+		fi
 		sleep 2
-		[[ -n "$pids" ]] && kill -9 $pids 2>/dev/null
-		sleep 2
-		for process in $(lsof +f -- /dev/${DISK}* 2>/dev/null | awk '{print $2}' | uniq); do kill -9 "$process"; done
-		sleep 2
-		# try again to kill any processes using the disk
-		lsof +f -- /dev/${DISK}* 2>/dev/null | awk '{print $2}' | uniq | xargs -r kill -9
+		
+		# Second check
+		pids=$(find_pids_using_disk)
+		if [[ -n "$pids" ]]; then
+			echo "Killing remaining PIDs: $pids"
+			kill -9 $pids 2>/dev/null
+		fi
 		sleep 2
 		
 		info "Unmounting partitions..."
@@ -432,17 +448,24 @@ cleanup_disks() {
 		if command -v vgchange &>/dev/null; then
 			info "Deactivating LVM..."
 			vgchange -an 2>/dev/null
+			# Use lsblk or manual scan if lvs usage is complex without it, 
+			# but lvs is usually standard if lvm2 is there. 
+			# Keeping lvs for now as it wasn't flagged as missing.
 			lvremove -f $(lvs -o lv_path --noheadings 2>/dev/null | grep "$DISK") 2>/dev/null
 		fi
 		
 		info "Disabling swap..."
 		swapoff -a 2>/dev/null
-		for swap in $(blkid -t TYPE=swap -o device | grep "/dev/$DISK"); do
+		# scan /proc/swaps manually if needed, but swapoff -a is usually enough
+		for swap in $(grep "/dev/$DISK" /proc/swaps | awk '{print $1}'); do
 			swapoff -v "$swap"
 		done
 		sleep 2
 
 		info "Checking for mounted partitions on /dev/$DISK..."
+		# Using mount command instead of lsblk loop if strict, but lsblk is standard.
+		# Parsing /proc/mounts is safer than assume lsblk is there, but lsblk IS standard util-linux.
+		# We'll stick to lsblk for iterating parts as it's standard.
 		for part in $(lsblk -lnp -o NAME | grep "^/dev/$DISK" | tail -n +2); do
 			info "Attempting to unmount $part..."
 			if ! umount "$part" 2>/dev/null; then
@@ -452,9 +475,9 @@ cleanup_disks() {
 			fi
 		done
 		
-		# Check if cleanup was successful
+		# Check if cleanup was successful by rescanning
 		if ! (mount | grep -q "/dev/$DISK") && \
-		   ! (lsof +f -- "/dev/$DISK"* 2>/dev/null | grep -q .); then
+		   [[ -z "$(find_pids_using_disk)" ]]; then
 			echo
 			info "Cleanup successful :) "
 			return 0
@@ -488,31 +511,18 @@ else
 	PART3="/dev/${DISK}3"
 fi
 
-info "Creating new GPT partition table..."
-parted -s "/dev/$DISK" mklabel gpt || error "Partitioning failed"
-
-newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
-
-info "Loading vfat module for EFI partition..."
-modprobe vfat || warn "Failed to load vfat module"
-modprobe nls_cp437 || warn "Failed to load nls_cp437"
-modprobe nls_iso8859_1 || warn "Failed to load nls_iso8859_1"
-
-newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
+info "Creating partitions with sfdisk..."
 
 if [[ "$BOOT_MODE" == "UEFI" ]]; then
-	info "Creating UEFI partitions..."
-	
-	# EFI System Partition
-	EFI_SIZE="2G"
-	ROOT_SIZE="100%"
-	
-	info "Creating EFI System Partition (2G)"
-	parted -s "/dev/$DISK" mkpart primary fat32 1MiB "$EFI_SIZE" || error "EFI partition failed"
-	parted -s "/dev/$DISK" set 1 esp on || error "Failed to set ESP flag"
-	
-	info "Creating root partition"
-	parted -s "/dev/$DISK" mkpart primary ext4 "$EFI_SIZE" "$ROOT_SIZE" || error "Root partition failed"
+	info "Creating UEFI partitions layout..."
+	# 1. EFI System Partition (2G) - Type U
+	# 2. Root Partition (Rest) - Type L
+	sfdisk "/dev/$DISK" <<EOF
+label: gpt
+, 2G, U
+, , L
+EOF
+	if [[ $? -ne 0 ]]; then error "Partitioning failed"; fi
 	
 	# Set partition variables for UEFI
 	EFI_PART="$PART1"
@@ -532,21 +542,17 @@ if [[ "$BOOT_MODE" == "UEFI" ]]; then
 	chmod 700 /mnt/boot/efi || error "Failed to set permissions on /mnt/boot/efi"
 	mount "$EFI_PART" /mnt/boot/efi || error "Failed to mount EFI partition"
 else
-	info "Creating BIOS partitions..."
-	
-	BIOS_BOOT_SIZE="2MiB"
-	BOOT_SIZE="2G"
-	ROOT_SIZE="100%"
-	
-	info "Creating BIOS boot partition (2MiB)"
-	parted -s "/dev/$DISK" mkpart primary 1MiB "$BIOS_BOOT_SIZE" || error "BIOS boot partition failed"
-	parted -s "/dev/$DISK" set 1 bios_grub on || error "Failed to set bios_grub flag"
-	
-	info "Creating boot partition (2G)"
-	parted -s "/dev/$DISK" mkpart primary ext4 "$BIOS_BOOT_SIZE" "$BOOT_SIZE" || error "Boot partition failed"
-	
-	info "Creating root partition"
-	parted -s "/dev/$DISK" mkpart primary ext4 "$BOOT_SIZE" "$ROOT_SIZE" || error "Root partition failed"
+	info "Creating BIOS partitions layout..."
+	# 1. BIOS Boot Partition (2M) - Type 21686148-6449-6E6F-744E-656564454649
+	# 2. Boot Partition (2G) - Type L
+	# 3. Root Partition (Rest) - Type L
+	sfdisk "/dev/$DISK" <<EOF
+label: gpt
+, 2M, 21686148-6449-6E6F-744E-656564454649
+, 2G, L
+, , L
+EOF
+	if [[ $? -ne 0 ]]; then error "Partitioning failed"; fi
 	
 	# Set partition variables for BIOS
 	BIOS_PART="$PART1"
