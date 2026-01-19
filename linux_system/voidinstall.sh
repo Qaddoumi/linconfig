@@ -1093,10 +1093,10 @@ xbps-reconfigure -fa || warn "Failed to reconfigure packages"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
-# Enable services (Void uses runit)
+# Enable services
 info "Enabling services (runit)"
 
-SV_DIR="/var/service"
+SV_DIR="/etc/runit/runsvdir/default"
 mkdir -p "$SV_DIR" > /dev/null 2>&1 || true
 
 # Create service links
