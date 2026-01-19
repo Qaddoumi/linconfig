@@ -69,7 +69,6 @@ declare -a GPU_PKGS=()
 GPU_OPTS=false
 
 info "Detecting system environment..."
-# Void Linux uses different detection method
 VIRT_TYPE=""
 if [ -f /sys/class/dmi/id/product_name ]; then
 	PRODUCT_NAME=$(cat /sys/class/dmi/id/product_name 2>/dev/null || echo "")
