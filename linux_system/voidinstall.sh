@@ -1210,7 +1210,7 @@ echo "permit nopass :wheel" >> /etc/doas.conf
 
 su "$USER_NAME" <<USEREOF
 	echo "Running post-install script as user \$USER_NAME..."
-	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --is-vm "$isVM" || echo "Failed to run the install script"
+	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_void_pkgs.sh) --is-vm "$isVM" || echo "Failed to run the install script"
 USEREOF
 
 echo "Restoring doas password requirement for wheel group"
@@ -1219,7 +1219,7 @@ POSTINSTALLEOF
 else
 	warn "Skipping post-install script, you may reboot now."
 	info "if you would like to run my post-install script later, you can run it with the command:"
-	info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install.sh) --is-vm \"$IS_VM\""
+	info "bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_void_pkgs.sh) --is-vm \"$IS_VM\""
 fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════\n"
