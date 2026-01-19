@@ -1097,7 +1097,7 @@ newTask "═══════════════════════�
 info "Enabling services (runit)"
 
 SV_DIR="/var/service"
-mkdir -p "$SV_DIR"
+mkdir -p "$SV_DIR" || true
 
 # Create service links
 info "Enabling udevd (device manager - must be first)"
