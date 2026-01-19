@@ -493,6 +493,13 @@ parted -s "/dev/$DISK" mklabel gpt || error "Partitioning failed"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
+info "Loading vfat module for EFI partition..."
+modprobe vfat || warn "Failed to load vfat module"
+modprobe nls_cp437 || warn "Failed to load nls_cp437"
+modprobe nls_iso8859_1 || warn "Failed to load nls_iso8859_1"
+
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
+
 if [[ "$BOOT_MODE" == "UEFI" ]]; then
 	info "Creating UEFI partitions..."
 	
@@ -657,7 +664,7 @@ declare -a PIPEWIRE_PKGS=(
 declare -a BASE_PKGS=(
 	base-container linux linux-firmware linux-headers booster
 	grub grub-x86_64-efi efibootmgr os-prober e2fsprogs void-repo-nonfree void-repo-multilib
-	eudev
+	eudev runit-void kbd
 )
 
 declare -a OPTIONAL_PKGS=(bash curl NetworkManager dbus opendoas git openssh terminus-font chrony neovim)
@@ -726,7 +733,7 @@ FSTABEOF
 
 if [[ "$BOOT_MODE" == "UEFI" ]]; then
 	echo "# EFI System Partition" >> /mnt/etc/fstab
-	echo "UUID=$(blkid -s UUID -o value "$EFI_PART")  /boot/efi  vfat  defaults,fmask=0077,dmask=0077  0  2" >> /mnt/etc/fstab
+	echo "UUID=$(blkid -s UUID -o value "$EFI_PART")  /boot/efi  vfat  defaults,fmask=0077,dmask=0077,iocharset=iso8859-1,codepage=437  0  2" >> /mnt/etc/fstab
 else
 	echo "# Boot partition" >> /mnt/etc/fstab
 	echo "UUID=$(blkid -s UUID -o value "$BOOT_PART")  /boot  ext4  defaults  0  2" >> /mnt/etc/fstab
@@ -738,6 +745,9 @@ echo "/swapfile  none  swap  sw  0  0" >> /mnt/etc/fstab
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 info "==== CHROOT SETUP ===="
+
+info "Ensuring /mnt/etc directory exists..."
+mkdir -p /mnt/etc
 
 info "Copying DNS resolution to chroot..."
 cp /etc/resolv.conf /mnt/etc/resolv.conf
@@ -1086,9 +1096,7 @@ newTask "═══════════════════════�
 # Enable services (Void uses runit)
 info "Enabling services (runit)"
 
-# Use /etc/runit/runsvdir/default/ for service symlinks during installation
-# (/var/service is a symlink to /run/runit/runsvdir/current which doesn't exist until boot)
-SV_DIR="/etc/runit/runsvdir/default"
+SV_DIR="/var/service"
 mkdir -p "$SV_DIR"
 
 # Create service links
