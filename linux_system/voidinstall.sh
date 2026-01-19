@@ -62,7 +62,7 @@ if ! ping -c 1 -W 5 voidlinux.org &>/dev/null; then
 fi
 
 info "Checking for required host tools on live environment..."
-REQUIRED_HOST_TOOLS=("parted" "wipefs" "lsof" "curl" "git")
+REQUIRED_HOST_TOOLS=("parted" "wipefs" "lsof")
 xbps-install -Sy xbps || warn "Failed to update xbps"
 for tool in "${REQUIRED_HOST_TOOLS[@]}"; do
 	if ! command -v "$tool" &>/dev/null; then
