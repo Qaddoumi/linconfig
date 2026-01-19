@@ -1,0 +1,32 @@
+# Color codes
+red='\033[0;31m'
+no_color='\033[0m' # reset the color to default
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		--install)
+			install="$2"
+			shift 2
+			;;
+		*)
+			echo -e "${red}Unknown argument: $1${no_color}"
+			exit 1
+			;;
+	esac
+done
+
+if [ -z "$install" ]; then
+	echo -e "${red}Error: No install specified.${no_color}"
+	exit 1
+fi
+
+if [ "$install" == "arch" ]; then
+	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/archinstall.sh)
+elif [ "$install" == "void" ]; then
+	xbps-fetch https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/voidinstall.sh && sudo bash voidinstall.sh
+elif [ "$install" == "config" ]; then
+	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/installconfig.sh)
+else
+	echo -e "${red}Error: Unknown install option: $install${no_color}"
+	exit 1
+fi

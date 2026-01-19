@@ -25,18 +25,18 @@ This project is currently in active development. While functional, it may not wo
 ### Complete Arch Linux Installation
 Install Arch Linux with advanced configuration options:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/archinstall.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install) --install arch
 ```
 ### Complete Void Linux Installation
 Install Void Linux with advanced configuration options:
 ```bash
-sudo xbps-install -Syu xbps libssh2 curl; curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/voidinstall.sh -o /tmp/voidinstall.sh; sudo bash /tmp/voidinstall.sh
+xbps-fetch https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install && bash install --install void
 ```
 
 ### Configuration Files Only
 Install only the configuration files without system packages:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/installconfig.sh)
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install) --install config
 ```
 
 ## Post-Installation
