@@ -405,40 +405,68 @@ cleanup_disks() {
 	find_pids_using_disk() {
 		local disk_path="/dev/$DISK"
 		local pids=""
-		# Scan /proc for open file descriptors
-		# We must be very careful not to match random strings
+		
+		# Get associated mount points for the disk
+		# lsblk returns mountpoints of the disk and its partitions
+		local mount_points=$(lsblk -lnp -o MOUNTPOINT "$disk_path" 2>/dev/null | grep -v "^$")
+		
+		# Helper to check if path matches disk or mountpoints
+		is_relevant_path() {
+			local path="$1"
+			[[ -z "$path" ]] && return 1
+			
+			# Check key device path (e.g. /dev/vda)
+			if [[ "$path" == "$disk_path"* ]]; then return 0; fi
+			
+			# Check mount points (e.g. /mnt, /mnt/boot)
+			# We only check if we have active mount points
+			if [[ -n "$mount_points" ]]; then
+				while IFS= read -r mp; do
+					[[ -z "$mp" ]] && continue
+					# Check if path starts with mountpoint
+					if [[ "$path" == "$mp"* ]]; then return 0; fi
+				done <<< "$mount_points"
+			fi
+			return 1
+		}
+
+		# Scan process directories
 		for pid_dir in /proc/[0-9]*; do
 			local pid=${pid_dir##*/}
 			
-			# Skip self
+			# Safety skips
 			[[ "$pid" == "$BASHPID" ]] && continue
-			[[ "$pid" == "1" ]] && continue  # NEVER kill init
-
-			local found=0
+			[[ "$pid" == "1" ]] && continue
+			[[ "$pid" == "2" ]] && continue # kthreadd
 			
-			# Check open files (fd)
-			if [ -d "$pid_dir/fd" ]; then
-				# Use find to get links, readlink to check target
-				# iterating over files is safer than parsing ls
+			local match=0
+			
+			# 1. Check symlinks: cwd, exe, root
+			for link in cwd exe root; do
+				if target=$(readlink -f "$pid_dir/$link" 2>/dev/null); then
+					if is_relevant_path "$target"; then match=1; break; fi
+				fi
+			done
+			
+			# 2. Check open file descriptors
+			if [[ $match -eq 0 && -d "$pid_dir/fd" ]]; then
 				for fd in "$pid_dir"/fd/*; do
-					[ -e "$fd" ] || continue
-					target=$(readlink -f "$fd" 2>/dev/null)
-					if [[ "$target" == "$disk_path"* ]]; then
-						found=1
-						break
+					if target=$(readlink -f "$fd" 2>/dev/null); then
+						if is_relevant_path "$target"; then match=1; break; fi
 					fi
 				done
 			fi
 			
-			# Check mounts if not found in fd
-			if [[ $found -eq 0 ]] && [ -f "$pid_dir/mounts" ]; then
-				# Check if any mount point source starts with our disk
-				if grep -qs "^$disk_path" "$pid_dir/mounts"; then
-					found=1
-				fi
+			# 3. Check mmap regions (maps) - less critical but good for completeness
+			if [[ $match -eq 0 && -f "$pid_dir/maps" ]]; then
+				while IFS= read -r line; do
+					# Extract path from maps line (after headers)
+					local path=$(echo "$line" | awk '{print $6}')
+					if is_relevant_path "$path"; then match=1; break; fi
+				done < "$pid_dir/maps"
 			fi
 
-			if [[ $found -eq 1 ]]; then
+			if [[ $match -eq 1 ]]; then
 				pids="$pids $pid"
 			fi
 		done
