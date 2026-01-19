@@ -406,15 +406,40 @@ cleanup_disks() {
 		local disk_path="/dev/$DISK"
 		local pids=""
 		# Scan /proc for open file descriptors
-		for pid in /proc/[0-9]*; do
-			pid=${pid##*/}
-			# content of fd directory
-			if [ -d "/proc/$pid/fd" ]; then
-				if ls -l /proc/$pid/fd 2>/dev/null | grep -q "$disk_path"; then
-					pids="$pids $pid"
-				elif grep -q "$disk_path" /proc/$pid/mounts 2>/dev/null; then
-					pids="$pids $pid"
+		# We must be very careful not to match random strings
+		for pid_dir in /proc/[0-9]*; do
+			local pid=${pid_dir##*/}
+			
+			# Skip self
+			[[ "$pid" == "$BASHPID" ]] && continue
+			[[ "$pid" == "1" ]] && continue  # NEVER kill init
+
+			local found=0
+			
+			# Check open files (fd)
+			if [ -d "$pid_dir/fd" ]; then
+				# Use find to get links, readlink to check target
+				# iterating over files is safer than parsing ls
+				for fd in "$pid_dir"/fd/*; do
+					[ -e "$fd" ] || continue
+					target=$(readlink -f "$fd" 2>/dev/null)
+					if [[ "$target" == "$disk_path"* ]]; then
+						found=1
+						break
+					fi
+				done
+			fi
+			
+			# Check mounts if not found in fd
+			if [[ $found -eq 0 ]] && [ -f "$pid_dir/mounts" ]; then
+				# Check if any mount point source starts with our disk
+				if grep -qs "^$disk_path" "$pid_dir/mounts"; then
+					found=1
 				fi
+			fi
+
+			if [[ $found -eq 1 ]]; then
+				pids="$pids $pid"
 			fi
 		done
 		echo "$pids"
@@ -428,7 +453,12 @@ cleanup_disks() {
 		pids=$(find_pids_using_disk)
 		if [[ -n "$pids" ]]; then
 			echo "Killing PIDs: $pids"
-			kill -9 $pids 2>/dev/null
+			# Double check we are not killing critical pids
+			for pid in $pids; do
+				if [[ "$pid" != "1" ]] && [[ "$pid" != "$BASHPID" ]]; then
+					kill -9 "$pid" 2>/dev/null
+				fi
+			done
 		fi
 		sleep 2
 		
