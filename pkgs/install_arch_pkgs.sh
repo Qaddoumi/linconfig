@@ -19,6 +19,8 @@ no_color='\033[0m' # reset the color to default
 
 # Find what installed a package (dependencies)
 # pacman -Qi <package_name> | grep "Required By"
+# or if that did not work use this :
+# pacman -Qo <package_name>
 
 # To find what other packages <package_name> installed (its dependencies), use:
 # pacman -Qi <package_name> | grep "Depends On"
