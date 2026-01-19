@@ -5,8 +5,8 @@
 [![Hyprland](https://img.shields.io/badge/Hyprland-1793D1?logo=hyprland&logoColor=fff)](https://hyprland.org)
 [![Sway](https://img.shields.io/badge/Sway-1793D1?logo=sway&logoColor=fff)](https://swaywm.org)
 [![DWM](https://img.shields.io/badge/DWM-1793D1?logo=dwm&logoColor=fff)](https://dwm.suckless.org)
-[![QuickShell](https://img.shields.io/badge/QuickShell-1793D1?logo=quickshell&logoColor=fff)]
-[![SDDM](https://img.shields.io/badge/SDDM-1793D1?logo=sddm&logoColor=fff)]
+[![QuickShell](https://img.shields.io/badge/QuickShell-1793D1?logo=quickshell&logoColor=fff)](https://github.com/quickshell-mirror/quickshell)
+[![SDDM](https://img.shields.io/badge/SDDM-1793D1?logo=sddm&logoColor=fff)](https://github.com/sddm/sddm)
 
 # 🌟 LinConfig - My Linux Configuration Suite
 
