@@ -1101,22 +1101,22 @@ mkdir -p "$SV_DIR" > /dev/null 2>&1 || true
 
 # Create service links
 info "Enabling udevd (device manager - must be first)"
-ln -sf /etc/sv/udevd "$SV_DIR/" || warn "Failed to enable udevd"
+ln -sf /etc/sv/udevd "$SV_DIR/udevd" || warn "Failed to enable udevd"
 
 info "Enabling dbus (message bus)"
-ln -sf /etc/sv/dbus "$SV_DIR/" || warn "Failed to enable dbus"
+ln -sf /etc/sv/dbus "$SV_DIR/dbus" || warn "Failed to enable dbus"
 
 info "Enabling elogind (session/power management)"
-ln -sf /etc/sv/elogind "$SV_DIR/" || warn "Failed to enable elogind"
+ln -sf /etc/sv/elogind "$SV_DIR/elogind" || warn "Failed to enable elogind"
 
 info "Enabling NetworkManager"
-ln -sf /etc/sv/NetworkManager "$SV_DIR/" || warn "Failed to enable NetworkManager"
+ln -sf /etc/sv/NetworkManager "$SV_DIR/NetworkManager" || warn "Failed to enable NetworkManager"
 
 info "Enabling chronyd (time sync)"
-ln -sf /etc/sv/chronyd "$SV_DIR/" || warn "Failed to enable chronyd"
+ln -sf /etc/sv/chronyd "$SV_DIR/chronyd" || warn "Failed to enable chronyd"
 
 info "Enabling sshd (optional)"
-ln -sf /etc/sv/sshd "$SV_DIR/" || warn "Failed to enable sshd"
+ln -sf /etc/sv/sshd "$SV_DIR/sshd" || warn "Failed to enable sshd"
 
 # PipeWire services (user services - handled differently in Void)
 info "PipeWire services will start automatically via pipewire user service"
