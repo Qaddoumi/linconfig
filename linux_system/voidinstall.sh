@@ -664,7 +664,7 @@ declare -a PIPEWIRE_PKGS=(
 declare -a BASE_PKGS=(
 	base-container linux linux-firmware linux-headers booster
 	grub grub-x86_64-efi efibootmgr os-prober e2fsprogs void-repo-nonfree void-repo-multilib
-	eudev runit-void kbd
+	eudev runit-void kbd kmod dosfstools
 )
 
 declare -a OPTIONAL_PKGS=(bash curl NetworkManager dbus opendoas git openssh terminus-font chrony neovim)
