@@ -1210,7 +1210,6 @@ echo "permit nopass :wheel" >> /etc/doas.conf
 
 su "$USER_NAME" <<USEREOF
 	echo "Running post-install script as user $USER_NAME..."
-	# curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_void_pkgs.sh | bash -s -- --is-vm "$isVM" || echo "Failed to run the install script"
 	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_void_pkgs.sh) --is-vm "$isVM" || echo "Failed to run the install script"
 USEREOF
 
@@ -1242,7 +1241,7 @@ info "4. Check GPU: lspci -k | grep -A 3 -E '(VGA|3D)'\n"
 
 info "Remember your credentials:"
 info "  Root password: Set during installation"
-info "  User: $USERNAME (with doas/sudo privileges)"
+info "  User: $USERNAME (with root privileges)"
 
 
 end_time=$(date +%s)
