@@ -805,6 +805,15 @@ declare -a INSTALL_PKGS_ARR=(
 info "Checking package availability and removing duplicates"
 declare -A seen_pkgs
 declare -a VALID_PKGS=()
+
+# Define repositories once
+REPOS=(
+	"--repository=${MIRROR_URL}/current"
+	"--repository=${MIRROR_URL}/current/nonfree"
+	"--repository=${MIRROR_URL}/current/multilib"
+	"--repository=${MIRROR_URL}/current/multilib/nonfree"
+)
+
 for item in "${INSTALL_PKGS_ARR[@]}"; do
 	[[ -z "$item" ]] && continue
 
@@ -813,13 +822,13 @@ for item in "${INSTALL_PKGS_ARR[@]}"; do
 		# Skip if we've already processed this package
 		[[ -n "${seen_pkgs[$pkg]:-}" ]] && continue
 
-		# Check if package exists in remote repositories (including multilib/nonfree)
-		if xbps-query -R -r /mnt --repository="${MIRROR_URL}/current" --repository="${MIRROR_URL}/current/nonfree" --repository="${MIRROR_URL}/current/multilib" --repository="${MIRROR_URL}/current/multilib/nonfree" "$pkg" &>/dev/null; then
+		# Check if package exists in remote repositories
+		if xbps-query -R -r /mnt "${REPOS[@]}" "$pkg" &>/dev/null; then
 			VALID_PKGS+=("$pkg")
 			seen_pkgs[$pkg]=1
 		else
-			# Try to capture a specific error, though xbps-query is usually brief
-			error_msg=$(xbps-query -R "$pkg" 2>&1 >/dev/null)
+			# Capture error message from the same query with repositories
+			error_msg=$(xbps-query -R -r /mnt "${REPOS[@]}" "$pkg" 2>&1)
 			warn "Skipping package ${red}$pkg${yellow}: ${error_msg:-"not found in repositories"}"
 		fi
 	done
