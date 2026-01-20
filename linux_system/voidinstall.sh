@@ -1209,8 +1209,9 @@ echo "Temporarily disabling doas password for wheel group"
 echo "permit nopass :wheel" >> /etc/doas.conf
 
 su "$USER_NAME" <<USEREOF
-	echo "Running post-install script as user \$USER_NAME..."
-	curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_void_pkgs.sh | bash -s -- --is-vm "$isVM" || echo "Failed to run the install script"
+	echo "Running post-install script as user $USER_NAME..."
+	# curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_void_pkgs.sh | bash -s -- --is-vm "$isVM" || echo "Failed to run the install script"
+	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_void_pkgs.sh) --is-vm "$isVM" || echo "Failed to run the install script"
 USEREOF
 
 echo "Restoring doas password requirement for wheel group"
