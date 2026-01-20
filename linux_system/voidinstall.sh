@@ -1061,6 +1061,24 @@ info "Resume offset: $SWAPFILE_OFFSET"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
+info "Installing memtest86+ for GRUB"
+
+# In Void (and Memtest86+ v6.0+), a single package supports both BIOS and UEFI.
+xbps-install -y memtest86+ || warn "Failed to install memtest86+"
+
+# Update GRUB configuration to include memtest86+
+# Note: Ensure /boot is mounted if it's a separate partition!
+grub-mkconfig -o /boot/grub/grub.cfg || warn "Failed to update GRUB configuration"
+
+# Verify memtest86+ was added to GRUB menu
+if grep -q "memtest" /boot/grub/grub.cfg; then
+	info "memtest86+ successfully added to GRUB menu"
+else
+	warn "memtest86+ may not have been properly added to GRUB menu. Check /etc/grub.d/ permissions."
+fi
+
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
+
 # (hibernate on lid close)
 info "Configuring elogind for hibernation on lid close"
 mkdir -p /etc/elogind/logind.conf.d
