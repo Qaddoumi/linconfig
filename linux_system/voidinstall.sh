@@ -655,7 +655,7 @@ declare -a BASE_PKGS=(
 	runit-void
 )
 
-declare -a OPTIONAL_PKGS=(bash curl NetworkManager dbus opendoas git openssh terminus-font chrony neovim)
+declare -a OPTIONAL_PKGS=(bash curl NetworkManager dbus elogind polkit opendoas git openssh terminus-font chrony neovim)
 
 # Combine arrays
 declare -a INSTALL_PKGS_ARR=(
