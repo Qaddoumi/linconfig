@@ -12,7 +12,7 @@ trap 'cleanup' EXIT  # Ensure cleanup runs on exit
 # Set default values
 DEFAULT_ROOT_PASSWORD="" # the default is the same as user password
 DEFAULT_USERNAME="user"
-DEFAULT_USER_PASSWORD="[REDACTED:password]"
+DEFAULT_USER_PASSWORD="user123"
 
 start_time=$(date +%s)
 
