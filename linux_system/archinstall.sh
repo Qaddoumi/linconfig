@@ -1393,7 +1393,7 @@ echo "Temporarily disabling sudo password for wheel group"
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 su "$USER_NAME" <<USEREOF
-	echo "Running post-install script as user \$USER_NAME..."
+	echo "Running post-install script as user $USER_NAME..."
 	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_arch_pkgs.sh) --is-vm "$isVM" || echo "Failed to run the install script"
 USEREOF
 
