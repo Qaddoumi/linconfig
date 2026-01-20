@@ -536,7 +536,7 @@ xbps-install -Sy xbps || warn "Failed to update xbps"
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Checking for required host tools on live environment..."
-REQUIRED_HOST_TOOLS=("lsof")
+REQUIRED_HOST_TOOLS=("lsof" "void-repo-nonfree" "void-repo-multilib")
 for tool in "${REQUIRED_HOST_TOOLS[@]}"; do
 	if ! command -v "$tool" &>/dev/null; then
 		info "Installing $tool..."
