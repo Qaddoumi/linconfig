@@ -822,13 +822,13 @@ for item in "${INSTALL_PKGS_ARR[@]}"; do
 		# Skip if we've already processed this package
 		[[ -n "${seen_pkgs[$pkg]:-}" ]] && continue
 
-		# Check if package exists in remote repositories
-		if xbps-query -R -r /mnt "${REPOS[@]}" "$pkg" &>/dev/null; then
+		# Check if package exists in remote repositories (WITHOUT -r /mnt)
+		if xbps-query -R "${REPOS[@]}" "$pkg" &>/dev/null; then
 			VALID_PKGS+=("$pkg")
 			seen_pkgs[$pkg]=1
 		else
 			# Capture error message from the same query with repositories
-			error_msg=$(xbps-query -R -r /mnt "${REPOS[@]}" "$pkg" 2>&1)
+			error_msg=$(xbps-query -R "${REPOS[@]}" "$pkg" 2>&1)
 			warn "Skipping package ${red}$pkg${yellow}: ${error_msg:-"not found in repositories"}"
 		fi
 	done
