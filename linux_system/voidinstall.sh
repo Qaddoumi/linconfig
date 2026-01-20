@@ -1183,6 +1183,9 @@ sleep 1
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════\n"
 
+info "Mounting virtual filesystems for post-install..."
+mount --rbind /proc /mnt/proc && mount --make-rslave /mnt/proc > /dev/null 2>&1 || true
+
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
 	info "Running post-install script..."
 
@@ -1192,6 +1195,11 @@ USER_NAME="$1"
 isVM="$2"
 
 echo -e "\n"
+
+[[ -L /dev/fd ]] || ln -sf /proc/self/fd /dev/fd || echo "Failed to link /dev/fd"
+[[ -L /dev/stdin ]] || ln -sf /proc/self/fd/0 /dev/stdin || echo "Failed to link /dev/stdin"
+[[ -L /dev/stdout ]] || ln -sf /proc/self/fd/1 /dev/stdout || echo "Failed to link /dev/stdout"
+[[ -L /dev/stderr ]] || ln -sf /proc/self/fd/2 /dev/stderr || echo "Failed to link /dev/stderr"
 
 echo "Temporarily disabling doas password for wheel group"
 echo "permit nopass :wheel" >> /etc/doas.conf
