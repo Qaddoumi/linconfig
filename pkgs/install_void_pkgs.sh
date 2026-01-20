@@ -15,6 +15,7 @@ for tool in sudo doas pkexec; do
 	if command -v "${tool}" >/dev/null 2>&1; then
 		ESCALATION_TOOL="${tool}"
 		echo -e "${cyan}Using ${tool} for privilege escalation${no_color}"
+		which "${tool}"
 		break
 	fi
 done
