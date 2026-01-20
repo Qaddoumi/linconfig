@@ -397,106 +397,38 @@ fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
+info "Updating XBPS package manager on live system"
+xbps-install -Sy xbps || warn "Failed to update xbps"
+
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
+
+info "Checking for required host tools on live environment..."
+REQUIRED_HOST_TOOLS=("lsof")
+for tool in "${REQUIRED_HOST_TOOLS[@]}"; do
+	if ! command -v "$tool" &>/dev/null; then
+		info "Installing $tool..."
+		xbps-install -Sy "$tool" || error "Failed to install $tool"
+	fi
+done
+
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
+
 cleanup_disks() {
 	local attempts=3
-	info "Starting cleanup process (3 attempts)..."
+	info "Starting cleanup process ($attempts attempts)..."
 	
-	# Helper to find PIDs using the disk
-	find_pids_using_disk() {
-		local disk_path="/dev/$DISK"
-		local pids=""
-		
-		# Get associated mount points for the disk
-		# lsblk returns mountpoints of the disk and its partitions
-		local mount_points=$(lsblk -lnp -o MOUNTPOINT "$disk_path" 2>/dev/null | grep -v "^$")
-		
-		# Helper to check if path matches disk or mountpoints
-		is_relevant_path() {
-			local path="$1"
-			[[ -z "$path" ]] && return 1
-			
-			# Check key device path (e.g. /dev/vda)
-			if [[ "$path" == "$disk_path"* ]]; then return 0; fi
-			
-			# Check mount points (e.g. /mnt, /mnt/boot)
-			# We only check if we have active mount points
-			if [[ -n "$mount_points" ]]; then
-				while IFS= read -r mp; do
-					[[ -z "$mp" ]] && continue
-					# Check if path starts with mountpoint
-					if [[ "$path" == "$mp"* ]]; then return 0; fi
-				done <<< "$mount_points"
-			fi
-			return 1
-		}
-
-		# Scan process directories
-		for pid_dir in /proc/[0-9]*; do
-			local pid=${pid_dir##*/}
-			
-			# Safety skips
-			[[ "$pid" == "$BASHPID" ]] && continue
-			[[ "$pid" == "1" ]] && continue
-			[[ "$pid" == "2" ]] && continue # kthreadd
-			
-			local match=0
-			
-			# 1. Check symlinks: cwd, exe, root
-			for link in cwd exe root; do
-				if target=$(readlink -f "$pid_dir/$link" 2>/dev/null); then
-					if is_relevant_path "$target"; then match=1; break; fi
-				fi
-			done
-			
-			# 2. Check open file descriptors
-			if [[ $match -eq 0 && -d "$pid_dir/fd" ]]; then
-				for fd in "$pid_dir"/fd/*; do
-					if target=$(readlink -f "$fd" 2>/dev/null); then
-						if is_relevant_path "$target"; then match=1; break; fi
-					fi
-				done
-			fi
-			
-			# 3. Check mmap regions (maps) - less critical but good for completeness
-			if [[ $match -eq 0 && -f "$pid_dir/maps" ]]; then
-				while IFS= read -r line; do
-					# Extract path from maps line (after headers)
-					local path=$(echo "$line" | awk '{print $6}')
-					if is_relevant_path "$path"; then match=1; break; fi
-				done < "$pid_dir/maps"
-			fi
-
-			if [[ $match -eq 1 ]]; then
-				pids="$pids $pid"
-			fi
-		done
-		echo "$pids"
-	}
-
 	while (( attempts-- > 0 )); do
 		# Kill processes using the disk
 		info "Attempt $((3-attempts)): Killing processes..."
-		
-		# Initial check and kill
-		pids=$(find_pids_using_disk)
-		if [[ -n "$pids" ]]; then
-			echo "Killing PIDs: $pids"
-			# Double check we are not killing critical pids
-			for pid in $pids; do
-				if [[ "$pid" != "1" ]] && [[ "$pid" != "$BASHPID" ]]; then
-					kill -9 "$pid" 2>/dev/null
-				fi
-			done
-		fi
-		sleep 2
-		
-		# Second check
-		pids=$(find_pids_using_disk)
-		if [[ -n "$pids" ]]; then
-			echo "Killing remaining PIDs: $pids"
-			kill -9 $pids 2>/dev/null
-		fi
-		sleep 2
+		pids=$(lsof +f -- "/dev/$DISK"* 2>/dev/null | awk '{print $2}' | uniq)
+		sleep 1
+		[[ -n "$pids" ]] && kill -9 $pids 2>/dev/null
+		sleep 1
+		for process in $(lsof +f -- /dev/${DISK}* 2>/dev/null | awk '{print $2}' | uniq); do kill -9 "$process"; done
+		sleep 1
+		# try again to kill any processes using the disk
+		lsof +f -- /dev/${DISK}* 2>/dev/null | awk '{print $2}' | uniq | xargs -r kill -9
+		sleep 1
 		
 		info "Unmounting partitions..."
 		umount -R "/dev/$DISK"* 2>/dev/null
@@ -505,24 +437,17 @@ cleanup_disks() {
 		if command -v vgchange &>/dev/null; then
 			info "Deactivating LVM..."
 			vgchange -an 2>/dev/null
-			# Use lsblk or manual scan if lvs usage is complex without it, 
-			# but lvs is usually standard if lvm2 is there. 
-			# Keeping lvs for now as it wasn't flagged as missing.
 			lvremove -f $(lvs -o lv_path --noheadings 2>/dev/null | grep "$DISK") 2>/dev/null
 		fi
 		
 		info "Disabling swap..."
 		swapoff -a 2>/dev/null
-		# scan /proc/swaps manually if needed, but swapoff -a is usually enough
-		for swap in $(grep "/dev/$DISK" /proc/swaps | awk '{print $1}'); do
+		for swap in $(blkid -t TYPE=swap -o device | grep "/dev/$DISK"); do
 			swapoff -v "$swap"
 		done
-		sleep 2
+		sleep 1
 
 		info "Checking for mounted partitions on /dev/$DISK..."
-		# Using mount command instead of lsblk loop if strict, but lsblk is standard.
-		# Parsing /proc/mounts is safer than assume lsblk is there, but lsblk IS standard util-linux.
-		# We'll stick to lsblk for iterating parts as it's standard.
 		for part in $(lsblk -lnp -o NAME | grep "^/dev/$DISK" | tail -n +2); do
 			info "Attempting to unmount $part..."
 			if ! umount "$part" 2>/dev/null; then
@@ -532,9 +457,9 @@ cleanup_disks() {
 			fi
 		done
 		
-		# Check if cleanup was successful by rescanning
+		# Check if cleanup was successful
 		if ! (mount | grep -q "/dev/$DISK") && \
-		   [[ -z "$(find_pids_using_disk)" ]]; then
+		   ! (lsof +f -- "/dev/$DISK"* 2>/dev/null | grep -q .); then
 			echo
 			info "Cleanup successful :) "
 			return 0

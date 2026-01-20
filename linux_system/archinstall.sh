@@ -414,7 +414,7 @@ newTask "═══════════════════════�
 
 cleanup_disks() {
 	local attempts=3
-	info "Starting cleanup process (3 attempts)..."
+	info "Starting cleanup process ($attempts attempts)..."
 	
 	while (( attempts-- > 0 )); do
 		# Kill processes using the disk
