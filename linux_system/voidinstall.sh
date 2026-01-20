@@ -806,6 +806,9 @@ info "Checking package availability and removing duplicates"
 declare -A seen_pkgs
 declare -a VALID_PKGS=()
 
+# Use default Void mirror if MIRROR_URL is not set
+: "${MIRROR_URL:=https://repo-default.voidlinux.org}"
+
 # Define repositories once
 REPOS=(
 	"--repository=${MIRROR_URL}/current"
@@ -822,12 +825,12 @@ for item in "${INSTALL_PKGS_ARR[@]}"; do
 		# Skip if we've already processed this package
 		[[ -n "${seen_pkgs[$pkg]:-}" ]] && continue
 
-		# Check if package exists in remote repositories (WITHOUT -r /mnt)
+		# Check if package exists in remote repositories
 		if xbps-query -R "${REPOS[@]}" "$pkg" &>/dev/null; then
 			VALID_PKGS+=("$pkg")
 			seen_pkgs[$pkg]=1
 		else
-			# Capture error message from the same query with repositories
+			# Capture error message
 			error_msg=$(xbps-query -R "${REPOS[@]}" "$pkg" 2>&1)
 			warn "Skipping package ${red}$pkg${yellow}: ${error_msg:-"not found in repositories"}"
 		fi
