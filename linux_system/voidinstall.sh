@@ -813,8 +813,8 @@ for item in "${INSTALL_PKGS_ARR[@]}"; do
 		# Skip if we've already processed this package
 		[[ -n "${seen_pkgs[$pkg]:-}" ]] && continue
 
-		# Check if package exists in remote repositories
-		if xbps-query -R "$pkg" &>/dev/null; then
+		# Check if package exists in remote repositories (including multilib/nonfree)
+		if xbps-query -R -r /mnt --repository="${MIRROR_URL}/current" --repository="${MIRROR_URL}/current/nonfree" --repository="${MIRROR_URL}/current/multilib" --repository="${MIRROR_URL}/current/multilib/nonfree" "$pkg" &>/dev/null; then
 			VALID_PKGS+=("$pkg")
 			seen_pkgs[$pkg]=1
 		else
@@ -1174,7 +1174,7 @@ fi
 info "run grub-mkconfig to generate GRUB configuration"
 grub-mkconfig -o /boot/grub/grub.cfg || error "Failed to generate GRUB configuration"
 
-info "Installing grub CyberRe theme"
+info "Installing grub theme"
 # Clone the repository
 git clone --depth 1 https://github.com/Qaddoumi/grub-theme-mr-robot.git
 

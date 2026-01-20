@@ -1114,7 +1114,7 @@ if [[ "$BOOTLOADER" == "grub" ]]; then
 	info "run grub-mkconfig to generate GRUB configuration"
 	grub-mkconfig -o /boot/grub/grub.cfg || error "Failed to generate GRUB configuration"
 
-	info "Installing grub CyberRe theme"
+	info "Installing grub theme"
 	# Clone the repository
 	git clone --depth 1 https://github.com/Qaddoumi/grub-theme-mr-robot.git
 
