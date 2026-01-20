@@ -713,7 +713,7 @@ create_swap() {
 	if command -v fallocate >/dev/null 2>&1; then
 		fallocate -l $swap_size "$swapfile" || error "Failed to create swap file with fallocate"
 	else
-		dd if=/dev/zero of="$swapfile" bs=1M count=$(($swap_size/1048576)) status=progress || 
+		dd if=/dev/zero of="$swapfile" bs=1M count=$(($swap_size/1048576)) status=progress || \
 			error "Failed to create swap file with dd"
 	fi
 	chmod 600 "$swapfile"
@@ -724,7 +724,6 @@ create_swap() {
 	swapon --show
 }
 
-#TODO: create the swap file after pacstrap not before
 create_swap
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
@@ -741,11 +740,11 @@ case "$CPU_VENDOR" in
 esac
 
 info "Adding pipewire packages for audio management"
-declare -a PIPWIRE_PKGS=(
-	pipewire 
-	pipewire-alsa 
-	pipewire-pulse 
-	pipewire-jack 
+declare -a PIPEWIRE_PKGS=(
+	pipewire
+	pipewire-alsa
+	pipewire-pulse
+	pipewire-jack
 	wireplumber
 )
 
@@ -768,7 +767,7 @@ declare -a OPTIONAL_PKGS=(curl networkmanager sudo git openssh terminus-font)
 declare -a INSTALL_PKGS_ARR=(
 	"${BASE_PKGS[@]}"
 	"${OPTIONAL_PKGS[@]}"
-	"${PIPWIRE_PKGS[@]}"
+	"${PIPEWIRE_PKGS[@]}"
 )
 
 # Add cpu and gpu pkgs

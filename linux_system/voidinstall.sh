@@ -12,7 +12,7 @@ trap 'cleanup' EXIT  # Ensure cleanup runs on exit
 # Set default values
 DEFAULT_ROOT_PASSWORD="" # the default is the same as user password
 DEFAULT_USERNAME="user"
-DEFAULT_USER_PASSWORD="user123"
+DEFAULT_USER_PASSWORD="[REDACTED:password]"
 
 start_time=$(date +%s)
 
@@ -92,24 +92,22 @@ if [[ -n "$VIRT_TYPE" ]]; then
 
 	info "Configuring VM graphics drivers..."
 	case "$VIRT_TYPE" in
-		"kvm"|"qemu"|"microsoft"|"unknown-hypervisor")
-			# Note: qemu-guest-agent may need manual install depending on Void version
-			VIRT_PKGS+=("spice-vdagent")
-			info "Added spice-vdagent for VM clipboard/display support"
-			info "You may want to install qemu or qemu-ga later for QEMU guest agent"
+		"kvm"|"qemu"|"microsoft")
+			VIRT_PKGS+=("qemu-ga" "spice-vdagent" "xf86-video-qxl" "virglrenderer")
+			info "Added VirtIO/QXL drivers with VirGL 3D acceleration"
 			;;
 		"virtualbox")
-			VIRT_PKGS+=("virtualbox-ose-guest" "virtualbox-ose-guest-dkms")
+			VIRT_PKGS+=("virtualbox-ose-guest")
 			info "Added VirtualBox guest utilities"
 			;;
 		"vmware"|"svga")
-			VIRT_PKGS+=("open-vm-tools")
-			info "Added VMware tools"
+			VIRT_PKGS+=("open-vm-tools" "open-vm-tools-32bit" "xf86-video-vmware")
+			info "Added VMware SVGA driver"
 			;;
 		*)
-			VIRT_PKGS+=("mesa-vulkan-swrast")
+			VIRT_PKGS+=("mesa-vulkan-lavapipe" "mesa-vulkan-lavapipe-32bit")
 			warn "Unknown virtualization platform: $VIRT_TYPE"
-			info "Using Software Rasterizer for fallback"
+			info "Using Software Rasterizer (lavapipe) for fallback"
 			;;
 	esac
 else
@@ -132,9 +130,9 @@ IFS="$OLD_IFS"
 if [[ ${#GPU_DEVICES[@]} -eq 0 ]]; then
 	warn "No GPU devices detected!"
 	if [[ "$IS_VM" == true ]]; then
-		GPU_PKGS+=("mesa")  # Mesa only for VMs without detected GPU
+		GPU_PKGS+=("mesa" "mesa-dri" "mesa-dri-32bit" "mesa-32bit")  # Mesa only for VMs without detected GPU
 	else
-		GPU_PKGS+=("mesa" "xf86-video-vesa")  # Fallback
+		GPU_PKGS+=("mesa" "mesa-dri" "mesa-dri-32bit" "mesa-32bit" "xf86-video-vesa")  # Fallback
 	fi
 else
 	# Initialize arrays for different GPU types
@@ -143,8 +141,8 @@ else
 	declare -a NVIDIA_GPUS=()
 	declare -a OTHER_GPUS=()
 	
-	# Add base GPU packages (Void Linux equivalents)
-	GPU_PKGS+=("mesa" "mesa-dri" "vulkan-loader")
+	# Add base GPU packages
+	GPU_PKGS+=("mesa" "mesa-32bit" "mesa-dri" "mesa-dri-32bit" "Vulkan-Tools" "vulkan-loader" "vulkan-loader-32bit" "glxinfo")
 	
 	info "Found ${#GPU_DEVICES[@]} GPU device(s):"
 	for ((i=0; i<${#GPU_DEVICES[@]}; i++)); do
@@ -179,12 +177,12 @@ else
 		read -rp "Select AMD driver [1-2]: " AMD_CHOICE
 		case ${AMD_CHOICE:-1} in
 			1) 
-				# Modern AMD GPUs (GCN 3 or newer / 2015+)
-				GPU_PKGS+=("xf86-video-amdgpu" "mesa-vulkan-radeon" "libva-mesa-driver" "radeontop")
+				# Modern AMD GPUs (GCN 1.2 or newer / 2012+)
+				GPU_PKGS+=("xf86-video-amdgpu" "mesa-vulkan-radeon" "mesa-vulkan-radeon-32bit" "mesa-vaapi" "mesa-vaapi-32bit" "radeontop")
 				;;
 			2) 
-				# Legacy ATI/Radeon GPUs (Pre-2015)
-				GPU_PKGS+=("xf86-video-ati" "libva-mesa-driver" "radeontop")
+				# Legacy ATI/Radeon GPUs (Pre-2012)
+				GPU_PKGS+=("xf86-video-ati" "mesa-vaapi" "mesa-vaapi-32bit" "radeontop")
 				;;
 		esac
 	fi
@@ -192,7 +190,7 @@ else
 	# Handle Intel GPUs
 	if [[ ${#INTEL_GPUS[@]} -gt 0 ]]; then
 		info "Detected ${#INTEL_GPUS[@]} Intel GPU(s)"
-		GPU_PKGS+=("mesa-vulkan-intel" "intel-video-accel" "libva-utils" "intel-gpu-tools")
+		GPU_PKGS+=("mesa-vulkan-intel" "mesa-vulkan-intel-32bit" "libva-utils" "intel-gpu-tools")
 		
 		# Detect CPU Generation to choose correct VAAPI driver
 		CPU_MODEL=$(grep -m1 "model name" /proc/cpuinfo)
@@ -213,19 +211,24 @@ else
 		echo "Select NVIDIA driver:"
 		echo "1) Nouveau (open-source, default)"
 		echo "2) Proprietary NVIDIA (better performance)"
-		read -rp "Select NVIDIA driver [1-2]: " NVIDIA_CHOICE
+		echo "3) NVIDIA Legacy 470 series (for Kepler GPUs)"
+		read -rp "Select NVIDIA driver [1-3]: " NVIDIA_CHOICE
 		case ${NVIDIA_CHOICE:-1} in
 			1)
-				GPU_PKGS+=("xf86-video-nouveau" "mesa-nouveau-dri")
+				GPU_PKGS+=("xf86-video-nouveau" "mesa-vulkan-nouveau" "mesa-vulkan-nouveau-32bit")
 				GPU_OPTS=false
 				;;
 			2)
-				GPU_PKGS+=("nvidia" "nvidia-libs" "nvidia-libs-32bit")
+				GPU_PKGS+=("nvidia-dkms" "nvidia-libs" "nvidia-libs-32bit" "nvidia-firmware")
+				GPU_OPTS=true
+				;;
+			3)
+				GPU_PKGS+=("nvidia470-dkms" "nvidia470-libs" "nvidia470-libs-32bit")
 				GPU_OPTS=true
 				;;
 			*)
 				warn "Invalid choice. Defaulting to Nouveau (Option 1)."
-				GPU_PKGS+=("xf86-video-nouveau" "mesa-nouveau-dri")
+				GPU_PKGS+=("xf86-video-nouveau" "mesa-vulkan-nouveau" "mesa-vulkan-nouveau-32bit")
 				GPU_OPTS=false
 				;;
 		esac
@@ -630,7 +633,7 @@ info "Preparing to install essential packages..."
 # Install essential packages
 CPU_VENDOR=$(grep -m 1 'vendor_id' /proc/cpuinfo | awk '{print $3}')
 info "Detected CPU vendor: $CPU_VENDOR"
-# Fix microcode package naming for Void
+# Fix microcode package naming
 case "$CPU_VENDOR" in
 	"GenuineIntel") UCODE_PKG="intel-ucode" ;;
 	"AuthenticAMD") UCODE_PKG="linux-firmware-amd" ;;
@@ -1275,7 +1278,7 @@ if [[ "$REBOOT_AFTER_INSTALL" == "y" ]]; then
 		sleep 1
 	done
 	echo -e "\n"
-	reboot || error "Failed to reboot system"
+	sudo reboot || error "Failed to reboot system"
 else
 	info "You can reboot the system manually when ready."
 fi
