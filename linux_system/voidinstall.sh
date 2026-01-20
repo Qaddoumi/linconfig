@@ -413,9 +413,9 @@ done
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
-cleanup_disks() {
+free_disk_from_processes() {
 	local attempts=3
-	info "Starting cleanup process ($attempts attempts)..."
+	info "Freeing disk from processes ($attempts attempts)..."
 	
 	while (( attempts-- > 0 )); do
 		# Kill processes using the disk
@@ -471,7 +471,7 @@ cleanup_disks() {
 	return 1
 }
 
-if ! cleanup_disks; then
+if ! free_disk_from_processes; then
 	warn "Proceeding with disk operations despite cleanup warnings"
 fi
 
