@@ -320,13 +320,10 @@ fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
-echo "Press Enter or wait 30 seconds to use defaults..."
-echo "Default username: $DEFAULT_USERNAME"
-echo "Default user password: [hidden]"
 echo
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-if read -rp "Enter username (default: $DEFAULT_USERNAME): " -t 30 USERNAME; then
+if read -rp "Enter username (timeout 30s, default: $DEFAULT_USERNAME): " -t 30 USERNAME; then
 	# If user pressed enter without typing anything, use default
 	if [[ -z "$USERNAME" ]]; then
 		USERNAME="$DEFAULT_USERNAME"
@@ -342,7 +339,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 [[ "$USERNAME" =~ ^[a-z_][a-z0-9_-]*$ ]] || error "Invalid username"
 
 while true; do
-	if read -rsp "Enter password for $USERNAME (default: [hidden]): " -t 30 USER_PASSWORD; then
+	if read -rsp "Enter password for $USERNAME (timeout 30s, default: $DEFAULT_USER_PASSWORD): " -t 30 USER_PASSWORD; then
 		echo
 		# If user pressed enter without typing anything, use default
 		if [[ -z "$USER_PASSWORD" ]]; then
