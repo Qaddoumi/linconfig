@@ -309,8 +309,6 @@ fi
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 echo
-
-echo -e "${blue}--------------------------------------------------\n${no_color}"
 if read -rp "Enter username (timeout 30s, default: $DEFAULT_USERNAME): " -t 30 USERNAME; then
 	# If user pressed enter without typing anything, use default
 	if [[ -z "$USERNAME" ]]; then
