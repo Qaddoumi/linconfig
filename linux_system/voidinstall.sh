@@ -669,18 +669,26 @@ declare -a INSTALL_PKGS_ARR=(
 [[ ${#GPU_PKGS[@]} -gt 0 ]]     && INSTALL_PKGS_ARR+=("${GPU_PKGS[@]}")
 [[ ${#VIRT_PKGS[@]} -gt 0 ]]    && INSTALL_PKGS_ARR+=("${VIRT_PKGS[@]}")
 
-info "Removing duplicate packages..."
+info "Checking package availability and removing duplicates"
 declare -A seen_pkgs
 declare -a VALID_PKGS=()
 for item in "${INSTALL_PKGS_ARR[@]}"; do
 	[[ -z "$item" ]] && continue
-	
+
 	# Split items if they contain spaces
 	for pkg in $item; do
 		# Skip if we've already processed this package
 		[[ -n "${seen_pkgs[$pkg]:-}" ]] && continue
-		VALID_PKGS+=("$pkg")
-		seen_pkgs[$pkg]=1
+
+		# Check if package exists in remote repositories
+		if xbps-query -R "$pkg" &>/dev/null; then
+			VALID_PKGS+=("$pkg")
+			seen_pkgs[$pkg]=1
+		else
+			# Try to capture a specific error, though xbps-query is usually brief
+			error_msg=$(xbps-query -R "$pkg" 2>&1 >/dev/null)
+			warn "Skipping package ${red}$pkg${yellow}: ${error_msg:-"not found in repositories"}"
+		fi
 	done
 done
 
