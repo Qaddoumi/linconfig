@@ -1183,11 +1183,14 @@ sleep 1
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════\n"
 
-info "Mounting virtual filesystems for post-install..."
-mount --rbind /proc /mnt/proc && mount --make-rslave /mnt/proc > /dev/null 2>&1 || true
-
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
 	info "Running post-install script..."
+	
+	# Re-mount virtual filesystems for post-install
+	info "Mounting virtual filesystems for post-install..."
+	mount --rbind /dev /mnt/dev && mount --make-rslave /mnt/dev || error "Failed to mount /dev"
+	mount --rbind /proc /mnt/proc && mount --make-rslave /mnt/proc || error "Failed to mount /proc"
+	mount --rbind /sys /mnt/sys && mount --make-rslave /mnt/sys || error "Failed to mount /sys"
 
 	chroot /mnt /bin/bash -s -- "$USERNAME" "$IS_VM" <<'POSTINSTALLEOF' || error "Post-install script failed to run"
 
@@ -1196,22 +1199,29 @@ isVM="$2"
 
 echo -e "\n"
 
-[[ -L /dev/fd ]] || ln -sf /proc/self/fd /dev/fd || echo "Failed to link /dev/fd"
-[[ -L /dev/stdin ]] || ln -sf /proc/self/fd/0 /dev/stdin || echo "Failed to link /dev/stdin"
-[[ -L /dev/stdout ]] || ln -sf /proc/self/fd/1 /dev/stdout || echo "Failed to link /dev/stdout"
-[[ -L /dev/stderr ]] || ln -sf /proc/self/fd/2 /dev/stderr || echo "Failed to link /dev/stderr"
+# These symlinks should already exist from the initial /dev mount, but just in case:
+[[ -L /dev/fd ]] || ln -sf /proc/self/fd /dev/fd
+[[ -L /dev/stdin ]] || ln -sf /proc/self/fd/0 /dev/stdin
+[[ -L /dev/stdout ]] || ln -sf /proc/self/fd/1 /dev/stdout
+[[ -L /dev/stderr ]] || ln -sf /proc/self/fd/2 /dev/stderr
 
 echo "Temporarily disabling doas password for wheel group"
 echo "permit nopass :wheel" >> /etc/doas.conf
 
 su "$USER_NAME" <<USEREOF
 	echo "Running post-install script as user \$USER_NAME..."
-	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_void_pkgs.sh) --is-vm "$isVM" || echo "Failed to run the install script"
+	curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_void_pkgs.sh | bash -s -- --is-vm "$isVM" || echo "Failed to run the install script"
 USEREOF
 
 echo "Restoring doas password requirement for wheel group"
 sed -i '/^permit nopass :wheel/d' /etc/doas.conf
 POSTINSTALLEOF
+
+	# Clean up: unmount virtual filesystems after post-install
+	info "Unmounting virtual filesystems after post-install..."
+	umount -R /mnt/dev 2>/dev/null || true
+	umount -R /mnt/proc 2>/dev/null || true
+	umount -R /mnt/sys 2>/dev/null || true
 else
 	warn "Skipping post-install script, you may reboot now."
 	info "if you would like to run my post-install script later, you can run it with the command:"
