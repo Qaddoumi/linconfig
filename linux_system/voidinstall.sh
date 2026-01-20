@@ -859,9 +859,10 @@ info "Configuring doas for wheel group"
 echo "permit persist :wheel" > /etc/doas.conf
 chmod 600 /etc/doas.conf
 
-# Also configure sudo if installed
-if [[ -f /etc/sudoers ]]; then
-	echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
+# Remove sudo if installed (we're using doas instead)
+if xbps-query sudo >/dev/null 2>&1; then
+	info "Removing sudo in favor of doas"
+	xbps-remove -RyF sudo || warn "Failed to remove sudo"
 fi
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
