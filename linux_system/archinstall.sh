@@ -390,7 +390,7 @@ read -rp "WARNING: ALL DATA ON /dev/$DISK WILL BE DESTROYED! Confirm (type 'y'):
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
-info "Would you like to run my post-install script? to install sway and other packages? with my configuration files ?"
+info "Would you like to run my post-install script? to install window manager and other packages? with my configuration files ?"
 read -rp "Type 'y' to run post-install script, or hit enter to skip: " RUN_POST_INSTALL
 RUN_POST_INSTALL=${RUN_POST_INSTALL:-n}
 if [[ "$RUN_POST_INSTALL" == "y" ]]; then
