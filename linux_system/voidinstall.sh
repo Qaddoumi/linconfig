@@ -70,21 +70,156 @@ GPU_OPTS=false
 
 info "Detecting system environment..."
 VIRT_TYPE=""
-if [ -f /sys/class/dmi/id/product_name ]; then
-	PRODUCT_NAME=$(cat /sys/class/dmi/id/product_name 2>/dev/null || echo "")
-	if echo "$PRODUCT_NAME" | grep -qi "virtualbox"; then
-		VIRT_TYPE="virtualbox"
-	elif echo "$PRODUCT_NAME" | grep -qi "vmware"; then
-		VIRT_TYPE="vmware"
-	elif echo "$PRODUCT_NAME" | grep -qi "kvm\|qemu"; then
-		VIRT_TYPE="kvm"
-	fi
-fi
 
-# Also check using cpu flags
-if [[ -z "$VIRT_TYPE" ]] && grep -q "hypervisor" /proc/cpuinfo 2>/dev/null; then
-	VIRT_TYPE="unknown-hypervisor"
-fi
+detect_vm() {
+	local detection_method=""
+	local confidence="low"
+	VIRT_TYPE="physical"
+	
+	info "Detecting system environment..."
+	
+	# Method 1: CPU hypervisor flag (most reliable)
+	if grep -q "hypervisor" /proc/cpuinfo; then
+		VIRT_TYPE="vm-detected"
+		detection_method="CPU hypervisor flag"
+		confidence="high"
+	fi
+	
+	# Method 2: Check systemd-detect-virt (if available)
+	if command -v systemd-detect-virt >/dev/null 2>&1; then
+		DETECTED=$(systemd-detect-virt 2>/dev/null)
+		if [ "$DETECTED" != "none" ] && [ -n "$DETECTED" ]; then
+			VIRT_TYPE="$DETECTED"
+			detection_method="systemd-detect-virt"
+			confidence="high"
+			info "systemd-detect-virt reports: $DETECTED"
+		fi
+	fi
+	
+	# Method 3: DMI/SMBIOS data (can be spoofed but still useful)
+	if [ -r /sys/class/dmi/id/product_name ]; then
+		PRODUCT=$(cat /sys/class/dmi/id/product_name 2>/dev/null | tr '[:upper:]' '[:lower:]')
+		case "$PRODUCT" in
+			*virtualbox*|*vbox*)
+				[ "$VIRT_TYPE" = "physical" ] && VIRT_TYPE="virtualbox"
+				;;
+			*vmware*|*vm*)
+				[ "$VIRT_TYPE" = "physical" ] && VIRT_TYPE="vmware"
+				;;
+			*kvm*|*qemu*)
+				[ "$VIRT_TYPE" = "physical" ] && VIRT_TYPE="kvm"
+				;;
+		esac
+	fi
+	
+	# Method 4: Specific VM device/module detection
+	if [[ "$VIRT_TYPE" =~ ^(vm-detected|physical)$ ]]; then
+		# KVM/QEMU detection
+		if [ -e /dev/vda ] || [ -e /dev/vdb ] || [ -e /dev/vdc ]; then
+			VIRT_TYPE="kvm"
+			detection_method="virtio block devices"
+		elif lsmod 2>/dev/null | grep -q "^virtio"; then
+			VIRT_TYPE="kvm"
+			detection_method="virtio modules"
+		# VirtualBox detection
+		elif [ -d /sys/module/vboxguest ] || lsmod 2>/dev/null | grep -q "vbox"; then
+			VIRT_TYPE="virtualbox"
+			detection_method="vbox modules"
+		# VMware detection
+		elif [ -d /sys/module/vmw_balloon ] || lsmod 2>/dev/null | grep -q "vmw"; then
+			VIRT_TYPE="vmware"
+			detection_method="vmware modules"
+		# Hyper-V detection
+		elif [ -d /sys/module/hv_vmbus ] || lsmod 2>/dev/null | grep -q "^hv_"; then
+			VIRT_TYPE="hyperv"
+			detection_method="hyper-v modules"
+		# Xen detection
+		elif [ -d /proc/xen ] || lsmod 2>/dev/null | grep -q "^xen"; then
+			VIRT_TYPE="xen"
+			detection_method="xen indicators"
+		fi
+	fi
+	
+	# Method 5: Check for VM-specific PCI devices
+	if [ "$VIRT_TYPE" = "physical" ] && command -v lspci >/dev/null 2>&1; then
+		PCI_DEVICES=$(lspci 2>/dev/null | tr '[:upper:]' '[:lower:]')
+		if echo "$PCI_DEVICES" | grep -q "vmware\|virtualbox\|qemu\|virtio\|red hat"; then
+			VIRT_TYPE="vm-pci-detected"
+			detection_method="PCI device scan"
+		fi
+	fi
+	
+	# Method 6: Check SCSI devices for VM signatures
+	if [ "$VIRT_TYPE" = "physical" ] && [ -d /sys/class/scsi_device ]; then
+		for dev in /sys/class/scsi_device/*/device/vendor; do
+			if [ -r "$dev" ]; then
+				VENDOR=$(cat "$dev" 2>/dev/null | tr '[:upper:]' '[:lower:]')
+				case "$VENDOR" in
+					*qemu*|*vbox*|*vmware*)
+						VIRT_TYPE="vm-scsi-detected"
+						detection_method="SCSI vendor string"
+						;;
+				esac
+			fi
+		done
+	fi
+	
+	# Method 7: MAC address OUI check for common VM prefixes
+	if [ "$VIRT_TYPE" = "physical" ]; then
+		for iface in /sys/class/net/*/address; do
+			[ -r "$iface" ] || continue
+			MAC=$(cat "$iface" 2>/dev/null | tr '[:upper:]' '[:lower:]')
+			case "$MAC" in
+				08:00:27:*) # VirtualBox
+					VIRT_TYPE="virtualbox-mac"
+					detection_method="MAC OUI (VirtualBox)"
+					;;
+				00:50:56:*|00:0c:29:*|00:05:69:*) # VMware
+					VIRT_TYPE="vmware-mac"
+					detection_method="MAC OUI (VMware)"
+					;;
+				52:54:00:*) # QEMU/KVM default range
+					VIRT_TYPE="kvm-mac"
+					detection_method="MAC OUI (KVM)"
+					;;
+			esac
+		done
+	fi
+	
+	# Method 8: Timing attacks - VMs often have timing anomalies
+	if [ "$VIRT_TYPE" = "physical" ]; then
+		if command -v rdtsc >/dev/null 2>&1; then
+			# This would need a custom timing test - placeholder for advanced detection
+			:
+		fi
+	fi
+	
+	# Final fallback: if still vm-detected but unknown type
+	if [ "$VIRT_TYPE" = "vm-detected" ]; then
+		VIRT_TYPE="unknown-hypervisor"
+		confidence="medium"
+	fi
+	
+	# Report findings
+	if [[ "$VIRT_TYPE" != "physical" ]]; then
+		info "✓ Virtualization detected: $VIRT_TYPE"
+		[ -n "$detection_method" ] && info "  Detection method: $detection_method"
+		info "  Confidence: $confidence"
+		
+		# Additional warnings for potential spoofing
+		if grep -q "hypervisor" /proc/cpuinfo; then
+			info "  CPU hypervisor flag: PRESENT (strong indicator)"
+		else
+			warn "  CPU hypervisor flag: ABSENT (possible spoofing attempt)"
+		fi
+	else
+		info "✓ Running on Bare Metal (Physical Hardware)"
+		info "  No virtualization indicators detected"
+	fi
+}
+
+# Run detection
+detect_vm
 
 if [[ -n "$VIRT_TYPE" ]]; then
 	IS_VM=true
@@ -92,7 +227,7 @@ if [[ -n "$VIRT_TYPE" ]]; then
 
 	info "Configuring VM graphics drivers..."
 	case "$VIRT_TYPE" in
-		"kvm"|"qemu"|"microsoft")
+		"kvm"|"qemu"|"microsoft"|"hyperv")
 			VIRT_PKGS+=("qemu-ga" "spice-vdagent" "xf86-video-qxl" "virglrenderer")
 			info "Added VirtIO/QXL drivers with VirGL 3D acceleration"
 			;;

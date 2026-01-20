@@ -78,7 +78,7 @@ if systemd-detect-virt --vm &>/dev/null; then
 
 	info "Configuring VM graphics drivers..."
 	case "$VIRT_TYPE" in
-		"kvm"|"qemu"|"microsoft")
+		"kvm"|"qemu"|"microsoft"|"hyperv")
 			VIRT_PKGS+=("qemu-guest-agent" "spice-vdagent" "xf86-video-qxl" "vulkan-virtio" "virglrenderer")
 			info "Added VirtIO/QXL drivers with VirGL 3D acceleration"
 			;;
