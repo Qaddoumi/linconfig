@@ -420,14 +420,14 @@ cleanup_disks() {
 		# Kill processes using the disk
 		info "Attempt $((3-attempts)): Killing processes..."
 		pids=$(lsof +f -- "/dev/$DISK"* 2>/dev/null | awk '{print $2}' | uniq)
-		sleep 2
+		sleep 1
 		[[ -n "$pids" ]] && kill -9 $pids 2>/dev/null
-		sleep 2
+		sleep 1
 		for process in $(lsof +f -- /dev/${DISK}* 2>/dev/null | awk '{print $2}' | uniq); do kill -9 "$process"; done
-		sleep 2
+		sleep 1
 		# try again to kill any processes using the disk
 		lsof +f -- /dev/${DISK}* 2>/dev/null | awk '{print $2}' | uniq | xargs -r kill -9
-		sleep 2
+		sleep 1
 		
 		info "Unmounting partitions..."
 		umount -R "/dev/$DISK"* 2>/dev/null
@@ -444,7 +444,7 @@ cleanup_disks() {
 		for swap in $(blkid -t TYPE=swap -o device | grep "/dev/$DISK"); do
 			swapoff -v "$swap"
 		done
-		sleep 2
+		sleep 1
 
 		info "Checking for mounted partitions on /dev/$DISK..."
 		for part in $(lsblk -lnp -o NAME | grep "^/dev/$DISK" | tail -n +2); do
