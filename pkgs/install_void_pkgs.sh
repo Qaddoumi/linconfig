@@ -1325,8 +1325,9 @@ else
 		echo -e "  -> Symlink will be: /dev/dri/$symlink_name"
 	}
 
-	gpu_type="virtio-gpu"
 	"$ESCALATION_TOOL" mkdir -p /etc/udev/rules.d/
+
+	gpu_type="virtio-gpu"
 
 	while IFS= read -r line; do
 		# Extract the PCI Bus ID (first field, e.g., 00:02.0)
