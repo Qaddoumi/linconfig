@@ -299,24 +299,9 @@ else
 fi
 info "Selected bootloader: $BOOTLOADER"
 
-echo
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-info "Bootloader kernel command line options:"
-echo "1) quiet (minimal output, recommended for daily use)"
-echo "2) debug (verbose output, useful for troubleshooting)"
-if read -rp "Select bootloader kernel mode [1-2] (press Enter for quiet): " -t 30 KERNEL_MODE_CHOICE; then
-	KERNEL_MODE_CHOICE=${KERNEL_MODE_CHOICE:-1}
-	if [[ "$KERNEL_MODE_CHOICE" == "2" ]]; then
-		KERNEL_CMDLINE="debug"
-		info "Bootloader will use debug mode"
-	else
-		KERNEL_CMDLINE="quiet"
-		info "Bootloader will use quiet mode"
-	fi
-else
-	KERNEL_CMDLINE="quiet"
-	info "Timeout, defaulting to quiet mode"
-fi
+# Bootloader kernel command line, this command to reduce the amount of output on boot
+# other options: debug.
+KERNEL_CMDLINE="quiet"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
