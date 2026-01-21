@@ -155,7 +155,7 @@ pkgs=(
     bridge-utils
     linux-headers
     spice-vdagent
-    acl
+    acl-progs
     sddm
     labwc
 )

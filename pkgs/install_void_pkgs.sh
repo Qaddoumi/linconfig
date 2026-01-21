@@ -1053,8 +1053,8 @@ kvm_acl_setup() {
 	if ! command -v getfacl &> /dev/null; then
 		echo -e "${red}getfacl command not found. ACL tools are not installed.${no_color}"
 		echo -e "${green}Install ACL tools:${no_color}"
-		echo -e "${green}  Void Linux: ${ESCALATION_TOOL} xbps-install acl${no_color}"
-		"${ESCALATION_TOOL}" xbps-install -y acl || return
+		echo -e "${green}  Void Linux: ${ESCALATION_TOOL} xbps-install acl-progs${no_color}"
+		"${ESCALATION_TOOL}" xbps-install -y acl-progs || return
 	fi
 	if ! command -v setfacl &> /dev/null; then
 		echo -e "${red}setfacl command not found. ACL tools are not installed.${no_color}"
