@@ -1363,6 +1363,7 @@ if [[ "$RUN_POST_INSTALL" == "y" ]]; then
 	mount --rbind /dev /mnt/dev && mount --make-rslave /mnt/dev || error "Failed to mount /dev"
 	mount --rbind /proc /mnt/proc && mount --make-rslave /mnt/proc || error "Failed to mount /proc"
 	mount --rbind /sys /mnt/sys && mount --make-rslave /mnt/sys || error "Failed to mount /sys"
+	mount --bind /run /mnt/run && mount --make-slave /mnt/run || error "Failed to mount /run"
 
 	chroot /mnt /bin/bash -s -- "$USERNAME" "$IS_VM" <<'POSTINSTALLEOF' || error "Post-install script failed to run"
 
@@ -1394,6 +1395,7 @@ POSTINSTALLEOF
 	umount -R /mnt/dev 2>/dev/null || true
 	umount -R /mnt/proc 2>/dev/null || true
 	umount -R /mnt/sys 2>/dev/null || true
+	umount -R /mnt/run 2>/dev/null || true
 else
 	warn "Skipping post-install script, you may reboot now."
 	info "if you would like to run my post-install script later, you can run it with the command:"
