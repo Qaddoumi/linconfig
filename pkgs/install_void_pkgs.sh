@@ -203,6 +203,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}Enabling dbus (message bus)\n${no_color}"
 "$ESCALATION_TOOL" ln -sf /etc/sv/dbus "/etc/runit/runsvdir/default/dbus" || echo -e "${yellow}Failed to enable dbus${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+"${ESCALATION_TOOL}" xbps-install -y libX11-devel libXft-devel libXinerama-devel # dwm/dmenu headers
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y xrandr # Xrandr for X11 (used for screen resolution, and monitors configuration)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y picom # Compositor for X11 (used for animation, transparency and blur, "it helps with screen tearing")
