@@ -111,22 +111,6 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y curl wget || true # Download utilities
 
-# Note: Void Linux doesn't have AUR helpers like yay.
-# Packages not in void-packages repo need to be built from source or obtained elsewhere.
-echo -e "${yellow}Note: Void Linux uses xbps. AUR packages are not available.${no_color}"
-echo -e "${yellow}Some packages may need to be built from source or installed via flatpak.${no_color}"
-
-# echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
-
-# echo -e "${green}Setting up aria2 to speed up downloads for xbps...${no_color}"
-
-# "${ESCALATION_TOOL}" xbps-install -y aria2
-
-# # Note: xbps doesn't have a built-in mechanism for external download managers
-# # You would need to use xdeb or similar tools
-
-# echo -e "${green}aria2 installed. Note: xbps doesn't natively support external download managers.${no_color}"
-
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Installing window managers and related packages...${no_color}"
@@ -303,6 +287,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives and MTP devices
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+echo -e "${yellow}Enabling udisks2 service...${no_color}"
 "${ESCALATION_TOOL}" ln -sf /etc/sv/udisks2 /etc/runit/runsvdir/default/udisks2 || echo -e "${yellow}Failed to enable udisks2${no_color}"
 "${ESCALATION_TOOL}" usermod -aG storage $USER || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -712,7 +697,7 @@ echo -e "${green}Installing and configuring Qemu/Libvirt for virtualization${no_
 "${ESCALATION_TOOL}" xbps-install -y qemu # QEMU package
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 # qemu-img is included in qemu package on Void
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y libvirt # Libvirt for managing virtualization: provides a unified interface for managing virtual machines
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 # "${ESCALATION_TOOL}" xbps-install -y virt-install # Tool for installing virtual machines: CLI tool to create guest VMs
@@ -1050,7 +1035,7 @@ kvm_acl_setup() {
 
 	echo -e "${green}Checking if ACL tools are installed...${no_color}"
 	if ! command -v getfacl &> /dev/null; then
-		echo -e "${red}getfacl command not found. ACL tools are not installed.${no_color}"
+		echo -e "${yellow}getfacl command not found. ACL tools are not installed.${no_color}"
 		echo -e "${green}Install ACL tools:${no_color}"
 		echo -e "${green}  Void Linux: ${ESCALATION_TOOL} xbps-install acl-progs${no_color}"
 		"${ESCALATION_TOOL}" xbps-install -y acl-progs || return

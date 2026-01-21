@@ -1072,12 +1072,13 @@ kvm_acl_setup() {
 
 	echo -e "${green}Checking if ACL tools are installed...${no_color}"
 	if ! command -v getfacl &> /dev/null; then
-		echo -e "${red}getfacl command not found. ACL tools are not installed.${no_color}"
+		echo -e "${yellow}getfacl command not found. ACL tools are not installed.${no_color}"
 		echo -e "${green}Install ACL tools:${no_color}"
 		echo -e "${green}  Ubuntu/Debian: ${ESCALATION_TOOL} apt install acl${no_color}"
 		echo -e "${green}  CentOS/RHEL: ${ESCALATION_TOOL} yum install acl${no_color}"
 		echo -e "${green}  Fedora: ${ESCALATION_TOOL} dnf install acl${no_color}"
-		return
+		echo -e "${green}  Arch Linux: ${ESCALATION_TOOL} pacman -S --needed --noconfirm core/acl${no_color}"
+		"$ESCALATION_TOOL" pacman -S --needed --noconfirm core/acl || return
 	fi
 	if ! command -v setfacl &> /dev/null; then
 		echo -e "${red}setfacl command not found. ACL tools are not installed.${no_color}"

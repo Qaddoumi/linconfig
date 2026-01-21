@@ -52,3 +52,30 @@ of the two available options (In alphabetical, not recommended, order):
 
 Either option should provide the same functionality/stability. Refer to the
 Sway wiki page for information.
+
+
+
+# TODO: void linux 
+- hyprland-void repo is not working 
+- uwsm is not in void repos, may need to build from source
+- nwg-displays is not in void repos, may need to build from source
+- quickshell is not in void repos, may need to build from source
+- JetBrainsMono Nerd Font Mono is not in void repos, may need to build from source
+- xdg-desktop-portal-hyprland is not in void repos, may need to build from source
+- hyprpolkitagent is not in void repos, may need to build from source
+- google-chrome
+- brave
+- vscode
+- antigravity
+- anythingllm
+- powershell
+- GTK_THEME
+- kvantum theme
+- 
+
+
+`
+Looking for matches…
+error: No remote refs found for ‘flathub’
+Failed to install easyflatpak
+`
