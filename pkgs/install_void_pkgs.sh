@@ -271,7 +271,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y bluez bluez-alsa # Bluetooth support
 "${ESCALATION_TOOL}" xbps-install -y bluetui || echo -e "${yellow}bluetui not found, installing blueman instead${no_color}" # Bluetooth TUI
-"${ESCALATION_TOOL}" ln -sf /etc/sv/bluetoothd /var/service/ || true
+"${ESCALATION_TOOL}" ln -sf /etc/sv/bluetoothd /etc/runit/runsvdir/default/bluetoothd || echo -e "${yellow}Failed to enable bluetoothd${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y btop # System monitor TUI
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -301,7 +301,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives and MTP devices
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-"${ESCALATION_TOOL}" ln -sf /etc/sv/udisks2 /var/service/ || true
+"${ESCALATION_TOOL}" ln -sf /etc/sv/udisks2 /etc/runit/runsvdir/default/udisks2 || echo -e "${yellow}Failed to enable udisks2${no_color}"
 "${ESCALATION_TOOL}" usermod -aG storage $USER || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y zenity # Dialogs from terminal,(used for thunar)
@@ -403,12 +403,12 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y cpufrequtils # CPU frequency scaling utility ==> change powersave to performance mode.
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y tlp # TLP for power management
-"${ESCALATION_TOOL}" ln -sf /etc/sv/tlp /var/service/ || true
+"${ESCALATION_TOOL}" ln -sf /etc/sv/tlp /etc/runit/runsvdir/default/tlp || echo -e "${yellow}Failed to enable tlp${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y lm_sensors # Hardware monitoring
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y thermald # Intel thermal daemon
-"${ESCALATION_TOOL}" ln -sf /etc/sv/thermald /var/service/ || true
+"${ESCALATION_TOOL}" ln -sf /etc/sv/thermald /etc/runit/runsvdir/default/thermald || echo -e "${yellow}Failed to enable thermald${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y dmidecode # Desktop Management Interface table related utilities
 echo -e "${blue}--------------------------------------------------\n${no_color}"
@@ -735,7 +735,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 #TODO: Optimise Host with TuneD , for now tlp is conflic with tuned, so we only can use one of them.
 # "${ESCALATION_TOOL}" xbps-install -y tuned || true # system tuning service for linux allows us to optimise the hypervisor for speed.
-# "${ESCALATION_TOOL}" ln -sf /etc/sv/tuned /var/service/
+# "${ESCALATION_TOOL}" ln -sf /etc/sv/tuned /etc/runit/runsvdir/default/tuned || echo -e "${yellow}Failed to enable tuned${no_color}"
 # "${ESCALATION_TOOL}" tuned-adm profile virtual-host # or throughput-performance
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y bridge-utils # Utilities for managing network bridges
@@ -744,8 +744,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${green}Enabling and starting libvirtd service${no_color}"
-"${ESCALATION_TOOL}" ln -sf /etc/sv/libvirtd /var/service/ || true
-"${ESCALATION_TOOL}" ln -sf /etc/sv/virtlogd /var/service/ || true
+"${ESCALATION_TOOL}" ln -sf /etc/sv/libvirtd /etc/runit/runsvdir/default/libvirtd || echo -e "${yellow}Failed to enable libvirtd${no_color}"
+"${ESCALATION_TOOL}" ln -sf /etc/sv/virtlogd /etc/runit/runsvdir/default/virtlogd || echo -e "${yellow}Failed to enable virtlogd${no_color}"
 
 echo -e "${green}Adding current user to libvirt group${no_color}"
 "${ESCALATION_TOOL}" usermod -aG libvirt $(whoami) || true
@@ -905,8 +905,8 @@ echo -e "${blue}═════════════════════�
 echo -e "${green}Installing QEMU Guest Agents and enabling their services${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y qemu-ga spice-vdagent # QEMU Guest Agent and SPICE agent for better VM integration
 
-"${ESCALATION_TOOL}" ln -sf /etc/sv/qemu-guest-agent /var/service/ || true
-"${ESCALATION_TOOL}" ln -sf /etc/sv/spice-vdagentd /var/service/ || true
+"${ESCALATION_TOOL}" ln -sf /etc/sv/qemu-guest-agent /etc/runit/runsvdir/default/qemu-guest-agent || echo -e "${yellow}Failed to enable qemu-guest-agent${no_color}"
+"${ESCALATION_TOOL}" ln -sf /etc/sv/spice-vdagentd /etc/runit/runsvdir/default/spice-vdagentd || echo -e "${yellow}Failed to enable spice-vdagentd${no_color}"
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
@@ -1413,9 +1413,9 @@ echo -e "${green}Installing and configuring SDDM (Simple Desktop Display Manager
 
 "${ESCALATION_TOOL}" xbps-install -y sddm || true
 # Disable any existing display manager
-"${ESCALATION_TOOL}" rm -f /var/service/gdm /var/service/lightdm /var/service/lxdm 2>/dev/null || true
+"${ESCALATION_TOOL}" rm -f /var/service/gdm /var/service/lightdm /var/service/lxdm /var/service/ly 2>/dev/null || true
 # Enable SDDM
-"${ESCALATION_TOOL}" ln -sf /etc/sv/sddm /var/service/ || true
+"${ESCALATION_TOOL}" ln -sf /etc/sv/sddm /etc/runit/runsvdir/default/sddm || echo -e "${yellow}Failed to enable sddm${no_color}"
 echo -e "${green}Setting up my Hacker theme for SDDM${no_color}"
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/sddm-hacker-theme/main/install.sh) || { echo -e "${red}Failed to install the theme${no_color}"; true ;}
 
