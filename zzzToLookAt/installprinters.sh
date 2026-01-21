@@ -47,6 +47,8 @@ fi
 
 yay -S cups cups-pdf cups-filters nss-mdns system-config-printer foomatic-db footmatic-db-engine foomatic-db-nonfree doomatic-db-nonfree-ppds foomatic-db-ppds cups-browsed libusb ipp-usb xdg-utils colord logrotate
 
+sudo usermod -aG lp $(whoami) || doas usermod -aG lp $(whoami)
+
 notify-send "Installing printer system complete"
 echo
 echo ":: Installing printer system complete"
