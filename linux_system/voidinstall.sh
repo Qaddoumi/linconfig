@@ -410,7 +410,6 @@ info "Mirror will be set to $REGION"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
-echo
 if read -rp "Enter username (timeout 30s, default: $DEFAULT_USERNAME): " -t 30 USERNAME; then
 	# If user pressed enter without typing anything, use default
 	if [[ -z "$USERNAME" ]]; then
@@ -423,7 +422,7 @@ else
 	echo "Timeout - using default username: $DEFAULT_USERNAME"
 	USERNAME="$DEFAULT_USERNAME"
 fi
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+echo -e "${blue}--------------------------------------------------${no_color}"
 [[ "$USERNAME" =~ ^[a-z_][a-z0-9_-]*$ ]] || error "Invalid username"
 
 while true; do
