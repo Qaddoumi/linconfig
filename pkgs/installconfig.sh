@@ -43,10 +43,10 @@ echo -e "${green}Removing mimeinfo cache...${no_color}"
 
 echo -e "${green}Restarting xdg-desktop-portal...${no_color}"
 systemctl --user restart xdg-desktop-portal.service || \
-pkill xdg-desktop-portal || \
-pkill xdg-desktop-portal-gtk || \
-pkill xdg-desktop-portal-wlr || \
-pkill xdg-desktop-portal-hyprland || true
+pkill -f xdg-desktop-portal || \
+pkill -f xdg-desktop-portal-gtk || \
+pkill -f xdg-desktop-portal-wlr || \
+pkill -f xdg-desktop-portal-hyprland || true
 
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 "$ESCALATION_TOOL" chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
