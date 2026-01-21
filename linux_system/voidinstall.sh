@@ -509,7 +509,7 @@ fi
 BOOTLOADER="grub"
 info "Using GRUB as bootloader."
 
-# Bootloader kernel command line, this command to reduce the amount of output on boot
+# Bootloader kernel command line, this command to reduce the amount of output on boot (for faster boot)
 # other options: debug.
 KERNEL_CMDLINE="quiet"
 
