@@ -147,4 +147,7 @@
         }
     ],
     "qt-qml.doNotAskForQmllsDownload": true,
+    "amp.url": "https://ampcode.com/",
+    "amp.tab.enabled": true,
+    "workbench.sideBar.location": "right",
 }
