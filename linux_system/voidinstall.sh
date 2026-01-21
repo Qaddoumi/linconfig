@@ -410,39 +410,6 @@ info "Mirror will be set to $REGION"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
-info "Detecting boot mode..."
-if [[ -d "/sys/firmware/efi" ]]; then
-	BOOT_MODE="UEFI"
-	info "UEFI boot mode detected"
-else
-	BOOT_MODE="BIOS"
-	info "BIOS/Legacy boot mode detected"
-fi
-
-BOOTLOADER="grub"
-info "Using GRUB as bootloader."
-
-echo
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-info "Bootloader kernel command line options:"
-echo "1) quiet (minimal output, recommended for daily use)"
-echo "2) debug (verbose output, useful for troubleshooting)"
-if read -rp "Select bootloader kernel mode [1-2] (press Enter for quiet): " -t 30 KERNEL_MODE_CHOICE; then
-	KERNEL_MODE_CHOICE=${KERNEL_MODE_CHOICE:-1}
-	if [[ "$KERNEL_MODE_CHOICE" == "2" ]]; then
-		KERNEL_CMDLINE="debug"
-		info "Bootloader will use debug mode"
-	else
-		KERNEL_CMDLINE="quiet"
-		info "Bootloader will use quiet mode"
-	fi
-else
-	KERNEL_CMDLINE="quiet"
-	info "Timeout, defaulting to quiet mode"
-fi
-
-newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
-
 echo
 if read -rp "Enter username (timeout 30s, default: $DEFAULT_USERNAME): " -t 30 USERNAME; then
 	# If user pressed enter without typing anything, use default
@@ -527,6 +494,24 @@ if [[ "$REBOOT_AFTER_INSTALL" == "y" ]]; then
 else
 	info "Skipping reboot after installation"
 fi
+
+newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
+``
+info "Detecting boot mode..."
+if [[ -d "/sys/firmware/efi" ]]; then
+	BOOT_MODE="UEFI"
+	info "UEFI boot mode detected"
+else
+	BOOT_MODE="BIOS"
+	info "BIOS/Legacy boot mode detected"
+fi
+
+BOOTLOADER="grub"
+info "Using GRUB as bootloader."
+
+# Bootloader kernel command line, this command to reduce the amount of output on boot
+# other options: debug.
+KERNEL_CMDLINE="quiet"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
