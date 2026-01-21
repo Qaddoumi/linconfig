@@ -318,13 +318,9 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 # hyprpolkitagent is not in void repos
 # "${ESCALATION_TOOL}" xbps-install -y hyprpolkitagent # PolicyKit authentication agent (give root access to GUI apps)
-echo -e "${yellow}hyprpolkitagent is not available in Void repos. Using polkit-gnome instead.${no_color}"
-"${ESCALATION_TOOL}" xbps-install -y polkit-gnome # PolicyKit authentication agent
-echo -e "${blue}--------------------------------------------------\n${no_color}"
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y mate-polkit # Authentication agent for privileged operations (used for x11)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-# "${ESCALATION_TOOL}" xbps-install -y s-tui # Terminal UI for monitoring CPU
-# echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y gdu # Disk usage analyzer
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y bc # Arbitrary precision calculator language
