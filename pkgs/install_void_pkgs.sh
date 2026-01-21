@@ -200,7 +200,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y xinit xorg-server dbus # X11 display server, initialization and dbus
-"$ESCALATION_TOOL" ln -s /etc/sv/dbus /var/service/ || echo -e "${red}Failed to link dbus service${no_color}"
+echo -e "${blue}Enabling dbus (message bus)\n${no_color}"
+"$ESCALATION_TOOL" ln -sf /etc/sv/dbus "/etc/runit/runsvdir/default/dbus" || echo -e "${yellow}Failed to enable dbus${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" xbps-install -y xrandr # Xrandr for X11 (used for screen resolution, and monitors configuration)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
