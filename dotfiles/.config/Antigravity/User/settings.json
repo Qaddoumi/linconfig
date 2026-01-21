@@ -152,4 +152,5 @@
     "editor.unicodeHighlight.ambiguousCharacters": false,
     "clangd.path": "/home/moh/.config/Antigravity/User/globalStorage/llvm-vs-code-extensions.vscode-clangd/install/21.1.0/clangd_21.1.0/bin/clangd",
     "makefile.configureOnOpen": true,
+    "workbench.sideBar.location": "right",
 }
