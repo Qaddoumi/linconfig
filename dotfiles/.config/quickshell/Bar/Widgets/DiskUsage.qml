@@ -47,7 +47,7 @@ Rectangle {
 
 	Process {
 		id: runOnClickProcess
-		command: ["bash", "-c", "kitty -e gdu"]
+		command: ["bash", "-c", "kitty -e gdu /"]
 	}
 
 	MouseArea {
