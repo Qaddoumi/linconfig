@@ -126,7 +126,7 @@ if ! grep -q "hyprland-void" /etc/xbps.d/*.conf 2>/dev/null; then
 	echo "repository=https://raw.githubusercontent.com/Makrennel/hyprland-void/repository-x86_64-glibc" | "${ESCALATION_TOOL}" tee /etc/xbps.d/hyprland-void.conf > /dev/null
 	"${ESCALATION_TOOL}" xbps-install -Sy -y || true
 fi
-"${ESCALATION_TOOL}" xbps-install -y hyprland || echo -e "${red}Failed to install hyprland. You may need to manually add the repo.${no_color}"
+"${ESCALATION_TOOL}" xbps-install -y hyprland hyprutils aquamarine hyprlang || echo -e "${red}Failed to install hyprland. You may need to manually add the repo.${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 # uwsm is not in void repos, may need to build from source
 # "${ESCALATION_TOOL}" xbps-install -y uwsm # A standalone Wayland session manager
