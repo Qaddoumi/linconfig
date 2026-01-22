@@ -71,7 +71,7 @@ su "$USER_NAME" <<USEREOF
 	# 	echo "All packages are available."
 	# fi
 
-	doas xbps-install -y rust cargo
+	doas xbps-install -y rust cargo openssl-devel pkg-config
 
 	echo -e "${green}Installing vay...${no_color}"
 	cd ~
@@ -86,7 +86,7 @@ su "$USER_NAME" <<USEREOF
 	git clone --depth 1 https://github.com/void-linux/void-packages.git ~/void-packages
 	cd ~/void-packages
     # echo 1 | doas tee /proc/sys/kernel/unprivileged_userns_clone
-	doas xbps-install -S -y
+	doas xbps-install -Sy
 	./xbps-src -N binary-bootstrap
 
 USEREOF
