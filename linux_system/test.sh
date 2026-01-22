@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Color codes
+##################### Color codes #####################
 red="\033[0;31m"
 green="\033[0;32m"
 yellow="\033[1;33m"
@@ -33,39 +33,65 @@ echo -e "\n"
 [[ -L /dev/stdout ]] || ln -sf /proc/self/fd/1 /dev/stdout
 [[ -L /dev/stderr ]] || ln -sf /proc/self/fd/2 /dev/stderr
 
-echo "Temporarily disabling doas password for wheel group"
+echo -e "${yellow}Temporarily disabling doas password for wheel group${no_color}"
 echo "permit nopass :wheel" >> /etc/doas.conf
 
 pkgs=( hyprland hyprutils aquamarine hyprlang )
 
 su "$USER_NAME" <<USEREOF
-	echo "Running post-install script as user $USER_NAME..."
-	echo "Checking for unavailable packages..."
+	red="\033[0;31m"
+	green="\033[0;32m"
+	yellow="\033[1;33m"
+	blue="\033[0;34m"
+	cyan="\033[0;36m"
+	bold="\e[1m"
+	no_color="\033[0m" 
+	echo -e "${cyan}Running post-install script as user $USER_NAME...${no_color}"
+	# echo "Checking for unavailable packages..."
 
-    if ! grep -q "hyprland-void" /etc/xbps.d/*.conf 2>/dev/null; then
-        echo "repository=https://raw.githubusercontent.com/Makrennel/hyprland-void/repository-x86_64-glibc" | doas tee /etc/xbps.d/hyprland-void.conf > /dev/null
-        doas xbps-install -Sy -y || true
-    fi
+    # if ! grep -q "hyprland-void" /etc/xbps.d/*.conf 2>/dev/null; then
+    #     echo "repository=https://raw.githubusercontent.com/Makrennel/hyprland-void/repository-x86_64-glibc" | doas tee /etc/xbps.d/hyprland-void.conf > /dev/null
+    #     doas xbps-install -Sy -y || true
+    # fi
 
-	params=( ${pkgs[@]} )
-	unavailable_pkgs=()
-	for pkg in "\${params[@]}"; do
-		if ! xbps-query -R "\$pkg" >/dev/null 2>&1; then
-			unavailable_pkgs+=("\$pkg")
-		fi
-	done
+	# params=( ${pkgs[@]} )
+	# unavailable_pkgs=()
+	# for pkg in "\${params[@]}"; do
+	# 	if ! xbps-query -R "\$pkg" >/dev/null 2>&1; then
+	# 		unavailable_pkgs+=("\$pkg")
+	# 	fi
+	# done
 
-	if [ \${#unavailable_pkgs[@]} -ne 0 ]; then
-		echo "The following packages are NOT available in the repository:"
-		for pkg in "\${unavailable_pkgs[@]}"; do
-			echo "  - \$pkg"
-		done
-	else
-		echo "All packages are available."
-	fi
+	# if [ \${#unavailable_pkgs[@]} -ne 0 ]; then
+	# 	echo "The following packages are NOT available in the repository:"
+	# 	for pkg in "\${unavailable_pkgs[@]}"; do
+	# 		echo "  - \$pkg"
+	# 	done
+	# else
+	# 	echo "All packages are available."
+	# fi
+
+	doas xbps-install -y rust cargo
+
+	echo -e "${green}Installing vay...${no_color}"
+	cd ~
+	rm -rf ~/vay
+	git clone --depth 1 https://github.com/Qaddoumi/vay.git
+	cd vay
+	cargo build --release
+	doas cp target/release/vay /usr/local/bin/
+
+	echo -e "${green}Installing void-packages...${no_color}"
+	rm -rf ~/void-packages
+	git clone --depth 1 https://github.com/void-linux/void-packages.git ~/void-packages
+	cd ~/void-packages
+    # echo 1 | doas tee /proc/sys/kernel/unprivileged_userns_clone
+	doas xbps-install -S -y
+	./xbps-src -N binary-bootstrap
+
 USEREOF
 
-echo "Restoring doas password requirement for wheel group"
+echo -e "${green}Restoring doas password requirement for wheel group${no_color}"
 sed -i '/^permit nopass :wheel/d' /etc/doas.conf
 POSTINSTALLEOF
 

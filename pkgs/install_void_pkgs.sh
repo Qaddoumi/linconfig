@@ -116,30 +116,30 @@ echo -e "${blue}═════════════════════�
 echo -e "${green}Installing window managers and related packages...${no_color}"
 echo ""
 
-# Hyprland is NOT in official Void repos. It requires adding a third-party repository.
-# See: https://github.com/Makrennel/hyprland-void for installation instructions.
-echo -e "${green}Installing Hyprland...${no_color}"
-echo -e "${yellow}Hyprland is NOT in official Void repos. Adding third-party repository...${no_color}"
+# # Hyprland is NOT in official Void repos. It requires adding a third-party repository.
+# # See: https://github.com/Makrennel/hyprland-void for installation instructions.
+# echo -e "${green}Installing Hyprland...${no_color}"
+# echo -e "${yellow}Hyprland is NOT in official Void repos. Adding third-party repository...${no_color}"
 
-# Add hyprland-void repository
-if ! grep -q "hyprland-void" /etc/xbps.d/*.conf 2>/dev/null; then
-	echo "repository=https://raw.githubusercontent.com/Makrennel/hyprland-void/repository-x86_64-glibc" | "${ESCALATION_TOOL}" tee /etc/xbps.d/hyprland-void.conf > /dev/null
-	"${ESCALATION_TOOL}" xbps-install -Sy -y || true
-fi
-"${ESCALATION_TOOL}" xbps-install -y hyprland hyprutils aquamarine hyprlang || echo -e "${red}Failed to install hyprland. You may need to manually add the repo.${no_color}"
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-# uwsm is not in void repos, may need to build from source
-# "${ESCALATION_TOOL}" xbps-install -y uwsm # A standalone Wayland session manager
-echo -e "${yellow}uwsm is not available in Void repos. Consider building from source if needed.${no_color}"
+# # Add hyprland-void repository
+# if ! grep -q "hyprland-void" /etc/xbps.d/*.conf 2>/dev/null; then
+# 	echo "repository=https://raw.githubusercontent.com/Makrennel/hyprland-void/repository-x86_64-glibc" | "${ESCALATION_TOOL}" tee /etc/xbps.d/hyprland-void.conf > /dev/null
+# 	"${ESCALATION_TOOL}" xbps-install -Sy -y || true
+# fi
+# "${ESCALATION_TOOL}" xbps-install -y hyprland hyprutils aquamarine hyprlang || echo -e "${red}Failed to install hyprland. You may need to manually add the repo.${no_color}"
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
+# # uwsm is not in void repos, may need to build from source
+# # "${ESCALATION_TOOL}" xbps-install -y uwsm # A standalone Wayland session manager
+# echo -e "${yellow}uwsm is not available in Void repos. Consider building from source if needed.${no_color}"
 
-if [ -f "/usr/share/wayland-sessions/hyprland.desktop" ]; then
-	echo -e "${green}Hiding hyprland from session menu...${no_color}"
-	if grep -q "^NoDisplay=" "/usr/share/wayland-sessions/hyprland.desktop"; then
-		"${ESCALATION_TOOL}" sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/hyprland.desktop"
-	else
-		echo "NoDisplay=true" | "${ESCALATION_TOOL}" tee -a "/usr/share/wayland-sessions/hyprland.desktop" > /dev/null
-	fi
-fi
+# if [ -f "/usr/share/wayland-sessions/hyprland.desktop" ]; then
+# 	echo -e "${green}Hiding hyprland from session menu...${no_color}"
+# 	if grep -q "^NoDisplay=" "/usr/share/wayland-sessions/hyprland.desktop"; then
+# 		"${ESCALATION_TOOL}" sed -i 's/^NoDisplay=.*/NoDisplay=true/' "/usr/share/wayland-sessions/hyprland.desktop"
+# 	else
+# 		echo "NoDisplay=true" | "${ESCALATION_TOOL}" tee -a "/usr/share/wayland-sessions/hyprland.desktop" > /dev/null
+# 	fi
+# fi
 
 # if [ ! -f /usr/share/wayland-sessions/hyprland-uwsm.desktop ]; then
 # 	echo -e "${green}Creating hyprland-uwsm.desktop...${no_color}"
