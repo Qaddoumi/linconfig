@@ -945,8 +945,7 @@ fi
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 
 info "Updating databases and upgrading packages..."
-pacman -Syy --noconfirm || error "Failed to update package databases in chroot"
-pacman -Syu --noconfirm || error "Failed to update packages in chroot"
+pacman -Syu --noconfirm || error "Failed to update and upgrade packages in chroot"
 
 newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
 

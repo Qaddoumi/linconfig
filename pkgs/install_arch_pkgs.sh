@@ -93,8 +93,7 @@ fi
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
 echo -e "${green}Updating databases and upgrading packages...${no_color}"
-"${ESCALATION_TOOL}" pacman -Syy --noconfirm || echo -e "${yellow}Failed to update package databases${no_color}"
-"${ESCALATION_TOOL}" pacman -Syu --noconfirm || echo -e "${yellow}Failed to upgrade packages${no_color}"
+"${ESCALATION_TOOL}" pacman -Syu --noconfirm || echo -e "${yellow}Failed to update and upgrade packages${no_color}"
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
