@@ -540,8 +540,13 @@ gitpush() {
 }
 
 gitbranch () {
-	echo -e "\n\033[0;32mCreating and switching to branch \033[0;34m'$1'\033[0m"
-	git switch -c "$1" && \
+	if git show-ref --verify --quiet refs/heads/"$1"; then
+		echo -e "\n\033[0;32mSwitching to existing branch \033[0;34m'$1'\033[0m"
+		git switch "$1"
+	else
+		echo -e "\n\033[0;32mCreating and switching to branch \033[0;34m'$1'\033[0m"
+		git switch -c "$1"
+	fi && \
 	echo -e "\033[0;32mSuccessfully switched to branch \033[0;34m'$1'\n\033[0m" || \
 	echo -e "\033[0;31mFailed to switch to branch \033[0;34m'$1'\n\033[0m"
 	echo -e "\n\033[0;32mPushing changes\033[0m"
