@@ -459,7 +459,7 @@ if grep -q "PATH" "$ENV_FILE"; then
 else
 	echo -e "${green}Adding PATHs to $ENV_FILE${no_color}"
 	echo "" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
-	echo "PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
+	echo "PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin:$HOME/go/bin" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
 fi
 
 echo -e "${green}Setting up environment variable for Electron apps so they lunch in wayland mode${no_color}"
