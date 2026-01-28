@@ -84,6 +84,13 @@ echo -e "${green}Username to be used	  : $USER${no_color}"
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
+# Fix broken pacman.conf entries before any pacman operations
+# This handles cases where chaotic-aur was added but mirrorlist doesn't exist
+if grep -q "\[chaotic-aur\]" /etc/pacman.conf && [[ ! -f /etc/pacman.d/chaotic-mirrorlist ]]; then
+	echo -e "${yellow}Fixing broken Chaotic-AUR entry in pacman.conf...${no_color}"
+	"${ESCALATION_TOOL}" sed -i '/\[chaotic-aur\]/,/Include.*chaotic-mirrorlist/d' /etc/pacman.conf || true
+fi
+
 echo -e "${green}Updating databases and upgrading packages...${no_color}"
 "$ESCALATION_TOOL" pacman -Syu --noconfirm
 
