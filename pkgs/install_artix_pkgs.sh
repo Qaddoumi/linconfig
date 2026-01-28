@@ -84,7 +84,17 @@ echo -e "${green}Username to be used	  : $USER${no_color}"
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
-echo -e "${green}Updating databases and upgrading packages...${no_color}"
+# Ensure keyrings are populated (needed for Arch packages on Artix)
+echo -e "${green}Initializing and populating keyrings...${no_color}"
+"${ESCALATION_TOOL}" pacman-key --init 2>/dev/null || true
+"${ESCALATION_TOOL}" pacman-key --populate artix 2>/dev/null || true
+"${ESCALATION_TOOL}" pacman-key --populate archlinux 2>/dev/null || true
+
+# Force refresh package databases to get latest mirror data
+echo -e "${green}Refreshing package databases...${no_color}"
+"$ESCALATION_TOOL" pacman -Syy --noconfirm || true
+
+echo -e "${green}Updating and upgrading packages...${no_color}"
 "$ESCALATION_TOOL" pacman -Syu --noconfirm
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
