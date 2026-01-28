@@ -27,12 +27,13 @@ Install Arch Linux with advanced configuration options:
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install) --install arch
 ```
+<!--------
 ### Complete Void Linux Installation
 Install Void Linux with advanced configuration options:
 ```bash
 xbps-fetch https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install && bash install --install void
 ```
-
+--------->
 ### Configuration Files Only
 Install only the configuration files without system packages:
 ```bash
