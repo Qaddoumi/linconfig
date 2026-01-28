@@ -625,24 +625,18 @@ else
 	PART3="/dev/${DISK}3"
 fi
 
-info "Creating new GPT partition table..."
-parted -s "/dev/$DISK" mklabel gpt || error "Partitioning failed"
-
-newTask "════════════════════════════════════════════════════\n════════════════════════════════════════════════════"
+info "Creating partitions with sfdisk..."
 
 if [[ "$BOOT_MODE" == "UEFI" ]]; then
-	info "Creating UEFI partitions..."
-	
-	# EFI System Partition
-	EFI_SIZE="2G"
-	ROOT_SIZE="100%"
-	
-	info "Creating EFI System Partition (2G)"
-	parted -s "/dev/$DISK" mkpart primary fat32 1MiB "$EFI_SIZE" || error "EFI partition failed"
-	parted -s "/dev/$DISK" set 1 esp on || error "Failed to set ESP flag"
-	
-	info "Creating root partition"
-	parted -s "/dev/$DISK" mkpart primary ext4 "$EFI_SIZE" "$ROOT_SIZE" || error "Root partition failed"
+	info "Creating UEFI partitions layout..."
+	# 1. EFI System Partition (2G) - Type U
+	# 2. Root Partition (Rest) - Type L
+	sfdisk "/dev/$DISK" <<EOF
+label: gpt
+, 2G, U
+, , L
+EOF
+	if [[ $? -ne 0 ]]; then error "Partitioning failed"; fi
 	
 	# Set partition variables for UEFI
 	EFI_PART="$PART1"
@@ -656,28 +650,23 @@ if [[ "$BOOT_MODE" == "UEFI" ]]; then
 	mkdir -p /mnt || error "Failed to create /mnt"
 	mount "$ROOT_PART" /mnt || error "Failed to mount root partition"
 	
-	# Mount ESP at /boot/efi for GRUB
-	info "Mounting ESP at /boot/efi for GRUB"
+	# Mount ESP for GRUB
+	info "Mounting ESP at /mnt/boot/efi for GRUB"
 	mkdir -p /mnt/boot/efi || error "Failed to create /mnt/boot/efi"
 	chmod 700 /mnt/boot/efi || error "Failed to set permissions on /mnt/boot/efi"
-	mkdir -p /mnt/boot/efi/loader || error "Failed to create /mnt/boot/efi/loader"
 	mount "$EFI_PART" /mnt/boot/efi || error "Failed to mount EFI partition"
 else
-	info "Creating BIOS partitions..."
-	
-	BIOS_BOOT_SIZE="2MiB"
-	BOOT_SIZE="2G"
-	ROOT_SIZE="100%"
-	
-	info "Creating BIOS boot partition (2MiB)"
-	parted -s "/dev/$DISK" mkpart primary 1MiB "$BIOS_BOOT_SIZE" || error "BIOS boot partition failed"
-	parted -s "/dev/$DISK" set 1 bios_grub on || error "Failed to set bios_grub flag"
-	
-	info "Creating boot partition (2G)"
-	parted -s "/dev/$DISK" mkpart primary ext4 "$BIOS_BOOT_SIZE" "$BOOT_SIZE" || error "Boot partition failed"
-	
-	info "Creating root partition"
-	parted -s "/dev/$DISK" mkpart primary ext4 "$BOOT_SIZE" "$ROOT_SIZE" || error "Root partition failed"
+	info "Creating BIOS partitions layout..."
+	# 1. BIOS Boot Partition (2M) - Type 21686148-6449-6E6F-744E-656564454649
+	# 2. Boot Partition (2G) - Type L
+	# 3. Root Partition (Rest) - Type L
+	sfdisk "/dev/$DISK" <<EOF
+label: gpt
+, 2M, 21686148-6449-6E6F-744E-656564454649
+, 2G, L
+, , L
+EOF
+	if [[ $? -ne 0 ]]; then error "Partitioning failed"; fi
 	
 	# Set partition variables for BIOS
 	BIOS_PART="$PART1"
