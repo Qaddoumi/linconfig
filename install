@@ -22,6 +22,8 @@ fi
 
 if [ "$install" == "arch" ]; then
 	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/archinstall.sh)
+elif [ "$install" == "artix" ]; then
+	bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/artixinstall.sh)
 elif [ "$install" == "void" ]; then
 	xbps-fetch https://raw.githubusercontent.com/Qaddoumi/linconfig/main/linux_system/voidinstall.sh && sudo bash voidinstall.sh
 elif [ "$install" == "config" ]; then

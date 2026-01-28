@@ -1,6 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bash](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)](https://www.gnu.org/software/bash/)
 [![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?logo=arch-linux&logoColor=fff)](https://archlinux.org)
+[![Artix Linux](https://img.shields.io/badge/Artix%20Linux-1793D1?logo=artix-linux&logoColor=fff)](https://artixlinux.org)
 [![Void Linux](https://img.shields.io/badge/Void%20Linux-1793D1?logo=void-linux&logoColor=fff)](https://voidlinux.org)
 [![Hyprland](https://img.shields.io/badge/Hyprland-1793D1?logo=hyprland&logoColor=fff)](https://hyprland.org)
 [![Sway](https://img.shields.io/badge/Sway-1793D1?logo=sway&logoColor=fff)](https://swaywm.org)
@@ -23,18 +24,20 @@ This project is currently in active development. While functional, it may not wo
 ## 🚀 Installation
 
 ### Complete Arch Linux Installation
-Install Arch Linux with advanced configuration options:
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install) --install arch
 ```
+### Complete Artix Linux Installation
+```bash
+bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install) --install artix
+```
 <!--------
 ### Complete Void Linux Installation
-Install Void Linux with advanced configuration options:
 ```bash
 xbps-fetch https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install && bash install --install void
 ```
 --------->
-### Configuration Files Only
+### Install only the configuration files without system packages:
 Install only the configuration files without system packages:
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install) --install config
