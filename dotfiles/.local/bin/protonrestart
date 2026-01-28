@@ -1,30 +1,31 @@
 #!/bin/bash
 
-# Kill all wine-related processes
-echo "Killing wine processes..."
-pkill -9 -i wine
-pkill -9 -i proton
+echo "Killing all .exe processes (full command line)..."
+pgrep -fai '.*\.exe' | awk '{print $1}' | xargs -r kill -9 2>/dev/null
 
-# Kill all .exe processes by matching process names
-echo "Killing .exe processes..."
-ps aux | grep -i '\.exe' | grep -v grep | awk '{print $2}' | xargs -r kill -9 2>/dev/null
-
-# Kill Battle.net launcher and other game launcher processes
 echo "Killing game launchers..."
 pkill -9 -f 'Battle\.net'
 pkill -9 -i lutris-wrapper
+pkill -9 -f 'steam'
+pkill -9 -f 'gameoverlayui'
 
-# Kill Chromium Embedded Framework processes (used by Battle.net, Epic, etc.)
 echo "Killing CEF processes..."
 pkill -9 -f 'CrGpuMain'
 pkill -9 -f 'CrUtilityMain'
 pkill -9 -f 'CrBrowserMain'
 pkill -9 -f 'CrRendererMain'
 
-# Kill specific Proton/Wine core processes
-PROTONCORE=(pv-bwrap pressure-vessel reaper wineserver winedevice)
+PROTONCORE=(pv-bwrap pressure-vessel reaper wineserver winedevice services.exe explorer.exe)
 for PROG in "${PROTONCORE[@]}"; do
-	killall -9 "$PROG" 2>/dev/null
+    killall -9 "$PROG" 2>/dev/null
+done
+
+echo "Final sweep of wine/proton prefixes..."
+MYPID=$$
+for pid in $(lsof 2>/dev/null | grep -iE 'steamapps/compatdata|\.wine|proton' | awk '{print $2}' | sort -u); do
+    if [ "$pid" != "$MYPID" ]; then
+        kill -9 "$pid" 2>/dev/null
+    fi
 done
 
 echo "All wine and proton processes terminated."
