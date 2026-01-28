@@ -84,13 +84,6 @@ echo -e "${green}Username to be used	  : $USER${no_color}"
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
-# Fix broken pacman.conf entries before any pacman operations
-# This handles cases where chaotic-aur was added but mirrorlist doesn't exist
-if grep -q "\[chaotic-aur\]" /etc/pacman.conf && [[ ! -f /etc/pacman.d/chaotic-mirrorlist ]]; then
-	echo -e "${yellow}Fixing broken Chaotic-AUR entry in pacman.conf...${no_color}"
-	"${ESCALATION_TOOL}" sed -i '/\[chaotic-aur\]/,/Include.*chaotic-mirrorlist/d' /etc/pacman.conf || true
-fi
-
 echo -e "${green}Updating databases and upgrading packages...${no_color}"
 "$ESCALATION_TOOL" pacman -Syu --noconfirm
 
@@ -181,36 +174,6 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/o
 
 # echo -e "${green}Setup complete! pacman (and yay) will now use aria2 for faster downloads.${no_color}"
 # echo -e "${green}Your original pacman.conf has been backed up to /etc/pacman.conf.backup.${no_color}"
-
-echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
-
-echo -e "${green}Installing Chaotic-AUR repository...${no_color}"
-if ! grep -q "\[chaotic-aur\]" /etc/pacman.conf; then
-	echo -e "${green}Chaotic-AUR repository not found. Proceeding with installation...${no_color}"
-	# install and enable Chaotic-AUR
-	"${ESCALATION_TOOL}" pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || true
-	"${ESCALATION_TOOL}" pacman-key --lsign-key 3056513887B78AEB || true
-	
-	# Install keyring and mirrorlist packages - only add to pacman.conf if successful
-	if "${ESCALATION_TOOL}" pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' && \
-	   "${ESCALATION_TOOL}" pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'; then
-		# Verify mirrorlist was installed before adding to pacman.conf
-		if [[ -f /etc/pacman.d/chaotic-mirrorlist ]]; then
-			echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | "${ESCALATION_TOOL}" tee -a /etc/pacman.conf > /dev/null || true
-			"${ESCALATION_TOOL}" pacman -Syu --noconfirm || true
-			echo -e "${green}Chaotic-AUR repository installed and enabled${no_color}"
-		else
-			echo -e "${yellow}Chaotic-AUR mirrorlist not found after installation, skipping repo addition${no_color}"
-		fi
-	else
-		echo -e "${yellow}Failed to install Chaotic-AUR packages, skipping${no_color}"
-	fi
-elif grep -q "\[chaotic-aur\]" /etc/pacman.conf && [[ ! -f /etc/pacman.d/chaotic-mirrorlist ]]; then
-	echo -e "${yellow}Chaotic-AUR is in pacman.conf but mirrorlist is missing. Removing broken entry...${no_color}"
-	"${ESCALATION_TOOL}" sed -i '/\[chaotic-aur\]/,/Include.*chaotic-mirrorlist/d' /etc/pacman.conf || true
-else
-	echo -e "${green}Chaotic-AUR repository already exists. Skipping installation.${no_color}"
-fi
 
 echo -e "${blue}════════════════════════════════════════════════════\n════════════════════════════════════════════════════${no_color}"
 
