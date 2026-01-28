@@ -38,7 +38,6 @@ xbps-fetch https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install && 
 ```
 --------->
 ### Install only the configuration files without system packages:
-Install only the configuration files without system packages:
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install) --install config
 ```
