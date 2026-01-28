@@ -183,12 +183,24 @@ if ! grep -q "\[chaotic-aur\]" /etc/pacman.conf; then
 	# install and enable Chaotic-AUR
 	"${ESCALATION_TOOL}" pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || true
 	"${ESCALATION_TOOL}" pacman-key --lsign-key 3056513887B78AEB || true
-	"${ESCALATION_TOOL}" pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' || true
-	"${ESCALATION_TOOL}" pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' || true
-	echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | "${ESCALATION_TOOL}" tee -a /etc/pacman.conf > /dev/null || true
-	"${ESCALATION_TOOL}" pacman -Syu --noconfirm || true
-	# Print message indicating Chaotic-AUR has been installed and enabled
-	echo -e "${green}Chaotic-AUR repository installed and enabled${no_color}"
+	
+	# Install keyring and mirrorlist packages - only add to pacman.conf if successful
+	if "${ESCALATION_TOOL}" pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' && \
+	   "${ESCALATION_TOOL}" pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'; then
+		# Verify mirrorlist was installed before adding to pacman.conf
+		if [[ -f /etc/pacman.d/chaotic-mirrorlist ]]; then
+			echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | "${ESCALATION_TOOL}" tee -a /etc/pacman.conf > /dev/null || true
+			"${ESCALATION_TOOL}" pacman -Syu --noconfirm || true
+			echo -e "${green}Chaotic-AUR repository installed and enabled${no_color}"
+		else
+			echo -e "${yellow}Chaotic-AUR mirrorlist not found after installation, skipping repo addition${no_color}"
+		fi
+	else
+		echo -e "${yellow}Failed to install Chaotic-AUR packages, skipping${no_color}"
+	fi
+elif grep -q "\[chaotic-aur\]" /etc/pacman.conf && [[ ! -f /etc/pacman.d/chaotic-mirrorlist ]]; then
+	echo -e "${yellow}Chaotic-AUR is in pacman.conf but mirrorlist is missing. Removing broken entry...${no_color}"
+	"${ESCALATION_TOOL}" sed -i '/\[chaotic-aur\]/,/Include.*chaotic-mirrorlist/d' /etc/pacman.conf || true
 else
 	echo -e "${green}Chaotic-AUR repository already exists. Skipping installation.${no_color}"
 fi

@@ -123,3 +123,23 @@ info "Unmounting virtual filesystems after post-install..."
 umount -R /mnt/dev 2>/dev/null || true
 umount -R /mnt/proc 2>/dev/null || true
 umount -R /mnt/sys 2>/dev/null || true
+
+
+artix-chroot /mnt /bin/bash -s -- "amoh" "true" <<'POSTINSTALLEOF' || echo "Post-install script failed to run"
+
+USER_NAME="$1"
+isVM="$2"
+
+echo -e "\n"
+
+echo "Temporarily disabling sudo password for wheel group"
+echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+su "$USER_NAME" <<USEREOF
+        echo "Running post-install script as user $USER_NAME..."
+        bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/pkgs/install_artix_pkgs.sh) --is-vm "$isVM" || echo "Failed to run the install script"
+USEREOF
+
+echo "Restoring sudo password requirement for wheel group"
+sed -i '/^%wheel ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers
+POSTINSTALLEOF
