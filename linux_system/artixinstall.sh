@@ -1050,6 +1050,22 @@ else
 
 	# Enable Arch repositories via artix-archlinux-support
 	info "Enabling Arch Linux repositories..."
+	
+	# Ensure mirrorlist-arch exists with working mirrors
+	if [[ ! -f /etc/pacman.d/mirrorlist-arch ]] || [[ ! -s /etc/pacman.d/mirrorlist-arch ]]; then
+		info "Creating Arch Linux mirrorlist..."
+		cat > /etc/pacman.d/mirrorlist-arch <<'ARCHMIRROREOF'
+# Arch Linux mirrors
+Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch
+Server = https://mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch
+Server = https://america.mirror.pkgbuild.com/$repo/os/$arch
+Server = https://europe.mirror.pkgbuild.com/$repo/os/$arch
+Server = https://asia.mirror.pkgbuild.com/$repo/os/$arch
+ARCHMIRROREOF
+		info "Created mirrorlist-arch with global mirrors"
+	fi
+	
 	if ! grep -q "\[extra\]" "$CONFIG_FILE"; then
 		cat >> "$CONFIG_FILE" <<'ARCHREPOSEOF'
 
@@ -1068,6 +1084,8 @@ newTask "═══════════════════════�
 
 # Populate Arch keyring
 info "Populating Arch Linux keyring..."
+pacman-key --init || warn "Failed to init keyring"
+pacman-key --populate artix || warn "Failed to populate artix keyring"
 pacman-key --populate archlinux || warn "Failed to populate archlinux keyring"
 
 info "Updating databases and upgrading packages..."

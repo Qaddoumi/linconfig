@@ -90,6 +90,20 @@ echo -e "${green}Initializing and populating keyrings...${no_color}"
 "${ESCALATION_TOOL}" pacman-key --populate artix 2>/dev/null || true
 "${ESCALATION_TOOL}" pacman-key --populate archlinux 2>/dev/null || true
 
+# Ensure mirrorlist-arch exists with working mirrors (for Arch packages on Artix)
+if [[ ! -f /etc/pacman.d/mirrorlist-arch ]] || [[ ! -s /etc/pacman.d/mirrorlist-arch ]]; then
+	echo -e "${green}Creating Arch Linux mirrorlist...${no_color}"
+	"${ESCALATION_TOOL}" tee /etc/pacman.d/mirrorlist-arch > /dev/null <<'ARCHMIRROREOF'
+# Arch Linux mirrors
+Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch
+Server = https://mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch
+Server = https://america.mirror.pkgbuild.com/$repo/os/$arch
+Server = https://europe.mirror.pkgbuild.com/$repo/os/$arch
+Server = https://asia.mirror.pkgbuild.com/$repo/os/$arch
+ARCHMIRROREOF
+fi
+
 # Force refresh package databases to get latest mirror data
 echo -e "${green}Refreshing package databases...${no_color}"
 "$ESCALATION_TOOL" pacman -Syy --noconfirm || true
