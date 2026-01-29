@@ -96,9 +96,13 @@ echo -e "${green}Updating Artix mirrorlist with reliable mirrors...${no_color}"
 # Artix Linux mirrors - primary tier 1
 Server = https://mirror1.artixlinux.org/repos/$repo/os/$arch
 Server = https://mirror.artixlinux.org/repos/$repo/os/$arch
-# Tier 2 mirrors
+
+# Europe
 Server = https://ftp.uni-bayreuth.de/linux/artix-linux/repos/$repo/os/$arch
+
+# Americas
 Server = https://mirror.clarkson.edu/artix-linux/repos/$repo/os/$arch
+Server = https://mirrors.ocf.berkeley.edu/artix-linux/repos/$repo/os/$arch
 Server = https://artix.cccp.io/repos/$repo/os/$arch
 ARTIXMIRROREOF
 

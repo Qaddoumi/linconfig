@@ -409,29 +409,33 @@ case $REGION_CHOICE in
 	1) REGION="Worldwide"
 	   ARTIX_MIRRORS=(
 		   "https://mirror1.artixlinux.org/repos/\$repo/os/\$arch"
-		   "https://mirror.pascalpuffke.de/artix-linux/repos/\$repo/os/\$arch"
-		   "https://ftp.crifo.org/artix-linux/repos/\$repo/os/\$arch"
+		   "https://mirror.artixlinux.org/repos/\$repo/os/\$arch"
+		   "https://ftp.uni-bayreuth.de/linux/artix-linux/repos/\$repo/os/\$arch"
+		   "https://mirror.clarkson.edu/artix-linux/repos/\$repo/os/\$arch"
+		   "https://mirrors.ocf.berkeley.edu/artix-linux/repos/\$repo/os/\$arch"
 	   )
 	   ;;
 	2) REGION="Europe"
 	   ARTIX_MIRRORS=(
-		   "https://mirror.pascalpuffke.de/artix-linux/repos/\$repo/os/\$arch"
-		   "https://ftp.crifo.org/artix-linux/repos/\$repo/os/\$arch"
-		   "https://artix.wheeze.cz/repos/\$repo/os/\$arch"
+		   "https://ftp.uni-bayreuth.de/linux/artix-linux/repos/\$repo/os/\$arch"
 		   "https://mirror1.artixlinux.org/repos/\$repo/os/\$arch"
+		   "https://mirror.pascalpuffke.de/artix-linux/repos/\$repo/os/\$arch"
+		   "https://artix.wheeze.cz/repos/\$repo/os/\$arch"
 	   )
 	   ;;
 	3) REGION="Americas"
 	   ARTIX_MIRRORS=(
-		   "https://mirror1.artixlinux.org/repos/\$repo/os/\$arch"
+		   "https://mirror.clarkson.edu/artix-linux/repos/\$repo/os/\$arch"
 		   "https://mirrors.ocf.berkeley.edu/artix-linux/repos/\$repo/os/\$arch"
-		   "https://ftp.crifo.org/artix-linux/repos/\$repo/os/\$arch"
+		   "https://artix.cccp.io/repos/\$repo/os/\$arch"
+		   "https://mirror1.artixlinux.org/repos/\$repo/os/\$arch"
 	   )
 	   ;;
 	4) REGION="Asia"
 	   ARTIX_MIRRORS=(
 		   "https://mirror1.artixlinux.org/repos/\$repo/os/\$arch"
-		   "https://ftp.crifo.org/artix-linux/repos/\$repo/os/\$arch"
+		   "https://mirror.artixlinux.org/repos/\$repo/os/\$arch"
+		   "https://mirror.pascalpuffke.de/artix-linux/repos/\$repo/os/\$arch"
 	   )
 	   ;;
 	*) error "Invalid region selection" ;;
