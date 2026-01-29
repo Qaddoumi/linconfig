@@ -90,10 +90,21 @@ echo -e "${green}Initializing and populating keyrings...${no_color}"
 "${ESCALATION_TOOL}" pacman-key --populate artix 2>/dev/null || true
 "${ESCALATION_TOOL}" pacman-key --populate archlinux 2>/dev/null || true
 
+# Ensure Artix mirrorlist has working mirrors
+echo -e "${green}Updating Artix mirrorlist with reliable mirrors...${no_color}"
+"${ESCALATION_TOOL}" tee /etc/pacman.d/mirrorlist > /dev/null <<'ARTIXMIRROREOF'
+# Artix Linux mirrors - primary tier 1
+Server = https://mirror1.artixlinux.org/repos/$repo/os/$arch
+Server = https://mirror.artixlinux.org/repos/$repo/os/$arch
+# Tier 2 mirrors
+Server = https://ftp.uni-bayreuth.de/linux/artix-linux/repos/$repo/os/$arch
+Server = https://mirror.clarkson.edu/artix-linux/repos/$repo/os/$arch
+Server = https://artix.cccp.io/repos/$repo/os/$arch
+ARTIXMIRROREOF
+
 # Ensure mirrorlist-arch exists with working mirrors (for Arch packages on Artix)
-if [[ ! -f /etc/pacman.d/mirrorlist-arch ]] || [[ ! -s /etc/pacman.d/mirrorlist-arch ]]; then
-	echo -e "${green}Creating Arch Linux mirrorlist...${no_color}"
-	"${ESCALATION_TOOL}" tee /etc/pacman.d/mirrorlist-arch > /dev/null <<'ARCHMIRROREOF'
+echo -e "${green}Updating Arch Linux mirrorlist...${no_color}"
+"${ESCALATION_TOOL}" tee /etc/pacman.d/mirrorlist-arch > /dev/null <<'ARCHMIRROREOF'
 # Arch Linux mirrors
 Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch
 Server = https://mirror.rackspace.com/archlinux/$repo/os/$arch
@@ -102,7 +113,6 @@ Server = https://america.mirror.pkgbuild.com/$repo/os/$arch
 Server = https://europe.mirror.pkgbuild.com/$repo/os/$arch
 Server = https://asia.mirror.pkgbuild.com/$repo/os/$arch
 ARCHMIRROREOF
-fi
 
 # Force refresh package databases to get latest mirror data
 echo -e "${green}Refreshing package databases...${no_color}"
