@@ -13,13 +13,13 @@
 
 # 🌟 LinConfig - My Linux Configuration Suite
 
-An automated configuration suite for Arch|Void Linux featuring Sway/Hyprland/DWM setup, QuickShell and SDDM login manager, with VM GPU passthrough capabilities.
+An automated configuration suite for Arch Linux featuring Sway/Hyprland/DWM setup, QuickShell and SDDM login manager, with VM GPU passthrough capabilities.
 
 ## ⚠️⚠️ Important Notice and Disclaimer
 
 This project is currently in active development. While functional, it may not work as expected in all environments and could potentially cause system issues, The authors are not responsible for any data loss or system and hardware damages. **Please backup your data and use at your own risk, I take no responsibility for any damage that may occur.**
 
-- Note 0.1 :- This setup build for laptops with iGPU and dGPU
+- Note 0.1 :- This setup build for laptops with iGPU and dGPU, but it can work on desktops
 - Note 0.2 :- And it has not been tested on AMD cpus or gpus and needs some adjustments for it to work
 - Note 0.3 :- This is not meant to be a minimal setup
 
