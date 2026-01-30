@@ -1,15 +1,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bash](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)](https://www.gnu.org/software/bash/)
 [![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?logo=arch-linux&logoColor=fff)](https://archlinux.org)
-<!--------
-[![Artix Linux](https://img.shields.io/badge/Artix%20Linux-1793D1?logo=artix-linux&logoColor=fff)](https://artixlinux.org)
-[![Void Linux](https://img.shields.io/badge/Void%20Linux-1793D1?logo=void-linux&logoColor=fff)](https://voidlinux.org)
---------->
 [![Hyprland](https://img.shields.io/badge/Hyprland-1793D1?logo=hyprland&logoColor=fff)](https://hyprland.org)
 [![Sway](https://img.shields.io/badge/Sway-1793D1?logo=sway&logoColor=fff)](https://swaywm.org)
 [![DWM](https://img.shields.io/badge/DWM-1793D1?logo=dwm&logoColor=fff)](https://dwm.suckless.org)
 [![QuickShell](https://img.shields.io/badge/QuickShell-1793D1?logo=quickshell&logoColor=fff)](https://github.com/quickshell-mirror/quickshell)
 [![SDDM](https://img.shields.io/badge/SDDM-1793D1?logo=sddm&logoColor=fff)](https://github.com/sddm/sddm)
+<!--------
+[![Artix Linux](https://img.shields.io/badge/Artix%20Linux-1793D1?logo=artix-linux&logoColor=fff)](https://artixlinux.org)
+[![Void Linux](https://img.shields.io/badge/Void%20Linux-1793D1?logo=void-linux&logoColor=fff)](https://voidlinux.org)
+--------->
 
 # 🌟 LinConfig - My Linux Configuration Suite
 
@@ -39,7 +39,7 @@ bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/instal
 xbps-fetch https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install && bash install --install void
 ```
 --------->
-### Install only the configuration files without system packages:
+### Install the dotfiles files without system packages:
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/Qaddoumi/linconfig/main/install) --install config
 ```
