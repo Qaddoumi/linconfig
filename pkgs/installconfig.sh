@@ -50,7 +50,7 @@ pkill -f xdg-desktop-portal-hyprland || true
 
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 "$ESCALATION_TOOL" chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
-find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
+find ~/.local/bin/ -maxdepth 1 -type f -exec  "$ESCALATION_TOOL" chmod +x {} +
 
 echo -e "${green}Setting up ownership for configuration files...${no_color}"
 "$ESCALATION_TOOL" chown -R $USER:$USER ~/.config > /dev/null || true
