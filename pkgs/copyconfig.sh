@@ -28,9 +28,12 @@ fi
 
 systemctl --user restart xdg-desktop-portal.service
 
+curl -sL "https://raw.githubusercontent.com/Qaddoumi/bashIslam/refs/heads/master/bashIslam.sh" -o ~/.local/bin/bashIslam.tmp && \
+mv ~/.local/bin/bashIslam.tmp ~/.local/bin/bashIslam || { echo -e "${red}Failed to download bashIslam${no_color}"; true; } # use mv to ensure atomicity (avoid partial writes)
+
 echo "Setting up permissions for configuration files"
 "$ESCALATION_TOOL" chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
-find ~/.local/bin/ -maxdepth 1 -type f -exec chmod +x {} +
+find ~/.local/bin/ -maxdepth 1 -type f -exec "$ESCALATION_TOOL" chmod +x {} +
 
 echo "Setting up ownership for configuration files"
 "$ESCALATION_TOOL" chown -R $USER:$USER ~/.config > /dev/null || true
