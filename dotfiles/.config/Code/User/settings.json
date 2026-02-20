@@ -148,6 +148,8 @@
     ],
     "qt-qml.doNotAskForQmllsDownload": true,
     "amp.url": "https://ampcode.com/",
-    "amp.tab.enabled": true,
+    "editor.wordBasedSuggestions": "off",
+    "amp.tab.enabled": false,
     "workbench.sideBar.location": "right",
+    "editor.semanticHighlighting.enabled": false,
 }

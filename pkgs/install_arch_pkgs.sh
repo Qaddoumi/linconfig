@@ -1384,7 +1384,7 @@ else
 	echo "env = AQ_DRM_DEVICES,/dev/dri/intel-igpu:/dev/dri/amd-igpu:/dev/dri/virtio-gpu"
 
 	echo -e "${green}Setting up WLR_DRM_DEVICES for wlroots ...${no_color}"
-    mkdir -p ~/.config/environment.d || true
+	mkdir -p ~/.config/environment.d || true
 	echo "WLR_DRM_DEVICES=/dev/dri/$gpu_type" | "${ESCALATION_TOOL}" tee ~/.config/environment.d/10-wlroots-gpu.conf > /dev/null || true
 	if ! grep -q "WLR_DRM_DEVICES" $ENV_FILE; then
 		echo "" | "${ESCALATION_TOOL}" tee -a "$ENV_FILE" > /dev/null || true
