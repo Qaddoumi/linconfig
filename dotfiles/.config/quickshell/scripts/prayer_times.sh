@@ -8,6 +8,35 @@ for arg in "$@"; do
 	fi
 done
 
+# Get prayer times using local bashIslam script
+get_prayer_times_local() {
+	local prayer_data
+	
+	prayer_data=$(bashIslam --lat 31.986 --lon 35.898 --timezone 3 --method 20 --madhab 1 --summer-time 0 --elevation 950 2>/dev/null | jq -c 2>/dev/null)
+	
+	if [[ -n "$prayer_data" ]]; then
+		local fajr=$(echo "$prayer_data" | jq -r '.prayers.fajr // empty')
+		local dhuhr=$(echo "$prayer_data" | jq -r '.prayers.dhuhr // empty')
+		local asr=$(echo "$prayer_data" | jq -r '.prayers.asr // empty')
+		local maghrib=$(echo "$prayer_data" | jq -r '.prayers.maghreb // empty')
+		local isha=$(echo "$prayer_data" | jq -r '.prayers.ishaa // empty')
+		
+		if [[ -n "$fajr" && "$fajr" != "null" ]]; then
+			# Cut seconds for HH:MM format
+			fajr=$(echo "$fajr" | cut -d: -f1,2)
+			dhuhr=$(echo "$dhuhr" | cut -d: -f1,2)
+			asr=$(echo "$asr" | cut -d: -f1,2)
+			maghrib=$(echo "$maghrib" | cut -d: -f1,2)
+			isha=$(echo "$isha" | cut -d: -f1,2)
+			
+			echo "$fajr $dhuhr $asr $maghrib $isha"
+			return 0
+		fi
+	fi
+	
+	return 1
+}
+
 # Configuration - Update these with your location
 LATITUDE="31.9555" # Amman, Jordan latitude
 LONGITUDE="35.9435" # Amman, Jordan longitude
@@ -133,10 +162,15 @@ calculate_prayer_times_offline() {
 }
 
 # Get prayer times
-prayer_times=$(get_prayer_times_api)
+prayer_times=$(get_prayer_times_local)
 if [[ $? -ne 0 || -z "$prayer_times" ]]; then
-	prayer_times=$(calculate_prayer_times_offline)
-	offline_mode="(offline)"
+	prayer_times=$(get_prayer_times_api)
+	if [[ $? -ne 0 || -z "$prayer_times" ]]; then
+		prayer_times=$(calculate_prayer_times_offline)
+		offline_mode="(offline)"
+	else
+		offline_mode=""
+	fi
 else
 	offline_mode=""
 fi
