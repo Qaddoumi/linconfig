@@ -48,6 +48,12 @@ pkill -f xdg-desktop-portal-gtk || \
 pkill -f xdg-desktop-portal-wlr || \
 pkill -f xdg-desktop-portal-hyprland || true
 
+
+echo -e "${green}Downloading bashIslam...${no_color}"
+curl -sL "https://raw.githubusercontent.com/Qaddoumi/bashIslam/refs/heads/master/bashIslam.sh" -o ~/.local/bin/bashIslam.tmp && \
+mv ~/.local/bin/bashIslam.tmp ~/.local/bin/bashIslam || { echo -e "${red}Failed to download bashIslam${no_color}"; true; } # use mv to ensure atomicity (avoid partial writes)
+
+
 echo -e "${green}Setting up permissions for configuration files${no_color}"
 "$ESCALATION_TOOL" chmod +x ~/.config/quickshell/scripts/*.sh > /dev/null || true
 find ~/.local/bin/ -maxdepth 1 -type f -exec "$ESCALATION_TOOL" chmod +x {} +
