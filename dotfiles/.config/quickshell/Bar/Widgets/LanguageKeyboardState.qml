@@ -101,9 +101,9 @@ Rectangle {
 		id: switchLayoutProcess
 		running: false
 		command: {
-			if (Quickshell.env("XDG_CURRENT_DESKTOP") === "Hyprland") {
+			if (root.desktop === "Hyprland") {
 				return ["bash", "-c", "hyprctl switchxkblayout all next"]
-			} else if (Quickshell.env("XDG_CURRENT_DESKTOP") && (Quickshell.env("XDG_CURRENT_DESKTOP").includes("sway") || Quickshell.env("XDG_CURRENT_DESKTOP").includes("Sway"))) {
+			} else if (root.desktop.includes("sway")) {
 				return ["bash", "-c", "swaymsg input 'type:keyboard' xkb_switch_layout next"]
 			} else {
 				// X11 - Toggles between us and ara
