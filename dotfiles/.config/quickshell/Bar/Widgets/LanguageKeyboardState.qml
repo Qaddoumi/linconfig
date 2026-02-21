@@ -40,9 +40,9 @@ Rectangle {
 	Process {
 		id: layoutProcess
 		command: {
-			if (Quickshell.env("XDG_CURRENT_DESKTOP") === "Hyprland") {
-				return ["bash", "-c", "hyprctl devices -j | jq -r '.keyboards[0].active_keymap // empty'"]
-			} else if (Quickshell.env("XDG_CURRENT_DESKTOP") && Quickshell.env("XDG_CURRENT_DESKTOP").includes("sway")) {
+			if (root.desktop === "Hyprland") {
+				return ["bash", "-c", "hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .active_keymap' | head -1"]
+			} else if (root.desktop.includes("sway")) {
 				return ["bash", "-c", "swaymsg -t get_inputs 2>/dev/null | jq -r '.[0].xkb_active_layout_name // empty'"]
 			} else {
 				// X11 / AwesomeWM
@@ -118,8 +118,8 @@ Rectangle {
 	function updateTooltip() {
 		var tooltip = "Layout: " + currentLayout
 		tooltip += "\n\nKeyboard State:"
-		tooltip += "\n  Caps Lock: " + (capsLock ? "ON" : "OFF")
-		tooltip += "\n  Num Lock: " + (numLock ? "ON" : "OFF")
+		tooltip += "\n  Caps Lock:   " + (capsLock ? "ON" : "OFF")
+		tooltip += "\n  Num Lock:    " + (numLock ? "ON" : "OFF")
 		tooltip += "\n  Scroll Lock: " + (scrollLock ? "OFF" : "OFF")
 		keyboardTooltip = tooltip
 	}
