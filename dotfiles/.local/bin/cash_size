@@ -1,0 +1,8 @@
+echo "current disk usage of your systemd journal logs"
+journalctl --disk-usage
+echo "Pacman Package Cache"
+sudo du -sh /var/cache/pacman/pkg/
+echo "User Application Cache"
+du -sh ~/.cache
+echo "Find Large Subfolders"
+du -h --max-depth=1 ~/.cache | sort -hr
