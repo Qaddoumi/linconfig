@@ -17,6 +17,7 @@ Rectangle {
 	// Properties
 	property string currentLayout: "US"
 	property string layoutDisplay: ""  // Short display (US, AR)
+	property bool keyboardFound: true
 	property bool capsLock: false
 	property bool numLock: false
 	property bool scrollLock: false
@@ -78,18 +79,31 @@ Rectangle {
 	Process {
 		id: ledProcess
 
-		command: ["bash", "-c", "cat /sys/class/leds/input*::capslock/brightness 2>/dev/null | head -1; cat /sys/class/leds/input*::numlock/brightness 2>/dev/null | head -1; cat /sys/class/leds/input*::scrolllock/brightness 2>/dev/null | head -1"]
-		
+		// command: {
+		// 	if (root.desktop === "Hyprland"){
+		// 		return ["bash", "-c", "hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .capsLock' | head -1; hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .numLock' | head -1; cat /sys/class/leds/input*::scrolllock/brightness 2>/dev/null | head -1"]
+		// 	} else {
+		// 		return ["bash", "-c", "cat /sys/class/leds/input*::capslock/brightness 2>/dev/null | head -1; cat /sys/class/leds/input*::numlock/brightness 2>/dev/null | head -1; cat /sys/class/leds/input*::scrolllock/brightness 2>/dev/null | head -1"]
+		// 	}
+		// }
+		command: ["bash", Quickshell.env("HOME") + "/.config/quickshell/scripts/keyboad_led_state.sh"]
 		stdout: SplitParser {
 			splitMarker: ""
 			onRead: data => {
 				// console.log("LED mask sysfs:", data)
 				if (!data) return
-				var lines = data.trim().split('\n')
-				// console.log("Lines:", lines)
-				languageWidget.capsLock = (lines[0] === "1")
-				languageWidget.numLock = (lines[1] === "1")
-				languageWidget.scrollLock = (lines[2] === "1")
+				try {
+					var state = JSON.parse(data.trim())
+					languageWidget.keyboardFound = true
+					languageWidget.capsLock = (state.capslock === "ON")
+					languageWidget.numLock = (state.numlock === "ON")
+					languageWidget.scrollLock = (state.scrolllock === "ON")
+				} catch (e) {
+					if (data.includes("No keyboard found") || data.includes("UNKNOWN")){
+						languageWidget.keyboardFound = false
+					}
+					// console.error("Error parsing LED state JSON:", e, data)
+				}
 				updateTooltip()
 			}
 		}
@@ -118,9 +132,14 @@ Rectangle {
 	function updateTooltip() {
 		var tooltip = "Layout: " + currentLayout
 		tooltip += "\n\nKeyboard State:"
+		if (!keyboardFound){
+			tooltip += "\n  Keyboard not found or unknown"
+			keyboardTooltip = tooltip
+			return
+		}
 		tooltip += "\n  Caps Lock:   " + (capsLock ? "ON" : "OFF")
 		tooltip += "\n  Num Lock:    " + (numLock ? "ON" : "OFF")
-		tooltip += "\n  Scroll Lock: " + (scrollLock ? "OFF" : "OFF")
+		tooltip += "\n  Scroll Lock: " + (scrollLock ? "ON" : "OFF")
 		keyboardTooltip = tooltip
 	}
 
