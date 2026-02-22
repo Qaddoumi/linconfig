@@ -34,7 +34,17 @@ awk -F', ' '{
 }')
 
 	# Get processes using the GPU (Universal query for C and G types)
-	apps_raw=$(nvidia-smi -q -d PIDS | awk -F': ' '/Name/ {name=$2} /Used GPU Memory/ {if(name) print name ": " $2; name=""}')
+	## Another way is `fuser -v /dev/nvidia*` which more accurate but it doesn't show the memory usage
+	apps_raw=$(nvidia-smi -q -d PIDS | awk -F': ' '/Name/ {name=$2} /Used GPU Memory/ {
+		if(name) {
+			mem = $2
+			if (length(name ": " mem) > 75) {
+				name = substr(name, 1, 75 - length(mem) - 5) "..."
+			}
+			print name ": " mem
+		}
+		name=""
+	}')
 
 	if [ -n "$apps_raw" ]; then
 		formatted_apps=$(echo "$apps_raw" | awk 'BEGIN { print "\nProcesses:" } { print $0 }')
