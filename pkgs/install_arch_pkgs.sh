@@ -1253,7 +1253,7 @@ else
 	echo -e "${green}System is not detected to be running in a VM, proceeding with looking-glass client setup${no_color}"
 
 	echo -e "${green}Setting up looking-glass for low latency video streaming${no_color}"
-	yay -S --needed --noconfirm looking-glass || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
+	yay -S --needed --noconfirm aur/looking-glass-git || echo -e "${red}Failed to install looking-glass${no_color}" # Low latency video streaming tool
 
 	# Create the shared memory directory if it doesn't exist
 	"${ESCALATION_TOOL}" mkdir -p /dev/shm || true
