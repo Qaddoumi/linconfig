@@ -122,7 +122,7 @@
 		<emulator>/usr/bin/qemu-system-x86_64</emulator>
 		<disk type="file" device="disk">
 			<driver name="qemu" type="qcow2" cache="none" io="native" discard="unmap" iothread="1"/>
-			<source file="/var/lib/libvirt/images/200-archlinux.qcow2"/>
+			<source file="/home/moh/VM_Images/200-archlinux.qcow2"/>
 			<target dev="vda" bus="virtio"/>
 			<iotune>
 				<read_iops_sec>10000</read_iops_sec>
