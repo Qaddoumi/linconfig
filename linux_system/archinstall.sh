@@ -196,27 +196,27 @@ else
 	if [[ ${#NVIDIA_GPUS[@]} -gt 0 ]]; then
 		info "Detected ${#NVIDIA_GPUS[@]} NVIDIA GPU(s)"
 		echo "Select NVIDIA driver:"
-		echo "1) Nouveau (open-source, default)"
+		echo "1) NVIDIA Open Kernel Module (Turing+ GPUs) 'default'"
 		echo "2) Proprietary NVIDIA (better performance)"
-		echo "3) NVIDIA Open Kernel Module (Turing+ GPUs)"
+		echo "3) Nouveau (open-source)"
 		read -rp "Select NVIDIA driver [1-3]: " NVIDIA_CHOICE
 		case ${NVIDIA_CHOICE:-1} in
 			1)
-				GPU_PKGS+=("xf86-video-nouveau" "vulkan-nouveau" "vulkan-mesa-layers")
-				GPU_OPTS=false
+				GPU_PKGS+=("nvidia-open-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
+				GPU_OPTS=true
 				;;
 			2)
 				GPU_PKGS+=("nvidia-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
 				GPU_OPTS=true
 				;;
 			3)
-				GPU_PKGS+=("nvidia-open-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
-				GPU_OPTS=true
-				;;
-			*)
-				warn "Invalid choice. Defaulting to Nouveau (Option 1)."
 				GPU_PKGS+=("xf86-video-nouveau" "vulkan-nouveau" "vulkan-mesa-layers")
 				GPU_OPTS=false
+				;;
+			*)
+				warn "Invalid choice. Defaulting to Open Kernel Module (Option 1)."
+				GPU_PKGS+=("nvidia-open-dkms" "nvidia-utils" "lib32-nvidia-utils" "nvidia-settings" "nvidia-prime")
+				GPU_OPTS=true
 				;;
 		esac
 	fi
