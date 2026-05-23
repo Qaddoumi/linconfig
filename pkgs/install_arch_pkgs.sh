@@ -464,8 +464,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm google-chrome || echo -e "${red}Failed to install google-chrome${no_color}" # Web browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm antigravity || echo -e "${red}Failed to install antigravity-bin${no_color}" # AI IDE
-antigravity --install-extension sdras.night-owl # dark theme
-antigravity --install-extension Gruntfuggly.todo-tree # todo tree
+# antigravity --install-extension sdras.night-owl # dark theme
+# antigravity --install-extension Gruntfuggly.todo-tree # todo tree
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm brave-bin || echo -e "${red}Failed to install brave-bin${no_color}" # Brave browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
