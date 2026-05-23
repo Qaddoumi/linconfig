@@ -377,6 +377,7 @@ fi
 echo ""
 
 SWITCH_SCRIPT=~/.local/bin/gpu-switch
+SWITCH_SCRIPT_TTY=~/.local/bin/gpu-switch-tty
 echo -e "${green}Creating GPU switch script at $SWITCH_SCRIPT${no_color}"
 
 #TODO: don't hardcode the audio driver
@@ -618,7 +619,7 @@ case "\$1" in
 		fi
 
 		echo -e "\${green}GPU switched to host mode\${no_color}"
-		echo "To check , look for 'nvidia'|'nouveau' or 'amdgpu' in the output of 'lspci -nnk | grep -A 3 "NVIDIA"'"
+		echo "To check , look for 'nvidia'|'nouveau' or 'amdgpu' in the output of 'lspci -nnk | grep -A 3 \"NVIDIA\"'"
 		echo "you should see 'Kernel driver in use: nvidia' or 'Kernel driver in use: amdgpu'"
 		;;
 	*)
@@ -632,6 +633,13 @@ esac
 SWITCH_SCRIPT_EOF
 
 "$ESCALATION_TOOL" chmod +x "$SWITCH_SCRIPT"
+
+echo -e "${green}Creating TTY switch script at $SWITCH_SCRIPT_TTY${no_color}"
+
+"$ESCALATION_TOOL" cp "$SWITCH_SCRIPT" "$SWITCH_SCRIPT_TTY"
+"$ESCALATION_TOOL" awk "NR==1 { print; print \"\"; print \"$ESCALATION_TOOL systemctl stop display-manager.service\"; next } { print }" "$SWITCH_SCRIPT_TTY" > /tmp/_tmpfile && "$ESCALATION_TOOL" mv /tmp/_tmpfile "$SWITCH_SCRIPT_TTY"
+"$ESCALATION_TOOL" bash -c "printf '\n$ESCALATION_TOOL systemctl enable sddm.service\n' >> '$SWITCH_SCRIPT_TTY'"
+"$ESCALATION_TOOL" chmod +x "$SWITCH_SCRIPT_TTY"
 
 echo ""
 # Load vfio modules
