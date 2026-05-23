@@ -638,7 +638,7 @@ echo -e "${green}Creating TTY switch script at $SWITCH_SCRIPT_TTY${no_color}"
 
 "$ESCALATION_TOOL" cp "$SWITCH_SCRIPT" "$SWITCH_SCRIPT_TTY"
 "$ESCALATION_TOOL" awk "NR==1 { print; print \"\"; print \"$ESCALATION_TOOL systemctl stop display-manager.service\"; next } { print }" "$SWITCH_SCRIPT_TTY" > /tmp/_tmpfile && "$ESCALATION_TOOL" mv /tmp/_tmpfile "$SWITCH_SCRIPT_TTY"
-"$ESCALATION_TOOL" bash -c "printf '\n$ESCALATION_TOOL systemctl enable sddm.service\n' >> '$SWITCH_SCRIPT_TTY'"
+"$ESCALATION_TOOL" bash -c "printf '\n$ESCALATION_TOOL systemctl enable --now sddm.service\n' >> '$SWITCH_SCRIPT_TTY'"
 "$ESCALATION_TOOL" chmod +x "$SWITCH_SCRIPT_TTY"
 
 echo ""
