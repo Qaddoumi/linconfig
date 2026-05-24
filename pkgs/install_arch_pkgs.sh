@@ -427,7 +427,7 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm flatpak # Flatpak package manager
 # Add Flathub repository
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo > /dev/null 2>&1 || true
+flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo > /dev/null 2>&1 || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 flatpak install -y --user flathub org.dupot.easyflatpak || echo -e "${red}Failed to install easyflatpak\n${no_color}" # Flatpak application manager (GUI store)
 
