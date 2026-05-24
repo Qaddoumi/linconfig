@@ -38,7 +38,7 @@ hl.config({
 		gaps_out = 1,
 		border_size = 2,
 
-        -- Using the Gruvbox color palette for borders
+		-- Using the Gruvbox color palette for borders
 		["col.active_border"] = "rgba(8ec07cff)",
 		["col.inactive_border"] = "rgba(3c3836ff)",
 
@@ -73,14 +73,14 @@ hl.config({
 		}
 	},
 	input = {
-        -- run 'ls -la  /usr/share/X11/xkb/symbols/' to get the layouts
+		-- run 'ls -la  /usr/share/X11/xkb/symbols/' to get the layouts
 		kb_layout = "us,ara",
 		kb_options = "grp:alt_shift_toggle",
 		numlock_by_default = true,
 		follow_mouse = 1,
 		touchpad = {
 			natural_scroll = true,
-			["tap-to-click"] = true,
+			tap_to_click = true,
 			middle_button_emulation = true,
 			drag_lock = false
 		},
@@ -94,17 +94,17 @@ hl.config({
 		vrr = 0
 	},
 	env = {
-        "XDG_CURRENT_DESKTOP,Hyprland",
+		"XDG_CURRENT_DESKTOP,Hyprland",
 		"XDG_SESSION_TYPE,wayland",
 		"XDG_SESSION_DESKTOP,Hyprland",
 		"QT_QPA_PLATFORM,wayland",
 		"QT_WAYLAND_DISABLE_WINDOWDECORATION,1",
 		"MOZ_ENABLE_WAYLAND,1",
-        -- Environment Variables for Multi-GPU ,see the above link
-        -- https://wiki.hypr.land/Configuring/Multi-GPU/
-        -- Use the stable symlinks generated that i generated with udev rules
-        -- Priority: Integrated/Virtual GPU or NVIDIA dGPU (if available) > Intel iGPU > AMD iGPU > Virtual GPU
-        -- AQ_DRM_DEVICES,/dev/dri/intel-igpu:/dev/dri/amd-igpu:/dev/dri/virtio-gpu
+		-- Environment Variables for Multi-GPU ,see the above link
+		-- https://wiki.hypr.land/Configuring/Advanced-and-Cool/Multi-GPU/
+		-- Use the stable symlinks generated that i generated with udev rules
+		-- Priority: Integrated/Virtual GPU or NVIDIA dGPU (if available) > Intel iGPU > AMD iGPU > Virtual GPU
+		-- AQ_DRM_DEVICES,/dev/dri/intel-igpu:/dev/dri/amd-igpu:/dev/dri/virtio-gpu
 		"AQ_DRM_DEVICES,/dev/dri/nvidia-dgpu:/dev/dri/intel-igpu:/dev/dri/amd-igpu:/dev/dri/virtio-gpu"
 	},
 	["exec-once"] = {
@@ -118,21 +118,21 @@ hl.config({
 		"copyq --start-server",
 		"dunst",
 		"swaybg --mode fit --output '*' --image /usr/share/hypr/wall0.png",
-        -- Alternative wallpaper daemon (SWWW instead of swaybg)
+		-- Alternative wallpaper daemon (SWWW instead of swaybg)
 		[[swayidle -w \
 			timeout 300 ']] .. lock_cmd .. [[' \
 			timeout 1800 'hyprctl dispatch dpms off' \
 			resume 'hyprctl dispatch dpms on' \
 			before-sleep 'swaylock -f -c 000000' &]],
-        -- This will lock your screen after 5 minutes of inactivity, then turn off
-        -- your displays after another 30 minutes, and turn your screens back on when
-        -- resumed. It will also lock your screen before your computer goes to sleep.
+		-- This will lock your screen after 5 minutes of inactivity, then turn off
+		-- your displays after another 30 minutes, and turn your screens back on when
+		-- resumed. It will also lock your screen before your computer goes to sleep.
 		"quickshell",
 		"flameshot",
-        -- Clipboard with X11 sync for XWayland apps (still does not work well)
+		-- Clipboard with X11 sync for XWayland apps (still does not work well)
 		"wl-paste --type text --watch xclip -selection clipboard"
-        -- X11 to Wayland clipboard bridge (for VM clipboard sharing)
-        -- "clipboard-bridge --bidirectional --interval 1.5 > /tmp/clipboard-bridge.log 2>&1"
+		-- X11 to Wayland clipboard bridge (for VM clipboard sharing)
+		-- "clipboard-bridge --bidirectional --interval 1.5 > /tmp/clipboard-bridge.log 2>&1"
 	},
 	bind = {
 		mod .. ", Return, exec, " .. term,
