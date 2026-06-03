@@ -9,24 +9,21 @@ echo "• when using yay -Syu, it will update both pacman and yay"
 # sudo pacman -Syu
 yay -Syu
 
-#Delete Pacman Cache
-sudo pacman -Sc
+# Delete Yay and pacman Caches
+yay -Sc # this will also run pacman -Sc, so you don't need to run it separately
 
-# Delete Yay Cache
-yay -Sc
+# # Delete unwanted dependencies
+# echo "• Use yay -Ps to see yay statistics"
+# echo "• Use yay -Yc to clean unneeded dependencies"
+# yay -Yc
 
-# Delete unwanted dependencies
-echo "• Use yay -Ps to see yay statistics"
-echo "• Use yay -Yc to clean unneeded dependencies"
-yay -Yc
+# # Remove Orphan packages if exists
+# if pacman -Qtdq > /dev/null 2>&1; then
+# 	sudo pacman -Rns $(pacman -Qtdq)
+# fi
 
-# Remove Orphan packages if exists
-if pacman -Qtdq > /dev/null 2>&1; then
-	sudo pacman -Rns $(pacman -Qtdq)
-fi
-
-# Clean user cache
-rm -rf ~/.cache/*
+# # Clean user cache
+# rm -rf ~/.cache/*
 
 # Clean the journal (pacman logs and system logs)
 sudo journalctl --vacuum-size=100M  # Keep only 100MB
