@@ -8,6 +8,8 @@ for arg in "$@"; do
 	fi
 done
 
+HIJRI_CACHE="/tmp/hijri_date_cache_$(date +%Y)-$(date +%m)-$(date +%d)"
+
 # Get prayer times using local bashIslam script
 get_prayer_times_local() {
 	local prayer_data
@@ -20,7 +22,20 @@ get_prayer_times_local() {
 		local asr=$(echo "$prayer_data" | jq -r '.prayers.asr // empty')
 		local maghrib=$(echo "$prayer_data" | jq -r '.prayers.maghreb // empty')
 		local isha=$(echo "$prayer_data" | jq -r '.prayers.ishaa // empty')
-		
+
+		local hijri_day=$(echo "$prayer_data" | jq -r '.hijri.day // empty')
+		local hijri_month=$(echo "$prayer_data" | jq -r '.hijri.month // empty')
+		local hijri_year=$(echo "$prayer_data" | jq -r '.hijri.year // empty')
+
+		if [[ -n "$hijri_day" && -n "$hijri_month" && -n "$hijri_year" ]]; then
+			# Write/overwrite Hijri data in cache file
+			cat > "$HIJRI_CACHE" << EOF
+day=$hijri_day
+month=$hijri_month
+year=$hijri_year
+EOF
+		fi
+
 		if [[ -n "$fajr" && "$fajr" != "null" ]]; then
 			# Cut seconds for HH:MM format
 			fajr=$(echo "$fajr" | cut -d: -f1,2)
