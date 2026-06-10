@@ -399,6 +399,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm unzip # Unzip utility
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm unrar # Unrar utility
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm trash-cli # Command line trash management
 "${ESCALATION_TOOL}" mkdir -p ~/.local/share/Trash/{files,info}
 "${ESCALATION_TOOL}" chmod 700 ~/.local/share/Trash
