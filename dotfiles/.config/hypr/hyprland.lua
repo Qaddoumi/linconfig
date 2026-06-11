@@ -177,7 +177,7 @@ hl.bind(mod .. " + Y", hl.dsp.exec_cmd(fileManager))
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("copyq toggle"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(lock_cmd))
 hl.bind(mod .. " + S", hl.dsp.exec_cmd("rofi -show emoji -modi emoji -matching regex -sorting-method levenshtein"))
-hl.bind("CTRL_ALT + Delete", hl.dsp.exec_cmd("powermenu"))
+hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd("powermenu"))
 
 -- Window management
 hl.bind(mod .. " + F", hl.dsp.exec_cmd("hyprctl dispatch fullscreen 0"))

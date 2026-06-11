@@ -23,7 +23,7 @@ case "$DESKTOP_SESSION" in
 		swaymsg exit
 	;;
 	hyprland|hyprland-uwsm)
-		hyprctl dispatch exit
+		uwsm stop
 	;;
 	awesome)
 		echo 'awesome.quit()' | awesome-client
