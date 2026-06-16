@@ -1,0 +1,274 @@
+#!/usr/bin/env bash
+
+
+# =============================================================================
+# disk_clone.sh — Standalone Disk Cloner using partclone
+# Tested on Arch Linux | Clones partition-by-partition (skips empty space)
+# Usage: sudo bash disk_clone.sh
+# =============================================================================
+
+set -euo pipefail
+
+# ─── Colors ───────────────────────────────────────────────────────────────────
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# ─── Helpers ──────────────────────────────────────────────────────────────────
+info()    { echo -e "${BLUE}[INFO]${NC}  $*"; }
+success() { echo -e "${GREEN}[OK]${NC}    $*"; }
+warn()    { echo -e "${YELLOW}[WARN]${NC}  $*"; }
+error()   { echo -e "${RED}[ERROR]${NC} $*"; exit 1; }
+ask()     { echo -e "${CYAN}[INPUT]${NC} $*"; }
+
+# ─── Root check ───────────────────────────────────────────────────────────────
+if [[ $EUID -ne 0 ]]; then
+    error "This script must be run as root. Use: sudo bash $0"
+fi
+
+# ─── Banner ───────────────────────────────────────────────────────────────────
+echo ""
+echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║           disk_clone.sh — Partition Cloner           ║${NC}"
+echo -e "${CYAN}║     Clones only used blocks (fast, skips empty)      ║${NC}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${NC}"
+echo ""
+
+# ─── Show available disks ─────────────────────────────────────────────────────
+info "Available disks on this system:"
+echo ""
+lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,MOUNTPOINTS
+echo ""
+
+# ─── Select source and destination ────────────────────────────────────────────
+ask "Enter SOURCE disk (e.g. sda — the disk to clone FROM):"
+read -r SRC
+SRC="/dev/${SRC##/dev/}"  # normalize, allow user to type with or without /dev/
+
+ask "Enter DESTINATION disk (e.g. sdb — the disk to clone TO, will be OVERWRITTEN):"
+read -r DST
+DST="/dev/${DST##/dev/}"
+
+# ─── Validate disks exist ─────────────────────────────────────────────────────
+[[ -b "$SRC" ]] || error "Source disk $SRC not found."
+[[ -b "$DST" ]] || error "Destination disk $DST not found."
+[[ "$SRC" == "$DST" ]] && error "Source and destination cannot be the same disk!"
+
+# ─── Confirm sizes ────────────────────────────────────────────────────────────
+SRC_SIZE=$(blockdev --getsize64 "$SRC")
+DST_SIZE=$(blockdev --getsize64 "$DST")
+SRC_SIZE_HR=$(numfmt --to=iec "$SRC_SIZE")
+DST_SIZE_HR=$(numfmt --to=iec "$DST_SIZE")
+
+info "Source:      $SRC  ($SRC_SIZE_HR)"
+info "Destination: $DST  ($DST_SIZE_HR)"
+echo ""
+
+if [[ "$DST_SIZE" -lt "$SRC_SIZE" ]]; then
+    warn "Destination is SMALLER than source!"
+    warn "Clone will only succeed if used data fits. Proceed with caution."
+    echo ""
+fi
+
+# ─── Final confirmation ───────────────────────────────────────────────────────
+echo -e "${RED}⚠️  WARNING: ALL DATA ON $DST WILL BE PERMANENTLY ERASED!${NC}"
+ask "Type YES to confirm and start the clone:"
+read -r CONFIRM
+[[ "$CONFIRM" == "YES" ]] || error "Aborted by user."
+echo ""
+
+# ─── Install dependencies ─────────────────────────────────────────────────────
+info "Checking and installing required packages..."
+
+install_pkg() {
+    if ! command -v "$1" &>/dev/null; then
+        info "Installing $2..."
+        if command -v pacman &>/dev/null; then
+            pacman -Sy --noconfirm "$2"
+        elif command -v apt-get &>/dev/null; then
+            apt-get install -y "$2"
+        elif command -v dnf &>/dev/null; then
+            dnf install -y "$2"
+        else
+            error "Could not detect package manager. Please install $2 manually."
+        fi
+    else
+        success "$2 already installed."
+    fi
+}
+
+install_pkg partclone  partclone
+install_pkg ntfsfix    ntfs-3g
+install_pkg sfdisk     util-linux
+echo ""
+
+# ─── Unmount any mounted partitions on source/destination ────────────────────
+info "Unmounting any mounted partitions on $SRC and $DST..."
+for part in $(lsblk -lno NAME "$SRC" "$DST" | grep -v "^sd[ab]$" || true); do
+    MOUNTPOINT=$(lsblk -no MOUNTPOINTS "/dev/$part" 2>/dev/null || true)
+    if [[ -n "$MOUNTPOINT" ]]; then
+        warn "Unmounting /dev/$part from $MOUNTPOINT"
+        umount "/dev/$part" || warn "Could not unmount /dev/$part — continuing anyway."
+    fi
+done
+echo ""
+
+# ─── Step 1: Copy MBR + partition table ──────────────────────────────────────
+info "Step 1/4 — Copying partition table from $SRC to $DST..."
+sfdisk -d "$SRC" | sfdisk --force "$DST"
+partprobe "$DST" 2>/dev/null || true
+sleep 1
+success "Partition table copied."
+echo ""
+
+# ─── Step 2: Detect and clone each partition ─────────────────────────────────
+info "Step 2/4 — Cloning partitions..."
+echo ""
+
+# Get list of partitions on source
+PARTITIONS=$(lsblk -lno NAME "$SRC" | grep -v "^$(basename $SRC)$" || true)
+
+if [[ -z "$PARTITIONS" ]]; then
+    error "No partitions found on $SRC. Is it partitioned?"
+fi
+
+PART_NUM=0
+for SRC_PART_NAME in $PARTITIONS; do
+    PART_NUM=$((PART_NUM + 1))
+    SRC_PART="/dev/${SRC_PART_NAME}"
+
+    # Derive destination partition (replace source disk name with dest disk name)
+    DST_PART_NAME="${SRC_PART_NAME/$(basename $SRC)/$(basename $DST)}"
+    DST_PART="/dev/${DST_PART_NAME}"
+
+    if [[ ! -b "$DST_PART" ]]; then
+        warn "Destination partition $DST_PART not found — skipping."
+        continue
+    fi
+
+    # Detect filesystem
+    FSTYPE=$(blkid -o value -s TYPE "$SRC_PART" 2>/dev/null || echo "unknown")
+    LABEL=$(blkid -o value -s LABEL "$SRC_PART" 2>/dev/null || echo "")
+    SIZE=$(lsblk -no SIZE "$SRC_PART")
+
+    info "Cloning partition $PART_NUM: $SRC_PART → $DST_PART"
+    info "  Filesystem: ${FSTYPE:-unknown}  |  Label: ${LABEL:-none}  |  Size: $SIZE"
+
+    case "$FSTYPE" in
+        ntfs)
+            # Clear hibernation if present before cloning
+            info "  Checking for Windows hibernation on $SRC_PART..."
+            mount -t ntfs-3g -o remove_hiberfile "$SRC_PART" /mnt 2>/dev/null && umount /mnt 2>/dev/null || true
+
+            info "  Running partclone.ntfs..."
+            partclone.ntfs -b -s "$SRC_PART" -O "$DST_PART"
+            ;;
+        vfat|fat32|fat16)
+            info "  Running partclone.fat..."
+            partclone.fat -b -s "$SRC_PART" -O "$DST_PART"
+            ;;
+        ext2)
+            info "  Running partclone.ext2..."
+            partclone.ext2 -b -s "$SRC_PART" -O "$DST_PART"
+            ;;
+        ext3)
+            info "  Running partclone.ext3..."
+            partclone.ext3 -b -s "$SRC_PART" -O "$DST_PART"
+            ;;
+        ext4)
+            info "  Running partclone.ext4..."
+            partclone.ext4 -b -s "$SRC_PART" -O "$DST_PART"
+            ;;
+        btrfs)
+            info "  Running partclone.btrfs..."
+            partclone.btrfs -b -s "$SRC_PART" -O "$DST_PART"
+            ;;
+        xfs)
+            info "  Running partclone.xfs..."
+            partclone.xfs -b -s "$SRC_PART" -O "$DST_PART"
+            ;;
+        swap)
+            info "  Swap partition — recreating with mkswap..."
+            SWAP_UUID=$(blkid -o value -s UUID "$SRC_PART" 2>/dev/null || true)
+            if [[ -n "$SWAP_UUID" ]]; then
+                mkswap -U "$SWAP_UUID" "$DST_PART"
+            else
+                mkswap "$DST_PART"
+            fi
+            ;;
+        *)
+            warn "  Unknown/unsupported filesystem '$FSTYPE' — falling back to dd..."
+            dd if="$SRC_PART" of="$DST_PART" bs=4M conv=noerror,sync status=progress
+            ;;
+    esac
+
+    success "  $SRC_PART → $DST_PART done!"
+    echo ""
+done
+
+# ─── Step 3: Copy MBR boot sector ────────────────────────────────────────────
+info "Step 3/4 — Copying MBR boot sector..."
+dd if="$SRC" of="$DST" bs=512 count=1
+success "MBR boot sector copied."
+echo ""
+
+# ─── Step 4: Fix NTFS alternate boot sectors ─────────────────────────────────
+info "Step 4/4 — Verifying and fixing NTFS partitions on $DST..."
+echo ""
+
+for DST_PART_NAME in $(lsblk -lno NAME "$DST" | grep -v "^$(basename $DST)$" || true); do
+    DST_PART="/dev/${DST_PART_NAME}"
+    FSTYPE=$(blkid -o value -s TYPE "$DST_PART" 2>/dev/null || echo "unknown")
+
+    if [[ "$FSTYPE" == "ntfs" ]]; then
+        info "Checking $DST_PART..."
+
+        # Clear hibernation
+        mount -t ntfs-3g -o remove_hiberfile "$DST_PART" /mnt 2>/dev/null && umount /mnt 2>/dev/null || true
+
+        # Fix with ntfsfix
+        ntfsfix "$DST_PART" 2>/dev/null || true
+
+        # Check if alternate boot sector is still bad and fix manually
+        CHECK=$(ntfsfix -n "$DST_PART" 2>&1 || true)
+        if echo "$CHECK" | grep -q "alternate boot sector.*BAD"; then
+            warn "$DST_PART alternate boot sector still bad — fixing manually..."
+            SECTORS=$(blockdev --getsz "$DST_PART")
+            python3 -c "
+import subprocess
+sectors = $SECTORS
+subprocess.run(['dd', 'if='+'$DST_PART', 'of='+'$DST_PART', 'bs=512', 'count=1', 'skip=0', f'seek={sectors-1}'])
+print('Alternate boot sector fixed.')
+"
+            # Final verify
+            RECHECK=$(ntfsfix -n "$DST_PART" 2>&1 || true)
+            if echo "$RECHECK" | grep -q "successfully"; then
+                success "$DST_PART — all checks passed!"
+            else
+                warn "$DST_PART — still has issues (Windows chkdsk will fix on first boot)"
+            fi
+        else
+            success "$DST_PART — all checks passed!"
+        fi
+    fi
+done
+
+echo ""
+
+# ─── Sync and done ────────────────────────────────────────────────────────────
+info "Syncing disks..."
+sync
+echo ""
+echo -e "${GREEN}╔══════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║              ✅  Clone Complete!                     ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════════════════════╝${NC}"
+echo ""
+info "To safely disconnect the drives run:"
+echo "    sudo udisksctl power-off -b $SRC"
+echo "    sudo udisksctl power-off -b $DST"
+echo ""
+info "Then unplug the USB cables and boot from $DST."
+echo ""
