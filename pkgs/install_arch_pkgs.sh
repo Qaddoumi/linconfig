@@ -337,7 +337,32 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm libgsf # Office document thumbnails for thunar
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-"${ESCALATION_TOOL}" pacman -S --needed --noconfirm udisks2 gvfs gvfs-mtp # Required for thunar to handle external drives and MTP devices
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm udisks2 dosfstools exfatprogs xfsprogs f2fs-tools udftools # Required for thunar to handle external drives and filesystems
+# Optional dependencies for udisks2
+#     udisks2-btrfs: for BTRFS module
+#     udisks2-lvm2: for LVM2 module
+#     udisks2-docs: API documentation
+#     btrfs-progs: for BTRFS support in libblockdev-fs
+#     dosfstools: for FAT support in libblockdev-fs
+#     exfatprogs: for exFAT support in libblockdev-fs
+#     e2fsprogs: for Ext2/3/4 support in libblockdev-fs [installed]
+#     f2fs-tools: for F2FS support in libblockdev-fs
+#     less: for default pager of the udisksctl dump command
+#     nilfs-utils: for NILFS support in libblockdev-fs
+#     udftools: for UDF support in libblockdev-fs
+#     xfsprogs: for XFS support in libblockdev-fs
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm gvfs gvfs-mtp gvfs-gphoto2 gvfs-afc # Required for thunar to handle MTP devices, gphoto2 devices and Apple mobile devices
+# Optional dependencies for gvfs
+#     gvfs-afc: AFC support (Apple mobile devices)
+#     gvfs-dnssd: DNS-SD and WebDAV support (macOS file sharing)
+#     gvfs-goa: Gnome Online Accounts support (e.g. OwnCloud)
+#     gvfs-gphoto2: gphoto2 support (PTP camera, MTP media player)
+#     gvfs-mtp: MTP support (Android, media player) [pending]
+#     gvfs-nfs: NFS support
+#     gvfs-onedrive: Microsoft OneDrive support
+#     gvfs-smb: SMB/CIFS support (Windows file sharing)
+#     gvfs-wsdd: Web Services Dynamic Discovery support (Windows discovery)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" systemctl enable udisks2.service || true
 "${ESCALATION_TOOL}" systemctl start udisks2.service || true
