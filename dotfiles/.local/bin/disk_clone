@@ -107,7 +107,7 @@ echo ""
 
 # ─── Unmount any mounted partitions on source/destination ────────────────────
 info "Unmounting any mounted partitions on $SRC and $DST..."
-for part in $(lsblk -lno NAME "$SRC" "$DST" | grep -v "^sd[ab]$" || true); do
+for part in $(lsblk -lno NAME "$SRC" "$DST" | grep -v -E "^($(basename "$SRC")|$(basename "$DST"))$" || true); do
     MOUNTPOINT=$(lsblk -no MOUNTPOINTS "/dev/$part" 2>/dev/null || true)
     if [[ -n "$MOUNTPOINT" ]]; then
         warn "Unmounting /dev/$part from $MOUNTPOINT"
@@ -120,7 +120,7 @@ echo ""
 info "Step 1/4 — Copying partition table from $SRC to $DST..."
 sfdisk -d "$SRC" | sfdisk --force "$DST"
 partprobe "$DST" 2>/dev/null || true
-sleep 1
+udevadm settle
 success "Partition table copied."
 echo ""
 
@@ -129,7 +129,7 @@ info "Step 2/4 — Cloning partitions..."
 echo ""
 
 # Get list of partitions on source
-PARTITIONS=$(lsblk -lno NAME "$SRC" | grep -v "^$(basename $SRC)$" || true)
+PARTITIONS=$(lsblk -lno NAME "$SRC" | grep -v "^$(basename "$SRC")$" || true)
 
 if [[ -z "$PARTITIONS" ]]; then
     error "No partitions found on $SRC. Is it partitioned?"
@@ -141,7 +141,7 @@ for SRC_PART_NAME in $PARTITIONS; do
     SRC_PART="/dev/${SRC_PART_NAME}"
 
     # Derive destination partition (replace source disk name with dest disk name)
-    DST_PART_NAME="${SRC_PART_NAME/$(basename $SRC)/$(basename $DST)}"
+    DST_PART_NAME="${SRC_PART_NAME/$(basename "$SRC")/$(basename "$DST")}"
     DST_PART="/dev/${DST_PART_NAME}"
 
     if [[ ! -b "$DST_PART" ]]; then
@@ -161,7 +161,9 @@ for SRC_PART_NAME in $PARTITIONS; do
         ntfs)
             # Clear hibernation if present before cloning
             info "  Checking for Windows hibernation on $SRC_PART..."
-            mount -t ntfs-3g -o remove_hiberfile "$SRC_PART" /mnt 2>/dev/null && umount /mnt 2>/dev/null || true
+            _tmpdir=$(mktemp -d)
+            mount -t ntfs-3g -o remove_hiberfile "$SRC_PART" "$_tmpdir" 2>/dev/null && umount "$_tmpdir" 2>/dev/null || true
+            rmdir "$_tmpdir" 2>/dev/null || true
 
             info "  Running partclone.ntfs..."
             partclone.ntfs -b -s "$SRC_PART" -O "$DST_PART"
@@ -209,17 +211,23 @@ for SRC_PART_NAME in $PARTITIONS; do
     echo ""
 done
 
-# ─── Step 3: Copy MBR boot sector ────────────────────────────────────────────
-info "Step 3/4 — Copying MBR boot sector..."
-dd if="$SRC" of="$DST" bs=512 count=1
-success "MBR boot sector copied."
+# ─── Step 3: Copy MBR boot code (if MBR disk) ────────────────────────────────
+TABLE_TYPE=$(blkid -o value -s PTTYPE "$SRC" 2>/dev/null || echo "unknown")
+if [[ "$TABLE_TYPE" == "dos" ]]; then
+    info "Step 3/4 — Copying MBR boot code (first 446 bytes)..."
+    dd if="$SRC" of="$DST" bs=446 count=1
+    success "MBR boot code copied (partition table preserved)."
+else
+    info "Step 3/4 — GPT disk detected, skipping MBR boot code copy."
+    success "No MBR boot code copy needed for GPT."
+fi
 echo ""
 
 # ─── Step 4: Fix NTFS alternate boot sectors ─────────────────────────────────
 info "Step 4/4 — Verifying and fixing NTFS partitions on $DST..."
 echo ""
 
-for DST_PART_NAME in $(lsblk -lno NAME "$DST" | grep -v "^$(basename $DST)$" || true); do
+for DST_PART_NAME in $(lsblk -lno NAME "$DST" | grep -v "^$(basename "$DST")$" || true); do
     DST_PART="/dev/${DST_PART_NAME}"
     FSTYPE=$(blkid -o value -s TYPE "$DST_PART" 2>/dev/null || echo "unknown")
 
@@ -227,7 +235,9 @@ for DST_PART_NAME in $(lsblk -lno NAME "$DST" | grep -v "^$(basename $DST)$" || 
         info "Checking $DST_PART..."
 
         # Clear hibernation
-        mount -t ntfs-3g -o remove_hiberfile "$DST_PART" /mnt 2>/dev/null && umount /mnt 2>/dev/null || true
+        _tmpdir=$(mktemp -d)
+        mount -t ntfs-3g -o remove_hiberfile "$DST_PART" "$_tmpdir" 2>/dev/null && umount "$_tmpdir" 2>/dev/null || true
+        rmdir "$_tmpdir" 2>/dev/null || true
 
         # Fix with ntfsfix
         ntfsfix "$DST_PART" 2>/dev/null || true
@@ -237,12 +247,9 @@ for DST_PART_NAME in $(lsblk -lno NAME "$DST" | grep -v "^$(basename $DST)$" || 
         if echo "$CHECK" | grep -q "alternate boot sector.*BAD"; then
             warn "$DST_PART alternate boot sector still bad — fixing manually..."
             SECTORS=$(blockdev --getsz "$DST_PART")
-            python3 -c "
-import subprocess
-sectors = $SECTORS
-subprocess.run(['dd', 'if='+'$DST_PART', 'of='+'$DST_PART', 'bs=512', 'count=1', 'skip=0', f'seek={sectors-1}'])
-print('Alternate boot sector fixed.')
-"
+            LAST_SECTOR=$((SECTORS - 1))
+            dd if="$DST_PART" of="$DST_PART" bs=512 count=1 skip=0 seek="$LAST_SECTOR" conv=notrunc
+            info "Alternate boot sector fixed."
             # Final verify
             RECHECK=$(ntfsfix -n "$DST_PART" 2>&1 || true)
             if echo "$RECHECK" | grep -q "successfully"; then
