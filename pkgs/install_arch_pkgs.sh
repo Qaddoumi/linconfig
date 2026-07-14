@@ -463,12 +463,12 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm cpupower # CPU frequency scaling utility ==> change powersave to performance mode.
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-"${ESCALATION_TOOL}" pacman -S --needed --noconfirm tlp # TLP for power management
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
+# "${ESCALATION_TOOL}" pacman -S --needed --noconfirm tlp # TLP for power management
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm lm_sensors # Hardware monitoring
-echo -e "${blue}--------------------------------------------------\n${no_color}"
-"${ESCALATION_TOOL}" pacman -S --needed --noconfirm thermald # Intel thermal daemon
+# echo -e "${blue}--------------------------------------------------\n${no_color}"
+# "${ESCALATION_TOOL}" pacman -S --needed --noconfirm thermald # Intel thermal daemon
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm dmidecode # Desktop Management Interface table related utilities
 echo -e "${blue}--------------------------------------------------\n${no_color}"
