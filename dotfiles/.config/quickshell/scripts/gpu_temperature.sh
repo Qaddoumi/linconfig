@@ -47,7 +47,7 @@ awk -F', ' '{
 	}')
 
 	if [ -n "$apps_raw" ]; then
-		formatted_apps=$(echo "$apps_raw" | awk 'BEGIN { print "\nProcesses:" } { print $0 }')
+		formatted_apps=$(echo "$apps_raw" | awk 'BEGIN { print "\n==============================\nProcesses:" } { print $0 }')
 		gpu_stats="${gpu_stats}${formatted_apps}"
 	fi
 
