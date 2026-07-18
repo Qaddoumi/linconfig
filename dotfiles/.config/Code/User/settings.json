@@ -152,4 +152,5 @@
     "amp.tab.enabled": false,
     "workbench.sideBar.location": "right",
     "editor.semanticHighlighting.enabled": false,
+    "todo-tree.ripgrep.ripgrep": "/usr/bin/rg",
 }

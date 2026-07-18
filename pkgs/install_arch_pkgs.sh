@@ -496,6 +496,8 @@ yay -S --needed --noconfirm antigravity || echo -e "${red}Failed to install anti
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm brave-bin || echo -e "${red}Failed to install brave-bin${no_color}" # Brave browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+sudo pacman -S --needed --noconfirm ripgrep || echo -e "${red}Failed to install ripgrep${no_color}" # ripgrep search tool (needed for todo extension)
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm visual-studio-code-bin || echo -e "${red}Failed to install visual-studio-code-bin${no_color}" # Visual Studio Code
 code --install-extension Continue.continue # for local ai and agent in vscode
 code --install-extension sdras.night-owl # dark theme
