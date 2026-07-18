@@ -172,7 +172,12 @@ Item {
 					MouseArea {
 						anchors.fill: parent
 						cursorShape: Qt.PointingHandCursor
-						onClicked: Hyprland.dispatch("workspace " + (index + 1))
+						onClicked: {
+						if (workspace !== null)
+							workspace.activate()
+						else
+							Hyprland.dispatch("workspace " + (index + 1))
+					}
 					}
 				}
 			}
