@@ -504,6 +504,7 @@ yay -S --needed --noconfirm visual-studio-code-bin || echo -e "${red}Failed to i
 code --install-extension Continue.continue # for local ai and agent in vscode
 code --install-extension sdras.night-owl # dark theme
 code --install-extension Gruntfuggly.todo-tree # todo tree
+code --install-extension theqtcompany.qt-qml # qt/qml support
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --noconfirm --needed aur/anythingllm-appimage --mflags --skipinteg || echo -e "${red}Failed to install anythingllm-appimage${no_color}" # all-in-one AI app
 echo -e "${blue}--------------------------------------------------\n${no_color}"
