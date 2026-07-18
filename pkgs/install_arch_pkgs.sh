@@ -368,6 +368,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" systemctl start udisks2.service || true
 "${ESCALATION_TOOL}" usermod -aG storage $USER || true
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm ntfs-3g ntfsprogs ## Download ntfs tools
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm zenity # Dialogs from terminal,(used for thunar)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm nano # Text editor
