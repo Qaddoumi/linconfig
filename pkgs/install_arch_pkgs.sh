@@ -370,6 +370,8 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm ntfs-3g ntfsprogs ## Download ntfs tools
 echo -e "${blue}--------------------------------------------------\n${no_color}"
+"${ESCALATION_TOOL}" pacman -S --needed --noconfirm rsync # File synchronization and backup tool
+echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm zenity # Dialogs from terminal,(used for thunar)
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 "${ESCALATION_TOOL}" pacman -S --needed --noconfirm nano # Text editor
