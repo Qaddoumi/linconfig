@@ -9,12 +9,24 @@ for arg in "$@"; do
 done
 
 HIJRI_CACHE="/tmp/hijri_date_cache_$(date +%Y)-$(date +%m)-$(date +%d)"
+SETTINGS_FILE="$HOME/.config/quickshell/settings.json"
+settings=$(cat "$SETTINGS_FILE" | jq -r '.prayerTimes // empty')
+latitude=$(echo "$settings" | jq -r '.latitude // empty')
+longitude=$(echo "$settings" | jq -r '.longitude // empty')
+city=$(echo "$settings" | jq -r '.city // empty')
+country=$(echo "$settings" | jq -r '.country // empty')
+timezone=$(echo "$settings" | jq -r '.timezone // empty')
+elevation=$(echo "$settings" | jq -r '.elevation // empty')
+bashIslamMethod=$(echo "$settings" | jq -r '.bashIslamMethod // empty')
+bashIslamMadhab=$(echo "$settings" | jq -r '.bashIslamMadhab // empty')
+bashIslamSummerTime=$(echo "$settings" | jq -r '.bashIslamSummerTime // empty')
+apiMethod=$(echo "$settings" | jq -r '.apiMethod // empty')
 
 # Get prayer times using local bashIslam script
 get_prayer_times_local() {
 	local prayer_data
 	
-	prayer_data=$(bashIslam --lat 31.986 --lon 35.898 --timezone 3 --method 20 --madhab 1 --summer-time 0 --elevation 950 2>/dev/null | jq -c 2>/dev/null)
+	prayer_data=$(bashIslam --lat "$latitude" --lon "$longitude" --timezone "$timezone" --method "$bashIslamMethod" --madhab "$bashIslamMadhab" --summer-time "$bashIslamSummerTime" --elevation "$elevation" 2>/dev/null | jq -c 2>/dev/null)
 	
 	if [[ -n "$prayer_data" ]]; then
 		local fajr=$(echo "$prayer_data" | jq -r '.prayers.fajr // empty')
@@ -52,36 +64,7 @@ EOF
 	return 1
 }
 
-# Configuration - Update these with your location
-LATITUDE="31.9555" # Amman, Jordan latitude
-LONGITUDE="35.9435" # Amman, Jordan longitude
-TIMEZONE="Asia/Amman"
-METHOD="23"
-### Possible values:
-# 0 - Jafari / Shia Ithna-Ashari
-# 1 - University of Islamic Sciences, Karachi
-# 2 - Islamic Society of North America
-# 3 - Muslim World League
-# 4 - Umm Al-Qura University, Makkah
-# 5 - Egyptian General Authority of Survey
-# 7 - Institute of Geophysics, University of Tehran
-# 8 - Gulf Region
-# 9 - Kuwait
-# 10 - Qatar
-# 11 - Majlis Ugama Islam Singapura, Singapore
-# 12 - Union Organization islamic de France
-# 13 - Diyanet İşleri Başkanlığı, Turkey
-# 14 - Spiritual Administration of Muslims of Russia
-# 15 - Moonsighting Committee Worldwide (also requires shafaq parameter)
-# 16 - Dubai (experimental)
-# 17 - Jabatan Kemajuan Islam Malaysia (JAKIM)
-# 18 - Tunisia
-# 19 - Algeria
-# 20 - KEMENAG - Kementerian Agama Republik Indonesia
-# 21 - Morocco
-# 22 - Comunidade Islamica de Lisboa
-# 23 - Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan
-# 99 - Custom. See https://aladhan.com/calculation-methods
+
 
 
 
@@ -130,7 +113,35 @@ get_prayer_times_api() {
 	local today=$(date +%d-%m-%Y)
 	
 	# API 1: AlAdhan API
-	prayer_data=$(curl -s --connect-timeout 5 "http://api.aladhan.com/v1/timings/$today?latitude=$LATITUDE&longitude=$LONGITUDE&method=$METHOD" 2>/dev/null)
+
+	# Configuration for the api only - Update these with your location
+
+### Possible values:
+# 0 - Jafari / Shia Ithna-Ashari
+# 1 - University of Islamic Sciences, Karachi
+# 2 - Islamic Society of North America
+# 3 - Muslim World League
+# 4 - Umm Al-Qura University, Makkah
+# 5 - Egyptian General Authority of Survey
+# 7 - Institute of Geophysics, University of Tehran
+# 8 - Gulf Region
+# 9 - Kuwait
+# 10 - Qatar
+# 11 - Majlis Ugama Islam Singapura, Singapore
+# 12 - Union Organization islamic de France
+# 13 - Diyanet İşleri Başkanlığı, Turkey
+# 14 - Spiritual Administration of Muslims of Russia
+# 15 - Moonsighting Committee Worldwide (also requires shafaq parameter)
+# 16 - Dubai (experimental)
+# 17 - Jabatan Kemajuan Islam Malaysia (JAKIM)
+# 18 - Tunisia
+# 19 - Algeria
+# 20 - KEMENAG - Kementerian Agama Republik Indonesia
+# 21 - Morocco
+# 22 - Comunidade Islamica de Lisboa
+# 23 - Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan
+# 99 - Custom. See https://aladhan.com/calculation-methods
+	prayer_data=$(curl -s --connect-timeout 5 "http://api.aladhan.com/v1/timings/$today?latitude=$latitude&longitude=$longitude&method=$apiMethod" 2>/dev/null)
 	
 	if [[ -n "$prayer_data" && "$prayer_data" != *"error"* ]]; then
 		local fajr=$(echo "$prayer_data" | jq -r '.data.timings.Fajr' | cut -d' ' -f1)
@@ -146,7 +157,7 @@ get_prayer_times_api() {
 	fi
 	
 	# API 2: Prayer Times API
-	prayer_data=$(curl -s --connect-timeout 5 "https://api.pray.zone/v2/times/today.json?city=amman&country=jordan" 2>/dev/null)
+	prayer_data=$(curl -s --connect-timeout 5 "https://api.pray.zone/v2/times/today.json?city=$city&country=$country" 2>/dev/null)
 	
 	if [[ -n "$prayer_data" && "$prayer_data" != *"error"* ]]; then
 		local fajr=$(echo "$prayer_data" | jq -r '.results.datetime[0].times.Fajr')
@@ -164,30 +175,14 @@ get_prayer_times_api() {
 	return 1
 }
 
-# Offline prayer calculation (simplified - less accurate)
-calculate_prayer_times_offline() {
-	# This is a very basic calculation - for accurate times, use API
-	# Based on sun angles: Fajr(-18°), Dhuhr(0°), Asr(shadow=1+tan(lat-decl)), Maghrib(0.83°), Isha(-17°)
-	
-	local day_of_year=$(date +%j)
-	local equation_of_time=$(echo "scale=4; 4 * (279.575 + 0.9856 * $day_of_year)" | bc -l)
-	
-	# Simplified calculation (not astronomically accurate)
-	echo "05:30 12:30 15:45 18:15 19:45"
-}
-
 # Get prayer times
 prayer_times=$(get_prayer_times_local)
 if [[ $? -ne 0 || -z "$prayer_times" ]]; then
 	prayer_times=$(get_prayer_times_api)
 	if [[ $? -ne 0 || -z "$prayer_times" ]]; then
-		prayer_times=$(calculate_prayer_times_offline)
 		offline_mode="(offline)"
-	else
-		offline_mode=""
+		exit 1
 	fi
-else
-	offline_mode=""
 fi
 
 # Parse prayer times
@@ -236,7 +231,7 @@ else
 fi
 
 # Create tooltip with all prayer times
-tooltip="Prayer Times $offline_mode\\n"
+tooltip="Prayer Times in $city/$country\\n"
 tooltip+="\\n"
 tooltip+="Fajr:    $fajr\\n"
 tooltip+="Dhuhr:   $dhuhr\\n"

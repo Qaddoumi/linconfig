@@ -7,10 +7,22 @@
 		"showSeconds": true
 	},
 	"weather":{
+		"latitude": 32.066,
+		"longitude": 36.076,
+		"city": "Zarqa",
+		"country": "Jordan"
+	},
+	"prayerTimes": {
 		"latitude": 31.986,
 		"longitude": 35.898,
+		"timezone": 3,
 		"city": "Amman",
-		"country": "Jordan"
+		"country": "Jordan",
+		"elevation": 950,
+		"bashIslamMethod": 20,
+		"bashIsmamMadhab": 1,
+		"bashIslamSummerTime": 0,
+		"apiMethod": 23
 	},
 	"screenshot": {
 		"defaultDelay": 0,
