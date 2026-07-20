@@ -1,0 +1,32 @@
+{
+	"general": {
+		"weatherLatitude": "31.986",
+		"weatherLongitude": "35.898",
+		"useFahrenheit": false,
+		"clockFormat24hr": false,
+		"showSeconds": true
+	},
+	"weather":{
+		"latitude": 31.986,
+		"longitude": 35.898,
+		"city": "Amman",
+		"country": "Jordan"
+	},
+	"screenshot": {
+		"defaultDelay": 0,
+		"saveToDisk": true,
+		"copyToClipboard": true,
+		"saveLocation": "~/Pictures/Screenshots"
+	},
+	"theme": {
+		"current": "catppuccin-mocha"
+	},
+	"systemTray": {
+		"showBatteryDetails": false,
+		"showVolumeDetails": false,
+		"showNetworkDetails": false
+	},
+	"bar": {
+		"transparentBackground": false
+	}
+}

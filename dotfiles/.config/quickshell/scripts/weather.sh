@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 # Weather script using Open-Meteo API (free, no API key)
-# Caches data in /tmp to avoid excessive API calls (refreshes once per day)
+# Caches data in /tmp to avoid excessive API calls (refreshes every 15 minutes)
 
 CACHE_FILE="/tmp/weather_cache.json"
-LOCATION_CACHE="/tmp/weather_location.json"
+SETTINGS_FILE="$HOME/.config/quickshell/settings.json"
 
 # Weather code to emoji mapping
 get_weather_emoji() {
@@ -54,48 +54,49 @@ get_weather_desc() {
 	esac
 }
 
-# Get location from IP (cached)
+# Get location strictly from settings.json
 get_location() {
-	if [[ -f "$LOCATION_CACHE" ]]; then
-		cat "$LOCATION_CACHE"
-		return
-	fi
-	
-	# Use ip-api.com for geolocation (free, no key needed)
-	local location
-	location=$(curl -s "http://ip-api.com/json/" | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g')
-	
-	if [[ -n "$location" ]] && echo "$location" | jq -e '.lat' >/dev/null 2>&1; then
-		echo "$location" > "$LOCATION_CACHE"
-		echo "$location"
+	if [[ -f "$SETTINGS_FILE" ]]; then
+		cat "$SETTINGS_FILE" | jq -r '.weather // empty'
 	else
-		# Fallback to a default (Amman, Jordan)
-		echo '{"lat":31.9555,"lon":35.9435,"city":"Amman", "country":"Jordan"}'
+		# Fallback just in case the settings file is missing or unreadable
+		echo '{"latitude":31.9555,"longitude":35.9435,"city":"Amman", "country":"Jordan"}'
 	fi
 }
 
-# Check if cache is valid (same day)
+# Check if cache is valid (less than 15 minutes / 900 seconds old)
 is_cache_valid() {
 	if [[ ! -f "$CACHE_FILE" ]]; then
 		return 1
 	fi
 	
-	local cache_date
-	cache_date=$(stat -c %Y "$CACHE_FILE" 2>/dev/null || stat -f %m "$CACHE_FILE" 2>/dev/null)
-	local cache_day=$(date -d "@$cache_date" +%Y-%m-%d 2>/dev/null || date -r "$cache_date" +%Y-%m-%d 2>/dev/null)
-	local today=$(date +%Y-%m-%d)
+	local current_time
+	current_time=$(date +%s)
 	
-	[[ "$cache_day" == "$today" ]]
+	local cache_time
+	cache_time=$(stat -c %Y "$CACHE_FILE" 2>/dev/null || stat -f %m "$CACHE_FILE" 2>/dev/null)
+	
+	if [[ -z "$cache_time" ]]; then
+		return 1
+	fi
+	
+	local time_diff=$((current_time - cache_time))
+	
+	if [[ $time_diff -lt 900 ]]; then
+		return 0 # Cache is valid (under 15 mins)
+	else
+		return 1 # Cache expired
+	fi
 }
 
 # Fetch weather data from API
 fetch_weather() {
 	local location
 	location=$(get_location)
-	local lat=$(echo "$location" | jq -r '.lat')
-	local lon=$(echo "$location" | jq -r '.lon')
+	local latitude=$(echo "$location" | jq -r '.latitude')
+	local longitude=$(echo "$location" | jq -r '.longitude')
 	
-	local url="https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=14"
+	local url="https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=14"
 	
 	curl -s "$url" 2>/dev/null
 }
