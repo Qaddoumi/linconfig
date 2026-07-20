@@ -180,7 +180,7 @@ prayer_times=$(get_prayer_times_local)
 if [[ $? -ne 0 || -z "$prayer_times" ]]; then
 	prayer_times=$(get_prayer_times_api)
 	if [[ $? -ne 0 || -z "$prayer_times" ]]; then
-		offline_mode="(offline)"
+		echo "{\"text\":\"󱠧 Error no data available\", \"tooltip\":\"Error: Unable to fetch prayer times.\", \"class\":\"current-prayer\"}" >&2
 		exit 1
 	fi
 fi
