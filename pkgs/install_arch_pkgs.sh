@@ -496,7 +496,9 @@ echo -e "${blue}--------------------------------------------------\n${no_color}"
 # echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm google-chrome || echo -e "${red}Failed to install google-chrome${no_color}" # Web browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"
-yay -S --needed --noconfirm antigravity || echo -e "${red}Failed to install antigravity-bin${no_color}" # AI IDE
+yay -S --needed --noconfirm antigravity || echo -e "${red}Failed to install antigravity manager${no_color}" # AI Manager
+echo -e "${blue}--------------------------------------------------\n${no_color}"
+yay -S --needed --noconfirm antigravity-ide || echo -e "${red}Failed to install antigravity ide${no_color}" # AI IDE
 echo -e "${blue}--------------------------------------------------\n${no_color}"
 yay -S --needed --noconfirm brave-bin || echo -e "${red}Failed to install brave-bin${no_color}" # Brave browser
 echo -e "${blue}--------------------------------------------------\n${no_color}"

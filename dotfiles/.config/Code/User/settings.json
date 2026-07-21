@@ -78,7 +78,10 @@
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.cursorStyle": "line",
     "workbench.editorAssociations": {
-        "*.ipynb": "jupyter-notebook"
+        "*.copilotmd": "vscode.markdown.preview.editor",
+        "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc": "default",
+        "*.ipynb": "jupyter-notebook",
+        "*.qrc": "qt-core.qrcEditor"
     },
     "security.workspace.trust.untrustedFiles": "open",
     "notebook.cellToolbarLocation": {
@@ -153,4 +156,5 @@
     "workbench.sideBar.location": "right",
     "editor.semanticHighlighting.enabled": false,
     "todo-tree.ripgrep.ripgrep": "/usr/bin/rg",
+    "editor.unicodeHighlight.ambiguousCharacters": false,
 }
