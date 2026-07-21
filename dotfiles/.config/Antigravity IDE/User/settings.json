@@ -78,7 +78,10 @@
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.cursorStyle": "line",
     "workbench.editorAssociations": {
-        "*.ipynb": "jupyter-notebook"
+        "*.copilotmd": "vscode.markdown.preview.editor",
+        "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc": "default",
+        "*.ipynb": "jupyter-notebook",
+        "*.qrc": "qt-core.qrcEditor"
     },
     "security.workspace.trust.untrustedFiles": "open",
     "notebook.cellToolbarLocation": {
@@ -146,11 +149,13 @@
             "path": "/usr/bin/qmake"
         }
     ],
-    "C_Cpp.intelliSenseEngine": "disabled",
     "python.languageServer": "Default",
     "qt-qml.doNotAskForQmllsDownload": true,
+    "editor.wordBasedSuggestions": "off",
+    "workbench.sideBar.location": "right",
+    "editor.semanticHighlighting.enabled": false,
+    "todo-tree.ripgrep.ripgrep": "/usr/bin/rg",
     "editor.unicodeHighlight.ambiguousCharacters": false,
     "clangd.path": "/home/moh/.config/Antigravity/User/globalStorage/llvm-vs-code-extensions.vscode-clangd/install/21.1.0/clangd_21.1.0/bin/clangd",
     "makefile.configureOnOpen": true,
-    "workbench.sideBar.location": "right",
 }
