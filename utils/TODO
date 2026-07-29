@@ -7,17 +7,13 @@
 - [ ] zram, zswap
 - [ ] dkms-3.2.1-1  i2c-tools-4.4-2
 
-
-
 - [ ] Plymouth Screen
 
-
-- [ ]  pacman -Ss conky
+- [ ] conky
 extra/conky 1.22.2-1
 	Light-weight system monitor for X, Wayland, and other things, too
 extra/conky-manager2 2.7-2
 	GUI for managing Conky config files with options to browse and edit themes
-
 
 - [ ] pacman -Ss acpi
 extra/acpi 1.7-4
@@ -38,23 +34,6 @@ extra/acpid 2.0.34-2
 - [ ] 
 
 
-# From sway output
-Sway requires additional setup for privilege escalation. Without this setup,
-sway will fail to start with session activation permission failures. Choose one
-of the two available options (In alphabetical, not recommended, order):
-
-1. polkit: This will make sway "just work" right after installation but may be
-		   a weightier solution than desired.
-
-2. seatd: Already required as a sway dependency, this is a lighter-weight
-		  solution but requires some user configuration: Enabling the service,
-		  adding your user to the "seat" group, then logging out/in again.
-
-Either option should provide the same functionality/stability. Refer to the
-Sway wiki page for information.
-
-
-
 # TODO: void linux 
 - hyprland-void repo is not working 
 - uwsm is not in void repos, may need to build from source
@@ -72,10 +51,3 @@ Sway wiki page for information.
 - GTK_THEME
 - kvantum theme
 - 
-
-
-`
-Looking for matches…
-error: No remote refs found for ‘flathub’
-Failed to install easyflatpak
-`
